@@ -1,0 +1,14 @@
+type: explore
+display_name: Retail Daily Revenue
+
+metrics_view: daily_revenue_metrics
+
+dimensions: '*'
+measures: '*'
+
+time_ranges:
+  - PT24H
+  - P7D
+  - P30D
+  - P3M
+  - P12M

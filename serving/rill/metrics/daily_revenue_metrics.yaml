@@ -1,0 +1,22 @@
+type: metrics_view
+display_name: Daily Revenue
+
+model: mart_daily_revenue
+timeseries: order_date
+
+dimensions:
+  - column: order_date
+    display_name: Order Date
+
+measures:
+  - name: total_revenue
+    display_name: Total Revenue
+    expression: SUM(revenue)
+    format_preset: currency_usd
+  - name: total_completed_orders
+    display_name: Completed Orders
+    expression: SUM(completed_order_count)
+  - name: avg_order_value
+    display_name: Avg Order Value
+    expression: AVG(avg_order_value)
+    format_preset: currency_usd

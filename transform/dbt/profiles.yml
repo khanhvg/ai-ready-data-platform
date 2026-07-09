@@ -1,0 +1,11 @@
+retail_pipeline:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      # Relative to the dbt invocation directory (transform/dbt), matching
+      # the Makefile's `cd transform/dbt && dbt run`. Same file the loader
+      # (ingestion/load_raw.py) writes to -- dbt reads after the loader closes
+      # its connection (single-writer discipline, plan risk R2).
+      path: "../../warehouse/retail.duckdb"
+      threads: 4

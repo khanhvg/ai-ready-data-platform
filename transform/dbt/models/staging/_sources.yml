@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: Landing tables loaded 1:1 from data/raw/*.csv by ingestion/load_raw.py.
+    tables:
+      - name: regions
+      - name: stores
+      - name: product_categories
+      - name: products
+      - name: customers
+      - name: promotions
+      - name: orders
+      - name: order_items
+      - name: payments
+      - name: inventory_movements
+      - name: returns_refunds
+      - name: reviews

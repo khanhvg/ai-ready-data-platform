@@ -1,0 +1,159 @@
+version: 2
+
+models:
+  - name: stg_regions
+    columns:
+      - name: region_id
+        tests: [not_null, unique]
+
+  - name: stg_stores
+    columns:
+      - name: store_id
+        tests: [not_null, unique]
+      - name: region_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_regions')
+                field: region_id
+
+  - name: stg_product_categories
+    columns:
+      - name: category_id
+        tests: [not_null, unique]
+
+  - name: stg_products
+    columns:
+      - name: product_id
+        tests: [not_null, unique]
+      - name: category_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_product_categories')
+                field: category_id
+
+  - name: stg_customers
+    description: >
+      Deduped on customer_id (see stg_customers.sql). `email` is nullable by
+      design (controlled null-optional-field quality scenario).
+    columns:
+      - name: customer_id
+        tests: [not_null, unique]
+      - name: region_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_regions')
+                field: region_id
+
+  - name: stg_promotions
+    columns:
+      - name: promotion_id
+        tests: [not_null, unique]
+
+  - name: stg_orders
+    description: >
+      Deduped on order_id (see stg_orders.sql). `status` is passed through
+      unclean -- a controlled rate of invalid values (UNKNOWN/N/A/error/empty)
+      is expected and flagged at warn severity, not failed. `promotion_id` is
+      nullable by design (controlled null-optional-field quality scenario).
+    columns:
+      - name: order_id
+        tests: [not_null, unique]
+      - name: customer_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+      - name: store_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_stores')
+                field: store_id
+      - name: status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['completed', 'cancelled', 'returned', 'pending']
+              config:
+                severity: warn
+
+  - name: stg_order_items
+    description: >
+      `product_id` is passed through unclean -- a controlled rate of dangling
+      FKs (9,000,000+ offset) is injected upstream, flagged at warn severity.
+    columns:
+      - name: order_item_id
+        tests: [not_null, unique]
+      - name: order_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+      - name: product_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
+              config:
+                severity: warn
+
+  - name: stg_payments
+    columns:
+      - name: payment_id
+        tests: [not_null, unique]
+      - name: order_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+  - name: stg_inventory_movements
+    columns:
+      - name: movement_id
+        tests: [not_null, unique]
+      - name: product_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
+
+  - name: stg_returns_refunds
+    columns:
+      - name: return_id
+        tests: [not_null, unique]
+      - name: order_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+  - name: stg_reviews
+    columns:
+      - name: review_id
+        tests: [not_null, unique]
+      - name: product_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
+      - name: customer_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+      - name: rating
+        tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
