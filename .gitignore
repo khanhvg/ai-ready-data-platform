@@ -57,6 +57,7 @@ build
 GoogleService-Info.plist
 
 repomix-output.xml
+.hermes/
 .serena/cache
 plans/**/*
 !plans/templates/*
