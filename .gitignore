@@ -97,3 +97,22 @@ external/
 
 # Git worktrees (local development only)
 worktrees/
+
+# AI Ready Data Platform sandbox (issue #1)
+.venv/
+data/raw/*.csv
+data/raw/manifest.json
+warehouse/*.duckdb
+warehouse/*.duckdb.wal
+serving/export/*.parquet
+serving/rill/.rill/
+serving/rill/tmp/
+lake/minio-data/
+governance/openmetadata-data/
+orchestration/airflow/logs/
+orchestration/airflow/airflow.db
+transform/dbt/target/
+transform/dbt/logs/
+transform/dbt/dbt_packages/
+transform/dbt/.user.yml
+openmetadata-docker/

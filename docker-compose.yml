@@ -1,0 +1,198 @@
+volumes:
+  airflow-home:
+  minio-data:
+  lakekeeper-db-data:
+  openmetadata-db-data:
+  openmetadata-es-data:
+
+services:
+  # --- orchestration profile: Apache Airflow (standalone, PythonOperator tasks) ---
+  airflow:
+    profiles: ["orchestration"]
+    build:
+      context: ./orchestration/airflow
+    image: retail-airflow:local
+    container_name: retail-airflow
+    mem_limit: 4g
+    command: ["standalone"]
+    environment:
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      RETAIL_PROJECT_ROOT: /opt/airflow/project
+      SCALE: ${SCALE:-small}
+      SEED: ${SEED:-42}
+      LAKE_PROFILE_ENABLED: ${LAKE_PROFILE_ENABLED:-false}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./orchestration/airflow/dags:/opt/airflow/dags:ro
+      - ./orchestration/airflow/callables:/opt/airflow/callables:ro
+      - .:/opt/airflow/project
+      - airflow-home:/opt/airflow
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v2/monitor/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  # --- lake profile: MinIO (object store) + Lakekeeper (Iceberg REST catalog) ---
+  minio:
+    profiles: ["lake"]
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    container_name: retail-minio
+    mem_limit: 1g
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin_local_only}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  minio-init:
+    profiles: ["lake"]
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    container_name: retail-minio-init
+    mem_limit: 256m
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >
+        mc alias set local http://minio:9000 "$${MINIO_ROOT_USER:-minioadmin}" "$${MINIO_ROOT_PASSWORD:-minioadmin_local_only}" &&
+        mc mb --ignore-existing "local/$${LAKE_S3_BUCKET:-retail-lake}"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin_local_only}
+      LAKE_S3_BUCKET: ${LAKE_S3_BUCKET:-retail-lake}
+
+  lakekeeper-db:
+    profiles: ["lake"]
+    image: postgres:16-alpine
+    container_name: retail-lakekeeper-db
+    mem_limit: 512m
+    environment:
+      POSTGRES_USER: lakekeeper
+      POSTGRES_PASSWORD: lakekeeper_local_only
+      POSTGRES_DB: lakekeeper
+    volumes:
+      - lakekeeper-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lakekeeper"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  lakekeeper-migrate:
+    profiles: ["lake"]
+    image: quay.io/lakekeeper/catalog:v0.13.1
+    container_name: retail-lakekeeper-migrate
+    mem_limit: 512m
+    command: ["migrate"]
+    environment:
+      LAKEKEEPER__PG_ENCRYPTION_KEY: local-dev-only-key-not-for-production
+      LAKEKEEPER__PG_DATABASE_URL_READ: postgresql://lakekeeper:lakekeeper_local_only@lakekeeper-db:5432/lakekeeper
+      LAKEKEEPER__PG_DATABASE_URL_WRITE: postgresql://lakekeeper:lakekeeper_local_only@lakekeeper-db:5432/lakekeeper
+    depends_on:
+      lakekeeper-db:
+        condition: service_healthy
+
+  lakekeeper:
+    profiles: ["lake"]
+    image: quay.io/lakekeeper/catalog:v0.13.1
+    container_name: retail-lakekeeper
+    mem_limit: 1g
+    command: ["serve"]
+    environment:
+      LAKEKEEPER__PG_ENCRYPTION_KEY: local-dev-only-key-not-for-production
+      LAKEKEEPER__PG_DATABASE_URL_READ: postgresql://lakekeeper:lakekeeper_local_only@lakekeeper-db:5432/lakekeeper
+      LAKEKEEPER__PG_DATABASE_URL_WRITE: postgresql://lakekeeper:lakekeeper_local_only@lakekeeper-db:5432/lakekeeper
+    ports:
+      - "8181:8181"
+    depends_on:
+      lakekeeper-db:
+        condition: service_healthy
+      lakekeeper-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8181/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  # --- governance profile: OpenMetadata (heaviest profile, opt-in, run alone) ---
+  openmetadata-db:
+    profiles: ["governance"]
+    image: mysql:8.3
+    container_name: retail-openmetadata-db
+    mem_limit: 1g
+    environment:
+      MYSQL_ROOT_PASSWORD: ${OPENMETADATA_DB_PASSWORD:-openmetadata_local_only}
+      MYSQL_DATABASE: openmetadata_db
+      MYSQL_USER: ${OPENMETADATA_DB_USER:-openmetadata_user}
+      MYSQL_PASSWORD: ${OPENMETADATA_DB_PASSWORD:-openmetadata_local_only}
+    volumes:
+      - openmetadata-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  openmetadata-search:
+    profiles: ["governance"]
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.4
+    container_name: retail-openmetadata-search
+    mem_limit: 1g
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    volumes:
+      - openmetadata-es-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  openmetadata-server:
+    profiles: ["governance"]
+    image: docker.getcollate.io/openmetadata/server:1.6.5
+    container_name: retail-openmetadata-server
+    mem_limit: 2g
+    depends_on:
+      openmetadata-db:
+        condition: service_healthy
+      openmetadata-search:
+        condition: service_healthy
+    environment:
+      OPENMETADATA_CLUSTER_NAME: retail-sandbox
+      DB_HOST: openmetadata-db
+      DB_PORT: 3306
+      DB_USER: ${OPENMETADATA_DB_USER:-openmetadata_user}
+      DB_USER_PASSWORD: ${OPENMETADATA_DB_PASSWORD:-openmetadata_local_only}
+      OM_DATABASE: openmetadata_db
+      ELASTICSEARCH_HOST: openmetadata-search
+      ELASTICSEARCH_PORT: 9200
+      ELASTICSEARCH_SCHEME: http
+    ports:
+      - "8585:8585"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8585/healthcheck || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 15
+      start_period: 60s

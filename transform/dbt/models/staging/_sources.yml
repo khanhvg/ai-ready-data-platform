@@ -1,0 +1,41 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: Landing tables loaded 1:1 from data/raw/*.csv by ingestion/load_raw.py.
+    tables:
+      - name: regions
+      - name: stores
+      - name: product_categories
+      - name: products
+      - name: customers
+        description: >
+          Contains a controlled duplicate customer_id scenario (~0.4% rate, see
+          data-generator/schema.md). staging dedupes downstream (stg_customers.sql), so this
+          warn-severity test on the raw table is what actually surfaces the duplicate scenario --
+          the staging-layer unique test always passes on already-deduped data.
+        columns:
+          - name: customer_id
+            tests:
+              - unique:
+                  config:
+                    severity: warn
+      - name: promotions
+      - name: orders
+        description: >
+          Contains a controlled duplicate order_id scenario (~0.4% rate, see
+          data-generator/schema.md). staging dedupes downstream (stg_orders.sql), so this
+          warn-severity test on the raw table is what actually surfaces the duplicate scenario --
+          the staging-layer unique test always passes on already-deduped data.
+        columns:
+          - name: order_id
+            tests:
+              - unique:
+                  config:
+                    severity: warn
+      - name: order_items
+      - name: payments
+      - name: inventory_movements
+      - name: returns_refunds
+      - name: reviews

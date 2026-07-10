@@ -1,0 +1,6 @@
+# Installed on top of the apache/airflow base image (see Dockerfile) so the
+# retail_batch_pipeline DAG's PythonOperator tasks can call the generator,
+# loader, and dbt-duckdb -- pinned to the P1 spike-proven versions (versions.md).
+duckdb==1.5.4
+dbt-duckdb==1.10.1
+faker==40.28.1

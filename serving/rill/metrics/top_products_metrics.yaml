@@ -1,0 +1,21 @@
+type: metrics_view
+display_name: Top Products
+
+model: mart_top_products
+
+dimensions:
+  - column: product_name
+    display_name: Product
+  - column: sku
+    display_name: SKU
+  - column: category_name
+    display_name: Category
+
+measures:
+  - name: total_units_sold
+    display_name: Units Sold
+    expression: SUM(units_sold)
+  - name: total_revenue
+    display_name: Revenue
+    expression: SUM(revenue)
+    format_preset: currency_usd

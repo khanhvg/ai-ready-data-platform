@@ -1,0 +1,25 @@
+type: metrics_view
+display_name: Customer Cohorts
+
+model: mart_customer_cohorts
+timeseries: cohort_month
+
+dimensions:
+  - column: loyalty_tier
+    display_name: Loyalty Tier
+
+measures:
+  - name: total_customers
+    display_name: Customers
+    expression: SUM(customer_count)
+  - name: total_orders
+    display_name: Completed Orders
+    expression: SUM(total_orders)
+  - name: total_revenue
+    display_name: Lifetime Revenue
+    expression: SUM(total_revenue)
+    format_preset: currency_usd
+  - name: avg_revenue_per_customer
+    display_name: Avg Revenue / Customer
+    expression: AVG(revenue_per_customer)
+    format_preset: currency_usd
