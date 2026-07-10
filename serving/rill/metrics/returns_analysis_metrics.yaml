@@ -1,0 +1,25 @@
+type: metrics_view
+display_name: Returns Analysis
+
+model: mart_returns_analysis
+
+dimensions:
+  - column: reason
+    display_name: Return Reason
+  - column: category_name
+    display_name: Category
+  - column: region_name
+    display_name: Region
+
+measures:
+  - name: total_returns
+    display_name: Returns
+    expression: SUM(return_count)
+  - name: total_refund_amount
+    display_name: Total Refund
+    expression: SUM(total_refund_amount)
+    format_preset: currency_usd
+  - name: avg_refund_amount
+    display_name: Avg Refund
+    expression: AVG(avg_refund_amount)
+    format_preset: currency_usd

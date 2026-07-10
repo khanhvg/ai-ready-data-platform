@@ -1,0 +1,7 @@
+type: explore
+display_name: Retail Web Funnel Conversion
+
+metrics_view: web_funnel_conversion_metrics
+
+dimensions: '*'
+measures: '*'

@@ -157,3 +157,115 @@ models:
           - accepted_values:
               arguments:
                 values: [1, 2, 3, 4, 5]
+
+  - name: stg_suppliers
+    columns:
+      - name: supplier_id
+        tests: [not_null, unique]
+      - name: region_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_regions')
+                field: region_id
+
+  - name: stg_purchase_orders
+    columns:
+      - name: po_id
+        tests: [not_null, unique]
+      - name: supplier_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_suppliers')
+                field: supplier_id
+      - name: store_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_stores')
+                field: store_id
+      - name: status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['received', 'pending', 'cancelled']
+
+  - name: stg_purchase_order_items
+    description: >
+      `product_id` is passed through unclean -- a controlled rate (~2%) of
+      dangling FKs (9,000,000+ offset) is injected upstream, flagged at warn
+      severity (see data-generator/schema.md).
+    columns:
+      - name: po_item_id
+        tests: [not_null, unique]
+      - name: po_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_purchase_orders')
+                field: po_id
+      - name: product_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
+              config:
+                severity: warn
+
+  - name: stg_shipments
+    description: >
+      `delivered_date` is null on purpose for in-transit shipments (~8% rate,
+      see data-generator/schema.md) -- not a data defect.
+    columns:
+      - name: shipment_id
+        tests: [not_null, unique]
+      - name: order_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+      - name: ship_status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['delivered', 'delayed', 'in_transit']
+
+  - name: stg_web_sessions
+    description: >
+      `customer_id` is null on purpose for anonymous browsing sessions (~40%
+      rate, see data-generator/schema.md).
+    columns:
+      - name: session_id
+        tests: [not_null, unique]
+      - name: customer_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+
+  - name: stg_web_events
+    description: >
+      `session_id` is passed through unclean -- a controlled rate (~0.4%) of
+      orphaned FKs (9,000,000+ offset) is injected upstream, flagged at warn
+      severity (see data-generator/schema.md).
+    columns:
+      - name: event_id
+        tests: [not_null, unique]
+      - name: session_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_web_sessions')
+                field: session_id
+              config:
+                severity: warn
+      - name: order_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id

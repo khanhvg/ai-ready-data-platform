@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: int_order_items_priced
+    description: >
+      Order items joined to products/categories with gross-revenue and
+      discount-amount math. Ephemeral; feeds fct_order_items.
+    columns:
+      - name: order_item_id
+        tests: [not_null, unique]
+
+  - name: int_orders_enriched
+    description: >
+      Orders joined to customers, stores, regions, and promotions. Ephemeral;
+      feeds fct_orders.
+    columns:
+      - name: order_id
+        tests: [not_null, unique]
+
+  - name: int_fulfillment
+    description: >
+      Shipments joined to returns with lead-time and on-time/delayed/
+      in-transit flags. Ephemeral; feeds fct_shipments.
+    columns:
+      - name: shipment_id
+        tests: [not_null, unique]
+
+  - name: int_web_funnel
+    description: >
+      Web sessions rolled up with per-session funnel-step flags and the
+      order attributed to the session's checkout event, when linked.
+      Ephemeral; feeds mart_web_funnel_conversion directly (no dedicated
+      web-session dimension exists in the core layer).
+    columns:
+      - name: session_id
+        tests: [not_null, unique]
+
+  - name: int_inventory_position
+    description: >
+      Inventory movements with a signed quantity and a running stock
+      position per product/store. Ephemeral; feeds fct_inventory_movements.
+    columns:
+      - name: movement_id
+        tests: [not_null, unique]
+
+  - name: int_purchasing
+    description: >
+      Purchase-order items joined to their purchase order, supplier, and
+      product, with line spend and expected cycle-time math. Ephemeral;
+      feeds fct_purchase_order_items.
+    columns:
+      - name: po_item_id
+        tests: [not_null, unique]

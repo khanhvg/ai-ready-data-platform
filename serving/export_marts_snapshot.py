@@ -10,6 +10,7 @@ Rill reads as its source (serving/rill/).
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 import duckdb
@@ -17,8 +18,14 @@ import duckdb
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DUCKDB_PATH = REPO_ROOT / "warehouse" / "retail.duckdb"
 DEFAULT_EXPORT_DIR = REPO_ROOT / "serving" / "export"
+CURATED_ASSETS_PATH = REPO_ROOT / "lake" / "curated_assets.json"
 
-MARTS = ["mart_daily_revenue", "mart_top_products", "mart_customer_cohorts"]
+
+def load_marts(curated_assets_path: Path = CURATED_ASSETS_PATH) -> list[tuple[str, str]]:
+    """Load the shared curated-asset list so the export, Rill explore, and
+    Iceberg asset sets stay a single source of truth (no drift)."""
+    assets = json.loads(curated_assets_path.read_text())["assets"]
+    return [(asset["name"], asset["schema"]) for asset in assets]
 
 
 def export_marts(duckdb_path: Path = DEFAULT_DUCKDB_PATH, export_dir: Path = DEFAULT_EXPORT_DIR) -> dict[str, int]:
@@ -26,12 +33,12 @@ def export_marts(duckdb_path: Path = DEFAULT_DUCKDB_PATH, export_dir: Path = DEF
     row_counts: dict[str, int] = {}
     con = duckdb.connect(str(duckdb_path), read_only=True)
     try:
-        for mart in MARTS:
+        for mart, schema in load_marts():
             out_path = export_dir / f"{mart}.parquet"
             con.execute(
-                f"COPY (SELECT * FROM main_marts.{mart}) TO '{out_path}' (FORMAT parquet)"
+                f"COPY (SELECT * FROM {schema}.{mart}) TO '{out_path}' (FORMAT parquet)"
             )
-            row_counts[mart] = con.execute(f"SELECT count(*) FROM main_marts.{mart}").fetchone()[0]
+            row_counts[mart] = con.execute(f"SELECT count(*) FROM {schema}.{mart}").fetchone()[0]
     finally:
         con.close()
     return row_counts

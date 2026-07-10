@@ -1,0 +1,7 @@
+type: explore
+display_name: Retail Returns Analysis
+
+metrics_view: returns_analysis_metrics
+
+dimensions: '*'
+measures: '*'

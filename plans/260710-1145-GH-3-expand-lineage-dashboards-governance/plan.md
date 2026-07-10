@@ -1,14 +1,28 @@
 ---
-title: "Issue #3: Expand large-scale lineage, dashboards, OpenMetadata, and Airflow demo"
-description: "Expand the AI-ready data platform sandbox with demo-large deterministic data, a source→staging→intermediate→core→mart dbt graph (≥8 marts), ≥8 Rill explores, a visible full-flow Airflow DAG, Iceberg publish/read-back of ≥8 curated assets, OpenMetadata Iceberg + dbt artifact ingestion, and resource-safe operation on a MacBook M1 Pro 16GB."
+title: >-
+  Issue #3: Expand large-scale lineage, dashboards, OpenMetadata, and Airflow
+  demo
+description: >-
+  Expand the AI-ready data platform sandbox with demo-large deterministic data,
+  a source→staging→intermediate→core→mart dbt graph (≥8 marts), ≥8 Rill
+  explores, a visible full-flow Airflow DAG, Iceberg publish/read-back of ≥8
+  curated assets, OpenMetadata Iceberg + dbt artifact ingestion, and
+  resource-safe operation on a MacBook M1 Pro 16GB.
 status: pending
 priority: P2
-branch: "plan/issue-3-expand-lineage-dashboards-governance"
-tags: [data-platform, dbt, rill, airflow, iceberg, openmetadata, duckdb]
+branch: plan/issue-3-expand-lineage-dashboards-governance
+tags:
+  - data-platform
+  - dbt
+  - rill
+  - airflow
+  - iceberg
+  - openmetadata
+  - duckdb
 blockedBy: []
 blocks: []
-created: "2026-07-10T04:45:12.952Z"
-createdBy: "ck:plan"
+created: '2026-07-10T04:45:12.952Z'
+createdBy: 'ck:plan'
 source: skill
 ---
 
@@ -53,7 +67,7 @@ Issue #3 **expands the code from issue #1**, which is now **merged to `main`** (
 | 4 | [Iceberg publication and read-back](./phase-04-iceberg-publication-and-read-back.md) | Pending |
 | 5 | [Airflow full-flow DAG](./phase-05-airflow-full-flow-dag.md) | Pending |
 | 6 | [OpenMetadata Iceberg and dbt ingestion](./phase-06-openmetadata-iceberg-and-dbt-ingestion.md) | Pending |
-| 7 | [Docs verification and rollback](./phase-07-docs-verification-and-rollback.md) | Pending |
+| 7 | [Docs verification and rollback](./phase-07-docs-verification-and-rollback.md) | Completed |
 
 ## Phase dependencies
 

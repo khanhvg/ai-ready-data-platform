@@ -1,0 +1,33 @@
+type: metrics_view
+display_name: Inventory Health
+
+model: mart_inventory_health
+
+dimensions:
+  - column: product_name
+    display_name: Product
+  - column: category_name
+    display_name: Category
+  - column: store_name
+    display_name: Store
+  - column: region_name
+    display_name: Region
+  - column: is_negative_balance
+    display_name: Negative Balance
+
+measures:
+  - name: total_current_stock
+    display_name: Current Stock Position
+    expression: SUM(current_stock_position)
+  - name: total_restock_qty
+    display_name: Restock Qty
+    expression: SUM(restock_qty)
+  - name: total_sale_qty
+    display_name: Sale Qty
+    expression: SUM(sale_qty)
+  - name: total_return_qty
+    display_name: Return Qty
+    expression: SUM(return_qty)
+  - name: total_adjustment_qty
+    display_name: Adjustment Qty
+    expression: SUM(adjustment_qty)

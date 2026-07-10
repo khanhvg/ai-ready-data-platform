@@ -1,0 +1,34 @@
+type: metrics_view
+display_name: Promotion Effectiveness
+
+model: mart_promotion_effectiveness
+
+dimensions:
+  - column: promo_name
+    display_name: Promotion
+  - column: channel
+    display_name: Channel
+
+measures:
+  - name: total_orders
+    display_name: Orders
+    expression: SUM(order_count)
+  - name: total_gross_revenue
+    display_name: Gross Revenue
+    expression: SUM(gross_revenue)
+    format_preset: currency_usd
+  - name: total_discount_amount
+    display_name: Total Discount
+    expression: SUM(total_discount_amount)
+    format_preset: currency_usd
+  - name: total_net_revenue
+    display_name: Net Revenue
+    expression: SUM(net_revenue)
+    format_preset: currency_usd
+  - name: avg_order_value
+    display_name: Avg Order Value
+    expression: AVG(avg_order_value)
+    format_preset: currency_usd
+  - name: avg_discount_pct_of_gross
+    display_name: Discount % of Gross
+    expression: AVG(discount_pct_of_gross)

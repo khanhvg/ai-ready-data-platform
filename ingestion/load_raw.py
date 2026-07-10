@@ -31,12 +31,18 @@ TABLES = {
     "products": "products.csv",
     "customers": "customers.csv",
     "promotions": "promotions.csv",
+    "suppliers": "suppliers.csv",
+    "purchase_orders": "purchase_orders.csv",
+    "purchase_order_items": "purchase_order_items.csv",
     "orders": "orders.csv",
     "order_items": "order_items.csv",
     "payments": "payments.csv",
     "inventory_movements": "inventory_movements.csv",
     "returns_refunds": "returns_refunds.csv",
     "reviews": "reviews.csv",
+    "shipments": "shipments.csv",
+    "web_sessions": "web_sessions.csv",
+    "web_events": "web_events.csv",
 }
 
 

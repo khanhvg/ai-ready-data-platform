@@ -6,8 +6,10 @@ source:
       type: DBT
       dbtConfigSource:
         dbtConfigType: local
-        dbtCatalogFilePath: transform/dbt/target/catalog.json
-        dbtManifestFilePath: transform/dbt/target/manifest.json
+        # Must be absolute: OM 1.6.5's LocalReader resolves relative dbt config
+        # paths against its own package directory, not the invoking CWD.
+        dbtCatalogFilePath: ${REPO_ROOT}/transform/dbt/target/catalog.json
+        dbtManifestFilePath: ${REPO_ROOT}/transform/dbt/target/manifest.json
       dbtUpdateDescriptions: true
 
 sink:

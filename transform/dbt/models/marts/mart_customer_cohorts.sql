@@ -5,7 +5,7 @@ with cohorts as (
         customer_id,
         loyalty_tier,
         date_trunc('month', signup_date::date) as cohort_month
-    from {{ ref('stg_customers') }}
+    from {{ ref('dim_customers') }}
 ),
 
 customer_revenue as (
@@ -13,7 +13,7 @@ customer_revenue as (
         customer_id,
         sum(order_total) as lifetime_revenue,
         count(*) as completed_orders
-    from {{ ref('stg_orders') }}
+    from {{ ref('fct_orders') }}
     where status = 'completed'
     group by customer_id
 )

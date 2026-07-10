@@ -1,10 +1,16 @@
 ---
 phase: 7
-title: "Docs verification and rollback"
-status: pending
+title: Docs verification and rollback
+status: completed
 priority: P2
-dependencies: [1, 2, 3, 4, 5, 6]
-effort: "M"
+dependencies:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+effort: M
 ---
 
 # Phase 7: Docs, verification, and rollback
@@ -62,14 +68,14 @@ Land the documentation, run the full real verification suite, and codify teardow
 
 ## Success Criteria
 
-- [ ] All ACs demonstrably met with captured evidence in `docs/verification/GH-3-full-flow-evidence.md` (tracked) (AC8).
-- [ ] Determinism verified on demo-large (checksums stable; total ≥ 300,000 rows) (AC1).
-- [ ] `dbt build` green with ≥8 documented marts; 4-layer lineage shown (AC2/AC3).
-- [ ] ≥8 Rill explores non-empty (AC4); ≥8 Iceberg assets read-back (AC6); Airflow full-flow visible + green (AC5).
-- [ ] OM Iceberg + dbt ingestion both complete with summaries captured (AC7).
-- [ ] Secret scan clean; `git status` free of credentials/runtime artifacts (AC9).
-- [ ] README/runbook explain startup order, resource trade-offs, architecture, teardown (AC10).
-- [ ] `make clean` removes all new generated artifacts; teardown/rollback documented.
+- [x] All ACs demonstrably met with captured evidence in `docs/verification/GH-3-full-flow-evidence.md` (tracked) (AC8).
+- [x] Determinism verified on demo-large (checksums stable; total ≥ 300,000 rows) (AC1).
+- [x] `dbt build` green with ≥8 documented marts; 4-layer lineage shown (AC2/AC3).
+- [x] ≥8 Rill explores non-empty (AC4); ≥8 Iceberg assets read-back (AC6); Airflow full-flow visible + green (AC5).
+- [x] OM Iceberg + dbt ingestion both complete with summaries captured (AC7).
+- [x] Secret scan clean; `git status` free of credentials/runtime artifacts (AC9).
+- [x] README/runbook explain startup order, resource trade-offs, architecture, teardown (AC10).
+- [x] `make clean` removes all new generated artifacts; teardown/rollback documented.
 
 ## Risk Assessment
 

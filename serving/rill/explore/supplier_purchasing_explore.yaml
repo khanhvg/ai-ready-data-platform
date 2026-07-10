@@ -1,0 +1,7 @@
+type: explore
+display_name: Retail Supplier Purchasing
+
+metrics_view: supplier_purchasing_metrics
+
+dimensions: '*'
+measures: '*'

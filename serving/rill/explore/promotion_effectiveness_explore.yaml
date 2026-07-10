@@ -1,0 +1,7 @@
+type: explore
+display_name: Retail Promotion Effectiveness
+
+metrics_view: promotion_effectiveness_metrics
+
+dimensions: '*'
+measures: '*'

@@ -1,0 +1,51 @@
+source:
+  type: iceberg
+  serviceName: retail_iceberg
+  serviceConnection:
+    config:
+      type: Iceberg
+      catalog:
+        name: retail
+        warehouseLocation: retail
+        connection:
+          uri: http://localhost:8181/catalog
+          # `ssl: null` is a no-op (no SSL config) but also the field OM's
+          # Hive/Rest catalog-connection union uses to disambiguate: Hive and
+          # Rest both accept a bare {uri, fileSystem}, so an unadorned config
+          # resolves to Hive (first in the Union) even though Lakekeeper is a
+          # REST catalog. `ssl` only exists on RestCatalogConnection.
+          ssl: null
+          fileSystem:
+            type:
+              awsAccessKeyId: ${MINIO_ROOT_USER}
+              awsSecretAccessKey: ${MINIO_ROOT_PASSWORD}
+              awsRegion: local
+              endPointURL: http://localhost:9000
+  sourceConfig:
+    config:
+      type: DatabaseMetadata
+      schemaFilterPattern:
+        includes:
+        - ^retail$
+      tableFilterPattern:
+        includes:
+        - ^mart_channel_geography$
+        - ^mart_customer_cohorts$
+        - ^mart_daily_revenue$
+        - ^mart_data_quality$
+        - ^mart_fulfillment_performance$
+        - ^mart_inventory_health$
+        - ^mart_promotion_effectiveness$
+        - ^mart_returns_analysis$
+        - ^mart_supplier_purchasing$
+        - ^mart_top_products$
+        - ^mart_web_funnel_conversion$
+sink:
+  type: metadata-rest
+  config: {}
+workflowConfig:
+  openMetadataServerConfig:
+    hostPort: http://localhost:8585/api
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: ${OPENMETADATA_JWT_TOKEN}

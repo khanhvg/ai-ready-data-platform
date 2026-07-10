@@ -1,0 +1,7 @@
+type: explore
+display_name: Retail Inventory Health
+
+metrics_view: inventory_health_metrics
+
+dimensions: '*'
+measures: '*'
