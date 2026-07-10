@@ -55,7 +55,12 @@ Grow the dbt project from two layers (staging → marts) into a real, multi-bran
 raw.* (18 sources)
    └─ stg_* (18 staging views: clean/dedupe/type, DQ surfaced)
         └─ int_* (6 intermediate: joins/enrichment, ephemeral/view)
-             └─ core: dim_* (7) + fct_* (7)  [tables, persist_docs on]
+             └─ core: dim_* (7) + fct_* (9)  [tables, persist_docs on]
+                 dims:  dim_customers, dim_products, dim_stores, dim_regions,
+                        dim_promotions, dim_suppliers, dim_date
+                 facts: fct_orders, fct_order_items, fct_payments, fct_shipments,
+                        fct_returns, fct_inventory_movements, fct_web_events,
+                        fct_purchase_orders, fct_purchase_order_items
                   └─ mart_* (≥8 tables: business aggregates)
 ```
 

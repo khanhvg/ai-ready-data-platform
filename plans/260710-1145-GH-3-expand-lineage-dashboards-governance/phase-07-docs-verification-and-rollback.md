@@ -36,7 +36,7 @@ Land the documentation, run the full real verification suite, and codify teardow
   4. Rill: `make bi`; `rill start serving/rill`; confirm ≥8 explores non-empty; record URL.
   5. Iceberg: `make lake-up`, `make lake-publish`; record ≥8 published + read-back counts; `make down`.
   6. Governance: guarded co-run window; run Iceberg + dbt ingestion + `verify_catalog`; record summaries + URL; teardown.
-  7. Airflow: `make airflow`; trigger DAG; record task-group run state + URL.
+  7. Airflow: `make airflow`; trigger DAG and record the default run (`generate→load→transform→serve`) task-group state + URL. Then, for AC5's full-flow requirement, bring the `lake` profile up, set `LAKE_PROFILE_ENABLED=1`, re-trigger, and capture the **`publish` task group** (`publish_iceberg` + `iceberg_read_back`) completing green through the container-network endpoints (Phase 5 F-03/F-04). **Stop Airflow** (`make down` of orchestration) before the Phase-6 governance co-run window so the three heavy profiles never overlap.
   8. Hygiene: `docker compose config --quiet`; `python -m py_compile` on all touched scripts; secret scan (`/ck:security-scan` or `security-scan` skill); `git status` clean of generated artifacts.
   - Save the captured evidence to a **tracked** path `docs/verification/GH-3-full-flow-evidence.md`. Do **not** use `plans/reports/`: `.gitignore` ignores `plans/**/*`, so evidence stored there would be silently excluded from the implementation PR and AC8 would appear unmet on review. (`docs/` is tracked.)
 

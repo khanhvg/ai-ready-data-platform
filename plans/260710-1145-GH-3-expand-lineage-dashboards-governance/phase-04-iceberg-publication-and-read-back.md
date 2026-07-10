@@ -16,9 +16,10 @@ Publish **≥ 8 curated assets** to Iceberg via Lakekeeper/MinIO and verify each
 ## Requirements
 
 - **Functional**
-  - Expand `lake/publish_iceberg.py` `MARTS` from 3 to a curated list of **≥ 8** assets. Default set: the 8 core business marts from Phase 2. Optionally include a small number of core assets (`dim_customers`, `fct_orders`) **only if justified** for the catalog demo — document why in `lake/README.md`.
+  - Expand `lake/publish_iceberg.py` `MARTS` from 3 to the canonical business-mart set defined in `lake/curated_assets.json` (11 marts; see the sketch below). Optionally include a small number of core assets (`dim_customers`, `fct_orders`) **only if justified** for the catalog demo — document why in `lake/README.md`.
   - Publish selected staging/core assets **only when justified**; the issue explicitly prefers curated marts. Keep the published set curated and explainable.
   - Read-back verification counts rows for **every** published asset (extend the existing `read_back`), and the run fails loudly if any asset is missing or count is 0.
+  - **Read-back-only CLI mode (for Airflow):** add a `--read-back-only` flag (alongside the existing `--skip-read-back`) so `read_back` can run as a standalone step without re-publishing. Phase 5 wires this as the separate `iceberg_read_back` Airflow task; without it the DAG's split publish/read-back task boundary is not expressible with the current single-shot CLI (`main()` only does publish-then-optional-read-back today).
   - Extract the curated-asset list into one place as a **data file** `lake/curated_assets.json` (not a Python module), read by `publish_iceberg.py`, `serving/export_marts_snapshot.py` (Phase 3), and the OpenMetadata Iceberg ingestion YAML renderer (Phase 6). Each consumer resolves the file by an **absolute path derived from its own `__file__`** (`<repo>/lake/curated_assets.json`), so it works when scripts are run standalone (`python lake/publish_iceberg.py`) without relying on `lake` being an importable package or the repo root being on `sys.path`. Record each asset's DuckDB source schema (e.g. `main_marts.mart_x`, `main_core.dim_customers`) so publish and export resolve correctly.
 
 - **Non-functional**
@@ -40,6 +41,8 @@ Keep the existing `ATTACH ... TYPE iceberg, ENDPOINT <lakekeeper>/catalog` + `CR
 
 `lake/curated_assets.json` — the single source of truth, a plain data file read by path (no Python import):
 
+This is the **single canonical business-mart set** consumed identically by Iceberg publish (Phase 4), Rill export/explores (Phase 3), and OpenMetadata Iceberg ingestion (Phase 6). The three consumers use the **same list**, so the sets cannot drift and every Rill explore has a matching published/exported asset. All eleven are `main_marts` marts built in Phase 2:
+
 ```json
 {
   "assets": [
@@ -51,12 +54,14 @@ Keep the existing `ATTACH ... TYPE iceberg, ENDPOINT <lakekeeper>/catalog` + `CR
     {"name": "mart_promotion_effectiveness", "schema": "main_marts"},
     {"name": "mart_channel_geography",       "schema": "main_marts"},
     {"name": "mart_inventory_health",        "schema": "main_marts"},
-    {"name": "mart_supplier_purchasing",     "schema": "main_marts"}
+    {"name": "mart_web_funnel_conversion",   "schema": "main_marts"},
+    {"name": "mart_supplier_purchasing",     "schema": "main_marts"},
+    {"name": "mart_data_quality",            "schema": "main_marts"}
   ]
 }
 ```
 
-Each consumer loads it via `Path(__file__).resolve().parents[N] / "lake" / "curated_assets.json"` so standalone script execution resolves the path deterministically. Optional core assets (`dim_customers`, `fct_orders`) may be appended only if justified for the catalog demo — documented in `lake/README.md`.
+Eleven marts comfortably exceeds the ≥8 floor for both the Iceberg-asset (AC6) and Rill-explore (AC4) counts even if one is trimmed. Each consumer loads it via `Path(__file__).resolve().parents[N] / "lake" / "curated_assets.json"` so standalone script execution resolves the path deterministically. Optional core assets (`dim_customers`, `fct_orders`) may be appended only if justified for the catalog demo — documented in `lake/README.md`.
 
 ## Related Code Files
 
@@ -70,7 +75,7 @@ Each consumer loads it via `Path(__file__).resolve().parents[N] / "lake" / "cura
 
 1. Create `lake/curated_assets.json` with the ≥8 curated assets + source schemas.
 2. Refactor `publish_iceberg.py` to load the JSON by `__file__`-relative path and iterate the shared list (both `publish` and `read_back`); resolve `<schema>.<asset>`.
-3. Make read-back strict: assert every asset present and count > 0; print `lake.retail.<asset>: N rows`.
+3. Make read-back strict: assert every asset present and count > 0; print `lake.retail.<asset>: N rows`. Add a `--read-back-only` flag so `read_back` can run as a standalone step (consumed by the Phase 5 `iceberg_read_back` task).
 4. Point Phase 3 export at the same list.
 5. `make lake-up`, `make dbt` (data present), `make lake-publish`; capture publish + read-back output for P7 (AC6/AC8).
 6. `make down` to release lake resources.

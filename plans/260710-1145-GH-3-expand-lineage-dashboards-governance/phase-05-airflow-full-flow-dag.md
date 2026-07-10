@@ -25,12 +25,13 @@ Expand the flat DAG (`seed → load_raw → dbt_run → dbt_test`) into a **visi
     - `transform` → `dbt_build` (or `dbt_run` + `dbt_test`), `dbt_docs_generate`
     - `serve` → `export_marts_snapshot`
     - `publish` (gated `LAKE_PROFILE_ENABLED`) → `publish_iceberg`, `iceberg_read_back`
-  - Add new callables in `callables/pipeline.py`: `health_check`, `dbt_build`, `dbt_docs_generate`, `iceberg_read_back`. Each shells out to the same script/CLI a `make` target uses (single source of truth), matching the existing thin-wrapper pattern. **No OpenMetadata/ingestion callables are added here** — governance ingestion is a Phase-6 host-side step, so the Airflow image gains no `openmetadata-ingestion`/pyiceberg dependency.
+  - Add new callables in `callables/pipeline.py`: `health_check`, `dbt_build`, `dbt_docs_generate`, `iceberg_read_back`. Each shells out to the same script/CLI a `make` target uses (single source of truth), matching the existing thin-wrapper pattern. `publish_iceberg` reuses the existing `lake/publish_iceberg.py --skip-read-back`; `iceberg_read_back` invokes `lake/publish_iceberg.py --read-back-only` (the flag added in Phase 4) so the two Airflow tasks map to real CLI modes. **No OpenMetadata/ingestion callables are added here** — governance ingestion is a Phase-6 host-side step, so the Airflow image gains no `openmetadata-ingestion`/pyiceberg dependency.
+  - **Container-network endpoints for the `publish` group (required):** `lake/publish_iceberg.py` defaults to host loopback (`LAKEKEEPER_CATALOG_URI=http://localhost:8181/catalog`, `LAKE_S3_ENDPOINT=http://localhost:9000`), which is unreachable **from inside the Airflow container**. The `publish` group must therefore run with the container-network equivalents injected as env: `LAKEKEEPER_CATALOG_URI=http://lakekeeper:8181/catalog` and `LAKE_S3_ENDPOINT=http://minio:9000`, plus `MINIO_ROOT_USER`/`MINIO_ROOT_PASSWORD`. This also requires the Airflow service and the `lake` services (`minio`, `lakekeeper`) to share a Docker Compose network so those service names resolve; confirm/declare that shared network when wiring the `publish` run.
   - Sequence to preserve single-writer discipline: `generate → load → transform → serve → publish` (only one writer of DuckDB at a time).
   - Default run (Airflow alone, no lake) executes `generate → load → transform → serve`; enabling `LAKE_PROFILE_ENABLED` extends into `publish`. Governance ingestion happens afterward, outside Airflow, via `make catalog-ingest` (Phase 6).
 
 - **Non-functional**
-  - **Safe credentials handling:** ingestion credentials (OpenMetadata JWT, MinIO keys) come from env/`.env`, surfaced to the container via `docker-compose.yml` `environment:` referencing `${VARS}`; never hard-coded, never committed. `.env.example` documents them.
+  - **Safe credentials handling:** the Airflow service receives only the **lake publish** credentials/endpoints it actually needs (MinIO keys + Lakekeeper/MinIO container endpoints), from env/`.env`, surfaced via `docker-compose.yml` `environment:` referencing `${VARS}`; never hard-coded, never committed. **No `OPENMETADATA_JWT_TOKEN` is passed to the Airflow service** — OpenMetadata ingestion is not an Airflow task, so its JWT belongs solely to the Phase-6 host-side `make catalog-ingest` step. `.env.example` documents the lake vars here and the OM/governance vars in Phase 6.
   - DAG remains importable/parseable with the flag off (no import-time failures when optional deps/services absent).
   - Airflow container stays within its 4g `mem_limit`. Airflow is **stopped** before the Phase-6 `make catalog-ingest` window, so its footprint never overlaps the `lake` + `governance` peak (see P6 memory math).
 
@@ -52,9 +53,10 @@ Expand the flat DAG (`seed → load_raw → dbt_run → dbt_test`) into a **visi
 
 - Modify: `orchestration/airflow/dags/retail_batch_pipeline.py` — TaskGroups, `LAKE_PROFILE_ENABLED` gating, dependencies.
 - Modify: `orchestration/airflow/callables/pipeline.py` — new callables (reuse entrypoints); no OM/ingestion callables.
+- Modify: `lake/publish_iceberg.py` — add the `--read-back-only` flag (owned in Phase 4) so the `iceberg_read_back` Airflow task maps to a real CLI mode. Listed here because Phase 5 is the consumer; the change itself lands with Phase 4.
 - `orchestration/airflow/requirements.txt` — **no change** for governance: OM ingestion is not run from Airflow, so no `openmetadata-ingestion`/pyiceberg is added to the Airflow image (decision, not deferred). `publish`/`read_back` reuse the existing lake entrypoints already present.
-- Modify: `docker-compose.yml` (airflow service `environment:`) — pass `LAKE_PROFILE_ENABLED` and any MinIO env needed by `publish_iceberg` from `${VARS}`. OpenMetadata JWT and Iceberg-connector creds belong to the Phase-6 ingestion step, not the Airflow service.
-- Modify: `.env.example` — document `LAKE_PROFILE_ENABLED` and lake creds (non-production local defaults or placeholders). Governance creds are documented in Phase 6.
+- Modify: `docker-compose.yml` (airflow service `environment:` **and** networks) — pass `LAKE_PROFILE_ENABLED` plus the container-network lake endpoints/creds `publish_iceberg` needs from `${VARS}`: `LAKEKEEPER_CATALOG_URI=http://lakekeeper:8181/catalog`, `LAKE_S3_ENDPOINT=http://minio:9000`, `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD`. Ensure the airflow service shares a Compose network with `minio`/`lakekeeper` so those hostnames resolve. OpenMetadata JWT and Iceberg-connector creds belong to the Phase-6 ingestion step, **not** the Airflow service.
+- Modify: `.env.example` — document `LAKE_PROFILE_ENABLED` and lake creds/endpoints (non-production local defaults or placeholders). Governance creds are documented in Phase 6.
 - Modify: `docs/transform-orchestration.md` + `docs/demo-runbook.md` — full-flow DAG description, gating, staged run.
 - Reference (read-only): existing DAG + callables, `docker-compose.yml` airflow service.
 
@@ -63,7 +65,7 @@ Expand the flat DAG (`seed → load_raw → dbt_run → dbt_test`) into a **visi
 1. Add new callables wrapping the canonical scripts/CLIs (health, dbt build, dbt docs, read-back).
 2. Rebuild the DAG with TaskGroups and `LAKE_PROFILE_ENABLED` gating; keep import safe when the flag is off.
 3. Wire dependencies: `generate→load→transform→serve→publish`; the `publish` group is present only when `LAKE_PROFILE_ENABLED` is true.
-4. Pass required lake env through the compose airflow service from `${VARS}`; update `.env.example`.
+4. Pass required lake env through the compose airflow service from `${VARS}` — the **container-network** endpoints (`lakekeeper:8181`, `minio:9000`) plus MinIO creds — and ensure the airflow service shares a network with the lake services; update `.env.example`.
 5. `make airflow`, open :8080, trigger `retail_batch_pipeline`; verify default groups succeed; then verify the `publish` group with `LAKE_PROFILE_ENABLED=1` and the `lake` profile up. Capture run state (AC5/AC8). Governance ingestion is verified separately in Phase 6.
 
 ## Success Criteria
