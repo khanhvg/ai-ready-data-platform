@@ -34,7 +34,12 @@ The dbt target writes schemas into the same DuckDB file:
 Great Expectations is deferred. Quality signals are dbt tests only:
 
 - strict tests for primary keys and core relationships
-- warn-severity tests for deliberately injected demo data-quality scenarios, including invalid order statuses and dangling product references
+- warn-severity tests for deliberately injected demo data-quality scenarios, including invalid
+  order statuses and dangling product references
+- warn-severity `unique` tests directly on `raw.orders.order_id` / `raw.customers.customer_id`
+  (see `_sources.yml`) surface the controlled duplicate-row scenario; staging dedupes those same
+  tables before the corresponding staging-layer `unique` tests run, so only the raw-layer tests
+  actually catch the duplicates
 
 Warnings are expected and useful for customer demo storytelling; errors are not expected.
 

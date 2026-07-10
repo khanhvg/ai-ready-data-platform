@@ -1,0 +1,22 @@
+source:
+  type: dbt
+  serviceName: retail_duckdb
+  sourceConfig:
+    config:
+      type: DBT
+      dbtConfigSource:
+        dbtConfigType: local
+        dbtCatalogFilePath: transform/dbt/target/catalog.json
+        dbtManifestFilePath: transform/dbt/target/manifest.json
+      dbtUpdateDescriptions: true
+
+sink:
+  type: metadata-rest
+  config: {}
+
+workflowConfig:
+  openMetadataServerConfig:
+    hostPort: http://localhost:8585/api
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: "${OPENMETADATA_JWT_TOKEN}"

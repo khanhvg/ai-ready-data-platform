@@ -14,9 +14,9 @@ throwaway venv. This replaces the plan's *candidate* matrix with the actually-te
 | DuckDB `httpfs` extension | bundled w/ duckdb 1.5.4 | required for S3/MinIO access; verified |
 | Rill Developer | v0.87.8 | CLI binary verified (`rill version`); embeds its own DuckDB — see R2 below |
 | Apache Airflow | 3.x (installed in `orchestration` extra, see `orchestration/airflow/requirements.txt`) | LocalExecutor/standalone, minimal providers, PythonOperator only |
-| MinIO | latest stable image (`minio/minio`) | `lake` profile only |
-| Lakekeeper (Iceberg REST catalog) | latest stable image (`quay.io/lakekeeper/catalog`) | `lake` profile only — required for DuckDB Iceberg **writes** (raw S3 path insufficient) |
-| OpenMetadata | latest stable (`docker-compose` from upstream) | `governance` profile only — no native DuckDB connector; ingests dbt artifacts + OpenLineage/Airflow + S3/Iceberg metadata |
+| MinIO | `RELEASE.2025-09-07T16-13-09Z` (`minio/minio`) | `lake` profile only; pinned instead of `latest` for reproducible pulls |
+| Lakekeeper (Iceberg REST catalog) | `v0.13.1` (`quay.io/lakekeeper/catalog`) | `lake` profile only — required for DuckDB Iceberg **writes** (raw S3 path insufficient); pinned instead of `latest-main` |
+| OpenMetadata | `1.6.5` (`docker.getcollate.io/openmetadata/server`) | `governance` profile only — no native DuckDB connector; manual dbt-artifact ingestion path (`governance/openmetadata/`) surfaces lineage/descriptions, not a live warehouse crawl |
 
 ## Spike evidence
 

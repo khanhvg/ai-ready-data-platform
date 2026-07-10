@@ -39,7 +39,7 @@ services:
   # --- lake profile: MinIO (object store) + Lakekeeper (Iceberg REST catalog) ---
   minio:
     profiles: ["lake"]
-    image: minio/minio:latest
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: retail-minio
     mem_limit: 1g
     command: server /data --console-address ":9001"
@@ -60,7 +60,7 @@ services:
 
   minio-init:
     profiles: ["lake"]
-    image: minio/minio:latest
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: retail-minio-init
     mem_limit: 256m
     depends_on:
@@ -95,7 +95,7 @@ services:
 
   lakekeeper-migrate:
     profiles: ["lake"]
-    image: quay.io/lakekeeper/catalog:latest-main
+    image: quay.io/lakekeeper/catalog:v0.13.1
     container_name: retail-lakekeeper-migrate
     mem_limit: 512m
     command: ["migrate"]
@@ -109,7 +109,7 @@ services:
 
   lakekeeper:
     profiles: ["lake"]
-    image: quay.io/lakekeeper/catalog:latest-main
+    image: quay.io/lakekeeper/catalog:v0.13.1
     container_name: retail-lakekeeper
     mem_limit: 1g
     command: ["serve"]

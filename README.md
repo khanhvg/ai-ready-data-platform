@@ -10,7 +10,7 @@ Local-first sandbox for practicing and demonstrating an AI-ready retail data pla
 - Airflow PythonOperators for the same pipeline steps as the Makefile.
 - Rill Developer for lightweight dashboarding over exported Parquet marts.
 - Optional `lake` profile: MinIO + Lakekeeper for Iceberg publish smoke tests.
-- Optional `governance` profile: OpenMetadata/catalog/lineage experiments.
+- Optional `governance` profile: OpenMetadata server + a manual dbt-lineage ingestion step (see `governance/openmetadata/README.md`).
 
 ## Quick start: core profile
 

@@ -1,0 +1,7 @@
+type: explore
+display_name: Retail Top Products
+
+metrics_view: top_products_metrics
+
+dimensions: '*'
+measures: '*'

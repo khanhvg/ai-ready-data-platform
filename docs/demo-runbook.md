@@ -70,5 +70,9 @@ This starts MinIO + Lakekeeper and publishes curated marts to Iceberg. Use this 
 make catalog
 ```
 
-OpenMetadata is opt-in and the heaviest profile. Use it to explore catalog/lineage over dbt artifacts, Airflow/OpenLineage, and S3/Iceberg assets. Do not run `lake` and `governance` simultaneously on 16GB RAM unless you intentionally accept the overhead.
+OpenMetadata is opt-in and the heaviest profile. `make catalog` only starts the OpenMetadata
+containers -- it ingests nothing by itself. Follow `governance/openmetadata/README.md` for the
+manual one-time steps (register a database service, `dbt docs generate`, run the dbt ingestion
+workflow) to pull dbt lineage/descriptions into it. Do not run `lake` and `governance`
+simultaneously on 16GB RAM unless you intentionally accept the overhead.
 The Makefile guards this by refusing `make lake-up` while governance containers are running and refusing `make catalog` while lake containers are running.

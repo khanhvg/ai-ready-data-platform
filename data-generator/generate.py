@@ -4,7 +4,11 @@
 Writes CSV files to data/raw/ plus a manifest.json describing the run
 (profile, seed, row counts, checksums, quality summary). All randomness
 flows through a single seeded random.Random instance so the same
---seed/--profile always reproduces byte-identical output.
+--seed/--profile always reproduces byte-identical CSVs (same row content,
+same per-file sha256 checksums in the manifest). manifest.json itself is
+NOT byte-identical across runs: it embeds a wall-clock `generated_at`
+timestamp that changes every run by design (it records when that run
+happened, for demo/debugging evidence).
 """
 from __future__ import annotations
 
@@ -373,11 +377,20 @@ def build_reviews(ctx: GenContext, customers, products, n_reviews: int):
     return reviews
 
 
-def inject_optional_nulls(ctx: GenContext, rows: list[dict], fields: list[str]):
+def inject_optional_nulls(ctx: GenContext, rows: list[dict], fields: list[str]) -> int:
+    """Nulls out `fields` at NULL_OPTIONAL_RATE and returns how many values this
+    call actually changed from non-null to null. Some fields (e.g. orders.promotion_id)
+    are already null for unrelated business reasons (no campaign matched that
+    order's date/channel), so counting every null in the final column would wildly
+    overstate this scenario's rate; only count nulls this injection caused."""
+    injected = 0
     for row in rows:
         for field in fields:
             if field in row and ctx.rnd.random() < NULL_OPTIONAL_RATE:
+                if row[field] is not None:
+                    injected += 1
                 row[field] = None
+    return injected
 
 
 def inject_duplicates(ctx: GenContext, rows: list[dict]) -> list[dict]:
@@ -386,6 +399,34 @@ def inject_duplicates(ctx: GenContext, rows: list[dict]) -> list[dict]:
     n_dupes = max(1, int(len(rows) * DUPLICATE_RATE))
     dupes = [dict(r) for r in ctx.rnd.sample(rows, k=min(n_dupes, len(rows)))]
     return rows + dupes
+
+
+def observed_quality_counts(
+    orders: list[dict],
+    order_items: list[dict],
+    duplicate_customer_rows: int,
+    duplicate_order_rows: int,
+    null_email_rows: int,
+    null_promotion_id_rows: int,
+    null_review_text_rows: int,
+) -> dict:
+    late_arriving_order_rows = sum(
+        1
+        for o in orders
+        if datetime.fromisoformat(o["recorded_at"]).date() > date.fromisoformat(o["order_date"])
+    )
+    return {
+        "duplicate_customer_rows": duplicate_customer_rows,
+        "duplicate_order_rows": duplicate_order_rows,
+        "null_email_rows": null_email_rows,
+        "null_promotion_id_rows": null_promotion_id_rows,
+        "null_review_text_rows": null_review_text_rows,
+        "invalid_order_status_rows": sum(
+            1 for o in orders if o["status"] in INVALID_ORDER_STATUS_VALUES
+        ),
+        "late_arriving_order_rows": late_arriving_order_rows,
+        "orphan_fk_order_item_rows": sum(1 for oi in order_items if oi["product_id"] >= 9_000_000),
+    }
 
 
 def write_csv(path: Path, rows: list[dict], fieldnames: list[str]) -> tuple[int, str]:
@@ -430,9 +471,11 @@ def main():
     reviews = build_reviews(ctx, customers, products, n_reviews)
 
     # Controlled data-quality scenarios.
-    inject_optional_nulls(ctx, customers, ["email"])
-    inject_optional_nulls(ctx, orders, ["promotion_id"])
-    inject_optional_nulls(ctx, reviews, ["review_text"])
+    null_email_injected = inject_optional_nulls(ctx, customers, ["email"])
+    null_promotion_id_injected = inject_optional_nulls(ctx, orders, ["promotion_id"])
+    null_review_text_injected = inject_optional_nulls(ctx, reviews, ["review_text"])
+    orders_before_dupes = len(orders)
+    customers_before_dupes = len(customers)
     orders = inject_duplicates(ctx, orders)
     customers = inject_duplicates(ctx, customers)
 
@@ -501,12 +544,23 @@ def main():
         "order_date_range": {"start": order_start.isoformat(), "end": order_end.isoformat()},
         "tables": {},
         "quality_summary": {
-            "duplicate_rate_target": DUPLICATE_RATE,
-            "null_optional_rate_target": NULL_OPTIONAL_RATE,
-            "invalid_status_rate_target": INVALID_STATUS_RATE,
-            "late_arriving_rate_target": LATE_ARRIVING_RATE,
-            "orphan_fk_rate_target": ORPHAN_FK_RATE,
-            "invalid_status_values_used": INVALID_ORDER_STATUS_VALUES,
+            "targets": {
+                "duplicate_rate": DUPLICATE_RATE,
+                "null_optional_rate": NULL_OPTIONAL_RATE,
+                "invalid_status_rate": INVALID_STATUS_RATE,
+                "late_arriving_rate": LATE_ARRIVING_RATE,
+                "orphan_fk_rate": ORPHAN_FK_RATE,
+                "invalid_status_values": INVALID_ORDER_STATUS_VALUES,
+            },
+            "observed": observed_quality_counts(
+                orders,
+                order_items,
+                duplicate_customer_rows=len(customers) - customers_before_dupes,
+                duplicate_order_rows=len(orders) - orders_before_dupes,
+                null_email_rows=null_email_injected,
+                null_promotion_id_rows=null_promotion_id_injected,
+                null_review_text_rows=null_review_text_injected,
+            ),
         },
     }
 

@@ -13,8 +13,10 @@ This is the single source of truth for table shapes; `warehouse/init.sql` (P2) a
 | `large` | 20,000 | 2,000 | 150 | 150,000 | ~750,000 | ~23s | ~305 MB peak |
 
 All profiles are safe to generate repeatedly on a MacBook M1 Pro 16GB without approaching
-memory/CPU limits. Determinism: same `--profile --seed` always produces byte-identical CSVs and
-`manifest.json` table checksums (verified by re-running the generator and diffing checksums).
+memory/CPU limits. Determinism: same `--profile --seed` always produces byte-identical CSVs, so
+the per-table `sha256` checksums in `manifest.json` are stable across re-runs (verified by
+re-running the generator and diffing checksums). `manifest.json` itself is not byte-identical
+across runs -- it embeds a wall-clock `generated_at` timestamp that changes every run by design.
 
 ## Tables
 
@@ -37,7 +39,7 @@ memory/CPU limits. Determinism: same `--profile --seed` always produces byte-ide
 
 | Scenario | Rate (target) | Where | How it's testable |
 |---|---|---|---|
-| Duplicate rows | 0.4% | `orders.csv`, `customers.csv` | dbt `unique` test on `order_id` / `customer_id` in `stg_orders` / `stg_customers` should surface these; loader intentionally does not dedupe raw |
+| Duplicate rows | 0.4% | `orders.csv`, `customers.csv` | warn-severity dbt `unique` test directly on `raw.orders.order_id` / `raw.customers.customer_id` (see `_sources.yml`) surfaces these; loader intentionally does not dedupe raw, and staging dedupes downstream so the staging-layer `unique` tests pass on clean data |
 | Null optional fields | 3% | `customers.email`, `orders.promotion_id`, `reviews.review_text` | dbt `not_null` test omitted on these columns; staging models pass nulls through |
 | Invalid status values | 1% | `orders.status` (`UNKNOWN`, `N/A`, `error`, empty string) | dbt `accepted_values` test on `stg_orders.status` (warn severity) flags these |
 | Late-arriving records | 2% | `orders.recorded_at` vs `order_date` (3–14 day gap) | staging model exposes both columns; a demo query/test can assert `recorded_at >= order_date` and count the gap |
@@ -53,12 +55,19 @@ the plan's "raw mirrors source 1:1" architecture decision.
 {
   "profile": "small",
   "seed": 42,
-  "generated_at": "<ISO8601 UTC timestamp>",
+  "generated_at": "<ISO8601 UTC timestamp, changes every run>",
   "order_date_range": {"start": "...", "end": "..."},
   "tables": {"<file>.csv": {"row_count": N, "sha256": "..."}},
-  "quality_summary": {"duplicate_rate_target": 0.004, "...": "..."}
+  "quality_summary": {
+    "targets": {"duplicate_rate": 0.004, "...": "..."},
+    "observed": {"duplicate_customer_rows": N, "duplicate_order_rows": N, "...": "..."}
+  }
 }
 ```
+
+`quality_summary.targets` are the rates the generator aims for; `quality_summary.observed` are
+the actual counts produced by this specific run (duplicates added, nulled optional fields,
+invalid statuses, late-arriving orders, orphaned order-item FKs).
 
 Downstream row-count/checksum validation (P2 loader, P3 dbt tests) reads this manifest as the
 expected-state baseline.

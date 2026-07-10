@@ -1,0 +1,12 @@
+type: explore
+display_name: Retail Customer Cohorts
+
+metrics_view: customer_cohorts_metrics
+
+dimensions: '*'
+measures: '*'
+
+time_ranges:
+  - P3M
+  - P12M
+  - P24M

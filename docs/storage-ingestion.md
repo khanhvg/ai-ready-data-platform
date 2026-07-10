@@ -29,7 +29,10 @@ The generator writes one CSV per raw domain:
 - `returns_refunds.csv`
 - `reviews.csv`
 
-`data/raw/manifest.json` records the profile, seed, generation timestamp, table row counts, checksums, and quality-summary counts.
+`data/raw/manifest.json` records the profile, seed, generation timestamp, table row counts,
+checksums, and a `quality_summary` with both the target injection rates and the observed counts
+for this specific run. The CSVs (and their checksums) are byte-identical for a given
+profile/seed; the manifest file itself is not, since `generated_at` changes every run.
 
 ## Loader behavior
 
