@@ -82,7 +82,7 @@ lake-up:
 lake-publish: venv
 	$(PYENV) $(PY) lake/publish_iceberg.py
 
-# Guarded, explicit opt-in co-run window (plan R2): the only place `lake` and
+# Guarded, explicit opt-in co-run window: the only place `lake` and
 # `governance` run together, and only after `orchestration` is stopped, so the
 # peak is never all three heavy profiles at once. Bypasses the RUNNING_LAKE/
 # RUNNING_GOVERNANCE mutual-exclusion guard on purpose -- catalog/lake-up keep
@@ -107,6 +107,7 @@ catalog-ingest: venv
 	$(PYENV) $(PY) governance/openmetadata/ingestion/render_iceberg_ingestion.py --check
 	MINIO_ROOT_USER=$${MINIO_ROOT_USER:-minioadmin} MINIO_ROOT_PASSWORD=$${MINIO_ROOT_PASSWORD:-minioadmin_local_only} $(PYENV) $(PY) lake/publish_iceberg.py --skip-read-back
 	MINIO_ROOT_USER=$${MINIO_ROOT_USER:-minioadmin} MINIO_ROOT_PASSWORD=$${MINIO_ROOT_PASSWORD:-minioadmin_local_only} $(PYENV) $(METADATA) ingest -c governance/openmetadata/ingestion/iceberg_ingestion.yaml
+	$(MAKE) dbt-docs
 	REPO_ROOT=$(CURDIR) $(PYENV) $(PY) governance/openmetadata/ingestion/bootstrap_dbt_service.py
 	REPO_ROOT=$(CURDIR) $(PYENV) $(METADATA) ingest -c governance/openmetadata/ingestion/dbt_ingestion.yaml
 	$(PYENV) $(PY) governance/openmetadata/verify_catalog.py

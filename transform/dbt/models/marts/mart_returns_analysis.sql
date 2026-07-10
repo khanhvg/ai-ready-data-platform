@@ -9,7 +9,9 @@ with return_category as (
         r.reason,
         r.refund_amount,
         p.category_name,
-        row_number() over (partition by r.return_id order by oi.line_total desc) as rn
+        row_number() over (
+            partition by r.return_id order by oi.line_total desc, oi.order_item_id desc
+        ) as rn
     from {{ ref('fct_returns') }} r
     left join {{ ref('fct_order_items') }} oi on r.order_id = oi.order_id
     left join {{ ref('dim_products') }} p on oi.product_id = p.product_id

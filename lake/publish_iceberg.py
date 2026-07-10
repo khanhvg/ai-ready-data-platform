@@ -26,8 +26,8 @@ DEFAULT_DUCKDB_PATH = REPO_ROOT / "warehouse" / "retail.duckdb"
 
 # Resolved relative to this file (not sys.path/cwd) so `python lake/publish_iceberg.py`
 # works standalone regardless of the invoking directory or whether `lake` is an
-# importable package. Shared with serving/export_marts_snapshot.py (Phase 3) and the
-# OpenMetadata Iceberg ingestion YAML renderer (Phase 6) to keep the curated-asset set
+# importable package. Shared with serving/export_marts_snapshot.py and the
+# OpenMetadata Iceberg ingestion YAML renderer to keep the curated-asset set
 # from drifting between publish, export, and catalog ingestion.
 CURATED_ASSETS_PATH = Path(__file__).resolve().parent / "curated_assets.json"
 

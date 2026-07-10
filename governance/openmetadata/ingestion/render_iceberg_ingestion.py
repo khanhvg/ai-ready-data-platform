@@ -3,8 +3,8 @@
 
 `iceberg_ingestion.yaml`'s `tableFilterPattern.includes` must list exactly the
 curated assets `lake/publish_iceberg.py` publishes to the `retail` Iceberg
-namespace -- this script is the single point that keeps the two from drifting
-(plan risk R7). The Iceberg *namespace* itself (`retail`) is fixed by
+namespace -- this script is the single point that keeps the two from drifting.
+The Iceberg *namespace* itself (`retail`) is fixed by
 `publish_iceberg.py`'s `CREATE SCHEMA IF NOT EXISTS lake.retail` and is not
 derived from curated_assets.json's `schema` field, which names the *DuckDB*
 schema (`main_marts`) dbt materializes into -- an unrelated axis.

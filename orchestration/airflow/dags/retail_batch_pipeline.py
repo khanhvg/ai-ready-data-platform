@@ -9,7 +9,7 @@ logic is duplicated here. Task groups give each pipeline stage a visible
 boundary in the Airflow UI: generate -> load -> transform -> serve, then an
 optional publish stage gated by `LAKE_PROFILE_ENABLED`. Groups are chained
 with `>>` (not XCom) so only one process writes the DuckDB file at a time
-(single-writer discipline, plan risk R2).
+(single-writer discipline).
 """
 from __future__ import annotations
 
