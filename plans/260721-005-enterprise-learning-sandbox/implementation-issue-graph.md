@@ -11,8 +11,9 @@ Every implementation issue must record:
 - immutable main input `3cd3d41f71582774e8d9656a51d1044035f4503c`;
 - reviewed tree head `d0273731a5077cc17c2f4398057623b83a50bb65`;
 - discovery SHA `d3ce0c5832cca4f1b68299cbba111e7cc6c7a430`;
-- immutable planner input `8ec96f92245c679d019ac3648c5c2d77a49f0429`, independent validation
-  output SHA, and later readiness-audit output SHA;
+- immutable planner output `8ec96f92245c679d019ac3648c5c2d77a49f0429`, independent validation
+  output `5962316b8113ece592a26fe6211a97ae77eb70fb`, red-team output/readiness input
+  `bf740edb87452fe766591d0eeefd0bd5151220fa`, and later readiness-audit report SHA;
 - files it exclusively owns, public contracts it consumes, and exact evidence command.
 
 Every implementation issue inherits `risk:high`, `tdd`, and `security:S3` from the epic even when
@@ -40,6 +41,9 @@ registry. Shared contracts include:
 I5-03 receives a time-bounded sequential lease after I5-01 merges; it may have a different owner
 and worktree, but never overlaps another shared-contract writer. I5-07 later receives a similarly
 serialized lease for equivalence/Iceberg/OpenMetadata/curated-release contracts before I5-11.
+After the merged I5-05 E2E, I5-06 receives a separate time-bounded architecture-view lease for
+P6-owned workspace includes and manifest rows only; it cannot modify I5-01 local view sources,
+rows, IDs or rendered paths.
 Other issues consume released versions read-only. Each lease uses additive-first versioning,
 compatibility tests, a migration note, and a new exact contract release SHA before downstream
 work resumes. This serialization protects contracts without making one person/worktree the
@@ -93,7 +97,7 @@ not a complete curriculum or cloud topology.
 
 After validation and a separate readiness audit both pass, create the integration branch from the
 exact readiness-audit output commit. That commit must descend from this immutable planner input
-and contain the discovery, planner, independent-validation, and audit artifacts:
+and contain the discovery, planner, independent-validation, red-team, and audit artifacts:
 
 ```text
 integration/issue-5-local-learning
@@ -156,7 +160,7 @@ Merge policy:
 | I5-03 | Sequential shared-contract lease for lesson/lab/progress schemas, operation matrix and first manifests; `mk/issue-5/i5-03.mk` | I5-01 evidence core, I5-02 score |
 | I5-04 | `apps/lab-runner/**`, runner tests, workspace runtime config, `mk/issue-5/i5-04.mk` | Released contracts; existing pipeline entrypoints |
 | I5-05 | Winning `apps/learning-portal/**`, portal tests, `mk/issue-5/i5-05.mk` | Released lesson/OpenAPI/evidence contracts; runner API |
-| I5-06 | `learning/curriculum/**`, architecture lab, AWS/publish Structurizr expansions, implementation ADR templates, `mk/issue-5/i5-06.mk` | Six I5-01 local views and include interfaces read-only; portal renderer |
+| I5-06 | `learning/curriculum/**`, architecture lab, AWS/publish Structurizr expansions, implementation ADR templates, `mk/issue-5/i5-06.mk`; time-bounded view-workspace/manifest lease for expansion rows/includes/renders only | Six I5-01 local views, rows, rendered paths and include interfaces read-only; portal renderer |
 | I5-07 | `learning/labs/data-platform/**`, data lab verifiers, later data-contract lease, narrowly approved pipeline seams, `mk/issue-5/i5-07.mk` | Golden data contracts; runner registry |
 | I5-08 | Compose/profile admission/resource scripts/tests and `mk/issue-5/i5-08.mk` | Portal/runner images; existing profiles |
 | I5-09 | `docs/decisions/aws/**`, cost/state models/tests and `mk/issue-5/i5-09.mk` | Architecture/deployment model |
@@ -164,7 +168,7 @@ Merge policy:
 | I5-11 | `platform/adapters/aws/**`, `platform/images/**`, portal-status descriptors/composition tests and `mk/issue-5/i5-11.mk`; never Terraform or portal source | Data contracts + released portal registry + I5-09 decisions + read-only exact Terraform outputs |
 | I5-12 | AI admission/eval/contracts and `mk/issue-5/i5-12.mk`; no runtime/app/cloud adapter in admission issue | Governed data/identity/evidence interfaces |
 | I5-13 | Release evidence orchestration, tracked runbook/docs and `mk/issue-5/i5-13.mk` | All merged outputs; does not change their contracts |
-| I5-14 | Hosted identity/tenant adapters, authz tests and `mk/issue-5/i5-14.mk` | Local object-shaped contracts |
+| I5-14 | `platform/identity/hosted/**`, `tests/hosted/{authz,isolation}/**`, `mk/issue-5/i5-14.mk`; any OpenAPI/portal adapter change requires a serialized shared-contract/portal integration lease | Local object-shaped contracts and released portal/runner/evidence interfaces |
 
 ## Proposed Follow-up Issues
 
@@ -369,10 +373,27 @@ make learn-down
 
 - Labels: `risk:high`, `security:S3`, `tdd`, `identity`, `hosted`.
 - Depends on: local release I5-13 and separate product decision.
-- Not required for first local release. Owns IdP/session/tenant/object authorization, per-lab
-  workspace quotas, instructor/operator roles, deletion/retention, and cross-user tests.
-- Blocks all learner-reachable AWS ingress and every hosted-agentcore claim.
-- Verify: `make hosted-authz-test hosted-isolation-test`.
+- Expected files/behavior: own `platform/identity/hosted/**`, hosted authz/isolation tests and
+  `mk/issue-5/i5-14.mk`; add IdP/session/tenant/object authorization, per-lab workspace quotas,
+  instructor/operator roles, deletion/retention and cross-user denial without changing the local
+  single-actor contract. Any OpenAPI or portal adapter edit uses a serialized lease and exact
+  released seam. Not required for the first local release.
+- TDD: write cross-user object-enumeration, role downgrade/expiry, CSRF/session fixation,
+  quota/race, retention/deletion and evidence-isolation failures first; implement the hosted
+  adapters and policy; rerun local runner/portal/evidence and tenant blast-radius suites after.
+- Acceptance: no learner-reachable AWS ingress or hosted-agentcore claim exists before this issue
+  merges; all tenant/object/role denials are non-enumerating and audit-redacted; local mode and
+  evidence readers remain backward compatible; `security:S3` threat disposition and manual human
+  pre-merge approval are retained.
+- Migration/rollback: additive hosted adapters and schema version only; feature remains off by
+  default, old local readers remain valid, and rollback disables hosted ingress/revokes sessions
+  without deleting local evidence or tenant data outside an approved retention runbook.
+- Evidence/STOP: emit schema-valid results below
+  `.artifacts/evidence/hosted-identity/<run-id>/`; stop while the hosted-product decision, IdP,
+  retention/deletion values, key authority, account/environment or separate ingress/apply
+  authorization is TBC. Blocks all learner-reachable AWS ingress and every hosted-agentcore claim.
+- Verify: `make hosted-authz-test hosted-isolation-test`; rerun `make runner-security-test
+  portal-e2e evidence-contracts-check` for the shared trust-boundary blast radius.
 
 ## Per-Issue Acceptance Template
 

@@ -77,7 +77,7 @@ clean checkout -> lock-hash environment -> two deterministic fixture dirs
 | Create | `learning/contracts/evidence.schema.json` | 150-250 lines | Evidence validation |
 | Create | `tests/fixtures/learning/promotion-trust/{evidence-v1.json,manifest.json}` | bounded/sanitized | Tracked cross-worktree fixture and source/artifact hashes |
 | Create | `tests/golden/**`, `tests/contracts/**` | 500-800 LOC | Characterization, clean run, tamper |
-| Create | `architecture/structurizr/workspace.dsl`, local includes/manifest/text outputs | 350-550 lines | Six minimum local views validate/render for P5 |
+| Create | `architecture/structurizr/workspace.dsl`, `view-manifest.yaml`, six local source includes/manifest rows/rendered text outputs, and an expansion include seam | 350-550 lines | Six minimum local views validate/render for P5; later rows require a sequential view lease |
 | Modify/create | root `Makefile` include/help and `mk/issue-5/i5-01.mk` | 40-100 lines | One shared registry plus golden/contract/architecture targets |
 | Consume | `data-generator/generate.py`, `ingestion/load_raw.py`, `serving/export_marts_snapshot.py` | no change unless characterization fails | Existing explicit path seams |
 | Modify | `orchestration/airflow/callables/pipeline.py` | narrow seam | Forward explicit workspace paths/clean env |

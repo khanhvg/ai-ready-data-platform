@@ -55,8 +55,8 @@ generated assets, never hand-copied diagrams. Source is authoritative.
 | Action | Planned path | Rough size | Test impact |
 |---|---|---:|---|
 | Modify under released include seams | `architecture/structurizr/{model/**,views/**}` excluding I5-01 local sources | 600-1,000 lines | Curriculum/AWS expansion and DYN-PUBLISH |
-| Create | `architecture/structurizr/view-manifest.yaml` | 120-200 lines | Concern/source/text coverage |
-| Create | `architecture/rendered/**` | generated | Portal/review artifacts |
+| Modify under a time-bounded sequential view lease | `architecture/structurizr/view-manifest.yaml` and workspace expansion includes | 120-200 lines | Add only P6 expansion rows/includes; I5-01 local rows and sources remain read-only |
+| Create | `architecture/rendered/<P6-owned-view-id>.{svg,txt}` | generated | Expansion-only portal/review artifacts; no overwrite of I5-01 local renders |
 | Create | `learning/curriculum/{competencies,pathways}.yaml` | 300-500 lines | DAG/coverage |
 | Create | `learning/templates/{stakeholder,requirements,c4-view,adr,threat-model,state-cost-recovery,fitness}.yaml` | 500-800 lines | Template validation |
 | Create | `learning/labs/architecture/first-boundary-journey/**` | 500-800 lines | Executable architecture-first lab |
@@ -133,6 +133,8 @@ make architecture-lab-e2e
 
 - [ ] Foundation→mid curriculum graph is acyclic, reachable and competency-based.
 - [ ] Required minimum useful C4/dynamic/deployment views validate/render with text alternatives.
+- [ ] The architecture-view lease changes only P6-owned expansion rows/includes/renders and closes
+  at one exact release SHA before any downstream consumer starts.
 - [ ] Logical taxonomy and physical container count are explicitly separate.
 - [ ] Every named pattern/service maps to a failure/quality attribute and evidence.
 - [ ] Portal can consume generated diagrams without duplicating source.

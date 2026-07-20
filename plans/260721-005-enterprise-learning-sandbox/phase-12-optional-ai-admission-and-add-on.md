@@ -3,7 +3,7 @@ phase: 12
 title: "Optional AI Admission and Add-on"
 status: pending
 priority: P3
-dependencies: [7, 9, 11]
+dependencies: [7]
 effort: "L"
 ---
 
@@ -15,8 +15,9 @@ effort: "L"
 
 Keep AI, LangGraph, Restate and Bedrock AgentCore out of the core until a machine-readable
 admission gate proves governed data, identity/ACL, citations/evals, policy, observability,
-approval, durability, recovery and cost. Only then build an optional add-on; it cannot block the
-first local site.
+approval, durability, recovery and cost. This phase emits admission evidence and a responsibility
+ADR only. Only a later, separately human-authorized follow-up may build an optional runtime; it
+cannot block the first local site.
 
 ## Context Links
 
@@ -99,7 +100,9 @@ Durable state sits in the admitted workflow/progress store, never ephemeral runt
 
 ## Dependency Map
 
-- Requires governed data labs, AWS decisions/adapters and I5-14 for hosted cross-role claims.
+- The `local-single-actor-read-only` admission profile requires Phase 7 only.
+- The `hosted-agentcore` admission profile additionally requires the exact I5-09/I5-10/I5-11
+  composition output and I5-14; absence of those dependencies is `blocked-tbc`, not a local pass.
 - Entire phase is optional and does not block Phases 5, 8 or local Phase 13 release.
 - Credentialed AgentCore work remains separately authorized after region/cost/apply gates.
 
@@ -168,7 +171,8 @@ make local-journey-e2e AI_ENABLED=false
 
 - [ ] Admission is machine-readable and all required gates pass before implementation.
 - [ ] Core remains credential/network/model independent.
-- [ ] First AI use case is governed, read-only, cited and evaluated.
+- [ ] The proposed first AI use-case contract is governed, read-only, cited and evaluated; no
+  runtime or cloud adapter is created by this phase.
 - [ ] ACL/redaction/approval/replay/recovery/cost hard invariants pass.
 - [ ] No AgentCore module or framework is included without a lesson/responsibility.
 

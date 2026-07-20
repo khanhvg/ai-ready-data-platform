@@ -81,7 +81,8 @@ contract release SHA.
 
 - Depends on Phase 1 evidence core and Phase 2 web decision.
 - Blocks Phases 4-7 and 12.
-- Contract ownership stays with shared-core owner; downstream changes require additive version.
+- Contract writes stay with the active serialized shared-core lease holder; downstream changes
+  require an additive version and a new exact contract-release SHA.
 
 ## Test Scenario Matrix
 

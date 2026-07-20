@@ -43,7 +43,10 @@ IDs may exist in the registry, but no active container/module is implied.
 I5-01 owns, validates and renders `C4-L0`, `C4-L1`, `C4-L2-LOCAL`, `C4-L3-RUNNER`,
 `DEP-LOCAL`, and `DYN-JOURNEY` before I5-05. I5-06 consumes those source IDs read-only and owns
 `DYN-PUBLISH`, AWS/AI expansions after their gates, curriculum links, and later visual review.
-This is an exact write handoff, not concurrent ownership of `workspace.dsl` or the same include.
+I5-06 receives a time-bounded, sequential architecture-view lease after the merged I5-05 E2E to
+add only its expansion includes and manifest rows. The six local sources, IDs, manifest rows and
+rendered paths remain read-only. This is an exact write handoff, not concurrent ownership of
+`workspace.dsl`, `view-manifest.yaml`, a source include, or a rendered view ID.
 
 | ID | C4/view | Audience / concern | Required elements |
 |---|---|---|---|
