@@ -13,10 +13,58 @@ throwaway venv. This replaces the plan's *candidate* matrix with the actually-te
 | DuckDB `iceberg` extension | bundled w/ duckdb 1.5.4 | `INSTALL/LOAD iceberg` verified |
 | DuckDB `httpfs` extension | bundled w/ duckdb 1.5.4 | required for S3/MinIO access; verified |
 | Rill Developer | v0.87.8 | CLI binary verified (`rill version`); embeds its own DuckDB — see R2 below |
-| Apache Airflow | 3.x (installed in `orchestration` extra, see `orchestration/airflow/requirements.txt`) | LocalExecutor/standalone, minimal providers, PythonOperator only |
+| Apache Airflow | 3.x (installed in `orchestration` extra, see `orchestration/airflow/requirements.txt`) | LocalExecutor/standalone, minimal providers; DAG uses the `airflow.sdk` TaskFlow API (`@dag`/`@task`/`@task_group`), not `PythonOperator` (Phase 5 rewrite) |
 | MinIO | `RELEASE.2025-09-07T16-13-09Z` (`minio/minio`) | `lake` profile only; pinned instead of `latest` for reproducible pulls |
 | Lakekeeper (Iceberg REST catalog) | `v0.13.1` (`quay.io/lakekeeper/catalog`) | `lake` profile only — required for DuckDB Iceberg **writes** (raw S3 path insufficient); pinned instead of `latest-main` |
-| OpenMetadata | `1.6.5` (`docker.getcollate.io/openmetadata/server`) | `governance` profile only — no native DuckDB connector; manual dbt-artifact ingestion path (`governance/openmetadata/`) surfaces lineage/descriptions, not a live warehouse crawl |
+| OpenMetadata | `1.6.5` (`docker.getcollate.io/openmetadata/server`) | `governance` profile only. `openmetadata-ingestion[iceberg,dbt]==1.6.5.0` ingests **both** the physical Iceberg tables (via its Iceberg RestCatalog connector, pyiceberg 0.5.1) and the logical dbt artifacts (`governance/openmetadata/`) — see the Phase 6 spike below. No native DuckDB connector, so the dbt-sourced `retail_duckdb` service is bootstrapped from dbt's own `catalog.json`, not a live crawl. |
+
+## Phase 6 compatibility spike: OpenMetadata 1.6.5 Iceberg connector vs Lakekeeper v0.13.1
+
+**Outcome: PASS.** The pinned `openmetadata-ingestion[iceberg]==1.6.5.0` (pyiceberg 0.5.1,
+`RestCatalog` + `PyArrowFileIO`) reaches Lakekeeper v0.13.1 + MinIO and lists/loads the
+curated Iceberg tables published by `lake/publish_iceberg.py`, using the same
+auth posture that script already proved out (no bearer token, no vended storage
+credentials -- pyiceberg's REST client sends neither by default, matching
+Lakekeeper's `AUTHORIZATION_TYPE 'none'` / `ACCESS_DELEGATION_MODE 'none'`).
+
+Spiked directly against the connector's own classes
+(`metadata.ingestion.source.database.iceberg.catalog.rest.IcebergRestCatalog`)
+before building the full ingestion workflow, per the plan's compatibility-gate-first
+ordering:
+
+```
+catalog = IcebergRestCatalog.get_catalog(IcebergCatalog(
+    name="retail", warehouseLocation="retail",
+    connection=RestCatalogConnection(
+        uri="http://localhost:8181/catalog",
+        fileSystem=IcebergFileSystem(type=AWSCredentials(
+            awsAccessKeyId=..., awsSecretAccessKey=..., awsRegion="local",
+            endPointURL="http://localhost:9000")),
+    ),
+))
+list(catalog.list_namespaces())  # -> [('retail',)]
+list(catalog.list_tables(('retail',)))  # -> all 11 curated marts
+```
+
+Two real, non-obvious findings from the spike and the full end-to-end run that follow
+it (`governance/openmetadata/ingestion/iceberg_ingestion.yaml`):
+
+- **Catalog-connection union is ambiguous without `ssl: null`.** OM's
+  `IcebergCatalog.connection` is `Union[HiveCatalogConnection, RestCatalogConnection, ...]`
+  with no discriminator field, and both Hive and Rest accept a bare `{uri, fileSystem}` --
+  pydantic resolves the ambiguous case to `HiveCatalogConnection` (first in the union),
+  which then fails at runtime with `Apache Hive support not installed`. Setting the
+  Rest-only field `ssl: null` (a no-op) is what disambiguates to `RestCatalogConnection`.
+- **Host, not container, endpoints.** `metadata ingest` was run from the host venv
+  (matching the existing `dbt_ingestion.yaml` convention), so `iceberg_ingestion.yaml`
+  uses `http://localhost:8181/catalog` / `http://localhost:9000`, not the container-network
+  `lakekeeper`/`minio` hostnames Airflow's `publish` task group uses internally.
+
+Real end-to-end result (`make catalog-ingest`, 2026-07-10): Iceberg ingestion listed all
+11 curated marts under the `retail_iceberg` service (0 errors, 100% success). See
+`governance/openmetadata/README.md` for the full workflow and the separate dbt-service
+bootstrap finding (OM 1.6.5's dbt connector only enriches pre-existing Table entities;
+it does not create them).
 
 ## Spike evidence
 

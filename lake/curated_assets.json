@@ -1,0 +1,15 @@
+{
+  "assets": [
+    {"name": "mart_daily_revenue",           "schema": "main_marts"},
+    {"name": "mart_top_products",            "schema": "main_marts"},
+    {"name": "mart_customer_cohorts",        "schema": "main_marts"},
+    {"name": "mart_fulfillment_performance", "schema": "main_marts"},
+    {"name": "mart_returns_analysis",        "schema": "main_marts"},
+    {"name": "mart_promotion_effectiveness", "schema": "main_marts"},
+    {"name": "mart_channel_geography",       "schema": "main_marts"},
+    {"name": "mart_inventory_health",        "schema": "main_marts"},
+    {"name": "mart_web_funnel_conversion",   "schema": "main_marts"},
+    {"name": "mart_supplier_purchasing",     "schema": "main_marts"},
+    {"name": "mart_data_quality",            "schema": "main_marts"}
+  ]
+}

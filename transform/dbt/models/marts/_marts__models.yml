@@ -3,18 +3,134 @@ version: 2
 models:
   - name: mart_daily_revenue
     description: Daily completed-order revenue, order count, and average order value.
+    config:
+      tags: ["revenue"]
+      meta:
+        owner: revenue-analytics
     columns:
       - name: order_date
         tests: [not_null, unique]
 
   - name: mart_top_products
     description: Product-level units sold and revenue, ranked for a top-N demo view.
+    config:
+      tags: ["revenue"]
+      meta:
+        owner: revenue-analytics
     columns:
       - name: product_id
         tests: [not_null, unique]
 
   - name: mart_customer_cohorts
     description: Signup-month cohorts by loyalty tier with customer count and lifetime revenue.
+    config:
+      tags: ["revenue", "customers"]
+      meta:
+        owner: revenue-analytics
     columns:
       - name: cohort_month
         tests: [not_null]
+
+  - name: mart_fulfillment_performance
+    description: >
+      On-time %, average lead time, and in-transit volume by carrier and
+      region. Fans in from fct_shipments, fct_orders, and dim_stores.
+    config:
+      tags: ["fulfillment"]
+      meta:
+        owner: supply-chain-ops
+    columns:
+      - name: carrier
+        tests: [not_null]
+      - name: region_name
+        tests: [not_null]
+
+  - name: mart_returns_analysis
+    description: >
+      Return count and refund amount by reason, dominant product category,
+      and region. Fans in from fct_returns, fct_order_items, dim_products,
+      fct_orders, and dim_stores.
+    config:
+      tags: ["fulfillment"]
+      meta:
+        owner: customer-ops
+    columns:
+      - name: reason
+        tests: [not_null]
+
+  - name: mart_promotion_effectiveness
+    description: >
+      Discounted vs. baseline (no-promotion) revenue and average order value
+      by campaign and channel, for uplift comparison. Fans in from
+      fct_order_items, fct_orders, and dim_promotions.
+    config:
+      tags: ["marketing"]
+      meta:
+        owner: marketing
+    columns:
+      - name: promo_name
+        tests: [not_null]
+
+  - name: mart_channel_geography
+    description: >
+      Completed-order revenue by sales channel, region, and city. Fans in
+      from fct_orders and dim_stores.
+    config:
+      tags: ["revenue", "geography"]
+      meta:
+        owner: revenue-analytics
+    columns:
+      - name: channel
+        tests: [not_null]
+
+  - name: mart_inventory_health
+    description: >
+      Current stock position per product/store with restock/sale/return/
+      adjustment volume and a negative-balance flag. Fans in from
+      fct_inventory_movements, dim_products, and dim_stores.
+    config:
+      tags: ["inventory"]
+      meta:
+        owner: supply-chain-ops
+    columns:
+      - name: product_id
+        tests: [not_null]
+
+  - name: mart_web_funnel_conversion
+    description: >
+      Session -> event -> order conversion rate and attributed revenue by
+      device and channel. Fans in from int_web_funnel and fct_orders.
+    config:
+      tags: ["web"]
+      meta:
+        owner: growth-marketing
+    columns:
+      - name: channel
+        tests: [not_null]
+
+  - name: mart_supplier_purchasing
+    description: >
+      Supplier spend, on-time PO %, and average cycle time. Required
+      business-facing terminus for purchasing lineage; fans in from
+      fct_purchase_orders, fct_purchase_order_items, and dim_suppliers.
+    config:
+      tags: ["purchasing"]
+      meta:
+        owner: supply-chain-ops
+    columns:
+      - name: supplier_id
+        tests: [not_null, unique]
+
+  - name: mart_data_quality
+    description: >
+      One row per controlled data-quality scenario (see
+      data-generator/schema.md) with an observed row count, for demo
+      storytelling about the pipeline surfacing rather than hiding known
+      imperfections.
+    config:
+      tags: ["data-quality"]
+      meta:
+        owner: data-engineering
+    columns:
+      - name: scenario
+        tests: [not_null, unique]

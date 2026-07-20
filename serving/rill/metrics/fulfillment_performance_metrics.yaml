@@ -1,0 +1,29 @@
+type: metrics_view
+display_name: Fulfillment Performance
+
+model: mart_fulfillment_performance
+
+dimensions:
+  - column: carrier
+    display_name: Carrier
+  - column: region_name
+    display_name: Region
+
+measures:
+  - name: total_shipments
+    display_name: Shipments
+    expression: SUM(shipment_count)
+  - name: total_on_time
+    display_name: On-Time Shipments
+    expression: SUM(on_time_count)
+  - name: avg_on_time_pct
+    display_name: On-Time %
+    expression: 100.0 * SUM(on_time_count) / NULLIF(SUM(shipment_count), 0)
+  - name: avg_lead_time_days
+    display_name: Avg Lead Time (Days)
+    expression: >-
+      SUM(avg_lead_time_days * (shipment_count - in_transit_count))
+      / NULLIF(SUM(shipment_count - in_transit_count), 0)
+  - name: total_in_transit
+    display_name: In-Transit Shipments
+    expression: SUM(in_transit_count)

@@ -39,3 +39,28 @@ sources:
       - name: inventory_movements
       - name: returns_refunds
       - name: reviews
+      - name: suppliers
+      - name: purchase_orders
+      - name: purchase_order_items
+        description: >
+          Contains a controlled rate (~2%, see data-generator/schema.md) of
+          `product_id` values offset into a dangling FK range (9,000,000+).
+          Surfaced by a warn-severity `relationships` test on
+          `stg_purchase_order_items.product_id` -> `stg_products.product_id`,
+          not cleaned here.
+      - name: shipments
+        description: >
+          `delivered_date` is null for ~8% of rows by design (the in-transit
+          shipment scenario, see data-generator/schema.md) -- not a data
+          defect, so no `not_null` test on that column.
+      - name: web_sessions
+        description: >
+          `customer_id` is null for ~40% of rows by design (anonymous
+          browsing sessions, see data-generator/schema.md).
+      - name: web_events
+        description: >
+          Contains a controlled rate (~0.4%, see data-generator/schema.md) of
+          `session_id` values offset into a dangling FK range (9,000,000+).
+          Surfaced by a warn-severity `relationships` test on
+          `stg_web_events.session_id` -> `stg_web_sessions.session_id`, not
+          cleaned here.

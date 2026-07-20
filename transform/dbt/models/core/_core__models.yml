@@ -1,0 +1,281 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: One row per customer with loyalty tier, region, and signup date.
+    config:
+      tags: ["customers"]
+      meta:
+        owner: data-engineering
+    columns:
+      - name: customer_id
+        tests: [not_null, unique]
+      - name: region_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_regions')
+                field: region_id
+
+  - name: dim_products
+    description: One row per SKU with denormalized category name and unit price.
+    config:
+      tags: ["products"]
+      meta:
+        owner: data-engineering
+    columns:
+      - name: product_id
+        tests: [not_null, unique]
+
+  - name: dim_regions
+    description: One row per sales/operations region.
+    config:
+      tags: ["geography"]
+      meta:
+        owner: data-engineering
+    columns:
+      - name: region_id
+        tests: [not_null, unique]
+
+  - name: dim_stores
+    description: One row per store with denormalized region name, channel, and store type.
+    config:
+      tags: ["geography"]
+      meta:
+        owner: data-engineering
+    columns:
+      - name: store_id
+        tests: [not_null, unique]
+      - name: region_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_regions')
+                field: region_id
+
+  - name: dim_promotions
+    description: One row per promotional campaign with discount band and eligible channel.
+    config:
+      tags: ["marketing"]
+      meta:
+        owner: marketing
+    columns:
+      - name: promotion_id
+        tests: [not_null, unique]
+
+  - name: dim_suppliers
+    description: One row per supplier with lead time, reliability score, and denormalized region name.
+    config:
+      tags: ["purchasing"]
+      meta:
+        owner: supply-chain-ops
+    columns:
+      - name: supplier_id
+        tests: [not_null, unique]
+      - name: region_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_regions')
+                field: region_id
+
+  - name: dim_date
+    description: >
+      Daily date spine spanning the observed order-date range, with calendar
+      attributes (year/quarter/month/day/week) for time-based mart joins.
+    config:
+      tags: ["calendar"]
+      meta:
+        owner: data-engineering
+    columns:
+      - name: date_day
+        tests: [not_null, unique]
+
+  - name: fct_orders
+    description: One row per order (order grain) with channel, status, and order total.
+    config:
+      tags: ["orders"]
+      meta:
+        owner: revenue-analytics
+    columns:
+      - name: order_id
+        tests: [not_null, unique]
+      - name: customer_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+      - name: store_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_stores')
+                field: store_id
+      - name: status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['completed', 'cancelled', 'returned', 'pending']
+              config:
+                severity: warn
+
+  - name: fct_order_items
+    description: One row per order line (order-item grain) with pricing and discount math.
+    config:
+      tags: ["orders"]
+      meta:
+        owner: revenue-analytics
+    columns:
+      - name: order_item_id
+        tests: [not_null, unique]
+      - name: order_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('fct_orders')
+                field: order_id
+      - name: product_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_id
+              config:
+                severity: warn
+
+  - name: fct_payments
+    description: One row per payment (order grain) with payment method and status.
+    config:
+      tags: ["orders"]
+      meta:
+        owner: revenue-analytics
+    columns:
+      - name: payment_id
+        tests: [not_null, unique]
+      - name: order_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('fct_orders')
+                field: order_id
+
+  - name: fct_shipments
+    description: >
+      One row per shipment (shipment grain) with carrier, lead time, and
+      on-time/delayed/in-transit flags.
+    config:
+      tags: ["fulfillment"]
+      meta:
+        owner: supply-chain-ops
+    columns:
+      - name: shipment_id
+        tests: [not_null, unique]
+      - name: order_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('fct_orders')
+                field: order_id
+
+  - name: fct_returns
+    description: One row per returned order (return grain) with reason and refund amount.
+    config:
+      tags: ["fulfillment"]
+      meta:
+        owner: customer-ops
+    columns:
+      - name: return_id
+        tests: [not_null, unique]
+      - name: order_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('fct_orders')
+                field: order_id
+
+  - name: fct_inventory_movements
+    description: >
+      One row per stock event (movement grain) with signed quantity and
+      running stock position per product/store.
+    config:
+      tags: ["inventory"]
+      meta:
+        owner: supply-chain-ops
+    columns:
+      - name: movement_id
+        tests: [not_null, unique]
+      - name: product_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_id
+      - name: store_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_stores')
+                field: store_id
+
+  - name: fct_web_events
+    description: One row per web event (event grain) with type, timestamp, and optional product/order linkage.
+    config:
+      tags: ["web"]
+      meta:
+        owner: growth-marketing
+    columns:
+      - name: event_id
+        tests: [not_null, unique]
+
+  - name: fct_purchase_orders
+    description: >
+      One row per purchase order (PO grain) with supplier, store, and
+      expected cycle time. Required so purchasing lineage terminates in a
+      business-facing mart (mart_supplier_purchasing).
+    config:
+      tags: ["purchasing"]
+      meta:
+        owner: supply-chain-ops
+    columns:
+      - name: po_id
+        tests: [not_null, unique]
+      - name: supplier_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_suppliers')
+                field: supplier_id
+      - name: store_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_stores')
+                field: store_id
+
+  - name: fct_purchase_order_items
+    description: >
+      One row per PO line (PO-item grain) with quantity, unit cost, and line
+      spend. Required so purchasing lineage terminates in a business-facing
+      mart (mart_supplier_purchasing).
+    config:
+      tags: ["purchasing"]
+      meta:
+        owner: supply-chain-ops
+    columns:
+      - name: po_item_id
+        tests: [not_null, unique]
+      - name: po_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('fct_purchase_orders')
+                field: po_id
+      - name: product_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_id
+              config:
+                severity: warn

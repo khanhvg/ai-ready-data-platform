@@ -1,0 +1,7 @@
+type: explore
+display_name: Retail Channel Geography
+
+metrics_view: channel_geography_metrics
+
+dimensions: '*'
+measures: '*'

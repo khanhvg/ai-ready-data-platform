@@ -1,0 +1,7 @@
+type: explore
+display_name: Retail Data Quality
+
+metrics_view: data_quality_metrics
+
+dimensions: '*'
+measures: '*'

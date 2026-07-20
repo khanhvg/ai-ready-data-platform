@@ -1,0 +1,25 @@
+type: metrics_view
+display_name: Channel Geography
+
+model: mart_channel_geography
+
+dimensions:
+  - column: channel
+    display_name: Channel
+  - column: region_name
+    display_name: Region
+  - column: city
+    display_name: City
+
+measures:
+  - name: total_completed_orders
+    display_name: Completed Orders
+    expression: SUM(completed_order_count)
+  - name: total_revenue
+    display_name: Revenue
+    expression: SUM(revenue)
+    format_preset: currency_usd
+  - name: avg_order_value
+    display_name: Avg Order Value
+    expression: SUM(revenue) / NULLIF(SUM(completed_order_count), 0)
+    format_preset: currency_usd

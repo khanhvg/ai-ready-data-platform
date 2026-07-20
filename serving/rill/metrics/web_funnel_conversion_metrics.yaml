@@ -1,0 +1,28 @@
+type: metrics_view
+display_name: Web Funnel Conversion
+
+model: mart_web_funnel_conversion
+
+dimensions:
+  - column: channel
+    display_name: Channel
+  - column: device
+    display_name: Device
+
+measures:
+  - name: total_sessions
+    display_name: Sessions
+    expression: SUM(session_count)
+  - name: total_checkout_sessions
+    display_name: Checkout Sessions
+    expression: SUM(checkout_session_count)
+  - name: total_converted_sessions
+    display_name: Converted Sessions
+    expression: SUM(converted_session_count)
+  - name: avg_conversion_pct
+    display_name: Conversion %
+    expression: 100.0 * SUM(converted_session_count) / NULLIF(SUM(session_count), 0)
+  - name: total_attributed_revenue
+    display_name: Attributed Revenue
+    expression: SUM(attributed_revenue)
+    format_preset: currency_usd

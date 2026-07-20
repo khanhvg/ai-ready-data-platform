@@ -6,17 +6,48 @@ This is the single source of truth for table shapes; `warehouse/init.sql` (P2) a
 
 ## Scale profiles
 
-| Profile | customers | products | stores | orders (pre-dup) | approx. total rows | measured runtime | peak RSS |
-|---|---|---|---|---|---|---|---|
-| `small` | 200 | 150 | 20 | 1,000 | ~5,000 | ~0.3s | ~tens of MB |
-| `medium` | 2,000 | 500 | 50 | 15,000 | ~75,000 | ~2.5s | ~tens of MB |
-| `large` | 20,000 | 2,000 | 150 | 150,000 | ~750,000 | ~23s | ~305 MB peak |
+| Profile | customers | products | stores | suppliers | web_sessions | orders (pre-dup) | approx. total rows | measured runtime | peak RSS |
+|---|---|---|---|---|---|---|---|---|---|
+| `small` | 200 | 150 | 20 | 10 | 200 | 1,000 | ~6,800 | <1s | ~tens of MB |
+| `medium` | 2,000 | 500 | 50 | 25 | 3,000 | 15,000 | ~91,000 | ~2s | ~tens of MB |
+| `large` | 20,000 | 2,000 | 150 | 80 | 45,000 | 150,000 | ~945,000 | ~35s | ~80 MB peak |
+| `demo-large` | 20,000 | 2,000 | 150 | 100 | 40,000 | 90,000 | **~620,000** | **~17s** | **~78 MB peak** |
 
 All profiles are safe to generate repeatedly on a MacBook M1 Pro 16GB without approaching
-memory/CPU limits. Determinism: same `--profile --seed` always produces byte-identical CSVs, so
-the per-table `sha256` checksums in `manifest.json` are stable across re-runs (verified by
-re-running the generator and diffing checksums). `manifest.json` itself is not byte-identical
+memory/CPU limits: high-volume tables (`orders`, `order_items`, `payments`, `returns_refunds`,
+`shipments`, `web_events`) are streamed row-by-row straight to disk instead of accumulated as
+Python lists, so peak RSS stays flat as profile size grows (measured with
+`/usr/bin/time -l` on macOS: `demo-large` peaks at ~78 MB resident, far under the ~1.5 GB
+target and the 16 GB machine budget). Only small dimension tables (regions, stores,
+categories, products, customers, promotions, suppliers, purchase orders/items, web sessions)
+are held fully in memory — they are bounded by the scale profile and needed for FK sampling.
+
+Determinism: same `--profile --seed` always produces byte-identical CSVs, so the per-table
+`sha256` checksums in `manifest.json` are stable across re-runs (verified by generating
+`demo-large` twice into separate output directories and diffing `manifest.json` with
+`generated_at` excluded — confirmed identical). `manifest.json` itself is not byte-identical
 across runs -- it embeds a wall-clock `generated_at` timestamp that changes every run by design.
+
+### `demo-large` row math (≥300,000 floor)
+
+`demo-large` is sized so the 18-table total comfortably clears the 300,000-row acceptance
+floor with margin even after quality/duplicate adjustments (measured total: 620,340 rows).
+Approximate per-table contribution at `--seed 42`: `order_items` ~189k (avg 2.1 lines/order),
+`orders` ~90k, `payments` 90k, `web_events` ~88k (avg ~2.2 events/session, capped by
+`--max-web-events` if set), `shipments` ~78k (orders with `status in (completed, returned)`),
+`customers` ~20k, `web_sessions` 40k, `reviews` ~11k, `purchase_order_items` ~2.2k,
+`purchase_orders` ~760, `inventory_movements` ~3.9k, `returns_refunds` ~4.4k, remaining
+dimension tables (regions/stores/categories/products/promotions/suppliers) a few thousand
+combined.
+
+### `--max-orders` / `--max-web-events`
+
+Both default to `None` (no cap beyond the profile's own sizing), which preserves existing
+behavior for `small`/`medium`/`large`. They let an operator bound `demo-large` (or any
+profile) further for a slower machine or a quicker local run, e.g.
+`make seed SCALE=demo-large MAX_ORDERS=20000 MAX_WEB_EVENTS=50000`. `--max-web-events` is a
+hard ceiling on emitted `web_events` rows — once reached, generation stops (no lookback or
+truncation bookkeeping needed, since events are streamed).
 
 ## Tables
 
@@ -28,26 +59,61 @@ across runs -- it embeds a wall-clock `generated_at` timestamp that changes ever
 | `products.csv` | 1 row / SKU | price sampled inside its category's band; `is_active` flag (~3% inactive) |
 | `customers.csv` | 1 row / customer | `loyalty_tier` (bronze/silver/gold/platinum, weighted 50/30/15/5), region + city, `signup_date` |
 | `promotions.csv` | 1 row / campaign | 6 named seasonal campaigns (New Year, Spring, Summer, Back to School, Black Friday, Holiday) with date ranges + discount bands, scoped to `online`/`offline`/`all` |
+| `suppliers.csv` | 1 row / supplier | `region_id` FK, `lead_time_days`, `reliability_score` (0.70–0.99) |
+| `purchase_orders.csv` | 1 row / replenishment PO | `supplier_id` + `store_id` FKs, `order_date`/`expected_date`, `status` (received/pending/cancelled) |
+| `purchase_order_items.csv` | 1 row / PO line | `po_id` FK, `product_id` FK (a low-rate slice intentionally dangling), wholesale `quantity`/`unit_cost` |
 | `orders.csv` | 1 row / order | `order_date` sampled with monthly seasonality (peak Nov–Dec), `status` (completed/cancelled/returned/pending + a controlled invalid-value slice), `payment_method` mix, optional `promotion_id` FK, `channel` inherited from the store |
 | `order_items.csv` | 1 row / order line | `discount_pct` applied when an active promotion matched the order's date+channel |
 | `payments.csv` | 1 row / order | `payment_status` derived from order status (paid/failed/pending) |
 | `inventory_movements.csv` | 1 row / stock event | `movement_type` (restock/sale/return/adjustment) per product at an offline store |
 | `returns_refunds.csv` | 1 row / returned order | only emitted for orders with `status = returned`; `reason` from a fixed vocabulary |
 | `reviews.csv` | 1 row / review | rating skewed positive (weights 5/5/15/35/40 for 1..5 stars) |
+| `shipments.csv` | 1 row / shipped order | only emitted for orders with `status in (completed, returned)`; `carrier`, `ship_date`, nullable `delivered_date` (in-transit scenario), `ship_status` (delivered/delayed/in_transit) |
+| `web_sessions.csv` | 1 row / browsing session | `customer_id` nullable (~40% anonymous), `channel` (organic/paid_search/email/social/direct), `device`, `started_at`/`ended_at`, `landing_page` |
+| `web_events.csv` | 1 row / session event | `event_type` (page_view/search/product_view/add_to_cart/checkout) per session, `product_id` set for product-related events, `order_id` links a deterministic fraction of `checkout` events to a real order for funnel/conversion demos |
 
 ## Controlled data-quality scenarios (for dbt tests / demo storytelling)
 
 | Scenario | Rate (target) | Where | How it's testable |
 |---|---|---|---|
-| Duplicate rows | 0.4% | `orders.csv`, `customers.csv` | warn-severity dbt `unique` test directly on `raw.orders.order_id` / `raw.customers.customer_id` (see `_sources.yml`) surfaces these; loader intentionally does not dedupe raw, and staging dedupes downstream so the staging-layer `unique` tests pass on clean data |
+| Duplicate rows | 0.4% | `orders.csv` (streamed: row re-emitted immediately after writing), `customers.csv` (in-memory sample) | warn-severity dbt `unique` test directly on `raw.orders.order_id` / `raw.customers.customer_id` (see `_sources.yml`) surfaces these; loader intentionally does not dedupe raw, and staging dedupes downstream so the staging-layer `unique` tests pass on clean data |
 | Null optional fields | 3% | `customers.email`, `orders.promotion_id`, `reviews.review_text` | dbt `not_null` test omitted on these columns; staging models pass nulls through |
 | Invalid status values | 1% | `orders.status` (`UNKNOWN`, `N/A`, `error`, empty string) | dbt `accepted_values` test on `stg_orders.status` (warn severity) flags these |
 | Late-arriving records | 2% | `orders.recorded_at` vs `order_date` (3–14 day gap) | staging model exposes both columns; a demo query/test can assert `recorded_at >= order_date` and count the gap |
 | Orphaned foreign keys | 0.4% | `order_items.product_id` (offset into an out-of-range id space, `9000000+`) | dbt `relationships` test (warn severity) from `stg_order_items.product_id` to `stg_products.product_id` |
+| In-transit shipments | 8% | `shipments.csv`, null `delivered_date` when `ship_status = in_transit` | fulfillment mart / dbt test asserts non-negative lead time only on rows with a non-null `delivered_date` |
+| Orphan web events | 0.4% | `web_events.session_id` (offset into `9000000+`, doesn't match any `web_sessions.session_id`) | dbt `relationships` warn test `stg_web_events` → `stg_web_sessions` |
+| PO items referencing dangling products | 2% | `purchase_order_items.product_id` (offset into `9000000+`) | dbt `relationships` warn test `stg_purchase_order_items` → `stg_products` |
 
 None of these are silently dropped by the generator — raw CSVs mirror the "real" (imperfect) source
 system, and quarantine/acceptance happens explicitly in the staging dbt models + tests (P3), matching
 the plan's "raw mirrors source 1:1" architecture decision.
+
+## Streaming & determinism design (P1, issue #3)
+
+- **Single RNG instance:** one `random.Random(seed)` drawn in a fixed order — dimensions
+  (regions/stores/categories/products/customers/promotions/suppliers/purchase-orders) →
+  per-order loop (orders + order_items + payments + returns_refunds, streamed inline) →
+  inventory_movements → reviews → shipments (streamed) → web_sessions → web_events (streamed).
+  Any newly added draw is appended at the end of its table's sequence so this ordering stays
+  stable across re-runs within issue #3. `Faker` uses its own `seed_instance(seed)` stream for
+  name/company text fields, matching the existing (issue #1) precedent.
+- **`StreamWriter`:** a single helper class opens the CSV file, writes the header, and for
+  every `writerow()` call updates a running `sha256` over the exact string handed to the
+  underlying file object (no second read-back pass), then returns `(row_count, sha256_hex)` on
+  `close()`. Small in-memory tables use it via a `write_table(path, fieldnames, rows)`
+  convenience wrapper; high-volume tables (`orders`, `order_items`, `payments`,
+  `returns_refunds`, `shipments`, `web_events`) call it directly, one `writerow()` per row as
+  the row is produced, so no full-list accumulation happens for those tables.
+- **Payments/returns stream inline, not reconstructed:** `generate_orders_pipeline` writes
+  `orders`, `order_items`, `payments`, and (when `status == "returned"`) `returns_refunds` in
+  the same per-order loop iteration that draws `payment_method`/`order_total`/the returned
+  item's `refund_amount` — those fields are never held outside that iteration's scope.
+- **Bounded per-order summary index:** the only cross-table state kept after the order loop is
+  a compact `order_id -> (customer_id, store_id, order_date, status)` dict — not full order/item
+  rows. `shipments` (orders with `status in (completed, returned)`) and the `checkout` ->
+  `order_id` web_events linkage both iterate this index (or a flat list of its keys), so they
+  reference real orders without holding item-level data.
 
 ## Manifest (`data/raw/manifest.json`)
 
@@ -67,7 +133,8 @@ the plan's "raw mirrors source 1:1" architecture decision.
 
 `quality_summary.targets` are the rates the generator aims for; `quality_summary.observed` are
 the actual counts produced by this specific run (duplicates added, nulled optional fields,
-invalid statuses, late-arriving orders, orphaned order-item FKs).
+invalid statuses, late-arriving orders, orphaned order-item/PO-item FKs, in-transit shipments,
+orphaned web events). All 18 tables appear in `manifest.tables`.
 
 Downstream row-count/checksum validation (P2 loader, P3 dbt tests) reads this manifest as the
 expected-state baseline.

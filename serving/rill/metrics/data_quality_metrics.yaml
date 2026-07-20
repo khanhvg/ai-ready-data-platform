@@ -1,0 +1,13 @@
+type: metrics_view
+display_name: Data Quality
+
+model: mart_data_quality
+
+dimensions:
+  - column: scenario
+    display_name: Scenario
+
+measures:
+  - name: total_row_count
+    display_name: Row Count
+    expression: SUM(row_count)

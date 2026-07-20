@@ -1,0 +1,7 @@
+type: explore
+display_name: Retail Fulfillment Performance
+
+metrics_view: fulfillment_performance_metrics
+
+dimensions: '*'
+measures: '*'

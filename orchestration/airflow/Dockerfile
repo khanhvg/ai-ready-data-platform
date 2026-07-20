@@ -1,5 +1,5 @@
 # Lightweight orchestration profile image: official Airflow base + the
-# pipeline's Python deps (duckdb/dbt-duckdb/faker) so PythonOperator tasks can
+# pipeline's Python deps (duckdb/dbt-duckdb/faker) so TaskFlow tasks can
 # call the generator/loader/dbt callables directly inside the container.
 FROM apache/airflow:3.1.0-python3.12
 

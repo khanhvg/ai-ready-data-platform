@@ -1,0 +1,36 @@
+type: metrics_view
+display_name: Supplier Purchasing
+
+model: mart_supplier_purchasing
+
+dimensions:
+  - column: supplier_name
+    display_name: Supplier
+  - column: region_name
+    display_name: Region
+
+measures:
+  - name: total_pos
+    display_name: Purchase Orders
+    expression: SUM(total_pos)
+  - name: total_received_pos
+    display_name: Received POs
+    expression: SUM(received_pos)
+  - name: avg_on_time_pct
+    display_name: On-Time %
+    expression: >-
+      SUM(on_time_pct * total_pos) / NULLIF(SUM(total_pos), 0)
+  - name: avg_cycle_days
+    display_name: Avg Cycle Days
+    expression: >-
+      SUM(avg_cycle_days * total_pos) / NULLIF(SUM(total_pos), 0)
+  - name: total_spend
+    display_name: Total Spend
+    expression: SUM(total_spend)
+    format_preset: currency_usd
+  - name: total_units_ordered
+    display_name: Units Ordered
+    expression: SUM(total_units_ordered)
+  - name: avg_reliability_score
+    display_name: Avg Reliability Score
+    expression: AVG(reliability_score)
