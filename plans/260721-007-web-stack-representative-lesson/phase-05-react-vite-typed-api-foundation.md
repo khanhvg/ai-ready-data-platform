@@ -5,7 +5,7 @@ status: pending
 priority: P1
 dependencies: [2]
 effort: "3 active hours; 90-minute foundation kill"
-barrier: provisional-unscored-before-issue-6
+barrier: deferred-requires-later-readiness-audit
 ---
 
 # Phase 5: React Vite Typed API Foundation
@@ -17,6 +17,10 @@ barrier: provisional-unscored-before-issue-6
 - [Acceptance and test matrix](./acceptance-and-test-matrix.md)
 
 ## Overview
+
+This phase is not authorized by the current Gate 0/Gate A cook scope. Its directory, manifest,
+lockfile, install/build/test/evidence targets, and timer must remain absent until a later readiness
+audit explicitly opens candidate work.
 
 Build a React/Vite candidate with an explicit typed API seam and a genuine prerendered/MPA
 semantic artifact. An empty SPA mount point is an immediate must-pass failure. Built assets use the

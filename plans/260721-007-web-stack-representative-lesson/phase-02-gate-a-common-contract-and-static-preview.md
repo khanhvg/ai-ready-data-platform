@@ -5,7 +5,7 @@ status: pending
 priority: P1
 dependencies: [1]
 effort: "3 active hours maximum"
-barrier: ready-after-gate-0
+barrier: authorized-after-gate-0-by-fresh-readiness-audit
 ---
 
 # Phase 2: Gate A Common Contract and Static Preview
@@ -61,7 +61,7 @@ readiness/lifecycle/CSP only and renders no framework route.
 |---|---|---:|---|
 | Create | `spikes/web/common/contracts/*.json` | 150-250 lines | Valid/invalid logical fixtures |
 | Create | `spikes/web/common/fixtures/synthetic-promotion-trust-v1.json` | small, deterministic | Safe preview input only |
-| Create | `spikes/web/common/state/*.json` | 100-180 lines | Transition/reset/digest vectors |
+| Create | `spikes/web/common/state/preview-state.mjs` and `*.json` | 120-220 lines | Pure transition/reset reducer and vectors |
 | Create | `spikes/web/common/tests/*.test.mjs` | 300-500 lines | Shared WEB contract/state/trust/security tests |
 | Create | `spikes/web/preview/index.html` | 250-400 lines | Semantic ten-act/static route |
 | Create | `spikes/web/preview/preview.css` | 150-250 lines | Reflow/reduced-motion/focus |
@@ -74,6 +74,12 @@ readiness/lifecycle/CSP only and renders no framework route.
 The no-build fallback is `python3 -m http.server` against `spikes/web/preview`; it is a review
 fallback only. The planned issue-local target uses the dependency-free Node static host so it can
 emit readiness/CSP/status and stop only its recorded process.
+
+The Node host hardcodes the real preview root and serves only `/`, `/index.html`, `/preview.css`,
+`/preview.mjs`, and `/__i5_02_ready`. It rejects directory listings, dotfiles, symlinks, traversal,
+unknown routes, wildcard binds/CORS, and any resolved path outside that root. Responses use a
+strict self-only CSP with `default-src 'none'`, no connect/object/worker/manifest/font authority,
+and no inline/eval/data script authority.
 
 ## Related Code Files
 
@@ -99,10 +105,15 @@ enter scorecard/ADR evidence.
 
 - [ ] Fixture kind/digest binds state and evidence; a digest change clears persisted state.
 - [ ] Allowed preview states omit `completed` and use explicit committed/transient fields.
-- [ ] Reset is idempotent, increments a visible count, and returns the same baseline digest.
+- [ ] Reset is idempotent for resettable lesson state, returns the same baseline digest, and its
+      separate visible audit counter increments exactly once per explicit invocation.
 - [ ] Default port is `4173`; an explicit `PREVIEW_PORT` may choose one other loopback port, but an
       occupied/invalid port fails rather than silently selecting another. Readiness times out after
       10 seconds, terminates only the just-started owned process, and records the failure.
+- [ ] Runtime locator is exactly `.artifacts/runtime/i5-02/learn-preview/<port>.json` and records
+      PID, process group, process-start fingerprint, command hash, cwd, real preview root, host,
+      port, run ID, fixture digest, and implementation input. Status/down signal nothing unless all
+      identity fields and the readiness run ID match.
 - [ ] Verify checks only the fixture projection and displays the non-completing label.
 - [ ] Export is sanitized, relative-path-only, synthetic-labelled, and unscored.
 - [ ] Failure code, learner copy, recovery, progression, and evidence differ by class.
@@ -124,9 +135,11 @@ enter scorecard/ADR evidence.
 ## Implementation Steps
 
 1. Write common logical failure fixtures and shared WEB tests.
-2. Implement semantic static acts/cards/labels/fallback navigation.
-3. Add accessible styling/reflow/reduced-motion behavior.
-4. Add the smallest reversible enhancement and scoped lifecycle scripts; run evidence gates.
+2. Implement the pure dependency-free state reducer and deterministic vectors.
+3. Implement semantic static acts/cards/labels/fallback navigation.
+4. Add accessible styling/reflow/reduced-motion behavior.
+5. Add the smallest reversible enhancement, then the exact-route static host and owned lifecycle
+   controller; run evidence gates.
 
 ## Tests Before
 
@@ -146,8 +159,11 @@ score. Keep the shared contract plain data and test semantics rather than a rend
 
 - Run all shared non-browser tests against the static preview.
 - Run parser/static checks proving every fact/label/card/limitation exists before JavaScript.
-- When a browser is available, capture early review evidence but label it synthetic/unscored;
-  absence of the browser does not create a score and does not open Gate C.
+- Record static/logical checks for landmark/heading/control structure, no-JS content, native
+  keyboard baseline, CSS 200% reflow rules, and reduced-motion rules as Gate A results. Actual
+  browser navigation, keyboard use, named screen-reader use, 200% rendering, reduced-motion
+  rendering, and no-JS manual comprehension remain `required-pending` Gate C evidence. They cannot
+  be reported as passed by source inspection.
 - Inspect bundle/source/network allow-list and non-copy inventory.
 
 ## Regression Gate
@@ -156,26 +172,35 @@ Planned future commands:
 
 ```bash
 node --test spikes/web/common/tests/*.test.mjs
-make -f mk/issue-5/i5-02.mk web-common-test
-make -f mk/issue-5/i5-02.mk learn-preview LESSON=promotion-trust
-make -f mk/issue-5/i5-02.mk learn-preview-status
-make -f mk/issue-5/i5-02.mk learn-preview-reset-check LESSON=promotion-trust
-make -f mk/issue-5/i5-02.mk learn-preview-down
-python3 -m http.server 4173 --bind 127.0.0.1 --directory spikes/web/preview
+node --test spikes/web/harness/tests/preview-control.test.mjs
+make -f mk/issue-5/i5-02.mk web-common-test IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
+node spikes/web/harness/scripts/preview-control.mjs start --lesson promotion-trust --port 4174 --implementation-input <full-40-hex-authorized-sha>
+node spikes/web/harness/scripts/preview-control.mjs status --port 4174 --implementation-input <full-40-hex-authorized-sha>
+node spikes/web/harness/scripts/preview-control.mjs reset-check --lesson promotion-trust --implementation-input <full-40-hex-authorized-sha>
+node spikes/web/harness/scripts/preview-control.mjs down --port 4174 --implementation-input <full-40-hex-authorized-sha>
+make -f mk/issue-5/i5-02.mk learn-preview LESSON=promotion-trust PREVIEW_PORT=4174 IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
+make -f mk/issue-5/i5-02.mk learn-preview-status PREVIEW_PORT=4174 IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
+make -f mk/issue-5/i5-02.mk learn-preview-reset-check LESSON=promotion-trust IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
+make -f mk/issue-5/i5-02.mk learn-preview-down PREVIEW_PORT=4174 IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
+python3 -m http.server 4174 --bind 127.0.0.1 --directory spikes/web/preview
 ```
 
-`web-common-test` emits `.artifacts/evidence/web-spike/<run-id>/gate-a/common-tests.json` and exits
+Port `4174` is the documented audit-time verification port; it is not auto-selected and the cook
+must stop if it is occupied. `web-common-test` emits
+`.artifacts/evidence/web-spike/<run-id>/gate-a/common-tests.json` and exits
 non-zero for any applicable WEB failure. `learn-preview` prints the loopback URL, PID locator,
 fixture digest, label, evidence root, fixed port, and 10-second readiness deadline; it binds only
 `127.0.0.1` and exits non-zero on an invalid/occupied port, unsafe host, missing assets, wrong
 lesson, stale PID, or timeout. `status` exits non-zero unless the recorded process identity and
 semantic readiness probe match. `learn-preview-reset-check` applies the same reducer used by the
-visible Reset control to the canonical persisted-state vector twice, proving the baseline digest,
-visible reset count, history replacement, and idempotency without pretending to mutate an open
-browser. `down` is idempotent, stops only the recorded process tree, retains evidence, and exits
-non-zero if an owned process survives. The Python command is a direct foreground fallback and
-creates no lifecycle/fitness/score claim; callers must stop it with their own foreground process
-control.
+visible Reset control to the canonical persisted-state vector twice, proving the unchanged
+resettable-state/baseline digest, one audit-counter increment per invocation, history replacement,
+and idempotency without pretending to mutate an open
+browser. `down` is idempotent when no locator exists, stops only a process whose PID, start
+fingerprint, command, cwd, preview root, and run ID still match, and exits non-zero if an owned
+process survives. A mismatched/reused PID or foreign listener is reported and never signalled. The
+Python command is a direct foreground fallback and creates no PID lifecycle, CSP, security,
+fitness, or score claim; callers stop it with Ctrl-C.
 
 ## Success Criteria
 
@@ -190,11 +215,13 @@ control.
 
 If the contract cannot stabilize inside three hours, stop; reduce presentation polish, never test
 semantics. If unsafe content, privilege, completion, or false causality appears, remove the
-offending path and revert to the semantic static document. Rollback removes only issue-owned
-preview/common generated state, keeps the non-copy and failure evidence, and leaves protected
-files unchanged.
+offending path and stop for review. Operational rollback stops only the verified owned preview
+process, removes transient `.artifacts/runtime/i5-02/**` and raw Gate A evidence after the
+sanitized retention subset exists, and leaves tracked preview/common/harness source, plans,
+retained evidence, and protected files unchanged. Source removal/revert requires later review and
+is not an automated rollback.
 
 ## Next Steps
 
-Freeze the Gate A contract digest and begin equal candidate foundations. All results remain
-provisional/unscored until Barrier B and Gate C.
+Freeze the Gate A contract digest and stop. Candidate foundations require a later readiness audit;
+Barrier B, Gate C, Gate D, scoring, ADR, review, PR, and merge remain blocked.

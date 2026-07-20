@@ -108,8 +108,10 @@ Rules:
   draft or discarded; it is never silently committed.
 - Scroll, intersection observers, animation end, hover, elapsed time, card visitation, and focus
   movement never commit or verify.
-- Reset clears transient state, returns the exact synthetic baseline digest, increments a visible
-  counter, and explains no repository/data asset was touched. Duplicate reset is idempotent.
+- Reset clears transient state, returns the exact synthetic baseline digest, increments a separate
+  visible audit counter exactly once per explicit invocation, and explains no repository/data
+  asset was touched. Repeated reset is idempotent for all resettable lesson state; only the audit
+  counter advances.
 - Fixture kind/digest change invalidates state. URL/storage tampering resets safely and cannot
   author verifier/evidence truth.
 - Evidence rail shows act, fixture kind/digest abbreviation, failure class, last committed action,
@@ -169,6 +171,8 @@ must differ by class. Color is never the only distinction.
 
 The preview is reviewable only when all applicable common WEB tests, non-copy review, protected
 path checks, and safe lifecycle pass. Fresh manual browser evidence is still required for
-decision-grade candidate acceptance. On failure, remove unsafe enhancement, flatten to the
-semantic static document, clear only scoped preview state, retain evidence, and never manufacture
-completion or a framework decision.
+decision-grade candidate acceptance. On failure, stop for review; during the authorized cook a
+tested correction may flatten an uncommitted enhancement to the semantic document. Operational
+rollback stops the verified owned process and clears only transient preview/runtime/raw evidence
+after safe retention. It preserves tracked source, plans, retained evidence, and protected files,
+and never manufactures completion or a framework decision.

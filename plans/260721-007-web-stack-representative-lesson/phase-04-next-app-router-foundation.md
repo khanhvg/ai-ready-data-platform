@@ -5,7 +5,7 @@ status: pending
 priority: P1
 dependencies: [2]
 effort: "3 active hours; 90-minute foundation kill"
-barrier: provisional-unscored-before-issue-6
+barrier: deferred-requires-later-readiness-audit
 ---
 
 # Phase 4: Next App Router Foundation
@@ -17,6 +17,10 @@ barrier: provisional-unscored-before-issue-6
 - [Security S3 disposition](./security-s3-disposition.md)
 
 ## Overview
+
+This phase is not authorized by the current Gate 0/Gate A cook scope. Its directory, manifest,
+lockfile, install/build/test/evidence targets, and timer must remain absent until a later readiness
+audit explicitly opens candidate work.
 
 Build one frozen Next.js App Router mode: a self-hosted standalone runtime with a prerenderable
 semantic lesson page, narrow Client Component for reversible state, and read-only Route Handler

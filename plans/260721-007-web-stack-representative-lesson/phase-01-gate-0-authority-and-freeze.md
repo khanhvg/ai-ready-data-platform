@@ -5,7 +5,7 @@ status: pending
 priority: P1
 dependencies: []
 effort: "preflight; active spike timer not started"
-barrier: ready-after-independent-plan-gates
+barrier: authorized-by-fresh-readiness-audit-for-gate-0-only
 ---
 
 # Phase 1: Gate 0 Authority and Freeze
@@ -38,6 +38,9 @@ mixed provenance.
   Astro `7.1.3`, Next `16.2.10`, Vite `8.1.5`, React/React DOM `19.2.7`, and Playwright
   `1.61.1`. Exact transitive trees come only from the three independent candidate lockfiles; the
   common harness is dependency-free and has no package manifest or lock.
+- For the currently authorized Gate 0/Gate A cook, candidate directories, manifests, lockfiles,
+  installs, builds, tests, and targets must be absent. Gate 0 freezes their future policy only; the
+  tracked-lock proof is activated solely by a later readiness audit that authorizes candidates.
 - Reject semver ranges for frozen top-level dependencies. A version/mode change invalidates that
   candidate's evidence and does not extend its cap.
 - Freeze candidate modes:
@@ -53,8 +56,9 @@ mixed provenance.
   category must define integer anchors 0 through 5 as pre-observation, machine-checkable numeric
   thresholds and/or a fixed reviewer predicate checklist; weights are exactly `20/20/20/15/10/10/5`.
   Reject missing levels, free-form interpolation, post-candidate edits, or a digest mismatch.
-- Because `.gitignore` ignores `package-lock.json`, require exact-path force-add and tracked-state
-  proof for `spikes/web/candidates/{astro,next,vite}/package-lock.json`; broad force-add is forbidden.
+- Because `.gitignore` ignores `package-lock.json`, a later candidate cook must require exact-path
+  force-add and tracked-state proof for `spikes/web/candidates/{astro,next,vite}/package-lock.json`;
+  broad force-add is forbidden. In Gate 0/Gate A, the same paths must be absent.
 - Treat `security:S3` as applicable to browser/content/dependency/evidence boundaries even though
   issue #7 implements no privilege.
 
@@ -85,6 +89,7 @@ system. No network, package install, candidate renderer, or shared contract is i
 | Create | `spikes/web/harness/candidate-modes.json` | One declared runtime/build mode per candidate | Mode drift invalidation |
 | Create | `spikes/web/harness/test-ids.json` | Canonical shared WEB IDs and semantics | No candidate fork |
 | Create | `spikes/web/harness/score-anchors.json` | Complete pre-observation 0-5 predicates and fixed weights | No post-hoc scoring |
+| Create | `spikes/web/harness/stage-status.json` | Machine-visible authorization/blocker schema | Deferred targets cannot open |
 | Create | `spikes/web/harness/scripts/authority-check.mjs` | Direct fail-closed preflight | All later targets depend on it |
 | Create | `spikes/web/harness/tests/authority.test.mjs` | Wrong SHA/hash/path/toolchain/mode fixtures | Tests before behavior |
 | Create | `mk/issue-5/i5-02.mk` | Issue-local targets only | Root Make remains unchanged |
@@ -116,7 +121,10 @@ Issue #6 is not needed to close Gate 0; it is checked only as absent/unmerged an
 - [ ] Score anchors contain all seven categories and levels 0..5, are frozen before candidate work,
       and are digest-bound into later evidence.
 - [ ] Changed-path check accepts only the issue allow-list and rejects discovery edits.
-- [ ] Each ignored candidate lockfile is explicitly tracked; no broad ignored path is staged.
+- [ ] Stage status says Gate 0 authorized, Gate A authorized only after Gate 0, candidates deferred,
+      Barrier B/C/D blocked, and full issue incomplete.
+- [ ] Candidate directories/locks are absent in this cook; later candidate authorization must
+      explicitly activate exact tracked-lock proof and must never broad-force-add.
 - [ ] Root Make alias is documented as future integration-owner work, not acceptance.
 
 ## Test Scenario Matrix
@@ -129,12 +137,15 @@ Issue #6 is not needed to close Gate 0; it is checked only as absent/unmerged an
 | High | Node/npm or candidate mode differs | Non-zero; existing evidence invalidated |
 | High | WEB ID missing/duplicated | Non-zero; candidate timers cannot start |
 | High | Score anchor category/level/predicate missing or changed after freeze | Non-zero; candidate timers cannot start or evidence is invalidated |
-| High | Candidate lock remains ignored/untracked or broad force-add is attempted | Non-zero; candidate cannot become provisional |
+| High | Candidate path/target/manifest/lock appears during this cook | Non-zero; deferred work cannot begin |
+| High | Stage status is missing or makes a deferred/blocked stage runnable | Non-zero before work continues |
 | High | Issue #6 files absent | Gate 0 passes with Barrier B still `closed`; no score path opens |
 
 ## Implementation Steps
 
-1. Author failure fixtures/tests and capture expected failing IDs.
+1. Author failure fixtures/tests and capture `G0-AUTH-001`, `G0-REMOTE-001`,
+   `G0-ANCESTRY-001`, `G0-PROTECTED-001`, `G0-PATH-001`, `G0-TOOLCHAIN-001`,
+   `G0-REGISTRY-001`, `G0-ANCHOR-001`, `G0-STAGE-001`, and `G0-DEFERRED-001`.
 2. Create immutable authority/toolchain/mode/test-ID/score-anchor registries.
 3. Implement the direct checker and thin issue-local targets.
 4. Run clean/negative cases and retain Gate 0 evidence.
@@ -144,7 +155,8 @@ Issue #6 is not needed to close Gate 0; it is checked only as absent/unmerged an
 1. Write `authority.test.mjs` fixtures for wrong initial local/tracking/live-remote input, missing
    ancestry, later remote drift, protected hash drift,
    changed forbidden path, edited discovery file, wrong Node/npm, semver range, mode drift, and
-   missing/duplicate WEB ID, incomplete/late anchor edits, and ignored/untracked candidate locks.
+   missing/duplicate WEB ID, incomplete/late anchor edits, illegal candidate paths/targets/locks,
+   and a stage registry that makes a deferred/blocked stage runnable.
 2. Run the direct test command and record the intended failures before creating the checker or
    Make targets.
 
@@ -152,6 +164,9 @@ Issue #6 is not needed to close Gate 0; it is checked only as absent/unmerged an
 
 Implement only the small data registry/checker and issue-local Make fragment. Do not add a root
 include, dependency, package manifest, candidate source, ADR score, or fixture workaround.
+The Make fragment exposes only the twelve Gate 0/Gate A targets named in the readiness scope and
+uses an explicit unknown-target failure; no wildcard, pattern, recursive root-Make, or candidate
+target is allowed.
 
 ## Tests After
 
@@ -169,8 +184,8 @@ Planned future commands (they do not exist in this planning commit):
 node --test spikes/web/harness/tests/authority.test.mjs
 node spikes/web/harness/scripts/authority-check.mjs --implementation-input <full-40-hex-authorized-sha>
 make -f mk/issue-5/i5-02.mk i5-02-authority-check IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
-make -f mk/issue-5/i5-02.mk i5-02-protected-hash-check
-make -f mk/issue-5/i5-02.mk i5-02-toolchain-check
+make -f mk/issue-5/i5-02.mk i5-02-protected-hash-check IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
+make -f mk/issue-5/i5-02.mk i5-02-toolchain-check IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
 make -f mk/issue-5/i5-02.mk i5-02-changed-path-check IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
 ```
 
@@ -187,9 +202,11 @@ candidate score or implementation authorization.
 
 ## Risk, Security, and Rollback
 
-Risk is false authority caused by drift or a broad allow-list. Fail before writes. Rollback removes
-only Gate 0 files under `spikes/web/**` and `mk/issue-5/i5-02.mk`, preserves evidence and discovery,
-and returns to the recorded implementation input. Do not use destructive Git reset as automation.
+Risk is false authority caused by drift or a broad allow-list. Fail before writes. Operational
+rollback stops owned processes and removes only generated runtime/raw evidence after safe
+retention; it preserves tracked Gate 0/Gate A source, plans, retained evidence, and protected
+files. If failure occurs before a commit, stop with the scoped worktree intact for review. A source
+revert needs separate review; do not automate destructive Git reset/checkout or broad deletion.
 
 ## Next Steps
 

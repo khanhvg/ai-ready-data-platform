@@ -5,7 +5,7 @@ status: pending
 priority: P1
 dependencies: [2]
 effort: "3 active hours; 90-minute foundation kill"
-barrier: provisional-unscored-before-issue-6
+barrier: deferred-requires-later-readiness-audit
 ---
 
 # Phase 3: Astro React Islands Foundation
@@ -17,6 +17,10 @@ barrier: provisional-unscored-before-issue-6
 - [Acceptance and test matrix](./acceptance-and-test-matrix.md)
 
 ## Overview
+
+This phase is not authorized by the current Gate 0/Gate A cook scope. Its directory, manifest,
+lockfile, install/build/test/evidence targets, and timer must remain absent until a later readiness
+audit explicitly opens candidate work.
 
 Build the smallest Astro static candidate that renders the common ten-act contract and hydrates
 only the reversible lab-state controls as a React island. It has an independent exact lockfile and

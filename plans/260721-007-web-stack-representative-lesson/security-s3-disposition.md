@@ -55,7 +55,10 @@ Issue #7 authority remains deliberately weaker than I5-04/I5-05:
 
 ## Supply-Chain Procedure
 
-For common harness and each independent candidate:
+The common Gate 0/Gate A harness is dependency-free: it has no package manifest, lockfile,
+installation, lifecycle script, or browser dependency. Its supply-chain gate proves those items
+are absent and uses only the already-frozen host Node/Python/Make tools. For each independent
+candidate, only after a later readiness audit authorizes candidate work:
 
 1. Validate exact manifest/lock agreement and lock hash.
 2. Inspect lock metadata and declared lifecycle scripts before approved script execution.

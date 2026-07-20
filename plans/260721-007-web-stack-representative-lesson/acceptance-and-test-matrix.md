@@ -15,6 +15,12 @@ Boundary vocabulary:
 - `N/A-LATER`: issue #7 does not implement the later portal/runner behavior, but records a
   compatibility constraint.
 
+For the currently authorized Gate 0/Gate A cook, `BLOCKS` on browser/manual rows means those
+facets block decision-grade preview acceptance, scoring, and release—not creation and retention of
+the permanently labelled static preview. Gate A may pass only source/logical facets. Actual
+browser, keyboard, named-screen-reader, 200% rendering, reduced-motion rendering, and no-JS manual
+facets remain `required-pending` until Gate C and are never converted to a source-inspection pass.
+
 ## Critical and High Discovery Coverage
 
 Each row is one canonical implementation control. Alias lists cover the web inventory (`WD-*`),
@@ -59,7 +65,7 @@ framework mode/build details but cannot replace these assertions.
 | `WEB-PREVIEW-001` | `preview-label.test.mjs`: permanent exact label at entry, rail, verify/evidence, export | Static parser + browser/export snapshots | Restore label; invalidate unlabeled evidence | Synthetic fixture | BLOCKS | Rejects preview score | BLOCKS false authority |
 | `WEB-PREVIEW-002` | `preview-authority.test.mjs`: no runner/cloud/completion/mutation/non-static request | Source/route/network/storage inventory | Remove route/state/API | Issue #7 scope | BLOCKS | BLOCKS | BLOCKS |
 | `WEB-STATE-001` | `state-navigation.test.mjs`: explicit commit; back/forward/reload restore committed not scroll/transient state | Transition log + URL/storage/browser trace | Remove faulty persistence; restore neutral state | Gate A/browser | BLOCKS | BLOCKS | BLOCKS |
-| `WEB-STATE-002` | `state-reset.test.mjs`: duplicate reset returns identical baseline digest and visible count | Before/after/repeat state snapshots | Restore idempotent reset | Gate A | BLOCKS | BLOCKS | BLOCKS |
+| `WEB-STATE-002` | `state-reset.test.mjs`: repeated reset returns the identical resettable-state/baseline digest; visible audit counter increments exactly once per explicit invocation | Before/after/repeat state snapshots | Restore idempotent reset | Gate A | BLOCKS | BLOCKS | BLOCKS |
 | `WEB-FAIL-001` | `failure-taxonomy.test.mjs`: controlled/environmental/unexpected have distinct codes/copy/recovery/evidence/progression | Unit/DOM/offline/digest-mismatch trace | Restore separate renderers; stop environmental progression | Gate A/#6 | BLOCKS | BLOCKS | BLOCKS |
 | `WEB-TRUST-001` | `four-grain.test.mjs`: naive headline rejected; verifier conclusion exactly `insufficient evidence` | Verifier JSON + conclusion screenshot | Delete invalid conclusion/score | Existing marts/#6 | BLOCKS | BLOCKS | BLOCKS |
 | `WEB-TRUST-002` | `four-grain.test.mjs`: forbidden-attribution scan finds no carrier/return/DQ fact assigned to promotion | Source/content/DOM/evidence scan and reviewer record | Remove attribution and every dependent artifact | Existing marts/#6 | BLOCKS | BLOCKS | BLOCKS |

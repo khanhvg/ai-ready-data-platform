@@ -5,6 +5,31 @@
 This is a future execution contract, not proof that any target, package, browser, candidate, or
 evidence exists. No command below is run in the planning phase.
 
+## Current Staged Authorization
+
+The fresh readiness audit authorizes Gate 0 and Gate A only. The first cook may expose exactly:
+
+```text
+i5-02-authority-check
+i5-02-protected-hash-check
+i5-02-toolchain-check
+i5-02-changed-path-check
+i5-02-security-check
+i5-02-credential-check
+i5-02-non-copy-check
+web-common-test
+learn-preview
+learn-preview-status
+learn-preview-reset-check
+learn-preview-down
+```
+
+The Make fragment must reject every unknown target and contain no candidate, install, build,
+browser, barrier, scoring, ADR, retention, winner, or rollback target. Every later target in this
+document remains a design contract only and must be absent until a later readiness audit. Candidate
+directories/manifests/locks must also be absent. `stage-status.json` makes those states
+machine-visible and declares the full issue incomplete.
+
 ## Frozen Toolchain and Modes
 
 | Concern | Freeze |
@@ -19,10 +44,13 @@ evidence exists. No command below is run in the planning phase.
 All remaining packages are pinned exactly in their owning manifest/lock during implementation.
 Changing a top-level or transitive lock, candidate mode, common test semantics, fixture digest, or
 browser version invalidates affected evidence. It never extends a candidate or total cap.
-Root `.gitignore` ignores `package-lock.json`, so implementation must use exactly
+Root `.gitignore` ignores `package-lock.json`, so a later candidate authorization must use exactly
 `git add -f -- spikes/web/candidates/astro/package-lock.json spikes/web/candidates/next/package-lock.json spikes/web/candidates/vite/package-lock.json`
 and prove those paths are tracked. Broad force-add, ignore-rule edits, or a root/common lock is a
 hard failure.
+
+No package manifest, lockfile, `npm ci`, package install, or browser install is allowed in the
+current Gate 0/Gate A cook. The common preview is dependency-free.
 
 ## Fairness Boundary
 
@@ -153,8 +181,10 @@ Mandatory no-winner cases:
 
 Canonical generated root:
 `.artifacts/evidence/web-spike/<run-id>/`. This is generated run state, not a tracked changed-path
-allowance. The sanitized/hash-indexed raw decision subset is retained under
-`spikes/web/evidence/retained/<run-id>/` before publication.
+allowance and is not ignored by the repository, so it must never be staged. The Gate A
+sanitized/hash-indexed subset is retained under
+`spikes/web/evidence/retained/gate-a/<run-id>/` before publication; all transient `.artifacts`
+state created by the cook is then removed.
 
 Every `fitness-result-v1` record includes:
 
@@ -165,10 +195,16 @@ Every `fitness-result-v1` record includes:
   "runId": "<opaque-safe-id>",
   "gate": "gate-0|gate-a|candidate|barrier-b|gate-c|gate-d",
   "candidate": "common|preview|astro|next|vite|decision",
+  "fixtureKind": "synthetic-preview|issue-6-tracked-real|null",
+  "notice": "SYNTHETIC LEARN-PREVIEW — UNSCORED — CANNOT COMPLETE|null",
   "evidenceScope": "foundation|decision|barrier|null",
   "resultStatus": "pass|fail|blocked-tbc|not-run-optional",
   "candidateDisposition": "PROVISIONAL_UNSCORED|ELIMINATED|PASS|WINNER|NO_WINNER|null",
   "numericScore": null,
+  "decisionGrade": false,
+  "issueComplete": false,
+  "opensBarrierB": false,
+  "implementationInputSha": "<40-hex>",
   "inputDiscoverySha": "a39251d45a56124322b9143ad16b926b2656073b",
   "testedTreeSha": "<40-hex>",
   "issue6MergeSha": "<40-hex-or-null>",
@@ -195,29 +231,56 @@ hash-indexed; a sanitized retained subset lives under `spikes/web/evidence/retai
 I5-05. The tracked scorecard stores tested-tree/attestation distinction and never claims its own
 containing commit SHA.
 
+Gate A records use `candidate: "common"` or `"preview"`, `fixtureKind: "synthetic-preview"`, the
+exact permanent notice, null disposition/score, and `decisionGrade`, `issueComplete`, and
+`opensBarrierB` all false. Static/logical accessibility facets may pass; actual browser, keyboard,
+named screen-reader, 200% rendering, reduced-motion rendering, and no-JS manual facets remain
+`required-pending` and cannot be promoted to a Gate A pass.
+
 ## Planned Command Registry
 
 All commands below are future issue-local/direct interfaces and do not exist yet. Every Make
 target first invokes Gate 0 and writes/updates the canonical evidence record.
+
+For the current scope, only the twelve targets in [Current Staged Authorization](#current-staged-authorization)
+may be implemented. The lifecycle source of truth is also directly callable without Make:
+
+```bash
+node spikes/web/harness/scripts/preview-control.mjs start --lesson promotion-trust --port 4174 --implementation-input <sha>
+node spikes/web/harness/scripts/preview-control.mjs status --port 4174 --implementation-input <sha>
+node spikes/web/harness/scripts/preview-control.mjs reset-check --lesson promotion-trust --implementation-input <sha>
+node spikes/web/harness/scripts/preview-control.mjs down --port 4174 --implementation-input <sha>
+```
+
+The Node host hardcodes the real preview root and exact routes `/`, `/index.html`, `/preview.css`,
+`/preview.mjs`, and `/__i5_02_ready`; rejects symlinks, traversal, dotfiles, directory listings, and
+unknown paths; binds only `127.0.0.1`; emits no CORS; and uses a CSP with `default-src 'none'`,
+`script-src 'self'`, `style-src 'self'`, `img-src 'self'`, and all connect/object/worker/manifest/
+font authority denied. The per-port locator under
+`.artifacts/runtime/i5-02/learn-preview/<port>.json` binds PID/process group, process-start
+fingerprint, command hash, cwd, real preview root, host/port, run ID, fixture digest, and
+implementation input. Status/down never signal a mismatched or foreign process. Start does not
+auto-select a port; readiness expires at 10 seconds and timeout stops only the just-started owned
+process group.
 
 | Command/target | Expected status and evidence | Non-zero behavior |
 |---|---|---|
 | `node --test spikes/web/harness/tests/authority.test.mjs` | Unit test report for drift/ownership negatives | Any assertion/tool error |
 | `node spikes/web/harness/scripts/authority-check.mjs --implementation-input <full-40-hex-authorized-sha>` | Initial local/tracking/live-remote equality, required ancestry, hashes/path/toolchain/mode/WEB-ID/anchor record | Any input/remote/ancestry/hash/path/freeze/tool mismatch |
 | `make -f mk/issue-5/i5-02.mk i5-02-authority-check IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>` | Same normalized Gate 0 record | Same |
-| `make -f mk/issue-5/i5-02.mk i5-02-protected-hash-check` | Root/protected/discovery hash/absence report | Any drift/presence violation |
-| `make -f mk/issue-5/i5-02.mk i5-02-toolchain-check` | Exact Node/npm/top-level/mode policy report | Range/version/mode/lock-format mismatch |
-| `make -f mk/issue-5/i5-02.mk i5-02-changed-path-check IMPLEMENTATION_INPUT_SHA=<sha>` | Allow/deny path and exact tracked candidate-lock report | Forbidden/shared/protected/discovery path, ignored/untracked lock, broad force-add, or missing input |
-| `make -f mk/issue-5/i5-02.mk i5-02-security-check` | S3 content/bundle/network/CSP/dependency/evidence negative-test index | Unsafe content/route/CSP/dependency/evidence or missing required record |
-| `make -f mk/issue-5/i5-02.mk i5-02-credential-check` | High-confidence source/bundle/source-map/trace/header/cookie/path canary report | Any credential/private-key/private-URL/absolute-path exposure |
-| `make -f mk/issue-5/i5-02.mk i5-02-non-copy-check` | Source/license/principle inventory and reviewer result | Missing inventory/reviewer or derivative prose/asset/layout/style/source |
+| `make -f mk/issue-5/i5-02.mk i5-02-protected-hash-check IMPLEMENTATION_INPUT_SHA=<sha>` | Root/protected/discovery hash/absence report | Any drift/presence violation |
+| `make -f mk/issue-5/i5-02.mk i5-02-toolchain-check IMPLEMENTATION_INPUT_SHA=<sha>` | Exact Node/npm/top-level/mode policy report | Range/version/mode/lock-format mismatch |
+| `make -f mk/issue-5/i5-02.mk i5-02-changed-path-check IMPLEMENTATION_INPUT_SHA=<sha>` | Allow/deny path report; candidate paths absent now, exact tracked locks in a later candidate scope | Forbidden/shared/protected/discovery path, premature candidate path/lock, broad force-add, or missing input |
+| `make -f mk/issue-5/i5-02.mk i5-02-security-check IMPLEMENTATION_INPUT_SHA=<sha>` | S3 content/network/CSP/evidence negative-test index; dependency absence in Gate A | Unsafe content/route/CSP/dependency/evidence or missing required record |
+| `make -f mk/issue-5/i5-02.mk i5-02-credential-check IMPLEMENTATION_INPUT_SHA=<sha>` | High-confidence source/header/path canary report | Any credential/private-key/private-URL/absolute-path exposure |
+| `make -f mk/issue-5/i5-02.mk i5-02-non-copy-check IMPLEMENTATION_INPUT_SHA=<sha>` | Source/license/principle inventory and reviewer result | Missing inventory/reviewer or derivative prose/asset/layout/style/source |
 | `node --test spikes/web/common/tests/*.test.mjs` | Common WEB assertion results | Any applicable WEB failure |
-| `make -f mk/issue-5/i5-02.mk web-common-test` | `gate-a/common-tests.json`, test-ID digest | Any WEB failure/missing/duplicate ID |
-| `make -f mk/issue-5/i5-02.mk learn-preview LESSON=promotion-trust [PREVIEW_PORT=4173]` | `pass`; loopback URL/PID/digest/label/evidence root; fixed port and 10s readiness deadline | Wrong lesson/host, invalid/occupied port, asset/readiness timeout, stale PID, unsafe route |
-| `make -f mk/issue-5/i5-02.mk learn-preview-status` | `pass` only when recorded process and semantic readiness match | Down/stale/wrong process/readiness |
-| `make -f mk/issue-5/i5-02.mk learn-preview-reset-check LESSON=promotion-trust` | Reducer applies canonical persisted-state reset twice; baseline digest, visible count, history replacement, and idempotency evidence | Wrong fixture/digest, non-baseline state, count/history mismatch, second-reset drift |
-| `make -f mk/issue-5/i5-02.mk learn-preview-down` | `pass`; idempotent owned-tree shutdown and retained evidence | Foreign target or owned process survives |
-| `python3 -m http.server 4173 --bind 127.0.0.1 --directory spikes/web/preview` | Foreground no-build review fallback; no fitness/score claim | Python/bind/path failure |
+| `make -f mk/issue-5/i5-02.mk web-common-test IMPLEMENTATION_INPUT_SHA=<sha>` | `gate-a/common-tests.json`, test-ID digest | Any WEB failure/missing/duplicate ID |
+| `make -f mk/issue-5/i5-02.mk learn-preview LESSON=promotion-trust PREVIEW_PORT=4174 IMPLEMENTATION_INPUT_SHA=<sha>` | `pass`; loopback URL/PID/digest/label/evidence root; fixed port and 10s readiness deadline | Wrong lesson/host, invalid/occupied port, asset/readiness timeout, stale PID, unsafe route |
+| `make -f mk/issue-5/i5-02.mk learn-preview-status PREVIEW_PORT=4174 IMPLEMENTATION_INPUT_SHA=<sha>` | `pass` only when recorded process and semantic readiness match | Down/stale/wrong process/readiness |
+| `make -f mk/issue-5/i5-02.mk learn-preview-reset-check LESSON=promotion-trust IMPLEMENTATION_INPUT_SHA=<sha>` | Reducer applies reset twice; resettable-state/baseline digest is unchanged, audit counter increments once per call, and history is replaced | Wrong fixture/digest, non-baseline state, counter/history mismatch, resettable-state drift |
+| `make -f mk/issue-5/i5-02.mk learn-preview-down PREVIEW_PORT=4174 IMPLEMENTATION_INPUT_SHA=<sha>` | `pass`; idempotent owned-tree shutdown and retained evidence | Foreign target or owned process survives |
+| `python3 -m http.server 4174 --bind 127.0.0.1 --directory spikes/web/preview` | Foreground no-build review fallback; no PID/CSP/fitness/score claim | Python/bind/path failure |
 | `make -f mk/issue-5/i5-02.mk web-astro-install`<br>`make -f mk/issue-5/i5-02.mk web-next-install`<br>`make -f mk/issue-5/i5-02.mk web-vite-install` | Candidate lock/lifecycle/install/timer evidence | Dirty/mismatched lock, policy/advisory block, install failure, cap/authority breach |
 | `make -f mk/issue-5/i5-02.mk web-astro-build`<br>`make -f mk/issue-5/i5-02.mk web-next-build`<br>`make -f mk/issue-5/i5-02.mk web-vite-build` | Frozen mode/build/static semantic manifest | Build/mode/schema/non-semantic/unsafe output failure |
 | `make -f mk/issue-5/i5-02.mk web-astro-test`<br>`make -f mk/issue-5/i5-02.mk web-next-test`<br>`make -f mk/issue-5/i5-02.mk web-vite-test` | Candidate-specific plus unchanged common assertion index | Any required unit/schema/static/common failure |

@@ -6,9 +6,15 @@ This handoff becomes executable only after issue #7's independent plan validatio
 readiness audit authorize cook from one exact full `IMPLEMENTATION_INPUT_SHA`. Before any write,
 local HEAD, tracking, and freshly fetched live remote must all equal that SHA; the SHA must contain
 planner output `0890c4abab46f81d110be6cbd6de3560e631a735` and the recorded validation/audit ancestry.
-It does not itself authorize implementation. Use the current worktree/branch assigned by that
-later phase; stop on a different repository, branch, dirty protected/shared path, upstream drift,
-missing dependency merge, or conflicting lease.
+The current authorization is only the task IDs in [the Gate 0/Gate A cook
+scope](./audit/cook-scope-gate-a.md). Create exactly branch `feature/issue-5-02-web-spike` in exactly
+one sibling product worktree named `ai-ready-data-platform-issue-5-02-web-spike` from the published
+audit output SHA. Before the first implementation write, push that unchanged branch with upstream
+tracking so local/tracking/fresh-live all equal the input. Stop on a different repository/branch,
+dirty protected/shared path, upstream divergence, missing input ancestry, or conflicting lease.
+After issue-owned commits, the input remains the changed-path base: upstream/live must be the input
+or an authorized descendant, never divergent or unknown. Fetch and prove exact
+local/tracking/live equality again before final publication.
 
 ## Exact Allowed Paths
 
@@ -25,6 +31,13 @@ plans/260721-007-web-stack-representative-lesson/**
 
 Within the plan package, `discovery/**` is immutable. Plan status/checklist sync is allowed only
 after actual work/evidence. No other path is implicit.
+
+For the current Gate 0/Gate A cook, narrow that list to `spikes/web/common/**`,
+`spikes/web/preview/**`, Gate 0/A files under `spikes/web/harness/**`,
+`spikes/web/non-copy-inventory.md`, `spikes/web/evidence/retained/gate-a/**`, and
+`mk/issue-5/i5-02.mk`. No plan file is implementation-owned. The three ADR paths,
+`spikes/web/candidates/**`, candidate evidence, fixture handoff, and all later-gate source remain
+protected-by-scope even though the full future plan may eventually own them.
 
 Forbidden examples:
 
@@ -47,9 +60,10 @@ Issue #6's four handoff files are read-only even though they are present after m
 
 Generated-only runtime paths `.artifacts/evidence/web-spike/**` and
 `.artifacts/runtime/i5-02/**` may exist while commands run. They are never staged or treated as
-implementation ownership. Before publication, sanitize/hash-index required raw evidence into
-`spikes/web/evidence/retained/**`, remove transient generated state, and require the Git changed
-set to match only the explicit tracked allow-list.
+implementation ownership. They are not ignored by the current repository. Before publication,
+sanitize/hash-index required Gate A raw evidence into
+`spikes/web/evidence/retained/gate-a/<run-id>/**`, remove all transient `.artifacts` state created
+by the cook, and require the Git changed set to match only the explicit tracked allow-list.
 
 ## Planned Layout
 
@@ -70,10 +84,11 @@ spikes/web/
     candidate-modes.json
     test-ids.json
     score-anchors.json
+    stage-status.json
     fixture-handoff.json          # only after Barrier B
     scripts/
     tests/
-  candidates/
+  candidates/                     # later readiness authorization only
     astro/                        # own package.json + package-lock.json
     next/                         # own package.json + package-lock.json
     vite/                         # own package.json + package-lock.json
@@ -91,6 +106,8 @@ manifest/lock. Each candidate has its own exact manifest/lock so one install can
 candidate's dependency evidence. Root `.gitignore` ignores `package-lock.json`; force-add exactly
 the three candidate locks and prove they are tracked, never edit `.gitignore` or broadly add
 ignored paths.
+Candidate directories, manifests, locks, installs, builds, and targets remain absent in the
+current cook; the lock rule activates only in a later candidate authorization.
 
 ## Start Conditions by Gate
 
@@ -98,14 +115,14 @@ ignored paths.
 |---|---|---|
 | Gate 0 registry/tests/checker/make fragment | Independent validation + readiness audit name exact `IMPLEMENTATION_INPUT_SHA`; initial local/tracking/live remote equality passes | Wrong/dirty/drifted base, missing ancestry, path lease conflict, protected drift |
 | Gate A common tests + neutral preview | Gate 0 passes | Common contract unstable; S3/path failure |
-| Astro/Next/Vite foundations | Gate A contract/test-ID digest frozen | Before Gate A; each stays provisional before #6 |
+| Astro/Next/Vite foundations | A later readiness audit explicitly authorizes exact candidate paths/targets after Gate A | Current Gate 0/Gate A cook; before Gate A; each stays provisional before #6 |
 | Barrier B check | #6 reviewed merge SHA is in tested ancestry and four tracked files exist | #6 open/unmerged; any digest/schema/read-only mismatch |
 | Gate C decision rerun | Barrier B passes and current browsers/manual named-AT session are available/frozen | Browser/manual evidence absent; mixed environment/fixture |
 | Gate D ADR/retention | Gate C full must-pass/comparability result exists | Partial/invalid evidence; cap overrun |
 
-Before issue #6 merges, only Gate A and candidate foundations may run. Nothing before that merge
+Under the current readiness decision only Gate 0 and Gate A may run. Nothing before the #6 merge
 can produce a numeric score, winner, or decision-grade ADR. Browser discovery unavailability does
-not block authoring/preview, but it blocks Gate C.
+not block the static preview, but it blocks Gate C. Gate A completion does not authorize candidates.
 
 ## Bite-Sized TDD Order
 
@@ -113,7 +130,7 @@ not block authoring/preview, but it blocks Gate C.
    case and all negatives.
 2. Gate A: write shared WEB contract/state/failure/trust/static/security tests; retain failing IDs;
    implement semantic HTML; then CSS; then optional navigation/reset/verify/evidence enhancement.
-3. For each candidate independently: point unchanged common tests at missing candidate; add only
+3. **Deferred until later readiness:** for each candidate independently, point unchanged common tests at missing candidate; add only
    framework-mode/build tests; start timer; implement to 90m foundation; continue to 3h
    provisional must-pass or eliminate.
 4. Barrier B: write absent/unmerged/mixed/tampered fixtures; implement read-only merge/digest/schema
@@ -140,15 +157,29 @@ The target and failure/evidence contracts are complete in
 
 ```bash
 make -f mk/issue-5/i5-02.mk i5-02-authority-check IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
-make -f mk/issue-5/i5-02.mk i5-02-security-check
-make -f mk/issue-5/i5-02.mk i5-02-credential-check
-make -f mk/issue-5/i5-02.mk i5-02-non-copy-check
-make -f mk/issue-5/i5-02.mk web-common-test
-make -f mk/issue-5/i5-02.mk learn-preview LESSON=promotion-trust
-make -f mk/issue-5/i5-02.mk learn-preview-status
-make -f mk/issue-5/i5-02.mk learn-preview-reset-check LESSON=promotion-trust
-make -f mk/issue-5/i5-02.mk learn-preview-down
+make -f mk/issue-5/i5-02.mk i5-02-security-check IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
+make -f mk/issue-5/i5-02.mk i5-02-credential-check IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
+make -f mk/issue-5/i5-02.mk i5-02-non-copy-check IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
+make -f mk/issue-5/i5-02.mk web-common-test IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
+make -f mk/issue-5/i5-02.mk learn-preview LESSON=promotion-trust PREVIEW_PORT=4174 IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
+make -f mk/issue-5/i5-02.mk learn-preview-status PREVIEW_PORT=4174 IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
+make -f mk/issue-5/i5-02.mk learn-preview-reset-check LESSON=promotion-trust IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
+make -f mk/issue-5/i5-02.mk learn-preview-down PREVIEW_PORT=4174 IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
+```
 
+The current cook stops here. Direct dependency-free lifecycle equivalents are:
+
+```bash
+node spikes/web/harness/scripts/preview-control.mjs start --lesson promotion-trust --port 4174 --implementation-input <full-40-hex-authorized-sha>
+node spikes/web/harness/scripts/preview-control.mjs status --port 4174 --implementation-input <full-40-hex-authorized-sha>
+node spikes/web/harness/scripts/preview-control.mjs reset-check --lesson promotion-trust --implementation-input <full-40-hex-authorized-sha>
+node spikes/web/harness/scripts/preview-control.mjs down --port 4174 --implementation-input <full-40-hex-authorized-sha>
+```
+
+The following commands are reference contracts for later readiness scopes and are not present or
+invocable in the Gate 0/Gate A Make fragment:
+
+```bash
 make -f mk/issue-5/i5-02.mk web-astro-install
 make -f mk/issue-5/i5-02.mk web-astro-build
 make -f mk/issue-5/i5-02.mk web-astro-test
@@ -171,10 +202,12 @@ make -f mk/issue-5/i5-02.mk web-local-rollback-check
 Direct no-build review fallback:
 
 ```bash
-python3 -m http.server 4173 --bind 127.0.0.1 --directory spikes/web/preview
+python3 -m http.server 4174 --bind 127.0.0.1 --directory spikes/web/preview
 ```
 
-Direct test/check scripts are the source of behavior; Make targets are thin issue-local wrappers.
+The Python fallback is foreground-only and provides no owned-PID, readiness, CSP, security,
+fitness, or evidence claim; stop it with Ctrl-C. Direct test/check scripts are the source of
+behavior; Make targets are thin issue-local wrappers.
 A future root `make learn-preview` include/alias belongs to the root/shared owner and is not issue
 #7 acceptance.
 
@@ -195,7 +228,8 @@ A future root `make learn-preview` include/alias belongs to the root/shared owne
 
 The future `i5-02-changed-path-check` evaluates committed, staged, unstaged, and untracked paths
 relative to the exact `IMPLEMENTATION_INPUT_SHA`. It allows only the explicit list above, rejects
-raw discovery changes, and requires all three exact ignored candidate locks to be tracked. It must
+raw discovery changes, and in the current cook requires all candidate paths/locks to be absent. A
+later candidate readiness scope activates the three exact ignored-lock tracked checks. It must
 not rely on a broad glob that includes all `docs/**`, `mk/**`, or `plans/**`.
 
 Required protected baselines from Gate 0:
@@ -216,17 +250,20 @@ as applicable.
 
 ## Rollback and Cleanup
 
-1. Stop only the PID/process tree recorded under the issue-scoped runtime locator; reject foreign
-   or reused PIDs.
-2. Remove only candidate-local `node_modules`, build output, caches, and generated runtime state
-   after retention indexes/hashes exist. Evidence remains.
-3. On candidate failure, mark `ELIMINATED`, remove default execution selection, retain source/lock/
+1. Stop only the PID/process tree whose per-port locator, start fingerprint, command, cwd, real
+   preview root, input, and readiness run ID all match; reject and never signal foreign/reused PIDs.
+2. For Gate 0/A, after sanitized retention exists, remove only transient generated `.artifacts`
+   runtime/raw evidence created by this cook. Preserve tracked source, plans, retained evidence,
+   and every protected path. If source is broken, stop with the worktree intact for review.
+3. In later candidate scopes, remove only candidate-local `node_modules`, build output, caches, and
+   generated runtime state after retention indexes/hashes exist. Evidence remains.
+4. On candidate failure, mark `ELIMINATED`, remove default execution selection, retain source/lock/
    commands/raw evidence, and keep the neutral preview.
-4. On comparison contamination, close Barrier B/C, remove numeric scores/winner selection, return
+5. On comparison contamination, close Barrier B/C, remove numeric scores/winner selection, return
    ADR-005 to Proposed/no-winner, and rerun equally if still inside cap.
-5. Do not delete losing source before I5-05. Later cleanup requires explicit authority and a
+6. Do not delete losing source before I5-05. Later cleanup requires explicit authority and a
    reproducible source bundle/hash.
-6. Never use a broad recursive delete, destructive Git reset/checkout, shared contract edit,
+7. Never use a broad recursive delete, destructive Git reset/checkout, shared contract edit,
    migration, cloud action, or root Make change as rollback.
 
 ## Handoff Completion
