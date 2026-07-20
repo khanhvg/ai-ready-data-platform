@@ -125,5 +125,8 @@ feedback but cannot override a failed lab.
 - No pattern/service appears without a controlled failure or quality attribute it resolves.
 - Every numeric claim points to generated evidence, not hand-maintained prose.
 - Foundation route completes without AWS credentials, optional tools, or animation.
+- Architecture priority is executable: at least one F01→F04→J01/J04/J05 lab includes a bounded
+  artifact edit, controlled boundary/resilience failure, progressive hints, reset, fitness
+  verification, retained evidence and reflection. Templates/views alone cannot release it.
 - Challenge route may skip instruction but cannot bypass reset/verify/evidence.
 - AI modules stay hidden/off until admission; their absence does not reduce core completion.

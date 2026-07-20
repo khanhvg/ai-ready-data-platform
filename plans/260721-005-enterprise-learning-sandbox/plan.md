@@ -30,9 +30,11 @@ runner. The first release is single-user, localhost-only, credential-free, and c
 failure-reset-verify-evidence journey on a 16 GiB laptop.
 
 The first journey asks: **Can Retail Operations trust a promotion decision when fulfillment
-delays, returns/refunds, and controlled data-quality failures distort the headline?** It uses the
-existing `mart_promotion_effectiveness`, `mart_fulfillment_performance`,
-`mart_returns_analysis`, and `mart_data_quality` products.
+delays, returns/refunds, and controlled data-quality failures qualify the headline?** It presents
+the existing `mart_promotion_effectiveness`, `mart_fulfillment_performance`,
+`mart_returns_analysis`, and `mart_data_quality` as a four-mart evidence bundle. Their independent
+grains are shown explicitly; the journey does not claim campaign-level attribution that the
+current marts cannot support.
 
 AWS is a later, non-applying track: configurable `ap-southeast-1`, weekdays 08:00-18:00
 `Asia/Ho_Chi_Minh`, ECS on EC2, ClickHouse, Superset, OpenMetadata, and S3/Iceberg. Monthly
@@ -98,9 +100,10 @@ governed-data waves.
 5. **Release evidence:** Phase 13 runs clean-checkout, browser, recovery, policy, and rollback
    gates.
 
-Phases 1-5 are the only first-wave product path. Phase 5 is the earliest usable product outcome;
-Phases 6-8 cannot start product/content expansion until its real end-to-end journey passes. AWS
-and optional AI stay off the local critical path.
+Phases 1-5 are the only first-wave product path. Phase 2 may retain an explicitly fixture-backed,
+non-completing reviewable preview; Phase 5 is the earliest **accepted runner-backed learner
+outcome**. Phases 6-8 cannot start product/content expansion until its real end-to-end journey
+passes. AWS and optional AI stay off the local critical path.
 
 ## Planned Artifact and Command Resolution Contract
 
@@ -110,14 +113,17 @@ and optional AI stay off the local critical path.
 - A path that depends on the Phase 2 stack decision is written as a bounded owning root plus an
   explicit ADR gate. ADR-005 must record the final exact path and command before I5-05 may start;
   dependent issues copy that value rather than choosing an “equivalent” silently.
-- Every planned `make` command must be added to tracked `Makefile` help, run non-interactively,
-  emit a schema-valid result beneath `.artifacts/evidence/<fitness-id>/`, and exit non-zero with a
-  typed failure/remediation message. A missing optional dependency is `not-run-optional` only
-  where the release registry declares it optional; otherwise it fails.
+- Every planned `make` command follows the owner, availability, status, security tier, evidence,
+  and failure contract in
+  [Execution, authority, and release contract](./execution-authority-and-release-contract.md).
+  I5-01 adds one root include/help registry; later issues own disjoint included command fragments
+  and do not concurrently edit the root `Makefile`.
 - `make learn LESSON=promotion-trust` is the stable future local start command owned by I5-05.
   It must start only the loopback portal/private runner/core dependencies, print the portal URL
   and evidence root, refuse unsafe/dirty prerequisites without mutating progress, and support a
   documented teardown. `make local-journey-e2e` is its automated acceptance path.
+- `make learn-preview LESSON=promotion-trust` is the earlier I5-02 fixture-backed review command.
+  It labels simulation/fixture state and cannot mutate or assert completion.
 - Existing and planned contracts use the exact files in each phase inventory. If a compatibility
   spike rejects a planned vendor/API, that phase records the rejection in its ADR, updates the
   stable wrapper contract, and blocks dependants; it does not invent a replacement API during
@@ -152,6 +158,7 @@ and optional AI stay off the local critical path.
 - [Lesson/lab contract](./lesson-lab-contract.md)
 - [Architecture decisions](./architecture-decisions.md)
 - [Architecture view source plan](./architecture-view-plan.md)
+- [Execution, authority, and release contract](./execution-authority-and-release-contract.md)
 
 ## Validation Log
 
@@ -182,3 +189,23 @@ and optional AI stay off the local critical path.
   SHA handoffs and blockedBy/blocks are defined in the issue graph.
 - Release/rollback: additive preservation and exact-SHA evidence agree across the plan. Remaining
   TBCs block AWS apply/claims only and remain listed in the validation report.
+
+## Red Team Review
+
+### Session 1 — 2026-07-21 — Independent adversarial plan challenge
+
+- Immutable input: `5962316b8113ece592a26fe6211a97ae77eb70fb`; golden main and discovery
+  remained `3cd3d41f71582774e8d9656a51d1044035f4503c` and
+  `d3ce0c5832cca4f1b68299cbba111e7cc6c7a430`.
+- Four independent hostile roles challenged security, failure/recovery, scope/assumptions, and
+  learning/delivery. Findings were deduplicated and capped at 15; verified data-model counts,
+  dbt warning behavior, weighted Rill metrics, deliberate AsyncAPI absence, and non-applying AWS
+  authorization were not reopened without contrary evidence.
+- Bounded fixes made execution isolation, local authority/atomicity, analytical grain, preview and
+  spike handoff, architecture/API ownership, Docker-free lifecycle, AWS validation/cost/apply/
+  recovery, AI admission, and release provenance actionable. Honest budget/RTO/RPO/account/
+  approver/retention TBCs remain TBC.
+- Full methods, adjudicated findings, disagreement reconciliation, residual risks, and verdict:
+  [red-team report](./validation/red-team-report.md).
+- This was not a readiness/plan-to-cook audit and performed no implementation, issue creation,
+  Terraform apply, cloud action, destructive migration, branch fan-out, or merge.

@@ -43,6 +43,12 @@ first local site.
 - Region availability, per-run limits, concurrency, monthly ceiling, alarm and kill switch pass
   before credentialed execution.
 - AgentCore modules are selected individually; LangGraph/Restate responsibilities are explicit.
+- Admission is evaluated separately for `local-single-actor-read-only` and `hosted-agentcore`;
+  local success cannot mark hosted ACL/identity/retention/cost fields not applicable.
+- Approval binds exact actor, policy/data versions, tool ID, canonical arguments, target,
+  environment, expected effect, idempotency key, cost bound, expiry, nonce and digest.
+- Select one durable workflow/approval/idempotency authority. LangGraph, Restate, and AgentCore
+  session memory may not each imply ownership of the same transition.
 
 ## Leading First Use Case
 
@@ -74,18 +80,19 @@ Durable state sits in the admitted workflow/progress store, never ephemeral runt
 | Create | `ai/admission/gates.yaml`, `ai/admission/check.py` | 300-500 LOC | Machine blocker |
 | Create | `ai/contracts/{retrieval,citation,policy,approval,trace}.schema.json` | 500-800 lines | Contract tests |
 | Create | `ai/evals/{dataset,thresholds,runner}/**` | 800-1,200 lines/LOC | Deterministic eval |
-| Create | `apps/agent-labs/**` only after admission | 1,500-2,500 LOC | Optional app |
-| Create | `platform/adapters/agentcore/**` only after module ADR | 500-900 LOC | Cloud adapter |
+| Deferred to separately authorized follow-up | `apps/agent-labs/**` after admission | 1,500-2,500 LOC | Passing admission does not authorize runtime implementation |
+| Deferred to separately authorized follow-up | `platform/adapters/agentcore/**` after module ADR | 500-900 LOC | Cloud adapter remains uncreated in admission issue |
 | Create | `tests/ai/{acl,injection,citation,redaction,approval,replay,recovery,cost}/**` | 1,500-2,200 LOC | Safety/eval |
-| Modify | portal optional route/feature flag | bounded | Core-off regression |
-| Modify | architecture optional AI component/dynamic views | bounded | Admission-rendered only |
+| Deferred to separately authorized runtime follow-up | portal optional route/feature flag | bounded | Admission issue does not edit portal source |
+| Create | `ai/admission/proposed-architecture/**` | bounded | Inactive proposal only; active C4-L3-AI/DYN-AI remains future runtime ownership |
+| Create | `mk/issue-5/i5-12.mk` | small | Admission/eval targets via root include |
 
 ## Interface Checklist
 
 - [ ] `RetrievalRequest(actor, purpose, productVersions, query)`
 - [ ] `Citation(sourceId, version, chunk, contentHash, accessDecision)`
 - [ ] `PolicyDecision` deterministic and auditable
-- [ ] `Approval` actor/scope/expiry/replay protection
+- [ ] `Approval` exact actor/policy/data/tool/args/target/effect/idempotency/cost/expiry/nonce/digest
 - [ ] `WorkflowCheckpoint` and idempotency/reconciliation
 - [ ] trace/redaction/retention/cost schema
 - [ ] AgentCore adapter isolated from core payloads
@@ -151,10 +158,11 @@ make local-journey-e2e AI_ENABLED=false
 2. Inventory governed products, identity/ACL and trace/retention readiness.
 3. Measure corpus baseline; request owner thresholds/use-case/module/cost approval.
 4. Stop if any gate/TBC remains. Do not scaffold agent runtime as a workaround.
-5. If admitted, implement read-only retrieval/citation/policy/eval path.
-6. Select LangGraph/Restate/AgentCore modules by explicit responsibility ADR.
-7. Add optional portal experience, OTel/cost evidence and core-off regression.
-8. Admit write tools only in a later issue with approval/idempotency/recovery proof.
+5. If admitted, record the responsibility ADR and request a separate human-authorized runtime
+   implementation issue; admission itself creates no agent runtime or cloud adapter.
+6. In that later issue only, implement the read-only retrieval/citation/policy/eval path and
+   optional portal experience with OTel/cost evidence and core-off regression.
+7. Admit write tools only in another later issue with approval/idempotency/recovery proof.
 
 ## Success Criteria
 

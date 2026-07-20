@@ -40,9 +40,11 @@ backend bootstrap, account mutation or Terraform apply is authorized.
 - Close workflow blocks new labs, drains/checkpoints/backups, verifies recovery artifact, stops
   schedulers/services, drives tasks/ASG to zero and inventories residual resources.
 - Wrong account/region/environment/SHA/role and placeholder secret/public ingress must fail.
+- Before I5-14, any future validation environment is private operator-only; learner-reachable
+  ingress is mechanically denied.
 - Any future apply requires all six TBC groups resolved, Security approval of S3/IAM, and the
-  named apply approver bound to one exact non-stale account/region/environment/plan SHA. This
-  phase provides policy tests only and cannot clear that gate.
+  named apply approver bound to the single-use saved-plan authorization envelope in the normative
+  execution contract. This phase provides policy tests only and cannot clear that gate.
 - No default target, CI workflow or documented command may call `apply` or `destroy`.
 - Async/event services exist only if needed by the readiness workflow, not curriculum symmetry.
 
@@ -58,6 +60,7 @@ ecs-capacity -> launch template/ASG/capacity provider/cluster
 ecs-services -> replaceable portal/runner/jobs adapters
 office-hours -> EventBridge Scheduler + observable state workflow
 observability-budget -> logs/metrics/alarms/tags/residual inventory
+persistence -> selected S3/catalog/metadata-db/search/portal-state/secrets/KMS/backup resources
 ```
 
 Step Functions with minimal Lambda/ECS control tasks is the leading readiness implementation
@@ -69,12 +72,12 @@ shows a smaller construct satisfies the same tests.
 | Action | Planned path | Rough size | Test impact |
 |---|---|---:|---|
 | Create | `infra/aws/terraform/bootstrap-state/**` | 150-250 lines | Contract/mocks only |
-| Create | `infra/aws/terraform/modules/{network,iam,ecs-capacity,ecs-services,office-hours,observability-budget}/**` | 2,000-3,000 lines | Module tests |
+| Create | `infra/aws/terraform/modules/{network,iam,ecs-capacity,ecs-services,office-hours,observability-budget,data-lake,catalog,metadata-db,search,portal-state,secrets,backup-recovery}/**` as admitted by P9 | 2,800-4,200 lines | Every accepted state row has a Terraform owner/test |
 | Create | `infra/aws/terraform/environments/sandbox/**` | 500-800 lines | Composition/no secrets |
 | Create | `infra/aws/terraform/tests/**.tftest.hcl` | 800-1,200 lines | Mock provider/plan assertions |
 | Create | `infra/aws/policy/{terraform,iam,network,cost}/**` | 500-800 lines | Conftest/security |
-| Create | `scripts/aws/terraform-check.sh`, `terraform-plan-offline.sh` | 150-250 LOC | Non-applying orchestration |
-| Modify | `Makefile`, `.gitignore`, docs | 80-150 lines | Safe targets/state/plan ignores |
+| Create | `scripts/aws/{terraform-check,terraform-validate-offline,terraform-test-mocked}.sh` | 180-300 LOC | Clearly separated non-applying orchestration |
+| Create/modify | `mk/issue-5/i5-10.mk`, `.gitignore`, docs | 80-150 lines | Safe targets/state/plan ignores via root include |
 
 ## Interface Checklist
 
@@ -85,6 +88,9 @@ shows a smaller construct satisfies the same tests.
 - [ ] office workflow inputs/state/readiness/drain/override outputs
 - [ ] task/service health and residual-resource inventory contract
 - [ ] outputs consumed by Phase 11 without circular state ownership
+- [ ] every accepted P9 persistence/key/backup row maps to one module/resource or explicit
+  rejected topology; no adapter-owned Terraform
+- [ ] single-use saved-plan envelope binds plan/config/lock/vars/backend-state/identity/expiry
 
 ## Dependency Map
 
@@ -99,6 +105,7 @@ shows a smaller construct satisfies the same tests.
 |---|---|---|
 | Critical | Wrong account/region/workspace/SHA/role | Plan/precondition denial |
 | Critical | Concurrent backend operation/approval replay | Lock/identity policy denial (mock; real later) |
+| Critical | Saved plan or any bound input changes after approval | Authorization invalid; no replan/apply |
 | Critical | Secret/static credential/state/plan committed | Security/secret check fails |
 | High | Broad ingress/public runner/NAT hidden | Policy/cost check fails |
 | High | Schedule sets count but health/hydration fails | Not ready; no learner admission |
@@ -119,14 +126,16 @@ introduce a platform framework.
 
 ## Tests After
 
-Run fmt/validate/tflint/security/policy, mock tests and credential-free non-applying plan. Later
-real plan/lock/restore checks require explicit credentials/account approval and still do not apply.
+Run fmt/validate/tflint/security/policy and explicitly labelled mocked tests. Offline validation is
+not a Terraform plan or provider-compatibility claim. Later real plan/lock/restore checks require
+explicit credentials/account approval and still do not apply.
 
 ## Regression Gate
 
 ```bash
 make terraform-check
-make terraform-plan-offline
+make terraform-validate-offline
+make terraform-test-mocked
 make aws-decision-check
 git diff --check
 ```
@@ -142,11 +151,12 @@ redacted plan; it is not run in this planning issue.
 4. Implement ECS EC2 capacity/services modules.
 5. Implement office open/readiness and close/drain/checkpoint state workflow.
 6. Add observability/budget/residual-inventory outputs and policies.
-7. Run only static/mock/offline plan gates and document future real-plan/apply authority.
+7. Run only static/offline/mock gates and document future real-plan/apply authority.
 
 ## Success Criteria
 
-- [ ] All modules format/validate/lint/security/policy/mock-plan clean.
+- [ ] All modules format/validate/lint/security/policy/mocked-test clean; evidence never labels a
+  mocked result a real plan.
 - [ ] Network/IAM/state/ECS schedule requirements are explicit and testable.
 - [ ] Readiness/drain—not desired count alone—drives office availability.
 - [ ] No apply/destroy or cloud creation occurs; unresolved owner gates block them mechanically.

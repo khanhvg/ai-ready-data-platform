@@ -30,13 +30,22 @@ release has one localhost learner.
 - Browser never receives runner credential; portal BFF is the only caller.
 - Typed Pydantic/domain models from released schemas; `subprocess` argument arrays,
   `shell=False`, sanitized allow-listed env and fixed command registry.
+- Treat allow-listed interpreters as code execution: run only pinned/hash-verified read-only
+  entrypoints with no learner imports/plugins/startup hooks and an OS containment boundary; if
+  containment is unavailable, keep interactive execution disabled.
 - Base checkout/scripts mounted/readable only; workspace under ignored runtime root; reject
   symlinks, traversal, device files, oversized inputs and user-controlled cwd/network targets.
 - Per-workspace lock, idempotency ledger, transition journal, timeout/cancel and CPU/memory/disk
   quotas.
+- Every direct Make/Airflow mutator shares the namespace lease/fencing protocol or uses a distinct
+  expert namespace. Path use is TOCTOU-safe; descendant processes and output are bounded/redacted.
 - Atomic reset from every state. Evidence binds last committed verified run.
+- The runner's local `retail.export` stages and validates all 11 marts under one
+  `CuratedReleaseManifest`, then atomically advances one workspace current-release pointer; a
+  partial export cannot become ready or verified.
 - No Terraform apply/destroy, arbitrary shell, package install, external URL or AWS credential.
 - Preserve static lesson and expert direct-command paths when runner is disabled.
+- Enforce Host/Origin/CSRF/DNS-rebinding protections on loopback HTTP; loopback alone is not auth.
 
 ## Architecture
 
@@ -63,7 +72,7 @@ domain/command/workspace code must not depend on HTTP.
 | Create | `apps/lab-runner/tests/race/**` | 400-700 LOC | Barrier/crash/replay |
 | Create | `scripts/labs/verify-promotion-trust.py` | 200-350 LOC | Real verifier |
 | Modify | `orchestration/airflow/callables/pipeline.py` and existing CLIs | narrow, contract-protected | Explicit workspace paths |
-| Modify | `Makefile` | 20-40 lines | Runner test targets |
+| Create | `mk/issue-5/i5-04.mk` | 20-40 lines | Runner test targets via root include |
 
 ## Interface Checklist
 
@@ -88,7 +97,11 @@ domain/command/workspace code must not depend on HTTP.
 | Critical | Metacharacter/traversal/symlink/device/oversize | Reject before child process |
 | Critical | Reset races verify/publish | Serialize/typed conflict; no mixed evidence |
 | Critical | Base repo write/secret canary/env injection | Denied; base tree/hash unchanged |
+| Critical | Mutable import/startup hook or path swap after validation | Denied before execution; pinned entrypoint/base identity unchanged |
+| Critical | Cross-origin/forged Host/DNS rebinding/CSRF | Portal/runner mutation denied |
 | Critical | Duplicate/replayed operation | Same result or safe conflict; no duplicate work |
+| Critical | Runner reset overlaps direct Make/Airflow mutation | Shared fence serializes/refuses; no mixed namespace/release |
+| Critical | Child dies after any mart export | Previous release remains current; staged generation is recoverable/quarantined |
 | High | Child timeout/crash/host restart | Journal last committed state; recover/reset |
 | High | Browser/direct caller reaches runner | Auth/transport denial |
 | High | Terraform-like command/flag | No registry entry; denial |
@@ -124,7 +137,8 @@ git status --short
 1. Threat-model actors/resources/actions, base/workspace, secrets and transport.
 2. Write failing policy/state/race/crash tests.
 3. Implement domain state/idempotency/workspace core.
-4. Implement the fixed command registry, safe typed configuration writer and resource-limited process adapter.
+4. Implement the fixed command registry, pinned execution/OS containment boundary, safe typed
+   configuration writer and resource-limited process adapter.
 5. Add private transport aligned to OpenAPI; keep browser out of trust zone.
 6. Add promotion verifier and evidence commit.
 7. Refactor only required current path seams behind characterization tests.

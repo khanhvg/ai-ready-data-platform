@@ -26,6 +26,7 @@ Planned sources:
 | `outcome` | Observable learner capability | Non-empty; tied to completion evidence |
 | `stakeholder` | Actor, concern, business decision | Traceability link required |
 | `prerequisites` | Competency and environment/tool requirements | Acyclic graph; optional tools marked |
+| `prerequisiteChecks` | Non-mutating probe, required/optional class, status, learner-language remediation and retry | Required failures block before mutation; optional absence never forges pass |
 | `fr/nfr/asr` | Measurable functional and quality requirements | Threshold or explicit TBC/blocker |
 | `architectureViews` | Minimum C4/dynamic/deployment sources needed | View IDs exist and render |
 | `decision` | Question, alternatives, trade-offs, selected/default status | ADR link; unresolved state visible |
@@ -36,6 +37,7 @@ Planned sources:
 | `reflection` | Prompt tied to trade-off/outcome | Cannot set completion |
 | `accessibility` | Keyboard, announcements, motion/static, text alternatives | Required checklist |
 | `remediation` | Failure code to useful next action; solution reveal policy | Every expected failure mapped |
+| `hints` | Ordered progressive hints, reveal condition and evidence event | Hint never changes verifier/completion |
 
 ## Required Lab Fields
 
@@ -63,8 +65,12 @@ Planned sources:
 - Business question: **Can we trust a promotion decision when fulfillment delays,
   returns/refunds, and controlled data-quality failures distort headline performance?**
 - Data products: existing promotion, fulfillment, returns, and data-quality marts.
+- Analytical boundary: the four marts have independent promotion/channel, carrier/region,
+  reason/category/region, and global DQ grains. They form a decision-evidence bundle; no
+  campaign-level causal join or attribution is permitted without an additive common-grain product.
 - Learner outcome: trace a decision from concern to FR/NFR, architecture views, raw/model/metric
-  contracts, a controlled failure, reset, verified data product, and tamper-evident evidence.
+  contracts, a controlled failure, reset, verified evidence bundle, and locally corruption-
+  detectable evidence.
 
 ### Acts
 
@@ -73,7 +79,8 @@ Planned sources:
 3. Run bounded deterministic generation/load/dbt/export through allow-listed commands.
 4. Observe a deliberately naive campaign assessment that overweights headline revenue and fails
    required quality/operational assertions.
-5. Trace controlled anomalies and model/lineage to the four existing marts.
+5. Trace controlled anomalies and model/lineage to the four existing marts while naming each
+   grain, time/filter scope, weighted measure, and cross-mart limitation.
 6. Compare architecture/data-product alternatives and record a bounded decision.
 7. Reset the failed workspace; prove the base repository and golden contracts are unchanged.
 8. Apply the lesson-owned typed campaign-decision configuration in a fresh workspace.
@@ -137,6 +144,7 @@ threat model, typed schema, tests, and owner approval.
 Planned synchronous OpenAPI operations:
 
 - `GET /v1/lessons`, `GET /v1/lessons/{lessonId}`
+- `GET /v1/progress`, `GET /v1/progress/{lessonId}`
 - `POST /v1/labs/{labId}/workspaces`
 - `GET /v1/workspaces/{workspaceId}`
 - `POST /v1/workspaces/{workspaceId}/operations`
@@ -144,9 +152,14 @@ Planned synchronous OpenAPI operations:
 - `POST /v1/workspaces/{workspaceId}/reset`
 - `POST /v1/workspaces/{workspaceId}/verify`
 - `GET /v1/evidence/{evidenceId}`
+- `GET /v1/tools`, `GET /v1/tools/{toolId}` (status and server-approved deep link)
+- `POST /v1/data-products/{productId}/queries` (fixed query/assertion ID, never raw SQL)
+- `GET /health/live`, `GET /health/ready`
 
-Every mutating operation requires idempotency/correlation headers and returns typed problem
-details. The logical taxonomy is metadata:
+Every operation is also listed in an operation matrix with method/path, `operationId`, logical
+taxonomy, physical process/module, authority/auth/CSRF, idempotency, and evidence. Every mutating
+operation requires idempotency/correlation headers and returns typed problem details. The logical
+taxonomy is metadata:
 
 - Experience: lesson/progress views.
 - Process: start/reset/verify use cases.
@@ -172,6 +185,11 @@ Required fields:
 - start/finish timestamps and duration
 - redaction/retention class
 - canonical payload SHA-256; later optional signer/key ID for hosted mode
+
+The local SHA-256 detects corruption/inconsistent edits but cannot authenticate against the owner
+of the same local filesystem/database/verifier. Completion requires a fresh private-runner result
+and live portal verification. Cryptographic anti-forgery/non-repudiation is a hosted I5-14 key-
+authority concern and is not claimed locally.
 
 Evidence must never contain tokens, full environment dumps, raw Terraform plans/state, PII
 canaries, or absolute local paths. JSON Schema and canonicalization tests reject unknown

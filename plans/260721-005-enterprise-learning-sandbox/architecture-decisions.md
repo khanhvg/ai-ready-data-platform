@@ -21,21 +21,21 @@ Statuses:
 | ADR-001 | Preserve golden data spine; selectively refactor shared seams; add portal/AWS contexts | Accepted default | Phase 1 | Shared-core owner | Characterization suite preserves generator anomalies, marts, lineage, metrics, Airflow graph, curated list |
 | ADR-002 | Portal starts as content-capable modular monolith plus isolated privileged runner | Accepted default | Phase 4 | Portal + runner owners | Two-process deployment, typed boundary, no arbitrary shell; extraction criteria documented |
 | ADR-003 | Experience/Process/System/Backend/Technical are logical API ownership layers, not services | Accepted default | Contract design | Shared-core owner | OpenAPI tags/extensions map every operation; container diagram shows actual processes |
-| ADR-004 | Local and AWS share lesson/data/evidence contracts, not identical engines/topology | Accepted default | Phase 3 | Shared-core architecture owner | `retail-golden-v1.json`, `local-aws-data-product-equivalence-v1.yaml`, `iceberg-lifecycle-v1.yaml`, `openmetadata-asset-identity-v1.yaml`, lesson and evidence schemas run against local adapters; AWS admission reuses the same versions and records deviations |
+| ADR-004 | Local and AWS share lesson/data/evidence contracts, not identical engines/topology | Accepted default | Phases 3/7 | Sequential shared-contract steward | `retail-golden-v1.json`, lesson/evidence schemas, then P7 equivalence/lifecycle/identity contracts run against local adapters; AWS admission reuses exact versions and records deviations |
 | ADR-005 | Web framework selected by representative-lesson scorecard | Decision gate | Phase 5 | Portal owner | Phase 2 scorecard; all must-pass criteria; winning ADR committed |
 | ADR-006 | Local single-user localhost first; hosted multi-user later | Accepted default | Phase 4 | Product/security owner | Loopback-only, isolated workspace, same-user race tests; hosted identity model left as future ADR |
-| ADR-007 | Progress/evidence are versioned state, separate from generated lab workspace | Accepted default | Phase 3 | Shared-core owner | State-machine tests, canonical hash, reset preservation rules, tamper test |
+| ADR-007 | Progress/evidence are versioned state, separate from generated lab workspace | Accepted default | Phase 3 | Shared-core owner | One portal completion transaction references committed runner result + immutable evidence blob; crash/orphan reconciliation tests |
 | ADR-008 | DuckDB and Rill remain local defaults | Accepted default | Local waves | Data-platform owner | Any replacement requires better lesson score, lower/equal RSS/start time, and preserved metric contract |
 | ADR-009 | Local Iceberg remains MinIO/Lakekeeper; OpenMetadata remains | Accepted default | Phase 7 | Data-platform owner | Current contracts preserved; atomic publish and reconciliation failures become explicit labs/gates |
 | ADR-010 | S3/Iceberg is AWS durable analytical truth; ClickHouse is initially a disposable projection hypothesis | Decision/apply gate | Phase 11 / any apply | AWS persistence owner | Empty-start rebuild, interrupted resume, query/row/hash equivalence, readiness within approved SLO |
 | ADR-011 | AWS Iceberg catalog leading candidate is Glue Iceberg REST | Decision/apply gate | Phase 11 / any apply | AWS persistence owner | Current writer, ClickHouse, OpenMetadata compatibility; IAM/SigV4; create/evolve/time-travel/rename/delete/restore; priced residual |
 | ADR-012 | Superset and OpenMetadata servers are replaceable; their metadata authorities persist separately | Apply gate | Any apply | AWS persistence owner | State matrix, backup/restore into empty environment, dashboard/catalog/search correctness, approved RTO/RPO/cost |
 | ADR-013 | Office-hours default is weekdays 08:00-18:00 Asia/Ho_Chi_Minh in configurable ap-southeast-1 | Accepted planning default; apply gate | Phase 10 / any apply | AWS operations owner | Next-run display, readiness workflow, drain/checkpoint, override; cold-start target still TBC |
-| ADR-014 | AWS monthly ceiling, retention, cold-start/readiness SLO, production RTO/RPO, account/environment and named apply approver | TBC apply gate | Any apply or cost/readiness claim | Product + FinOps + operations + security | Signed decision record, priced active/off-hours/failure-storm BOM, exact account/environment/plan SHA and approver identity |
-| ADR-015 | Terraform state uses encrypted/versioned S3 lockfile with plan/apply role separation | Accepted design; apply gate | Backend bootstrap/apply | Terraform owner | Mock tests plus later real lock, wrong-account denial, previous-version restore; never store state/plan secrets in VCS |
+| ADR-014 | AWS monthly ceiling, retention, cold-start/readiness SLO, production RTO/RPO, account/environment and named apply approver | TBC apply gate | Any apply or cost/readiness claim | Product + FinOps + operations + security | Signed decision, topology-reconciled current-price BOM, and single-use saved-plan envelope bound to every exact input/identity/state value |
+| ADR-015 | Terraform state uses encrypted/versioned S3 lockfile with plan/apply/recovery role separation | Accepted design; apply gate | Backend bootstrap/apply | Terraform owner | Mock tests plus later real lock/wrong-account/previous-version/key-config restore; never store state/plan secrets in VCS |
 | ADR-016 | AWS orchestration exists only when a curriculum/runtime requirement survives Phase 9 | Decision gate | Phase 10/11 | Architecture owner | Compare Airflow-on-ECS versus narrow readiness/hydration workflows; no symmetry-only service |
 | ADR-017 | AsyncAPI is absent until a real asynchronous channel is introduced | Accepted default | Contract design | Shared-core owner | Contract inventory check fails orphan AsyncAPI or undocumented actual channel |
-| ADR-018 | Evidence integrity uses canonical payload hash locally; hosted signing/key identity is later | Accepted default | Phase 3 | Evidence owner | Canonicalization, verifier hash, artifact hashes, tamper detection; no secret payload |
+| ADR-018 | Local canonical hash detects corruption but does not authenticate against the same host owner; hosted signing/key identity is later | Accepted default | Phase 3 | Evidence owner | Canonicalization/artifact hashes plus fresh private-runner verification; no local non-repudiation claim |
 | ADR-019 | AI/AgentCore is optional and off until admission | Admission gate | Phase 12 | AI governance owner | Every gate in Phase 12 passes; core journey still succeeds network/cloud-credential free |
 | ADR-020 | LangGraph and Restate are admitted by responsibility, not bundled by default | Decision/admission gate | AI implementation | AI governance owner | LangGraph only for explainable agent graph; Restate only for durable side-effect/recovery need |
 | ADR-021 | Root release-manifest.json remains untouched legacy/tooling provenance | Accepted default | Cleanup work | Repository owner | Consumer/provenance investigation required before relocate/delete; excluded from product golden contract |
@@ -111,14 +111,16 @@ Weighted score:
 | Hosted evolution without rewriting contracts | 10 |
 | Maintenance/dependency surface | 5 |
 
-Time box: two implementation days total. A candidate failing a must-pass is eliminated. Highest
-score wins. Tie within five points defaults to Astro + React islands because the product is
+Time box: 14 working hours over at most two implementation days, allocated and killed exactly as
+specified in the normative execution contract. A candidate failing a must-pass is eliminated and
+receives no synthetic score. Highest score wins. Tie within five points defaults to Astro + React
+islands because the product is
 content-heavy and progressive hydration is the smaller initial runtime; the scorecard may
 override that default with evidence.
 
 Exact decision evidence is
-`plans/260721-005-enterprise-learning-sandbox/reports/web-stack-scorecard.md` plus
-`plans/260721-005-enterprise-learning-sandbox/reports/web-stack-scorecard.json`. The JSON records
+`docs/decisions/evidence/adr-0005-web-stack-scorecard.md` plus
+`docs/decisions/evidence/adr-0005-web-stack-scorecard.json`. The JSON records
 candidate commands, lock/tool versions, normalized environment, must-gate booleans, measurements,
 artifact hashes and reason. `make web-spike-scorecard-check` exits non-zero if a candidate lacks
 evidence, scores eliminated candidates, uses different lesson assertions, omits the non-copy
@@ -160,10 +162,13 @@ RTO/RPO, scale-to-zero behavior, residual cost, and accountable owner for:
 - orchestration state if retained;
 - Terraform state;
 - AI workflow/approval/idempotency state if admitted.
+- KMS and application encryption/signing keys, secret versions, configuration schemas, and
+  durable cost-admission/kill-switch state.
 
 ## Local Versus AWS Contract
 
-The versioned source files are owned by I5-01/I5-03 and consumed read-only downstream:
+The versioned source files are released sequentially by I5-01/I5-03/I5-07 and consumed read-only
+downstream:
 
 - `contracts/data/retail-golden-v1.json` — protected generator/dbt/mart/metric/lineage truth;
 - `contracts/data/local-aws-data-product-equivalence-v1.yaml` — engine-neutral query, type,
@@ -217,8 +222,14 @@ backend `use_lockfile = true` (no new DynamoDB lock dependency), least-privilege
 policies, no static credentials, lifecycle and
 retention/deletion rules, restore/version recovery, access logging/monitoring, and exact
 account/region/plan-SHA binding. Security approves the S3/IAM controls; Product/FinOps/operations
-set numeric gates; the named apply approver approves one exact non-stale plan. None is authorized
-in this plan.
+set numeric gates; the named apply approver approves one single-use saved plan bound to the
+config/module/provider-lock/variables/backend lineage+serial/account/region/role/expiry/nonce
+envelope. The plan is applied without replanning. None is authorized in this plan.
+
+Real provider compatibility/empty-restore evidence requires a separately authorized disposable
+validation environment (or exact pre-existing one) with least privilege, budget, TTL, teardown and
+residual scan. That validation authorization is not production/classroom apply authorization and
+is not granted here. Before I5-14, any such environment is private operator-only.
 
 ### Required before optional AI
 

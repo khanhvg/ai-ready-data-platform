@@ -28,7 +28,7 @@ credential- and authorization-gated. No cloud resource is created here.
 ## Requirements
 
 - Preserve DuckDB/Rill local path and define exact shared versus platform-specific contracts.
-- Consume the exact Phase 1/P7 versions of `local-aws-data-product-equivalence-v1.yaml`,
+- Consume the exact Phase 7 released versions of `local-aws-data-product-equivalence-v1.yaml`,
   `iceberg-lifecycle-v1.yaml`, and `openmetadata-asset-identity-v1.yaml`; an AWS deviation requires
   a versioned ADR and cannot silently fork learning/data/evidence semantics.
 - Validate current client compatibility before accepting Glue Iceberg REST: writer, ClickHouse,
@@ -45,6 +45,11 @@ credential- and authorization-gated. No cloud resource is created here.
   vocabulary.
 - All AWS credentials/real lifecycle tests are opt-in, account-bound, least-privilege and
   non-default. No apply is authorized.
+- After P10 and adapter outputs freeze, run a sequential composition gate that binds exact module,
+  descriptor, image, command, health, state and contract hashes. Parallel P10/P11 work alone cannot
+  claim an office-hours or recovery path.
+- Real compatibility/restore evidence comes only from a separately authorized, budget/TTL-bounded
+  disposable validation environment or an exact pre-existing one; offline mocks cannot satisfy it.
 
 ## Architecture
 
@@ -71,9 +76,11 @@ Contracts expose divergence instead of pretending identical topology/auth.
 | Create | `tests/adapters/{iceberg,analytics,bi,governance}/**` | 1,500-2,200 LOC | Lifecycle/equivalence/recovery |
 | Create | `tests/fixtures/engine-equivalence/**` | 300-500 lines | Null/timezone/type/query/metric vectors |
 | Create | `scripts/aws/{hydrate-clickhouse,verify-aws-adapters}.py` | 500-800 LOC | Readiness/evidence |
-| Modify | Portal status adapter registry | bounded | AWS tool states |
+| Create | `platform/adapters/aws/portal-status-descriptors/**` | bounded | Validate AWS tool states against released portal registry contract; no portal-source edit |
 | Create/modify | Adapter-owned deployment descriptors under `platform/adapters/aws/**` only | bounded | Validate against read-only Phase 10 output schema; never edit Terraform paths |
+| Create | `tests/aws/composition/**`, `scripts/aws/check-composition.py` | 500-800 LOC | P10 output + P11 descriptor/image office lifecycle closure |
 | Modify | version/compatibility docs and ADRs | 200-350 lines | Pin evidence |
+| Create | `mk/issue-5/i5-11.mk` | small | Adapter/composition targets via root include |
 
 ## Interface Checklist
 
@@ -84,6 +91,7 @@ Contracts expose divergence instead of pretending identical topology/auth.
 - [ ] OpenMetadata DB restore/search rebuild/reconcile verifier
 - [ ] adapter status/deep-link/problem mapping
 - [ ] version/cost/source evidence and exit path
+- [ ] exact P10/P11 composition manifest and open/hydrate/ready/drain/backup/close simulation
 
 ## Dependency Map
 
@@ -91,6 +99,8 @@ Contracts expose divergence instead of pretending identical topology/auth.
   10 outputs read-only when present.
 - Reuses Phase 1/7 data contracts.
 - Does not block local release. Blocks any AWS readiness claim and optional cloud AI.
+- Composition/readiness evidence is sequential after exact P10 and P11 outputs; before I5-14 it is
+  private operator-only and cannot expose learner ingress.
 
 ## Test Scenario Matrix
 
@@ -128,6 +138,7 @@ explicit account/resource authority and record exact cost/region/version.
 make aws-adapters-contract
 make engine-equivalence
 make metadata-contracts-check
+make aws-composition-check
 make data-contracts-check
 make golden-clean PROFILE=small SEED=42
 ```
@@ -140,8 +151,8 @@ make golden-clean PROFILE=small SEED=42
 4. Implement ClickHouse hydration/readiness/equivalence adapter.
 5. Implement Superset asset/metadata and OpenMetadata DB/search adapters.
 6. Add portal status/deep links and evidence.
-7. Run local/mocked suites; update ADRs with supported/unsupported operations and retained apply
-   blockers.
+7. Compose exact P10/P11 outputs and simulate office/recovery failures; run local/mocked suites and
+   update ADRs with supported/unsupported operations and retained apply blockers.
 
 ## Success Criteria
 

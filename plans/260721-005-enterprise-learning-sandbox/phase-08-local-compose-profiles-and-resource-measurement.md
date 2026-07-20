@@ -32,23 +32,29 @@ on a 16 GiB laptop.
 - Bind local ports to `127.0.0.1`; runner is not browser/public-facing. Base code read-only,
   dedicated workspace/evidence volumes writable.
 - Preflight estimates/actuals and rejects unsupported combinations before startup.
+- Keep the host-run portal/runner/DuckDB core green when Docker is absent; Compose-heavy profiles
+  are optional and cannot redefine the first-journey command.
 - Capture host/Docker/browser/process RSS, CPU, disk, network, readiness, teardown and raw
   environment context. Compose `mem_limit` is not measurement.
 - Credential placeholders stay local and cannot satisfy AWS schema.
 - Support arm64 and amd64 where pinned images/tools permit; fail with remediation otherwise.
+- Treat numeric per-service/profile thresholds as candidates until the product/runtime owner
+  approves repeated, normalized evidence. Define OS/Docker VM/process attribution and
+  deduplication so RSS is not omitted or double-counted.
 
-## Bounded Local Defaults
+## Candidate Local Measurement Bands (Not Yet Pass Gates)
 
-| Profile/journey | Provisional pass gate on 16 GiB machine |
+| Profile/journey | Candidate band on 16 GiB machine; owner approval required |
 |---|---|
 | Core + portal + runner + test browser | Peak observed sandbox/browser RSS ≤4 GiB; ready ≤90s after dependencies installed; generated workspace ≤3 GiB |
 | Learning + one of orchestration/lake/governance | Peak observed sandbox/browser/container RSS ≤10 GiB; host available memory remains ≥4 GiB; swap growth ≤512 MiB; no OOM/restart |
 | Guarded learning + lake + governance ingest | Same ≤10 GiB/≥4 GiB headroom; Airflow confirmed down; ready ≤8 min; automatic lake teardown |
 | Unsupported all-heavy combination | Denied before `docker compose up` |
 
-Cold image/dependency download time is recorded separately and does not count toward service
-readiness, but failures are surfaced. Threshold changes require a measured ADR, not silent doc
-edits.
+These numbers design the measurement experiment; they cannot produce `pass` until repeated,
+normalized evidence is approved by the product/runtime owner. Cold image/dependency download time
+is recorded separately and does not count toward service readiness, but failures are surfaced.
+Approved threshold changes require a measured ADR, not silent doc edits.
 
 ## Architecture
 
@@ -66,7 +72,7 @@ by evidence/portal status.
 | Create | `scripts/profiles/{admit,measure,teardown}.py` | 600-900 LOC | Cross-platform resource evidence |
 | Create | `tests/profiles/**` | 700-1,000 LOC | Matrix/overbudget/health/teardown |
 | Create | `tests/compose/**` | 400-650 LOC | Render/security/mount/port |
-| Modify | `Makefile`, `.env.example` | 80-140 lines | `learn`, checks, unique worktree project |
+| Create/modify | `mk/issue-5/i5-08.mk`, `.env.example` | 80-140 lines | Profile checks/unique worktree project via root include |
 | Modify | README/runbook | 100-180 lines | Supported sequences/remediation |
 
 ## Interface Checklist

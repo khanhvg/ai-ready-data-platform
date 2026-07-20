@@ -40,6 +40,11 @@ IDs may exist in the registry, but no active container/module is implied.
 
 ## Local Views
 
+I5-01 owns, validates and renders `C4-L0`, `C4-L1`, `C4-L2-LOCAL`, `C4-L3-RUNNER`,
+`DEP-LOCAL`, and `DYN-JOURNEY` before I5-05. I5-06 consumes those source IDs read-only and owns
+`DYN-PUBLISH`, AWS/AI expansions after their gates, curriculum links, and later visual review.
+This is an exact write handoff, not concurrent ownership of `workspace.dsl` or the same include.
+
 | ID | C4/view | Audience / concern | Required elements |
 |---|---|---|---|
 | C4-L0 | System landscape/capability | Product owner: business outcome/capabilities and external tools | Learner, instructor/operator evolution, learning platform, retail platform, optional AWS/identity |

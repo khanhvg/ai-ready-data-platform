@@ -35,9 +35,15 @@ portal, runner, curriculum, local/AWS adapters and future AI consume.
 - Do not create AsyncAPI unless an actual channel is introduced.
 - Provide promotion-trust lesson/lab manifests and failure/remediation codes.
 - Preserve backward reading/migration from every released schema version.
-- Consume, without forking, Phase 1
-  `local-aws-data-product-equivalence-v1.yaml`, `iceberg-lifecycle-v1.yaml`, and
-  `openmetadata-asset-identity-v1.yaml`; learning/evidence references record their exact versions.
+- Consume, without forking, Phase 1 `retail-golden-v1.json` and the tracked promotion-trust
+  fixture/manifest; later P7 data-platform contracts are not a first-journey dependency.
+- Publish the normative operation matrix for lesson/progress, workspace, operation status,
+  reset/verify/evidence, tool status/deep links, data query, and health/readiness with logical
+  taxonomy, physical owner, trust, idempotency, and evidence fields.
+- Define one local state-authority/completion transaction and reconciliation protocol; do not let
+  portal SQLite, runner journals, and evidence files each imply independent completion authority.
+- Add machine-readable non-mutating prerequisite checks and ordered hint ladders; hints/solution
+  reveal are evidence events and never set completion.
 
 ## Architecture
 
@@ -45,8 +51,9 @@ Contract files are source-of-truth; generated TypeScript/Python types are build 
 for drift, not independently edited. Portal and runner validate at boundaries. Evidence is
 canonicalized and hashed by a framework-neutral library.
 
-I5-03 uses the same shared-core owner and long-lived worktree as I5-01 under a sequential write
-lease. No separate feature worktree may edit `learning/contracts/**` or `contracts/**` in parallel.
+I5-03 receives a time-bounded sequential shared-core write lease after I5-01 merges. The owner may
+be different, but no concurrent shared-contract writer is allowed and the lease ends at an exact
+contract release SHA.
 
 ## File Inventory
 
@@ -59,7 +66,7 @@ lease. No separate feature worktree may edit `learning/contracts/**` or `contrac
 | Create | `learning/labs/promotion-trust/lab.yaml` and fixtures | 250-400 lines | First lab |
 | Create | `packages/learning-contracts/**` or winning-stack equivalent | 300-500 LOC | Generated/shared validators |
 | Create | `tests/contracts/learning/**`, `tests/contracts/openapi/**` | 600-900 LOC | Valid/invalid/migration/tamper |
-| Modify | `Makefile` | 20-40 lines | Contract targets |
+| Create | `mk/issue-5/i5-03.mk` | 20-40 lines | Contract targets via root include |
 
 ## Interface Checklist
 

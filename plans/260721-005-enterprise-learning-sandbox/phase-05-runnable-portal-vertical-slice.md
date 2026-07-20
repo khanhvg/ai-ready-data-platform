@@ -29,17 +29,22 @@ deterministic reset/verify and evidence.
 - Portal is the selected content-capable modular monolith: lesson rendering, progress/evidence
   state, BFF, status/deep-link adapters and local persistence.
 - Journey covers stakeholder/business question, capability/FR/NFR, C4/dynamic view, raw data,
-  model/lineage, controlled DQ/metric failure, decision/trade-off, reset, verified four-mart data
-  product, evidence and reflection.
+  model/lineage, controlled DQ/metric failure, decision/trade-off, reset, verified four-mart
+  evidence bundle, evidence and reflection. It exposes the four independent grains and never
+  attributes returns/fulfillment/DQ context to a promotion without a common key.
 - No cloud/model credential; bounded local core only. Rill is a deep link/enhancement, not a
   completion dependency.
 - External tool absent/starting/ready/error states use shared vocabulary and useful action.
 - Static/reduced-motion route preserves all facts and controls; progress is verifier-driven.
 - Browser never sees runner secret and cannot request arbitrary command/paths.
 - Local state and evidence survive browser reload; reset does not forge or delete prior evidence.
+- Use the normative portal/runner/evidence authority and crash-safe completion protocol; orphan
+  blobs or portal/runner disagreement never produce completion.
 - `make learn LESSON=promotion-trust` is the one stable future start command. It starts loopback
   portal/private runner/core only, prints URL/evidence/teardown instructions, exits non-zero with
   remediation before mutation on unsafe prerequisites, and requires no optional profile.
+- The command works with Docker unavailable and is paired with exact `make learn-status` and
+  idempotent `make learn-down` lifecycle behavior.
 
 ## Architecture
 
@@ -59,7 +64,7 @@ versioned. Do not introduce a database/service beyond what this slice needs.
 | Create | `apps/learning-portal/src/server/runner-client/**` | 250-400 LOC | Private BFF boundary |
 | Create | `apps/learning-portal/tests/{unit,a11y,e2e,visual}/**` | 1,200-1,800 LOC | Release gates |
 | Create | `apps/learning-portal/public/architecture/**` generated | generated | Rendered views/text |
-| Modify | root package scripts/lock allow-list and `Makefile` | small | Start/test commands |
+| Modify/create | root package scripts/lock allow-list and `mk/issue-5/i5-05.mk` | small | Start/test commands via root include |
 
 ## Interface Checklist
 
@@ -84,6 +89,9 @@ versioned. Do not introduce a database/service beyond what this slice needs.
 | Critical | Complete novice journey | Real runner/evidence; all critical assertions pass |
 | Critical | Forge URL/state/evidence | No completion; typed error/remediation |
 | High | Runner/Rill unavailable | Lesson and architecture remain usable; status/action clear |
+| High | Docker absent | Host portal/runner/DuckDB journey starts; optional Compose tools report absent |
+| High | Required host tool absent | Non-mutating prerequisite probe explains install/retry; no controlled-failure confusion |
+| High | Learner asks for help | Ordered hints reveal progressively, are logged, and never complete/reveal solution early |
 | High | Reload/back/reverse | Committed progress correct; no duplicate operation |
 | High | Keyboard/screen reader/200%/reduced motion | Full completion without hidden control/content |
 | High | Controlled vs environmental failure | Distinct language/state; no blame or false progress |

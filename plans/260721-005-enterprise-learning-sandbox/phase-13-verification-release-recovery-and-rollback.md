@@ -37,19 +37,25 @@ admitted.
 - Run race/fault/crash/replay/reset/publish/evidence tamper and rollback rehearsal.
 - Verify tracked repository unchanged by lab runs; runtime artifacts ignored/deletable.
 - Evidence manifest distinguishes `pass`, `fail`, `not-run-optional` and
-  `blocked-by-TBC`; never convert a blocked AWS/AI gate into pass.
-- Reuse exact merge/tree/discovery evidence and record final implementation/release SHA.
+  `blocked-tbc`; never convert a blocked AWS/AI gate into pass.
+- Reuse exact merge/tree/discovery evidence and distinguish tested-tree, attestation-commit, and
+  externally recorded merge/tag SHAs; a tracked file never claims its own commit SHA.
 - Update user/maintainer docs only for actual shipped behavior/commands/architecture.
 - Release rollback keeps golden spine and user-owned files; no destructive migration.
 - Preservation manifest records `docs/code-standards.md` input/output hashes when present or
   `absent` at both boundaries; release automation never creates, overwrites, deletes or formats it.
+- Every issue inherits a changed-path deny-list for root `release-manifest.json`,
+  `docs/code-standards.md`, discovery history, and unrelated user files. The issue stops on a
+  deny-list change before any generated evidence is accepted.
 
 ## Architecture
 
 The release driver executes named fitness functions and gathers their result manifests, not raw
 unbounded logs. Each evidence item has command, tool version, timestamps, input/output SHAs,
-artifact hashes and retention class. A top-level release manifest validates cross-links and
-finding coverage.
+artifact hashes and retention class. The machine manifest has the unambiguous runtime path
+`.artifacts/evidence/release/<testedTreeSha>/release-evidence.json`; root
+`release-manifest.json` is unrelated reserved ClaudeKit provenance and is never reused. The
+machine manifest validates cross-links and finding coverage.
 
 ```text
 clean detached checkout
@@ -70,8 +76,8 @@ clean detached checkout
 | Create | `contracts/evidence/release-evidence.schema.json` | 180-280 lines | Result/status schema |
 | Create | `tests/release/**` | 700-1,000 LOC | Missing/stale/forged/blocked fixtures |
 | Create | `scripts/release/rollback-rehearsal.sh` or safe wrapper | 150-250 LOC | Additive rollback |
-| Create | `docs/verification/GH-5-<sha>-release-evidence.md` | generated summary | Tracked human index |
-| Modify | `Makefile`, CI workflow if repo adopts CI | 50-100 lines | Release target/artifact retention |
+| Create | `docs/verification/GH-5-<tested-tree-sha>-release-evidence.md` | generated summary | Tracked human index referencing tested parent/tree, not its own commit |
+| Create/modify | `mk/issue-5/i5-13.mk`, CI workflow if repo adopts CI | 50-100 lines | Release target/artifact retention via root include |
 | Modify | README/runbook/system architecture/versions | evidence-based only | Shipped behavior |
 | Preserve | Historical evidence, discovery, user files | 0 | Hash/clean checks |
 
@@ -79,7 +85,7 @@ clean detached checkout
 
 - [ ] `FitnessResult(id, command, status, evidence, blocker, duration, toolVersions)`
 - [ ] release manifest required/optional gate registry
-- [ ] exact SHA/tree/discovery/plan/validation/audit/implementation provenance
+- [ ] exact tested-tree/attestation/merge-tag plus golden/discovery/plan/validation/audit provenance
 - [ ] clean-checkout/worktree lifecycle with explicit safe target
 - [ ] rollback manifest and contract compatibility result
 - [ ] docs claim-to-evidence link checker
@@ -139,7 +145,7 @@ make runner-test runner-security-test runner-race-test
 make portal-test portal-a11y lesson-e2e local-journey-e2e portal-visual-review
 make data-contracts-check data-labs-e2e lake-fault-test metadata-reconcile-test
 make compose-check compose-security-check profile-budget-check recovery-test
-make terraform-check terraform-plan-offline
+make terraform-check terraform-validate-offline terraform-test-mocked
 ```
 
 ## Implementation Steps

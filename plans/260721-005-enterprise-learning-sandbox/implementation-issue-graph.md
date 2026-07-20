@@ -21,24 +21,33 @@ of the epic S3/data-security threat model; it does not imply every issue touches
 also requires the owner-mandated human pre-merge approval. An issue body may not weaken these
 inherited gates.
 
-## Shared-Core Owner
+## Shared-Contract Stewardship
 
-**I5-01 owner is the shared-core owner through the first local release.** Exclusive contracts:
+I5-01 owns the first minimal shared-core release: golden preservation/command, evidence base,
+tracked promotion fixture, six required local view sources, and the root Make include/help
+registry. Shared contracts include:
 
 - `learning/contracts/**`
 - `contracts/openapi/**` and any future `contracts/asyncapi/**`
-- `contracts/data/**`
+- `contracts/data/{retail-golden-v1.json,promotion-trust-v1.yaml,curated-release-manifest.schema.json}`;
+  later data contracts use the I5-07 lease below
 - architecture workspace/manifest schema, required IDs and include interfaces
 - evidence schema/canonicalization/version registry
 - golden baseline command/evidence envelope
 - mappings for generator anomalies, dbt/marts/lineage/Rill metrics, and
   `lake/curated_assets.json`
 
-I5-03 is a sequential write lease held by the same shared-core owner in the same long-lived
-shared-core worktree after I5-01 merges. It is not a second concurrent owner or worktree. Other
-issues consume released versions and must not edit the same contract in parallel. Contract
-changes use additive-first versioning, compatibility tests, a migration note, and a new exact
-contract release SHA before downstream work resumes.
+I5-03 receives a time-bounded sequential lease after I5-01 merges; it may have a different owner
+and worktree, but never overlaps another shared-contract writer. I5-07 later receives a similarly
+serialized lease for equivalence/Iceberg/OpenMetadata/curated-release contracts before I5-11.
+Other issues consume released versions read-only. Each lease uses additive-first versioning,
+compatibility tests, a migration note, and a new exact contract release SHA before downstream
+work resumes. This serialization protects contracts without making one person/worktree the
+first-release bottleneck.
+
+I5-01 is the only normal owner of root `Makefile` changes: it adds help and includes
+`mk/issue-5/*.mk`. Each later issue exclusively owns `mk/issue-5/i5-<nn>.mk`; root edits require a
+new serialized shared-core lease. Parallel P6/P7 never edit the same command file.
 
 ## Dependency Graph
 
@@ -57,8 +66,10 @@ I5-05 + I5-06 + I5-07 + I5-08 ----------------------> I5-13 Local release
 
 I5-01 + I5-06 --> I5-09 AWS decisions --> I5-10 Terraform (no apply)
                                       \--> I5-11 AWS adapters (no apply)
+I5-10 + I5-11 ---------------------------> I5-11 composition gate (no apply)
 
-I5-07 + I5-09 + I5-11 + I5-14(hosted identity, later) --> I5-12 Optional AI
+I5-07 -----------------------------------> I5-12 local read-only AI admission
+I5-09 + I5-10 + I5-11 + I5-14 ----------> I5-12 hosted-agentcore admission
 ```
 
 AWS decision work does not block I5-02 through I5-08. AWS apply remains blocked regardless of
@@ -68,11 +79,11 @@ whether I5-09 through I5-11 merge.
 
 | Wave | Issues | Parallelism | Merge rule |
 |---|---|---|---|
-| 0 | I5-01, I5-02 | Start in parallel with disjoint ownership; I5-02 uses historical/contract fixture until I5-01 emits real golden fixture | I5-02 decision ADR cannot merge before real fixture check from I5-01 |
+| 0 | I5-01, I5-02 | Start in parallel only for I5-02 common tests/unscored `learn-preview`; no provisional fixture measurement or score survives | I5-02 scoring/ADR waits for merged tracked I5-01 fixture manifest and records its SHA/hashes |
 | 1 | I5-03, I5-04, I5-05 | Sequential contract→runner→portal integration; portal-only shell work may start after I5-02, but no product expansion merges before the runner-backed journey | Wave exits only when `make local-journey-e2e` passes the real promotion-trust journey |
 | 2 | I5-06, I5-07 | Parallel only after I5-05 E2E; distinct architecture/curriculum vs data-lab ownership | Shared contract changes routed sequentially through the I5-01 owner |
 | 3 | I5-08, I5-13 local gates | I5-08 measures profiles; I5-13 begins release harness after I5-05 | Local release requires I5-01..I5-08 |
-| AWS | I5-09 then I5-10/I5-11 | I5-10 and I5-11 parallel after decision matrix freezes interfaces | Non-applying only; no false cost/readiness claim |
+| AWS | I5-09 then I5-10/I5-11 | Module and adapter work may parallel after interface freeze; composition is sequential after both exact outputs | Non-applying only; offline/mock evidence cannot claim deployability/readiness |
 | Later | I5-14 then optional I5-12 | Hosted identity before multi-user/AI authorization | Separate approval and worktrees |
 
 The first implementation wave is explicitly optimized for a runnable learning web vertical slice,
@@ -93,7 +104,7 @@ Each bounded issue uses:
 ```text
 feature/issue-5-01-golden-contract
 feature/issue-5-02-web-spike
-feature/issue-5-03-learning-contracts  # sequential reuse of shared-core worktree/owner
+feature/issue-5-03-learning-contracts  # sequential shared-contract lease; owner may differ
 feature/issue-5-04-lab-runner
 feature/issue-5-05-portal-vertical-slice
 ...
@@ -121,8 +132,8 @@ Merge policy:
 
 | Issue | blockedBy | blocks |
 |---|---|---|
-| I5-01 | validation PASS, readiness-audit PASS | I5-03, I5-04, I5-07, I5-09, all refactors |
-| I5-02 | validation PASS; real I5-01 fixture before ADR merge | I5-03, I5-05 |
+| I5-01 | validation PASS, readiness-audit PASS | I5-02 scoring/ADR, I5-03, I5-04, I5-07, I5-09, all refactors |
+| I5-02 | validation PASS for unscored preview; merged tracked I5-01 fixture before scoring/ADR | I5-03, I5-05 |
 | I5-03 | I5-01 merged, I5-02 ADR merged | I5-04, I5-05 |
 | I5-04 | I5-01 and I5-03 merged | I5-05, runner-backed I5-07 |
 | I5-05 | I5-02, I5-03, I5-04 merged | I5-06, I5-07, I5-08, I5-13 |
@@ -130,9 +141,9 @@ Merge policy:
 | I5-07 | I5-01, I5-03, I5-04, I5-05 merged | I5-08, I5-11, I5-12, I5-13 |
 | I5-08 | I5-05 and I5-07 merged | I5-13 |
 | I5-09 | I5-01 and I5-06 merged | I5-10, I5-11; AWS apply remains separately blocked |
-| I5-10 | I5-09 interface release | optional non-applying release evidence only |
-| I5-11 | I5-07 and I5-09 merged; I5-10 outputs optional/read-only | I5-12; AWS readiness claim |
-| I5-12 | I5-07, I5-09, I5-11 and I5-14 when multi-user is claimed | optional AI release only |
+| I5-10 | I5-09 interface release | I5-11 composition; optional non-applying release evidence only |
+| I5-11 | adapter work: I5-07/I5-09; composition: exact I5-10 output plus frozen adapter output | hosted I5-12 profile; AWS readiness claim |
+| I5-12 | local profile: I5-07; hosted profile: I5-09/I5-10/I5-11 composition and I5-14 | admission report only; runtime needs separate human authorization |
 | I5-13 | I5-01..I5-08 merged | local release/owner merge decision |
 | I5-14 | I5-13 and separate hosted-product decision | multi-user I5-12 claim |
 
@@ -140,20 +151,20 @@ Merge policy:
 
 | Owner issue | Exclusive paths | Consumes read-only/shared |
 |---|---|---|
-| I5-01 | `scripts/golden/**`, `contracts/data/**`, base `learning/contracts/**`, evidence core, architecture workspace/manifest schema and required IDs, dependency locks | Current data spine |
-| I5-02 | `spikes/web/**`, scorecard report, ADR-005 proposal | Golden evidence fixture + draft lesson |
-| I5-03 | Sequential shared-core lease for lesson/lab/progress schemas and first manifests; same owner/worktree as I5-01, never concurrent | I5-01 evidence core, I5-02 score |
-| I5-04 | `apps/lab-runner/**`, runner tests, workspace runtime config | Released contracts; existing pipeline entrypoints |
-| I5-05 | Winning `apps/learning-portal/**`, portal tests | Released lesson/OpenAPI/evidence contracts; runner API |
-| I5-06 | `learning/curriculum/**`, Structurizr models/views/rendered outputs, implementation ADR templates | Shared-core architecture IDs/include interfaces; portal renderer |
-| I5-07 | `learning/labs/data-platform/**`, data lab verifiers; narrowly approved pipeline seams | Golden data contracts; runner registry |
-| I5-08 | Compose/profile admission/resource scripts and tests | Portal/runner images; existing profiles |
-| I5-09 | `docs/decisions/aws/**`, cost/state models and tests | Architecture/deployment model |
-| I5-10 | `infra/aws/terraform/**`, Terraform tests/policies | Accepted I5-09 interfaces |
-| I5-11 | `platform/adapters/aws/**`, `platform/images/**`, AWS adapter deployment-descriptor inputs and contract tests; never `infra/aws/terraform/**` | Data contracts + I5-09 state decisions + read-only Terraform output schema |
-| I5-12 | `apps/agent-labs/**`, AI evals/policies after admission | Governed data/identity/evidence interfaces |
-| I5-13 | Release evidence orchestration and tracked runbook/docs | All merged outputs; does not change their contracts |
-| I5-14 | Hosted identity/tenant adapters and authz tests | Local object-shaped contracts |
+| I5-01 | `scripts/golden/**`, `contracts/data/{retail-golden-v1.json,promotion-trust-v1.yaml,curated-release-manifest.schema.json}`, base `learning/contracts/**`, evidence core, six local view sources, dependency locks, root `Makefile` include/help | Current data spine |
+| I5-02 | `spikes/web/**`, `docs/decisions/evidence/adr-0005-web-stack-scorecard.*`, ADR-005 proposal, `mk/issue-5/i5-02.mk` | Tracked golden evidence fixture + draft lesson |
+| I5-03 | Sequential shared-contract lease for lesson/lab/progress schemas, operation matrix and first manifests; `mk/issue-5/i5-03.mk` | I5-01 evidence core, I5-02 score |
+| I5-04 | `apps/lab-runner/**`, runner tests, workspace runtime config, `mk/issue-5/i5-04.mk` | Released contracts; existing pipeline entrypoints |
+| I5-05 | Winning `apps/learning-portal/**`, portal tests, `mk/issue-5/i5-05.mk` | Released lesson/OpenAPI/evidence contracts; runner API |
+| I5-06 | `learning/curriculum/**`, architecture lab, AWS/publish Structurizr expansions, implementation ADR templates, `mk/issue-5/i5-06.mk` | Six I5-01 local views and include interfaces read-only; portal renderer |
+| I5-07 | `learning/labs/data-platform/**`, data lab verifiers, later data-contract lease, narrowly approved pipeline seams, `mk/issue-5/i5-07.mk` | Golden data contracts; runner registry |
+| I5-08 | Compose/profile admission/resource scripts/tests and `mk/issue-5/i5-08.mk` | Portal/runner images; existing profiles |
+| I5-09 | `docs/decisions/aws/**`, cost/state models/tests and `mk/issue-5/i5-09.mk` | Architecture/deployment model |
+| I5-10 | `infra/aws/terraform/**`, Terraform tests/policies and `mk/issue-5/i5-10.mk` | Accepted I5-09 interfaces |
+| I5-11 | `platform/adapters/aws/**`, `platform/images/**`, portal-status descriptors/composition tests and `mk/issue-5/i5-11.mk`; never Terraform or portal source | Data contracts + released portal registry + I5-09 decisions + read-only exact Terraform outputs |
+| I5-12 | AI admission/eval/contracts and `mk/issue-5/i5-12.mk`; no runtime/app/cloud adapter in admission issue | Governed data/identity/evidence interfaces |
+| I5-13 | Release evidence orchestration, tracked runbook/docs and `mk/issue-5/i5-13.mk` | All merged outputs; does not change their contracts |
+| I5-14 | Hosted identity/tenant adapters, authz tests and `mk/issue-5/i5-14.mk` | Local object-shaped contracts |
 
 ## Proposed Follow-up Issues
 
@@ -166,8 +177,9 @@ Merge policy:
   1. Write characterization tests for current generator bytes/anomalies, 18 raw tables,
      dbt warnings/51-model lineage/11 marts, Rill weighted metrics, Airflow graph,
      curated assets and historical evidence parsing.
-  2. Add lock-hash environment setup, workspace path seams, `make golden-clean`, evidence
-     schema/canonicalization, and architecture skeleton.
+  2. Add lock-hash environment setup, only the proven missing Airflow path forwarding,
+     `make golden-clean`, tracked sanitized promotion fixture, evidence schema/canonicalization,
+     root Make include/help, and the six rendered local views.
   3. Re-run current and new contract suites twice from clean generated state.
 - Acceptance:
   - exact main/discovery/reviewed-tree inputs recorded;
@@ -175,6 +187,7 @@ Merge policy:
   - `docs/code-standards.md` hash-preserved if present at issue input, otherwise preservation
     manifest records `absent`; the issue never creates/overwrites/deletes it;
   - future command regenerates ignored fixtures and evidence without pre-existing venv/data;
+  - tracked fixture/manifest crosses worktrees by merged SHA; no ignored artifact is a dependency;
   - preservation/migration mapping and rollback manifest committed.
 - Verify:
 
@@ -189,15 +202,17 @@ git diff --check
 ### I5-02 — Select web stack with one representative lesson
 
 - Labels: `risk:high`, `security:S3`, `tdd`, `frontend`, `accessibility`, `decision-gate`.
-- Depends on: validated plan; may start with I5-01, merge waits for its real evidence fixture.
+- Depends on: validated plan for unscored preview; scoring/ADR waits for the merged tracked I5-01
+  fixture manifest.
 - Phase: 2.
 - Candidates: Astro+React islands, Next.js App Router, React/Vite+typed API.
 - TDD: shared interaction/a11y/E2E test first; implement same lesson in time-boxed spikes; capture
   bundle/start/RSS/JS/a11y evidence; accept ADR-005.
-- Acceptance: all must-pass criteria; weighted score; tie rule; no copied proprietary content;
-  spike directories removable with no contract loss.
-- Verify: `make web-spike-scorecard-check`, candidate unit/a11y/Playwright commands recorded in
-  the scorecard.
+- Acceptance: fixture-labelled preview cannot complete; 14-hour/per-candidate kill rule; all
+  surviving must-passes; weighted score/tie rule; no copied proprietary content; reproducible
+  candidate artifacts retained through I5-05.
+- Verify: `make learn-preview LESSON=promotion-trust`; `make web-spike-scorecard-check`; candidate
+  unit/a11y/Playwright commands recorded in the scorecard.
 
 ### I5-03 — Version lesson, lab, progress and evidence contracts
 
@@ -206,8 +221,9 @@ git diff --check
 - Phase: 3.
 - TDD: failing schema/ref/state/tamper/migration fixtures first; implement JSON Schemas, OpenAPI,
   state machine and evidence canonicalization; add backward-reader tests.
-- Acceptance: complete contract from `lesson-lab-contract.md`; logical API taxonomy; no AsyncAPI
-  without a channel; promotion-trust manifest validates.
+- Acceptance: complete contract from `lesson-lab-contract.md`; operation matrix covers every
+  claimed taxonomy operation; one completion authority/reconciliation protocol; prerequisite
+  probes/hint ladder; no AsyncAPI without a channel; promotion-trust manifest validates.
 - Verify: `make learning-contracts-check api-contracts-check evidence-contracts-check`.
 
 ### I5-04 — Build isolated privileged local runner
@@ -215,10 +231,13 @@ git diff --check
 - Labels: `risk:high`, `security:S3`, `tdd`, `backend`.
 - Depends on: I5-01, I5-03.
 - Phase: 4.
-- TDD: argv/path/env/quota/base-write/race/crash/idempotency negatives first; implement runner;
-  new behavior tests; full data-contract regression.
-- Acceptance: loopback/private transport, no direct browser credential, `shell=false`, typed
-  commands, read-only base, atomic workspace, no Terraform apply command, auditable state.
+- TDD: interpreter/import/startup-hook/argv/path-TOCTOU/env/quota/output/descendant/base-write/
+  browser-request/cross-entrypoint-race/crash/idempotency negatives first; implement runner; full
+  data-contract regression.
+- Acceptance: private transport with Host/Origin/CSRF protections, pinned entrypoints and OS
+  containment, typed commands, shared mutation fencing, all-11 atomic local release pointer,
+  read-only base, no ambient credentials/network or Terraform apply, auditable state; otherwise
+  runner remains disabled.
 - Verify:
 
 ```bash
@@ -235,8 +254,9 @@ make data-contracts-check
 - Phase: 5.
 - TDD: component/state/a11y/real-browser journey tests first; implement portal modular monolith and
   BFF; integrate actual runner/data products; run manual AT/visual review.
-- Acceptance: business question→raw/model/DQ→decision→reset→verified product→evidence; no cloud
-  credential; static/reduced-motion path; external-tool unavailable states.
+- Acceptance: business question→grain-honest four-mart context→decision→reset→verified evidence
+  bundle→evidence; one crash-safe completion authority; Docker unavailable; no cloud credential;
+  static/reduced-motion path; external-tool unavailable states.
 - Verify:
 
 ```bash
@@ -244,6 +264,8 @@ make portal-test portal-a11y
 make lesson-e2e LESSON=promotion-trust
 make local-journey-e2e
 make portal-visual-review
+make learn-status
+make learn-down
 ```
 
 ### I5-06 — Publish architecture curriculum, templates and fitness functions
@@ -252,9 +274,10 @@ make portal-visual-review
 - Depends on: I5-03 and passing, merged I5-05 real journey; no portal-source overlap.
 - Phase: 6.
 - TDD: broken-reference/prerequisite/view/ADR/pattern-without-failure fixtures first.
-- Acceptance: foundation→mid competency graph, templates, minimum useful C4 sources, render/text
-  equivalents, requirement/ADR/test traceability, pattern admission rules.
-- Verify: `make curriculum-check architecture-check architecture-render traceability-check`.
+- Acceptance: foundation→mid graph, templates, read-only preservation of I5-01 local views,
+  expansion renders/text, requirement/ADR/test traceability, pattern admission rules, and one
+  executable architecture failure-reset-verify-evidence lab.
+- Verify: `make curriculum-check architecture-check architecture-render architecture-lab-e2e traceability-check`.
 
 ### I5-07 — Add data-pipeline guided labs without changing golden semantics
 
@@ -264,7 +287,8 @@ make portal-visual-review
 - TDD: current warning/mart/lineage/publish/catalog behavior first; add labs and fail-loud seams;
   regression/equivalence after.
 - Acceptance: labs for deterministic ingest/model/quality, orchestration, metric weighting,
-  Iceberg commit/recovery, OpenMetadata reconciliation; every service/pattern has a failure.
+  eleven-asset atomic curated release, Iceberg commit/recovery, namespace-safe exact OpenMetadata
+  reconciliation; every service/pattern has a failure.
 - Verify: `make data-labs-e2e lake-fault-test metadata-reconcile-test data-contracts-check`.
 
 ### I5-08 — Enforce local profiles and resource budgets
@@ -274,8 +298,8 @@ make portal-visual-review
 - Phase: 8.
 - TDD: invalid profile combinations and measurement schema first; implement admission/telemetry;
   cold/warm profile matrix.
-- Acceptance: core+portal and each admitted heavy profile fit approved thresholds; all-three
-  denied; guarded co-run measured; ports/mounts/credentials local-only; teardown clean.
+- Acceptance: Docker-free core remains green; each admitted heavy profile fits owner-approved,
+  normalized repeated thresholds; all-three denied; guarded co-run measured; teardown clean.
 - Verify: `make compose-check compose-security-check profile-budget-check recovery-test`.
 
 ### I5-09 — Decide AWS state, cost, persistence and readiness
@@ -284,8 +308,9 @@ make portal-visual-review
 - Depends on: I5-01, I5-06. Does not block local issues.
 - Phase: 9.
 - TDD: incomplete state/cost/TBC matrices fail schema tests; cost golden cases first.
-- Acceptance: state authority matrix; ClickHouse alternatives; catalog/metadata/search options;
-  active/off-hours/failure BOM; apply TBCs explicit; no false zero-cost claim.
+- Acceptance: state/key/config authority matrix; ClickHouse/catalog/metadata/search options;
+  topology/plan-reconcilable current-source BOM; enforcing CostGuard; apply TBCs explicit; no
+  false zero-cost/scale-to-zero claim.
 - Verify: `make state-matrix-check cost-model-check aws-decision-check`.
 
 ### I5-10 — Build non-applying Terraform platform modules
@@ -293,34 +318,38 @@ make portal-visual-review
 - Labels: `risk:high`, `security:S3`, `tdd`, `terraform`, `no-apply`.
 - Depends on: I5-09 accepted design interfaces.
 - Phase: 10.
-- TDD: policy/mock tests for network/IAM/state/schedule/wrong-account first; build modules; run
-  static/mock/non-applying plan checks.
-- Acceptance: networking, IAM, state backend contract, ECS EC2 capacity, office workflow,
-  observability/budget/teardown outputs; no default/apply path.
-- Verify: `make terraform-check terraform-plan-offline`; real `make terraform-plan-aws` remains
-  credential and owner gated.
+- TDD: policy/mocked tests for network/IAM/state/schedule/persistence/wrong-account first; build
+  modules; run static/offline/mocked checks.
+- Acceptance: networking, IAM, state backend, every admitted P9 persistence/key/backup row, ECS
+  capacity, office workflow, observability/budget/teardown outputs, and exact saved-plan envelope;
+  no default/apply path and no learner ingress before I5-14.
+- Verify: `make terraform-check terraform-validate-offline terraform-test-mocked`; real
+  `make terraform-plan-aws` remains credential/account/role gated and is not apply authorization.
 
 ### I5-11 — Prove AWS ClickHouse/Superset/OpenMetadata/S3-Iceberg adapters
 
 - Labels: `risk:high`, `security:S3`, `tdd`, `aws`, `data-platform`, `persistence`, `no-apply`.
-- Depends on: I5-07 and I5-09; consumes an I5-10 output schema read-only when present; spikes may
-  run locally/disposable only and never edit Terraform-owned paths.
+- Depends on: adapter work after I5-07/I5-09; composition waits for exact I5-10 and I5-11 outputs;
+  never edits Terraform-owned paths.
 - Phase: 11.
 - TDD: local contract fixtures and incompatibility cases first; adapter lifecycle/equivalence;
   recovery readiness tests.
 - Acceptance: validated catalog choice; ClickHouse role evidence; Superset/OpenMetadata state and
-  restore contract; versioned divergences; no cloud resource created by default.
-- Verify: `make aws-adapters-contract engine-equivalence metadata-contracts-check`; credential
-  gated restore drills later.
+  restore contract; exact descriptor/module office lifecycle composition; versioned divergences;
+  offline mocks not deployability; no cloud resource created by default.
+- Verify: `make aws-adapters-contract engine-equivalence metadata-contracts-check aws-composition-check`;
+  separately authorized validation-environment restore drills later.
 
 ### I5-12 — Optional governed AI admission and learning add-on
 
 - Labels: `risk:high`, `security:S3`, `tdd`, `ai`, `optional`, `cost`.
-- Depends on: I5-07, I5-09, I5-11, hosted identity I5-14 where multi-user ACL is claimed.
+- Depends on: I5-07 for local-single-actor-read-only admission; I5-09/I5-10/I5-11 composition and
+  I5-14 for hosted-agentcore admission.
 - Phase: 12.
 - TDD: ACL/prompt-tool injection/citation/redaction/approval/replay/crash/cost evals first.
-- Acceptance: admission JSON all green; explicit LangGraph/Restate/AgentCore responsibilities;
-  local core unchanged; read-only first use case.
+- Acceptance: profile-specific admission JSON; exact approval digest; one durable workflow/
+  approval/idempotency authority; local core unchanged. Passing admission creates no runtime;
+  implementation needs a separate human-authorized follow-up.
 - Verify: `make ai-admission-check`; optional credential-gated `make ai-evals`.
 
 ### I5-13 — Produce clean-checkout release, recovery and rollback evidence
@@ -330,7 +359,8 @@ make portal-visual-review
 - Phase: 13.
 - TDD: release manifest schema and stale/forged evidence failures first; aggregate checks; run from
   clean checkout twice; review docs/rollback.
-- Acceptance: all gates pass, exact SHAs captured, browser/manual evidence retained, rollback
+- Acceptance: all gates pass, tested-tree/attestation/merge-tag provenance is non-recursive,
+  reserved root manifest/user paths are unchanged, browser/manual evidence retained, rollback
   rehearsed, runtime artifacts ignored, no product contract drift.
 - Verify: `make release-evidence`, `git diff --check`, clean status, plan-defined evidence
   manifest.
@@ -341,6 +371,7 @@ make portal-visual-review
 - Depends on: local release I5-13 and separate product decision.
 - Not required for first local release. Owns IdP/session/tenant/object authorization, per-lab
   workspace quotas, instructor/operator roles, deletion/retention, and cross-user tests.
+- Blocks all learner-reachable AWS ingress and every hosted-agentcore claim.
 - Verify: `make hosted-authz-test hosted-isolation-test`.
 
 ## Per-Issue Acceptance Template
@@ -357,3 +388,5 @@ Every follow-up issue body must include:
 8. STOP/TBC conditions and who may clear them.
 9. Confirmation that product code, cloud apply, merge, and issue-state transitions remain outside
    the issue unless explicitly authorized.
+10. Changed-path deny-list result for root `release-manifest.json`, `docs/code-standards.md`, raw
+    discovery history, ignored runtime fixtures, and contracts owned by another active lease.

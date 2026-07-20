@@ -16,8 +16,8 @@ effort: "L"
 Publish the foundation-to-mid architecture curriculum, reusable templates, minimum useful local
 and AWS C4 sources, ADR/traceability conventions and executable architecture fitness functions.
 Every pattern/view exists only for a stakeholder concern or controlled failure. Expansion starts
-only after the real Phase 5 promotion-trust E2E passes, so the first usable journey remains the
-earliest product outcome.
+only after the merged Phase 5 promotion-trust E2E SHA, so the first accepted runner-backed journey
+remains the earliest accepted product outcome.
 
 ## Context Links
 
@@ -40,6 +40,9 @@ earliest product outcome.
 - Teach DNS/TLS/gateway/LB/subnets/routes/NAT-or-endpoints/SG/service discovery/mTLS where the
   local/AWS deployment concern requires them.
 - Keep technology and numeric claims sourced/versioned.
+- Consume the six I5-01 local views read-only; own curriculum/AWS expansion and `DYN-PUBLISH`.
+- Ship one executable F01→F04→J01/J04/J05 architecture lab with controlled boundary/resilience
+  failure, hints, reset, fitness verification, evidence and reflection; templates are insufficient.
 
 ## Architecture
 
@@ -51,15 +54,16 @@ generated assets, never hand-copied diagrams. Source is authoritative.
 
 | Action | Planned path | Rough size | Test impact |
 |---|---|---:|---|
-| Create/modify | `architecture/structurizr/{workspace.dsl,model/**,views/**}` | 800-1,200 lines | C4 validate/render |
+| Modify under released include seams | `architecture/structurizr/{model/**,views/**}` excluding I5-01 local sources | 600-1,000 lines | Curriculum/AWS expansion and DYN-PUBLISH |
 | Create | `architecture/structurizr/view-manifest.yaml` | 120-200 lines | Concern/source/text coverage |
 | Create | `architecture/rendered/**` | generated | Portal/review artifacts |
 | Create | `learning/curriculum/{competencies,pathways}.yaml` | 300-500 lines | DAG/coverage |
 | Create | `learning/templates/{stakeholder,requirements,c4-view,adr,threat-model,state-cost-recovery,fitness}.yaml` | 500-800 lines | Template validation |
+| Create | `learning/labs/architecture/first-boundary-journey/**` | 500-800 lines | Executable architecture-first lab |
 | Create | `docs/decisions/template.md` and initial implementation ADRs | 150-300 lines | ADR lint |
 | Create | `tests/architecture/**`, `tests/curriculum/**` | 600-900 LOC | Broken IDs/links/views/pattern admission |
 | Create | `scripts/architecture/{check,render}.sh` or platform-neutral wrapper | 150-250 LOC | Pinned tool command |
-| Modify | `Makefile` | 20-40 lines | Fitness targets |
+| Create | `mk/issue-5/i5-06.mk` | 20-40 lines | Fitness targets via root include |
 
 ## Interface Checklist
 
@@ -73,8 +77,8 @@ generated assets, never hand-copied diagrams. Source is authoritative.
 ## Dependency Map
 
 - Depends on released contract/reference IDs.
-- May run in parallel with portal after Phase 3; generated asset integration coordinates with
-  Phase 5.
+- No Phase 6 branch, generated asset, contract write, or merge begins before the merged Phase 5
+  E2E SHA. Read-only notes drafted earlier are not implementation inputs.
 - Feeds data/AWS/AI lessons and release checks.
 
 ## Test Scenario Matrix
@@ -111,17 +115,19 @@ make architecture-check
 make architecture-render
 make traceability-check
 make api-contracts-check
+make architecture-lab-e2e
 ```
 
 ## Implementation Steps
 
 1. Write failing competency/view/template/pattern fitness fixtures.
 2. Encode curriculum graph and reusable architecture/decision templates.
-3. Complete local model, runner component, deployment and first-journey/publish sequences.
+3. Preserve the released I5-01 local views and add the publish/AWS expansions under include seams.
 4. Add AWS model/deployment/office-hours/restore source with TBC labels, not false decisions.
 5. Pin renderer/validator and emit render manifest/text alternatives.
 6. Add portal asset integration and review all diagrams for purpose/readability.
-7. Cross-link requirements, ADRs, phases/issues, tests and evidence.
+7. Build and verify the executable architecture lab; cross-link requirements, ADRs, phases/issues,
+   tests and evidence.
 
 ## Success Criteria
 

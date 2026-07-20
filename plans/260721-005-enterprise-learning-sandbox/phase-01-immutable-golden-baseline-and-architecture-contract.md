@@ -39,9 +39,14 @@ refactor or implementation branch fans out.
   cache and emit schema-valid evidence from two runs.
 - Key environment rebuild to dependency/lock hashes; do not use the current
   `.venv/bin/python3` sentinel alone.
-- Parameterize only the path seams needed for isolated workspaces; characterization tests precede
-  every refactor.
-- Create the initial Structurizr model/view IDs and contract registries. Do not invent services.
+- Reuse the generator `--out`, loader path, and exporter path seams already present. Characterize
+  them as consume-only unless evidence disproves them; add only the missing Airflow forwarding and
+  other proven gaps needed for isolated workspaces.
+- Create and render the minimum Phase 5 Structurizr sources—`C4-L0`, `C4-L1`, `C4-L2-LOCAL`,
+  `C4-L3-RUNNER`, `DEP-LOCAL`, and `DYN-JOURNEY`—with manifest/text alternatives. Do not invent
+  services or defer these portal inputs to Phase 6.
+- Publish a sanitized tracked promotion-trust evidence fixture and handoff manifest; ignored raw
+  workspaces/evidence are not cross-worktree dependencies.
 
 ## Architecture
 
@@ -67,15 +72,15 @@ clean checkout -> lock-hash environment -> two deterministic fixture dirs
 | Create | `scripts/golden/environment-fingerprint.py` | 80-150 LOC | Stable tool/lock/SHA capture |
 | Create | `requirements/locks/core.txt` and lock-hash stamp contract | generated/managed | Reproducibility |
 | Create | `contracts/data/retail-golden-v1.json` | 150-250 lines | Expected schemas/anomalies/marts/metrics |
-| Create | `contracts/data/local-aws-data-product-equivalence-v1.yaml` | 150-250 lines | Engine-neutral result/deviation vectors |
-| Create | `contracts/data/iceberg-lifecycle-v1.yaml` | 120-200 lines | Local/AWS lifecycle/fault behavior |
-| Create | `contracts/data/openmetadata-asset-identity-v1.yaml` | 120-200 lines | Logical/physical/reconciliation identity |
+| Create | `contracts/data/promotion-trust-v1.yaml` | 100-180 lines | Four-mart grains/queries/assertions/limitations/failure IDs |
+| Create | `contracts/data/curated-release-manifest.schema.json` | 150-250 lines | Eleven-mart staged release/current-pointer contract |
 | Create | `learning/contracts/evidence.schema.json` | 150-250 lines | Evidence validation |
+| Create | `tests/fixtures/learning/promotion-trust/{evidence-v1.json,manifest.json}` | bounded/sanitized | Tracked cross-worktree fixture and source/artifact hashes |
 | Create | `tests/golden/**`, `tests/contracts/**` | 500-800 LOC | Characterization, clean run, tamper |
-| Create | `architecture/structurizr/workspace.dsl`, `architecture/structurizr/includes/**` | 250-400 lines | Model/view ID fitness |
-| Modify | `Makefile` | 40-80 lines | Golden/contract/architecture targets |
-| Modify | `data-generator/generate.py`, `ingestion/load_raw.py` | narrow seams | Workspace output/input without semantic drift |
-| Modify | `serving/export_marts_snapshot.py`, `orchestration/airflow/callables/pipeline.py` | narrow seams | Explicit workspace paths/clean env |
+| Create | `architecture/structurizr/workspace.dsl`, local includes/manifest/text outputs | 350-550 lines | Six minimum local views validate/render for P5 |
+| Modify/create | root `Makefile` include/help and `mk/issue-5/i5-01.mk` | 40-100 lines | One shared registry plus golden/contract/architecture targets |
+| Consume | `data-generator/generate.py`, `ingestion/load_raw.py`, `serving/export_marts_snapshot.py` | no change unless characterization fails | Existing explicit path seams |
+| Modify | `orchestration/airflow/callables/pipeline.py` | narrow seam | Forward explicit workspace paths/clean env |
 | Modify | `.gitignore` | <30 lines | Keep runtime evidence ignored; allow tracked schemas/locks |
 | Preserve | `release-manifest.json`, discovery, issue #3 plan/evidence, `docs/code-standards.md` when present | 0 | Assert byte hash or explicit absent state unchanged |
 
@@ -83,7 +88,9 @@ clean checkout -> lock-hash environment -> two deterministic fixture dirs
 
 - [ ] `GoldenRun(profile, seed, workspace, input_sha) -> EvidenceRecord`
 - [ ] data-contract IDs for every raw table/anomaly/mart/metric/lineage invariant
-- [ ] local/AWS equivalence, Iceberg lifecycle and OpenMetadata identity contract versions
+- [ ] promotion-trust query/assertion manifest exposes each mart grain and forbids unsupported attribution
+- [ ] curated release manifest requires all 11 schema/count/checksum/version entries and one current pointer
+- [ ] tracked promotion-trust fixture manifest with producer commit/contract/artifact hashes
 - [ ] canonical evidence serialization and SHA-256 verifier
 - [ ] path/config objects rather than implicit repository-root writes
 - [ ] make targets are non-interactive, credential-free and discoverable
@@ -138,7 +145,7 @@ make golden-clean PROFILE=small SEED=42
 make data-contracts-check
 make evidence-contracts-check
 make architecture-check
-docker compose config --quiet
+make architecture-render
 git diff --check
 ```
 
@@ -147,9 +154,10 @@ git diff --check
 1. Capture immutable SHAs/tree equality and generate the preservation inventory.
 2. Write failing characterization and mutation fixtures around every protected contract.
 3. Select and commit a reproducible Python lock workflow; key venv recreation to lock hashes.
-4. Add isolated path seams one at a time; run characterization after each.
+4. Verify existing CLI path seams and add only the missing Airflow forwarding; run
+   characterization after the bounded change.
 5. Implement the clean golden orchestrator and evidence schema/canonicalization.
-6. Add Make targets and architecture skeleton with required local/AWS view IDs.
+6. Add the root Make include/help registry and render the six minimum local Phase 5 views.
 7. Run two clean bounded executions and retain machine-readable evidence in CI/artifact storage.
 8. Record migration/rollback mapping and shared-core ownership.
 
@@ -157,7 +165,7 @@ git diff --check
 
 - [ ] Exact SHA/tree/discovery provenance is machine-checked.
 - [ ] `make golden-clean` passes twice without pre-existing ignored assets or credentials.
-- [ ] Evidence validates, detects tampering, and contains commands/tools/resources/artifact hashes.
+- [ ] Evidence validates, detects hash/integrity mismatch, and contains commands/tools/resources/artifact hashes without claiming same-host authorship.
 - [ ] Current generator/dbt/mart/lineage/Rill/Airflow/Iceberg/OpenMetadata contracts are protected.
 - [ ] Workspace seams do not change default behavior.
 - [ ] `release-manifest.json`, discovery artifacts, issue #3 plan/evidence,

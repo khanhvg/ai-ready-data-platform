@@ -28,7 +28,7 @@ The labs expose real failure modes without changing golden semantics.
 
 - Preserve generator bytes/anomaly meanings, raw/dbt/mart/lineage/metric contracts and existing
   expert commands.
-- Reuse exact Phase 1 versions of `retail-golden-v1.json`,
+- Reuse the exact Phase 1 `retail-golden-v1.json`. Under a sequential shared-core lease, release
   `local-aws-data-product-equivalence-v1.yaml`, `iceberg-lifecycle-v1.yaml`, and
   `openmetadata-asset-identity-v1.yaml`; local results are the first executable oracle for P11.
 - Each lab has starter, controlled failure, reset, verify, solution, evidence and reflection.
@@ -41,6 +41,11 @@ The labs expose real failure modes without changing golden semantics.
   6. OpenMetadata logical/physical assets plus rename/delete reconciliation.
 - Rill remains local BI default; OpenMetadata and MinIO/Lakekeeper remain optional profiles.
 - Fail loud on partial publish or stale catalog; never silently “fix” controlled anomalies.
+- Reuse the Phase 1 schema and Phase 4 local all-11 staged `CuratedReleaseManifest` behavior;
+  extend the same release ID/current-pointer invariant to Iceberg, serving and governance
+  consumers.
+- Namespace OpenMetadata managed objects by workspace/release, preserve unmanaged entities, and
+  reconcile exact FQN/owner/tag/lineage sets rather than counts.
 - Use bounded small fixtures by default; `demo-large` is an explicit scale lab.
 
 ## Architecture
@@ -58,17 +63,18 @@ workflow remains compatible until migration evidence supports switching defaults
 | Create | `scripts/labs/data-platform/**` | 800-1,200 LOC | Typed verifiers/fault injectors |
 | Create | `tests/labs/data-platform/**` | 1,200-1,800 LOC | E2E/reset/evidence |
 | Create | `tests/data/{metrics,iceberg,metadata,airflow}/**` | 1,000-1,500 LOC | Contract/fault/race |
+| Create | `contracts/data/{local-aws-data-product-equivalence-v1,iceberg-lifecycle-v1,openmetadata-asset-identity-v1}.yaml` | 390-650 lines | Sequential shared-core contract release before AWS adapters |
 | Modify | `lake/publish_iceberg.py` | bounded | Staged/fail-loud/recovery seam |
 | Modify | `governance/openmetadata/ingestion/**`, `verify_catalog.py` | bounded | Reconciliation/reset |
 | Modify | `orchestration/airflow/**`, `docker-compose.yml` | bounded | Read-only base/scoped output |
-| Modify | `Makefile` and docs | 50-100 lines | Lab/fault targets |
+| Create/modify | `mk/issue-5/i5-07.mk` and docs | 50-100 lines | Lab/fault targets via root include |
 | Preserve | dbt SQL/YAML, Rill metrics, curated list unless approved contract change | 0 | Golden regression |
 
 ## Interface Checklist
 
 - [ ] `DataProductContract` and engine-neutral assertion IDs
-- [ ] `PublishAttempt` with staged/current pointer and idempotency key
-- [ ] `CatalogReconciler` or per-lab reset manifest
+- [ ] `CuratedReleaseManifest`/`PublishAttempt` with all 11 assets, staged/current pointer and idempotency key
+- [ ] `CatalogReconciler` with namespace, managed marker, adoption/tombstone policy and exact identity/edge set
 - [ ] Airflow callable workspace config, no repository RW need
 - [ ] lab fault injector scoped to workspace/profile
 - [ ] reset/recovery oracle for every lab
@@ -86,6 +92,8 @@ workflow remains compatible until migration evidence supports switching defaults
 | Critical | Generator/refactor semantic drift | Golden fails on bytes/anomalies/schema/lineage |
 | Critical | Reset during publish | Serialize or recover previous/current snapshot; no false success |
 | Critical | Object write succeeds, catalog commit times out | Idempotent resume/rollback and explicit not-ready |
+| Critical | Failure after any of 11 projection writes | No consumer sees a mixed release; prior release stays current |
+| Critical | Direct Make/Airflow mutation overlaps runner | Shared namespace fence serializes or refuses the mutation |
 | High | Metric aggregate reintroduces unweighted average | Query/metric contract fails |
 | High | dbt expected warning treated as error/ignored | Warning oracle/remediation distinguishes it |
 | High | Model rename/delete leaves stale metadata | Reconcile/reset test proves expected catalog |

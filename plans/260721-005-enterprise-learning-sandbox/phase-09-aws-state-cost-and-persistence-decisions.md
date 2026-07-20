@@ -35,11 +35,16 @@ does not apply infrastructure.
   lifecycle/retention/deletion, logging/monitoring and version restore behavior.
 - State matrix owns authority, backup, restore/rebuild, zero behavior, residual cost and operator
   for every stateful component.
+- Include KMS keys, application encryption/signing keys, secret versions, configuration schemas,
+  deletion protection, rotation/escrow, and restore ordering—not only data stores.
 - Compare ClickHouse disposable projection, fenced EBS and supported object/managed alternatives.
 - Compare Glue Iceberg REST with viable catalog fallback; compare managed vs self-hosted
   Superset/OpenMetadata DB/search persistence.
 - Price active office hours, compute-zero/off-hours, one classroom, failure/retry storm, retained
   backup/log growth and forgotten teardown. Never call EC2-zero “zero cost.”
+- Reconcile each priced/excluded line with accepted topology, later real Terraform plan JSON, and
+  post-teardown residual inventory. Record region, offer/SKU/dimension, unit/currency, source/API,
+  effective/as-of/retrieval dates, freshness TTL, and approval-cycle refresh.
 - Compare network egress options (NAT, endpoints, controlled public egress) against security/cost.
 - Decide whether AWS orchestration has a learning/runtime need; no local/AWS symmetry decision.
 
@@ -52,6 +57,8 @@ numeric pass/fail or marketing claims while TBC remains.
 Required state rows: S3/Iceberg objects and metadata, catalog pointers, ClickHouse, Superset
 metadata/cache/jobs, OpenMetadata DB/search, portal identity/progress/evidence, orchestration,
 Terraform state, and optional AI workflow state.
+Keys, secret/config versions and the durable `CostGuard` admission/stop/reconciliation state are
+required rows too.
 
 ## File Inventory
 
@@ -64,13 +71,14 @@ Terraform state, and optional AI workflow state.
 | Create | `scripts/aws/check-decisions.py`, `scripts/aws/cost-model.py` | 500-800 LOC | Deterministic model |
 | Create | `tests/aws/decisions/**`, `tests/aws/cost/**` | 700-1,000 LOC | Incomplete/TBC/golden cases |
 | Modify | AWS Structurizr view annotations | 80-150 lines | State/cost/readiness boundaries |
-| Modify | `Makefile` | 20-40 lines | Decision/cost targets |
+| Create | `mk/issue-5/i5-09.mk` | 20-40 lines | Decision/cost targets via root include |
 
 ## Interface Checklist
 
-- [ ] `StateOwner(authority, persistence, backup, recovery, rto, rpo, zeroBehavior, cost, owner)`
-- [ ] `CostScenario(region, hours, learners, retention, failureMode, lineItems, sourceDate)`
+- [ ] `StateOwner(authority, persistence, backup, recovery, rto, rpo, zeroBehavior, cost, owner, keyAndConfigDependencies)`
+- [ ] `CostScenario(region, hours, learners, retention, failureMode, lineItems, source, sku, unit, effectiveDate, retrievedAt, freshnessTtl)`
 - [ ] `ApplyGate(id, value|TBC, owner, blocks, evidence)`
+- [ ] `CostGuard(state, trigger, action, authority, breakGlass, reconciliation)`
 - [ ] ClickHouse/catalog/metadata option scorecards
 - [ ] office open/close/readiness/drain state machine
 - [ ] next-run/override/timezone semantics
@@ -91,6 +99,8 @@ Terraform state, and optional AI workflow state.
 | Critical | Backup succeeds but restore oracle fails | Not ready; scale-down/migration blocked |
 | High | EC2/tasks zero with residual RDS/search/LB/NAT/log cost | Residual inventory remains visible |
 | High | Retry storm/forgotten teardown | Quota/alarm/kill-switch scenario exceeds and flags |
+| High | Alarm fires without enforceable stop owner/action | CostGuard check fails; no kill-switch claim |
+| High | Topology/plan resource has no priced line or exclusion | Cost/reconciliation check fails |
 | High | Timezone/holiday/active session | Next run/drain/override behavior explicit |
 | High | Disposable ClickHouse misses readiness/equivalence | Hypothesis rejected |
 

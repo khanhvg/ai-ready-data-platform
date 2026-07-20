@@ -14,8 +14,9 @@ effort: "M"
 ## Overview
 
 Time-box three serious web stacks against the same promotion-trust lesson and real golden evidence.
-Select the winner by an auditable scorecard before the portal implementation. This is a decision
-spike, not a passive site or production portal.
+Select the winner by an auditable scorecard before the portal implementation. Retain an early
+fixture-labelled, non-completing learner preview for novice/accessibility feedback; it is not the
+runner-backed product acceptance.
 
 ## Context Links
 
@@ -32,13 +33,16 @@ spike, not a passive site or production portal.
 - Exercise the full reversible teaching sequence with progressive disclosure:
   question→controlled failure→diagnose→reset→verify→evidence→reflection; back/reload must preserve
   only committed progress and reset must be idempotent.
-- Use Phase 1's real golden evidence fixture before accepting the decision; no fake business data.
+- Before Phase 1 merges, use only an explicitly provisional contract fixture for the unscored
+  preview. Use Phase 1's tracked sanitized fixture/manifest for every candidate score and ADR;
+  no fake business data or provisional score survives the handoff barrier.
 - Test no-JS/static value, hydration, keyboard, screen-reader semantics, 200% zoom, reduced
   motion, reverse navigation and status/evidence interaction. No completion control may require
   scroll position, hover, animation, or client JavaScript without a semantic/static equivalent.
 - Capture dependency/build mode, cold/warm start, RSS, browser JS payload, accessibility, test
   ergonomics, API/BFF fit, hosted evolution and rollback complexity.
-- Complete within two implementation days. Eliminate must-pass failures before weighted scoring.
+- Complete within the 14-hour allocation and per-candidate kill/retention rules in the normative
+  execution contract. Eliminate must-pass failures before weighted scoring.
 - Copy no proprietary prose, assets, layout, style or source from the inspiration site; retain a
   project-owned source/non-copy inventory in the scorecard evidence.
 
@@ -59,9 +63,10 @@ tests teaching interaction and BFF shape; the real runner arrives in Phase 4.
 | Create | `spikes/web/tests/representative-lesson.spec.ts` | 200-300 LOC | Identical Playwright assertions |
 | Create | `spikes/web/measure/**` | 150-250 LOC | Bundle/start/RSS/JS JSON |
 | Create | `docs/decisions/0005-web-stack.md` | 100-180 lines | Accepted ADR |
-| Create | `plans/260721-005-enterprise-learning-sandbox/reports/web-stack-scorecard.md` | 150-250 lines | Human decision evidence |
-| Create | `plans/260721-005-enterprise-learning-sandbox/reports/web-stack-scorecard.json` | 100-180 lines | Machine must-gates/scores/artifact hashes |
+| Create | `docs/decisions/evidence/adr-0005-web-stack-scorecard.md` | 150-250 lines | Tracked human decision evidence |
+| Create | `docs/decisions/evidence/adr-0005-web-stack-scorecard.json` | 100-180 lines | Tracked machine must-gates/scores/artifact hashes |
 | Modify | `.gitignore` / selected lock allow-list | small | Reproducible dependencies |
+| Create | `mk/issue-5/i5-02.mk` | small | Preview/scorecard targets via I5-01 root include |
 
 ## Interface Checklist
 
@@ -75,8 +80,9 @@ tests teaching interaction and BFF shape; the real runner arrives in Phase 4.
 
 ## Dependency Map
 
-- Can start with Phase 1 in a separate worktree/path.
-- Final ADR depends on Phase 1 real evidence fixture and draft lesson contract.
+- Can start the unscored preview/common tests with Phase 1 in a separate worktree/path.
+- Candidate scoring and final ADR depend on Phase 1's merged tracked fixture/manifest and draft
+  lesson contract; the report pins the I5-01 merge SHA and fixture hashes.
 - Blocks Phase 5. Feeds authoring decisions in Phase 3.
 
 ## Test Scenario Matrix
@@ -108,6 +114,7 @@ the selected candidate again after its lockfile is recreated from a clean instal
 
 ```bash
 make web-spike-scorecard-check
+make learn-preview LESSON=promotion-trust
 # Candidate-specific clean install, unit, a11y and Playwright commands are recorded in the report.
 ```
 
@@ -119,15 +126,18 @@ complete weighted score. That leaves ADR-005 `Proposed` and blocks Phase 5.
 
 1. Freeze representative lesson view model and real Phase 1 evidence fixture.
 2. Write common browser/a11y/measurement tests.
-3. Build the smallest complete candidate in each stack; stop at the time box.
+3. Build the smallest complete candidate in each stack; apply the per-candidate kill rules.
 4. Record pass/fail must-gates and normalized measurements.
 5. Score using ADR-005 weights and tie rule.
 6. Commit the winning ADR, chosen build/runtime mode and lock strategy.
-7. Delete or archive non-winning executable spikes; retain scorecard, tests and content contract.
+7. Retain all executable candidate sources/locks/artifacts until I5-05 merges; exclude losers from
+   product builds and clean them up only under the reproducible retention rule.
 
 ## Success Criteria
 
-- [ ] All three serious candidates evaluated with identical content/data/tests.
+- [ ] The early preview is runnable, fixture-labelled and incapable of completion mutation.
+- [ ] All non-eliminated candidates evaluated with identical real content/data/tests; eliminated
+  candidates record the exact kill gate and elapsed budget.
 - [ ] Winner passes every must-pass and has reproducible measurements.
 - [ ] ADR-005 records decision, consequences, rejected alternatives and rollback.
 - [ ] Phase 5 can begin without reopening framework choice.
