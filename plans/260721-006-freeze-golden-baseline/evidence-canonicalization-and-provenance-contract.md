@@ -123,6 +123,12 @@ Projection creation is pure: same raw semantic facts plus schemas produce identi
 
 Every planned public command emits a `fitness-result-v1` envelope under `.artifacts/evidence/<fitness-id>/<run-id>/`, even on failure after run-root allocation. Required fields include command ID/owner, schema version, requested profile/seed, status (`pass` or `fail` for I5-01 required gates), typed failure code, bounded remediation, tested tree, tool/lock hashes, started/finished/duration, raw/projection/envelope locators and artifact hashes. A missing tool/evidence/schema is `fail`; no I5-01 required gate uses `skip` or `not-run-optional`.
 
+Every locator is normalized relative to the evidence-family root, contains no `..`, symlink,
+absolute/private component or credential-bearing URL, and resolves through the descriptor-bound
+allocator. `.artifacts` is not ignored by the repository: publication checks require zero tracked
+or staged `.artifacts/**` paths, and cleanup may remove only marker-verified cook-created mutable
+state after sanitized evidence retention.
+
 If failure happens before safe root allocation, the command emits a minimal schema-valid result to a newly allocated evidence root or, if even that is unsafe, writes a bounded typed error to stderr and exits non-zero without claiming evidence. Evidence write uses temp-in-destination, fsync, atomic rename and directory fsync. Failure evidence is preserved; `golden-clean` never deletes it.
 
 ## Migration and rollback tests

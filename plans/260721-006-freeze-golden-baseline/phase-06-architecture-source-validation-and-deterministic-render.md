@@ -3,7 +3,7 @@ phase: 6
 title: "Architecture source validation and deterministic render"
 status: pending
 effort: "2.0-3.0 implementation days"
-dependsOn: [1, 2, 3, 4]
+dependsOn: [1, 2, 3, 4, 5]
 ---
 
 <!-- Updated: Initial validation made npm-lock reproduction/staging and SVG semantic preservation explicit. -->
@@ -20,7 +20,9 @@ Create exactly six minimum-useful LikeC4 source views and deterministically deri
 - C4 abstraction/scope/required elements/relations, audience/concern/owner/legend/traceability enforced by project fitness wrapper.
 - Semantic `.txt` generated from computed JSON, not SVG; dynamic step order preserved.
 - SVG normalization/accessibility/security and JCS render input freshness.
-- Two renders plus second empty-cache install yield byte equality on primary platform; Linux tuples are compatibility tests and may not be claimed until passing.
+- Two renders plus a second empty-cache install yield byte equality on the only current support
+  lane: native Darwin arm64. Linux tuple hashes are future compatibility inputs only; this cook
+  neither claims nor requires Linux execution.
 - I5-06 additions-only lease cannot mutate the original six.
 - The 119-record npm lock is reproduced twice at SHA-256 `7a56d803…`; because `package-lock.json` is ignored and `.gitignore` is protected, only its exact path may be force-added after verification.
 
@@ -38,7 +40,8 @@ Create exactly six minimum-useful LikeC4 source views and deterministically deri
 ## Dependency map
 
 - Uses phase 3 private staging/process core and phase 4 JCS/envelope.
-- Can proceed alongside phase 5 after phases 1–4.
+- Executes after phase 5 in the one-writer cook, even though it has no semantic dependency on the
+  promotion fixture candidate.
 - Blocks phase 7 public targets and phase 8 completion.
 - I5-06 gets a later serialized additions-only lease after merged I5-05.
 
@@ -92,6 +95,15 @@ Keep source semantics, C4 fitness, text generation, SVG render, normalization an
 - Six sources, six SVGs, six semantic text alternatives and one render manifest are complete/fresh.
 - Required missing tools are failures; no unsupported capability claim.
 - F-07 and architecture portion of SC-09 pass.
+
+## Failure Evidence, Rollback and STOP
+
+Retain the exact tool fingerprint, computed JSON/DOT, fitness mutation, staged-set inventory and
+semantic SVG/text diff. Rollback restores source/manifest/package-lock/rendered outputs as one
+reviewed coherent set; never install a partial render set. STOP on an unsupported host, missing or
+wrong tool/license/integrity, non-six view set, invalid C4 fitness, semantic-erasing normalization,
+stale/nondeterministic output, partial atomic publication or any Java/Structurizr/browser/native/
+global/remote-runtime fallback.
 
 ## Success criteria
 

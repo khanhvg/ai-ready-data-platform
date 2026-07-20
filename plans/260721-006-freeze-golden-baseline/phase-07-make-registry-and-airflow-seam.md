@@ -49,6 +49,10 @@ Current 15 targets to preserve exactly: `venv`, `up`, `down`, `seed`, `load`, `h
 
 - Registry has exactly 54 unique commands/owners; later entries are `future-owner` declarations and do not create recipes.
 - `i5-01.mk` owns exactly seven recipes. Root seam includes fragments/discovers help but does not absorb recipes from later issues.
+- The complete root diff is the ordered fragment declaration and optional include
+  `ISSUE_5_MAKE_FRAGMENTS := $(sort $(wildcard mk/issue-5/*.mk))` followed by
+  `-include $(ISSUE_5_MAKE_FRAGMENTS)` at the end of the root file. `help` is implemented in
+  `i5-01.mk` from the registry; no other root variable, prerequisite or recipe changes.
 - `make help` is non-interactive, reports current/future availability honestly and emits registry evidence.
 - Existing 15 target semantics/variables remain compatible; `clean` is never invoked by golden targets.
 - Airflow default/optional graph and all callers remain stable. The only allowed seam is optional default-preserving forwarding of generator `--out`, loader `--raw-dir/--duckdb-path`, health warehouse path, caller-supplied private `DBT_PROFILES_DIR`, and export `--duckdb-path/--export-dir`; no DAG or `_run` containment redesign.
@@ -84,7 +88,12 @@ Current 15 targets to preserve exactly: `venv`, `up`, `down`, `seed`, `load`, `h
 1. Parse the master list into expected exact owner-command pairs and add count/duplicate/collision mutations.
 2. Snapshot current 15 Make recipes/prerequisites/help behavior and test ignored sentinel preservation.
 3. Test I5-01 target evidence/non-zero missing-tool behavior; fail because registry/fragment are absent.
-4. Run explicit-path Airflow callable characterization for raw directory, warehouse file, generated private dbt profile, dbt target/log and export directory. The immutable input is expected to fail this isolation because the callables omit/override those paths; retain the exact failure as the proof for the line-scoped exception.
+4. Run explicit-path Airflow callable characterization for raw directory, warehouse file,
+   generated private dbt profile, dbt target/log and export directory. Include import-without-
+   optional-dependencies, AST/DAG parse, default-call behavior, explicit-call behavior and exact
+   six/eight task-ID/edge regression. The immutable input is expected to fail only the explicit
+   path isolation because the callables omit/override those paths; retain that exact failure as
+   the proof for the line-scoped exception.
 
 ## Implementation
 
@@ -97,7 +106,11 @@ Keep registry parsing/help formatting out of root Make recipes where possible; r
 ## Tests After
 
 - Run help/registry and all target missing-tool/failure evidence tests.
-- Compare current 15 target database/recipes and exercise safe read-only representatives.
+- Compare current 15 target database/prerequisites/recipes/variables and exercise safe read-only
+  representatives; do not start Docker or invoke the existing broad `clean`.
+- Import and parse the Airflow seam, exercise every existing default caller, then exercise the
+  explicit private raw/warehouse/profile/target/log/export parameters. The DAG source and its
+  six/eight graph remain byte-identical.
 - Inject duplicate target/fragment/owner mutations privately.
 - Verify root Make plus `i5-01.mk` rollback restores exact input behavior.
 
@@ -107,6 +120,15 @@ Keep registry parsing/help formatting out of root Make recipes where possible; r
 - Current 15 targets preserved; no broad clean or later recipe.
 - Airflow remains unchanged or the exact seam is proven and caller-compatible.
 - F-08/F-12 and SC-10 pass.
+
+## Failure Evidence, Rollback and STOP
+
+Retain the Make database/help/recipe comparison, registry mutation, exact root diff and Airflow
+import/parse/default/explicit-path/graph result. Rollback removes the issue fragment and reverses
+the exact two-line root seam plus only the proven forwarding diff as one reviewed inverse. STOP
+if any current 15 target changes, the 54/14 registry or exact seven differs, a later fragment gains
+a recipe, missing fragments break help, root clean broadens, the DAG changes, or Airflow defaults/
+callers/path isolation regress.
 
 ## Success criteria
 

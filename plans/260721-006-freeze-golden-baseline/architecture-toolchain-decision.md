@@ -51,7 +51,9 @@ Exact Node 22.22.3 official tar.xz SHA-256 values from the [signed release archi
 | linux-arm64 | `1c4a9933a5e45bc88f54f70b5f91232c127ec49f1a5989d23fb85824c7adf9b7` |
 | linux-x64 | `2e5d13569282d016861fae7c8f935e741693c269101a5bebcf761a5376d1f99f` |
 
-The initial golden render claim is darwin-arm64. Linux tuples are required compatibility runs; byte equality is an implementation gate, not a completed planner claim.
+The initial and only I5-01 render support claim is native darwin-arm64. Linux tuple hashes are
+recorded for a future separately authorized compatibility lane; Linux execution and byte equality
+are not required for this cook and must not be claimed from Darwin evidence.
 
 The package/lock candidate is reproduced only in a new private directory containing the exact package document, with Node 22.22.3/npm 10.9.8 and `npm install --package-lock-only --ignore-scripts --no-audit --no-fund` while that directory is the process CWD. Two candidates must have 119 package records and byte SHA-256 `7a56d803a47454023f40a04bcdb3b037f4ab2c2a05321292ad3b7f7225c2118c`; any registry re-resolution difference is `ARCH_TOOL_LOCK_MISMATCH`, never an implicit upgrade. The checked-in lock is then the only `npm ci` authority.
 
@@ -120,6 +122,15 @@ The public registry owns only `make architecture-check` and `make architecture-r
 ```bash
 npm ci --prefix "$RUN_ROOT/toolchain" --cache "$RUN_ROOT/npm-cache" --ignore-scripts --no-audit --no-fund
 ```
+
+The bootstrap does not trust an ambient version string alone. It downloads only the official
+`node-v22.22.3-darwin-arm64.tar.xz` during an explicit bounded bootstrap step, verifies SHA-256
+`753c1629e168cc788ccc46ab61e0b35549fce08c07f82fcd3bb0d41f7fb01e7b` before safe extraction,
+rejects archive path/link escapes, and uses that private Node/npm pair. It then runs two
+empty-cache `npm ci` installs from the checked-in lock. After those downloads, validation,
+computed-model export, DOT generation, text generation and SVG rendering run with network denied.
+Architecture bootstrap/render time and disk evidence are separate from the 300-second core
+`golden-clean` guard.
 
 The wrapper must never invoke `npx`, an unpinned resolver, a global tool, lifecycle scripts, Java, a browser, or native Graphviz. It copies the exact package/renderer files into the private root, then executes:
 

@@ -87,6 +87,14 @@ Consolidate descriptor/identity verification into one audited helper. Keep destr
 - Failed roots/evidence are retained with sanitized relative locator.
 - F-02/F-12 and SC-02/SC-03/SC-04/SC-06/SC-11 pass.
 
+## Failure Evidence, Rollback and STOP
+
+Retain only schema-valid, sanitized, relative failure evidence plus the marker-verified failed
+issue-owned root. Rollback restores the prior atomic pointer/complete evidence state and removes
+only a cook-created root after descriptor, marker, nonce, device/inode and purpose checks; never
+touch foreign state. STOP on any lexical/realpath/parent/link/race/permission escape, pre-existing
+destination acceptance, unsanitized output, bound overrun, child leak or refusal-cleanup failure.
+
 ## Success criteria
 
 - [ ] Workspace and evidence writes are scoped, private and race-defended.

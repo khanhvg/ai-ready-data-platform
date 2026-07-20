@@ -83,6 +83,14 @@ Separate lock parsing, platform preflight, process execution and evidence projec
 - 1.12 comparator remains contextual migration evidence, not selected baseline.
 - F-06, SC-04 and SC-06 are closed by retained evidence.
 
+## Failure Evidence, Rollback and STOP
+
+Retain the rejected lock/platform case, exact command/exit status, bounded bootstrap output and
+both environment inventories. Rollback restores the last coherent lock/input/metadata set and
+uses a new empty private root; never reuse or mutate a failed venv/cache. STOP on any wrong
+40/840-line or 8/56-distribution count, fingerprint/version/platform drift, sdist/resolver/index
+fallback, failed `pip check`/import/full run, hidden network, timeout or live descendant.
+
 ## Success criteria
 
 - [ ] Complete wheel hashes and compiler identity are tracked.

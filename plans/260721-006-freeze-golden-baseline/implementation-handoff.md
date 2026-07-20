@@ -6,6 +6,23 @@ Do not implement from the discovery SHA or original planner commit. Independent 
 
 At implementation start, prove local HEAD, tracking ref and remote branch identity all equal that externally recorded `IMPLEMENTATION_INPUT_SHA`; prove ancestry contains planner artifact `cec9f6b02cb3bf9f2aa7e2cf26af32692008aacd`, discovery `7a65da010abf0e3730731b6d744b532156c48fdc`, integration `f9a87d0ebdb72c014a6f8c6eaae865dad4d2188c` and master readiness `e440c5855732d5d8f5d634e3cc1359c010cc5ed3`. A mismatch, active shared lease or dirty tree is `BASE_AUTHORITY_MISMATCH` and STOP.
 
+The only future implementation branch is `feature/issue-6-golden-baseline-contracts`; the only
+future product worktree is
+`{workspace-parent}/ai-ready-data-platform-issue-6-implementation`, where
+`{workspace-parent}` is resolved as the parent directory of the primary repository. The exact
+implementation input is the containing readiness-audit commit attested in issue #6 after
+publication. Before creation, fetch and prove both the local/remote branch and exact worktree path
+are absent. Create them once from that full SHA, push the unchanged branch with upstream tracking,
+fetch, and require local HEAD = upstream = live remote = input before the first write. A
+pre-existing branch/path, divergence or active writer is a STOP; never reuse, delete, reset,
+rebase, merge, force-push or destructively clean around it.
+
+One implementation actor executes all eight phases sequentially. No parallel implementation
+writer, second product worktree, phase-5/6 fan-out or shared-contract lease overlap is allowed.
+If integration or authority changes, stop for a new validated/readiness input rather than merging
+or rebasing during this lease. [audit/cook-scope.md](./audit/cook-scope.md) is the executable task
+and RED/evidence contract.
+
 ## Exact owned paths
 
 The implementation allow-list is:
@@ -96,7 +113,9 @@ I5-01 must not change `lake/publish_iceberg.py`; implement runner containment; c
 5. Implement phase 5 data/promotion/curated-release schemas and readers; generate semantic mutations privately. Do not publish the tracked fixture yet.
 6. Implement phase 6 LikeC4 source/manifest/tool lock and render wrapper; render/normalize/compare all six atomically.
 7. Implement phase 7 machine registry, issue fragment and reversible root include/help; activate the narrow Airflow seam only if its characterization test is still failing.
-8. Phase 8: commit C1; from clean archived C1 run the two-run 600-second oracle; rehearse rollback; generate/scan authorized fixture; commit C2; publish external attestation. Do not merge.
+8. Phase 8: commit C1; from the single read-only C1 implementation worktree run the sequential
+   two-run 600-second oracle in disjoint, fresh private state roots; rehearse rollback;
+   generate/scan the authorized fixture; commit C2; publish external attestation. Do not merge.
 
 Within every phase the order is: **Tests Before → smallest implementation → Refactor with tests green → Tests After → Regression Gate → evidence finalization**. Never weaken an anchor or mutation to make a result pass.
 

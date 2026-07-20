@@ -57,9 +57,20 @@ Details and probe evidence are normative in [dependency-lock-decision.md](./depe
 
 ## Phase dependency graph
 
-`1 → 2 → 3 → 4 → 5`; phases 5 and 6 may proceed in parallel only after phases 1–4 establish the shared evidence rules; `5 + 6 → 7 → 8`. Phase 8 is the only fixture publication phase. No tracked fixture may be generated from an uncommitted or dirty tree.
+The implementation cook is deliberately single-writer and sequential:
+`1 (tests-first definitions) → 2 (locked execution environment) → 1 (dynamic
+characterization close) → 3 → 4 → 5 → 6 → 7 → 8`. Phase 2 may provide only the
+pinned environment needed to execute phase 1's already-written dynamic tests; no phase 3 behavior
+may begin until both phase 1 and phase 2 gates are green. Phase 5 and phase 6 are logically
+independent after phase 4 but execute in that order in the one authorized worktree. Phase 8 is the
+only fixture publication phase. No tracked fixture may be generated from an uncommitted or dirty
+tree.
 
 External dependency: issue #7 remains read-only and unscored until issue #6 is remotely merged and the four required path digests are externally attested. This is not a plan-directory dependency because no local issue #7 implementation artifact is modified here.
+
+The exact future implementation lease, RED IDs, commands, protected hashes and STOP/rollback
+rules are frozen by [audit/cook-scope.md](./audit/cook-scope.md). That audit scope is stricter than
+earlier parallelization or generic integration-branch guidance.
 
 ## Planned public command contract
 

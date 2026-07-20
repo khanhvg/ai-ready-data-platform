@@ -22,6 +22,11 @@ Mutable state and retained evidence use disjoint repository-relative roots:
 .artifacts/evidence/golden/<run-id>/
 ```
 
+Other public fitness commands use the same allocator under the exact allow-listed family root
+`.artifacts/evidence/<fitness-id>/<run-id>/`; caller-supplied fitness IDs, paths and run IDs are
+not accepted. `.artifacts` is visible/unignored at the immutable input. It is always transient or
+locally retained evidence and must never appear in the Git index.
+
 The runner generates a collision-resistant run ID; normal public targets do not accept an arbitrary path or run ID. Test-only injection is behind an explicit test interface and never shipped as a Make parameter. Parent and run directories are mode `0700` subject to a checked restrictive umask.
 
 Allocation procedure:
@@ -34,6 +39,12 @@ Allocation procedure:
 6. Perform child operations relative to retained directory descriptors. Reject symlinks, hardlink count greater than one for mutable regular files, FIFOs/devices/sockets and pre-existing foreign entries.
 
 If the host filesystem cannot supply the required no-follow, same-filesystem atomic-rename and identity checks, fail `WORKSPACE_FS_UNSUPPORTED`; never downgrade quietly.
+
+The current support tuple is native Darwin arm64 with POSIX private modes. Every created parent,
+run directory and file is verified after creation (`0700` directories, `0600` mutable/evidence
+files, restrictive umask). Linux and Windows are unclaimed; a non-Darwin host fails the platform
+preflight before allocation or network. A future platform lane must define equivalent private
+permission/no-follow/atomic semantics and pass the same attack suite.
 
 ## TOCTOU, write and publication rules
 
@@ -67,6 +78,8 @@ Each step starts in its own process group/session with explicit CWD, environment
 
 - 2 MiB stdout and 2 MiB stderr per step;
 - 16 MiB combined retained output per run;
+- 2 GiB maximum mutable bytes for one golden run, 2 GiB for one architecture bootstrap/stage and
+  256 MiB retained evidence per run; preflight requires 6 GiB free on the containing volume;
 - step deadline from [implementation-handoff.md](./implementation-handoff.md);
 - timeout: send TERM to the process group, wait 5 seconds, send KILL, wait/reap up to 5 seconds;
 - detect/reap descendants and fail if any child remains.
@@ -86,6 +99,10 @@ Cleanup:
 5. Remove the run directory only after a complete owned traversal; fsync the parent.
 
 Successful runs may remove their private mutable workspace after evidence finalization. Failed workspaces are preserved by default for diagnosis and referenced only by a sanitized relative locator. A separate future manual cleanup mode may remove them only with the same owner proof; it is not a broad root clean.
+
+The two formal runs execute sequentially so their mutable roots are never intentionally active at
+the same time. Disk-limit or free-space failure emits bounded evidence and stops; it does not
+delete an earlier run, user state or foreign `.artifacts` content to make room.
 
 ## Required negative tests
 

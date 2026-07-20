@@ -39,12 +39,15 @@ Write read-only characterization and negative tests before any golden producer o
 | Create | `tests/golden/test-airflow-curated-characterization.py` | DAG, asset and identity inventory |
 | Create | `tests/golden/test-historical-evidence-reader.py` | contextual evidence parser contract |
 | Create | `tests/contracts/test-semantic-mutations.py` | itemized drift mutations |
+| Create | `scripts/golden/tdd-red-capture.py` | dependency-free bounded/sanitized RED-result recorder only |
 | Preserve/read | current generator/dbt/Rill/Airflow/lake/governance/docs inputs | no product edits in this phase |
 
 ## Dependency map
 
 - Input: immutable repository and discovery anchors.
-- Blocks phases 2–8; every later schema/producer must satisfy these tests.
+- Its tests-first definitions block phase 2 behavior. Phase 2 then provides the exact pinned
+  environment needed to execute the dynamic current anchors; phase 1 and phase 2 must both close
+  before phase 3 begins.
 - The Airflow file remains read-only; this phase only determines whether its existing callable path seam is insufficient.
 
 ## Test scenario matrix
@@ -75,6 +78,12 @@ Write read-only characterization and negative tests before any golden producer o
 4. Add private-copy mutations for every matrix row; verify coarse current checks would miss at least one mutation while the new assertion fails.
 5. Record failing assertion IDs and immutable input SHA in phase evidence; do not edit expected values to match a changed run.
 
+The first RED capture is dependency-free and may inspect only repository bytes/static contracts
+plus expected absent future artifacts. It must not resolve packages, generate bulk data, create a
+warehouse, render architecture, or write a tracked contract. Dynamic generator/dbt/mart anchors
+run immediately after phase 2 installs the reviewed lock in a private root and before any phase 3
+behavior.
+
 ## Implementation
 
 No product behavior. Implement only reusable read-only test helpers in evidence-core paths: deterministic inventory walkers, exact byte hashes, SQL/YAML semantic readers and historical-context parser fixtures constructed in private temp roots. Helpers reject duplicate identities and absolute paths.
@@ -85,7 +94,8 @@ Deduplicate test-only normalization helpers only after all anchor tests are gree
 
 ## Tests After
 
-- Re-run all current anchors twice against separate `git archive` extracts.
+- Re-run all current anchors twice from the same read-only C1 source tree with disjoint,
+  freshly allocated private state roots; neither run may reuse a venv, cache or generated data.
 - Run every semantic mutation and require the expected typed assertion.
 - Verify working tree product/protected paths are unchanged.
 
@@ -95,6 +105,14 @@ Deduplicate test-only normalization helpers only after all anchor tests are gree
 - No test relies only on total rows/models or nonzero reads.
 - Source hash, test inventory and historical-context claims remain distinguishable.
 - F-01, F-10, SC-07 and SC-09 have failing-before/pass-after evidence.
+
+## Failure Evidence, Rollback and STOP
+
+Retain the exact RED IDs, command/exit status, bounded diagnostic and protected-state pre/post
+inventory. Rollback is a reviewed inverse of test-only/helper changes; no product/config/data byte
+is available to delete or regenerate. STOP on an unexpected current-anchor failure, missing named
+RED, protected/unrelated drift, or any request to generate bulk data/contracts before the phase-2
+locked environment exists.
 
 ## Success criteria
 

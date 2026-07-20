@@ -87,6 +87,14 @@ Keep parser, schema validator, canonicalizer, projection builder and verifier as
 - No recursive digest/commit identity exists.
 - F-01/F-09/F-10 and SC-07/SC-08/SC-15 pass.
 
+## Failure Evidence, Rollback and STOP
+
+Retain the named parser/schema/JCS/drift/migration mutation, raw bytes, expected typed error and
+independent canonical-byte comparison. Rollback atomically restores the prior coherent
+schema/registry/reader/writer set while keeping v1 readable and all raw evidence immutable. STOP
+on accepted invalid I-JSON, canonical-byte disagreement, raw/projection/envelope conflation,
+undeclared drift, build/docs overwrite, migration cycle/loss or recursive/authenticity claim.
+
 ## Success criteria
 
 - [ ] JSON Schema/JCS behavior is fully deterministic and mutation-tested.

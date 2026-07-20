@@ -95,6 +95,15 @@ Share stable ID/set/hash validators through the evidence core, but keep release 
 - F-03/F-04/F-05 and SC-05/SC-12/SC-13 pass.
 - Phase 8 publication remains blocked until clean C1 two-run evidence.
 
+## Failure Evidence, Rollback and STOP
+
+Retain the exact release/pointer/grain/fixture mutation and private candidate scan; do not publish
+the candidate. Rollback discards only the private candidate and atomically restores the prior
+coherent contract/reader set or conceptual previous complete pointer. STOP on a set other than
+the exact 11 assets/current pointer, mixed generation, any result other than 89 safe aggregate
+rows and `insufficient-evidence`, cross-grain/causal/raw-ID/secret/private-URL/score/ADR content,
+publisher behavior or an unauthorized fixture path.
+
 ## Success criteria
 
 - [ ] All three named contracts are exact and mutation-complete.
