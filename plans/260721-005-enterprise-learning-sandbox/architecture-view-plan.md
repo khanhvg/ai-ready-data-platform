@@ -70,10 +70,14 @@ TBC values appear explicitly in annotations:
 
 - region default `ap-southeast-1`;
 - schedule default weekdays 08:00-18:00 `Asia/Ho_Chi_Minh`;
-- budget, retention, cold-start SLO and production RTO/RPO `TBC — blocks aws-apply`;
+- monthly budget, retention by data class, cold-start/readiness SLO, production RTO/RPO,
+  account/environment and named apply approver `TBC — blocks aws-apply`;
 - managed/self-hosted metadata/search and ClickHouse final role remain decision links.
 
 Do not label the AWS deployment “scale to zero” without an adjacent residual-state/cost note.
+DEP-AWS must also show the S3/Terraform-state boundary: public-access block, TLS-only, SSE-KMS,
+versioning/lockfile, least-privilege role/prefix, retention/lifecycle/restore, account/region/plan
+SHA and the human security/apply gates. A diagram never implies those controls are deployed.
 
 ## Optional AI Views
 

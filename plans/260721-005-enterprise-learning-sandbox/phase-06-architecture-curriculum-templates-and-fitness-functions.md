@@ -3,17 +3,21 @@ phase: 6
 title: "Architecture Curriculum Templates and Fitness Functions"
 status: pending
 priority: P1
-dependencies: [3]
+dependencies: [3, 5]
 effort: "L"
 ---
 
 # Phase 6: Architecture Curriculum Templates and Fitness Functions
 
+<!-- Updated: Validation Session 1 - placed curriculum expansion after the runnable journey. -->
+
 ## Overview
 
 Publish the foundation-to-mid architecture curriculum, reusable templates, minimum useful local
 and AWS C4 sources, ADR/traceability conventions and executable architecture fitness functions.
-Every pattern/view exists only for a stakeholder concern or controlled failure.
+Every pattern/view exists only for a stakeholder concern or controlled failure. Expansion starts
+only after the real Phase 5 promotion-trust E2E passes, so the first usable journey remains the
+earliest product outcome.
 
 ## Context Links
 
@@ -45,7 +49,7 @@ generated assets, never hand-copied diagrams. Source is authoritative.
 
 ## File Inventory
 
-| Action | Likely path | Rough size | Test impact |
+| Action | Planned path | Rough size | Test impact |
 |---|---|---:|---|
 | Create/modify | `architecture/structurizr/{workspace.dsl,model/**,views/**}` | 800-1,200 lines | C4 validate/render |
 | Create | `architecture/structurizr/view-manifest.yaml` | 120-200 lines | Concern/source/text coverage |

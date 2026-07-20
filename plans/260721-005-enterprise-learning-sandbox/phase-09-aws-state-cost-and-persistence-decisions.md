@@ -9,6 +9,8 @@ effort: "L"
 
 # Phase 9: AWS State Cost and Persistence Decisions
 
+<!-- Updated: Validation Session 1 - made apply owners and S3/state security gates explicit. -->
+
 ## Overview
 
 Produce owner-ready AWS state, cost, persistence, networking-egress and office-hours decision
@@ -28,6 +30,9 @@ does not apply infrastructure.
   `Asia/Ho_Chi_Minh`.
 - Explicit TBC apply gates: monthly total/residual ceiling, retention by data class, exact
   cold-start/readiness SLO, production RTO/RPO, account/environment layout and apply approver.
+- S3/backend decision rows require public-access block, bucket-owner enforced ownership,
+  TLS-only, SSE-KMS, versioning/lockfile, least-privilege prefixes/actions, no static credentials,
+  lifecycle/retention/deletion, logging/monitoring and version restore behavior.
 - State matrix owns authority, backup, restore/rebuild, zero behavior, residual cost and operator
   for every stateful component.
 - Compare ClickHouse disposable projection, fenced EBS and supported object/managed alternatives.
@@ -50,7 +55,7 @@ Terraform state, and optional AI workflow state.
 
 ## File Inventory
 
-| Action | Likely path | Rough size | Test impact |
+| Action | Planned path | Rough size | Test impact |
 |---|---|---:|---|
 | Create | `docs/decisions/aws/{state-ownership,clickhouse-role,iceberg-catalog,metadata-persistence,office-hours,network-egress}.md` | 800-1,200 lines | ADR completeness |
 | Create | `infra/aws/decisions/state-matrix.yaml` | 200-300 lines | Schema/owner/gate |
@@ -119,7 +124,9 @@ make architecture-check
 3. Model ClickHouse, catalog, metadata/search and network options.
 4. Define office open/readiness and close/drain/checkpoint workflows.
 5. Produce active/off-hours/failure/retention sensitivity tables.
-6. Present TBC values to product/FinOps/operations owners; record decisions or retain blockers.
+6. Present numeric TBCs to Product/FinOps/operations, S3/IAM controls to Security, and the exact
+   account/environment/plan-SHA gate to the named apply approver; record decisions or retain
+   blockers.
 7. Export accepted interfaces/defaults to Phase 10/11 without authorizing apply.
 
 ## Success Criteria

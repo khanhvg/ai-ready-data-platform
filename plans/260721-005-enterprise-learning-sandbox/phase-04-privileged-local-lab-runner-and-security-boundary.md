@@ -9,6 +9,8 @@ effort: "L"
 
 # Phase 4: Privileged Local Lab Runner and Security Boundary
 
+<!-- Updated: Validation Session 1 - classified all file destinations as planned artifacts. -->
+
 ## Overview
 
 Build the isolated local runner that executes only typed, allow-listed retail lab operations in a
@@ -51,7 +53,7 @@ domain/command/workspace code must not depend on HTTP.
 
 ## File Inventory
 
-| Action | Likely path | Rough size | Test impact |
+| Action | Planned path | Rough size | Test impact |
 |---|---|---:|---|
 | Create | `apps/lab-runner/pyproject.toml`, locked deps | small | Reproducible runner |
 | Create | `apps/lab-runner/src/lab_runner/{domain,policy,commands,workspace,state,evidence}.py` | 1,200-1,800 LOC | Core |

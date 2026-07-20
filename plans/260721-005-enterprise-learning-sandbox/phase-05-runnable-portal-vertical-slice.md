@@ -9,6 +9,8 @@ effort: "L"
 
 # Phase 5: Runnable Portal Vertical Slice
 
+<!-- Updated: Validation Session 1 - defined the first usable command and expansion gate. -->
+
 ## Overview
 
 Deliver the first runnable product: one accessible, credential-free promotion-trust learning
@@ -35,6 +37,9 @@ deterministic reset/verify and evidence.
 - Static/reduced-motion route preserves all facts and controls; progress is verifier-driven.
 - Browser never sees runner secret and cannot request arbitrary command/paths.
 - Local state and evidence survive browser reload; reset does not forge or delete prior evidence.
+- `make learn LESSON=promotion-trust` is the one stable future start command. It starts loopback
+  portal/private runner/core only, prints URL/evidence/teardown instructions, exits non-zero with
+  remediation before mutation on unsafe prerequisites, and requires no optional profile.
 
 ## Architecture
 
@@ -45,7 +50,7 @@ versioned. Do not introduce a database/service beyond what this slice needs.
 
 ## File Inventory
 
-| Action | Likely path | Rough size | Test impact |
+| Action | Planned path | Rough size | Test impact |
 |---|---|---:|---|
 | Create | `apps/learning-portal/**` in winning stack | 2,000-3,500 LOC | Portal/BFF |
 | Create | `apps/learning-portal/src/features/lessons/**` | 600-900 LOC | Narrative/views |
@@ -124,7 +129,8 @@ make runner-security-test
 
 ## Success Criteria
 
-- [ ] One clean local command starts portal/runner and one complete journey works.
+- [ ] `make learn LESSON=promotion-trust` starts portal/runner and one complete journey works;
+  `make local-journey-e2e` proves it from a clean workspace.
 - [ ] Completion requires real verification and valid evidence.
 - [ ] No AWS/model credential or optional heavy service is required.
 - [ ] Full journey passes keyboard/static/reduced-motion route and manual accessibility review.

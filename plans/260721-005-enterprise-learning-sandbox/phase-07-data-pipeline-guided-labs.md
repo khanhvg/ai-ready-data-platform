@@ -3,11 +3,13 @@ phase: 7
 title: "Data Pipeline Guided Labs"
 status: pending
 priority: P1
-dependencies: [1, 3, 4]
+dependencies: [1, 3, 4, 5]
 effort: "L"
 ---
 
 # Phase 7: Data Pipeline Guided Labs
+
+<!-- Updated: Validation Session 1 - placed lab expansion after the runnable journey and pinned shared contracts. -->
 
 ## Overview
 
@@ -26,6 +28,9 @@ The labs expose real failure modes without changing golden semantics.
 
 - Preserve generator bytes/anomaly meanings, raw/dbt/mart/lineage/metric contracts and existing
   expert commands.
+- Reuse exact Phase 1 versions of `retail-golden-v1.json`,
+  `local-aws-data-product-equivalence-v1.yaml`, `iceberg-lifecycle-v1.yaml`, and
+  `openmetadata-asset-identity-v1.yaml`; local results are the first executable oracle for P11.
 - Each lab has starter, controlled failure, reset, verify, solution, evidence and reflection.
 - Initial labs:
   1. deterministic grain/anomaly/manifest;
@@ -47,7 +52,7 @@ workflow remains compatible until migration evidence supports switching defaults
 
 ## File Inventory
 
-| Action | Likely path | Rough size | Test impact |
+| Action | Planned path | Rough size | Test impact |
 |---|---|---:|---|
 | Create | `learning/labs/data-platform/{determinism,dbt-quality,metric-contract,airflow-recovery,iceberg-commit,metadata-reconcile}/**` | 1,500-2,500 lines | Six labs |
 | Create | `scripts/labs/data-platform/**` | 800-1,200 LOC | Typed verifiers/fault injectors |
@@ -70,7 +75,7 @@ workflow remains compatible until migration evidence supports switching defaults
 
 ## Dependency Map
 
-- Requires golden contracts, lab/evidence schema and runner.
+- Requires golden contracts, lab/evidence schema, runner, and the passing Phase 5 real journey.
 - May run alongside Phase 6 with exclusive content/path ownership.
 - Feeds Phase 8 resource profiles and Phase 11 cross-engine/AWS adapters.
 

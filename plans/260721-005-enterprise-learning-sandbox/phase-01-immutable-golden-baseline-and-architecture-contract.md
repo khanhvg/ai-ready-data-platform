@@ -9,6 +9,8 @@ effort: "L"
 
 # Phase 1: Immutable Golden Baseline and Architecture Contract
 
+<!-- Updated: Validation Session 1 - made preservation and local/AWS shared contracts exact. -->
+
 ## Overview
 
 Freeze the shipped issue #3 behavior at exact main SHA `3cd3d41…`, create a credential-free
@@ -30,6 +32,9 @@ refactor or implementation branch fans out.
 - Preserve 18 CSV schemas, deterministic bytes/checksums, anomaly meanings, dbt warning oracle,
   51-model lineage, 11 mart schemas, curated-list membership, weighted Rill metrics, Airflow task
   graph, logical/physical OpenMetadata identities, and unrelated files.
+- Hash and preserve `docs/code-standards.md` byte-for-byte if it exists at the implementation input
+  SHA; if absent, record `absent`. Never create, overwrite or delete it in this epic without a
+  separate owner decision.
 - Add `make golden-clean PROFILE=small SEED=42`; it must work with no prior venv, data, volume or
   cache and emit schema-valid evidence from two runs.
 - Key environment rebuild to dependency/lock hashes; do not use the current
@@ -56,12 +61,15 @@ clean checkout -> lock-hash environment -> two deterministic fixture dirs
 
 ## File Inventory
 
-| Action | Likely path | Rough size | Test impact |
+| Action | Planned path | Rough size | Test impact |
 |---|---|---:|---|
 | Create | `scripts/golden/run-golden-baseline.py` | 300-450 LOC | Orchestrates bounded clean run/evidence |
 | Create | `scripts/golden/environment-fingerprint.py` | 80-150 LOC | Stable tool/lock/SHA capture |
 | Create | `requirements/locks/core.txt` and lock-hash stamp contract | generated/managed | Reproducibility |
 | Create | `contracts/data/retail-golden-v1.json` | 150-250 lines | Expected schemas/anomalies/marts/metrics |
+| Create | `contracts/data/local-aws-data-product-equivalence-v1.yaml` | 150-250 lines | Engine-neutral result/deviation vectors |
+| Create | `contracts/data/iceberg-lifecycle-v1.yaml` | 120-200 lines | Local/AWS lifecycle/fault behavior |
+| Create | `contracts/data/openmetadata-asset-identity-v1.yaml` | 120-200 lines | Logical/physical/reconciliation identity |
 | Create | `learning/contracts/evidence.schema.json` | 150-250 lines | Evidence validation |
 | Create | `tests/golden/**`, `tests/contracts/**` | 500-800 LOC | Characterization, clean run, tamper |
 | Create | `architecture/structurizr/workspace.dsl`, `architecture/structurizr/includes/**` | 250-400 lines | Model/view ID fitness |
@@ -69,12 +77,13 @@ clean checkout -> lock-hash environment -> two deterministic fixture dirs
 | Modify | `data-generator/generate.py`, `ingestion/load_raw.py` | narrow seams | Workspace output/input without semantic drift |
 | Modify | `serving/export_marts_snapshot.py`, `orchestration/airflow/callables/pipeline.py` | narrow seams | Explicit workspace paths/clean env |
 | Modify | `.gitignore` | <30 lines | Keep runtime evidence ignored; allow tracked schemas/locks |
-| Preserve | `release-manifest.json`, discovery, issue #3 plan/evidence | 0 | Assert unchanged |
+| Preserve | `release-manifest.json`, discovery, issue #3 plan/evidence, `docs/code-standards.md` when present | 0 | Assert byte hash or explicit absent state unchanged |
 
 ## Interface Checklist
 
 - [ ] `GoldenRun(profile, seed, workspace, input_sha) -> EvidenceRecord`
 - [ ] data-contract IDs for every raw table/anomaly/mart/metric/lineage invariant
+- [ ] local/AWS equivalence, Iceberg lifecycle and OpenMetadata identity contract versions
 - [ ] canonical evidence serialization and SHA-256 verifier
 - [ ] path/config objects rather than implicit repository-root writes
 - [ ] make targets are non-interactive, credential-free and discoverable
@@ -151,7 +160,8 @@ git diff --check
 - [ ] Evidence validates, detects tampering, and contains commands/tools/resources/artifact hashes.
 - [ ] Current generator/dbt/mart/lineage/Rill/Airflow/Iceberg/OpenMetadata contracts are protected.
 - [ ] Workspace seams do not change default behavior.
-- [ ] `release-manifest.json`, discovery artifacts, issue #3 plan/evidence and user files are
+- [ ] `release-manifest.json`, discovery artifacts, issue #3 plan/evidence,
+  `docs/code-standards.md` state and user files are
   unchanged.
 - [ ] Rollback to exact main removes only new tracked seams and generated state.
 

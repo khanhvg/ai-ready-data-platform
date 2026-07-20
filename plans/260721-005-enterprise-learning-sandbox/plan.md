@@ -35,9 +35,12 @@ existing `mart_promotion_effectiveness`, `mart_fulfillment_performance`,
 `mart_returns_analysis`, and `mart_data_quality` products.
 
 AWS is a later, non-applying track: configurable `ap-southeast-1`, weekdays 08:00-18:00
-`Asia/Ho_Chi_Minh`, ECS on EC2, ClickHouse, Superset, OpenMetadata, and S3/Iceberg. Budget,
-retention, cold-start SLO, and production RTO/RPO remain TBC and block every AWS apply. AI,
-LangGraph, Restate, and AgentCore are admission-gated after the local and governed-data waves.
+`Asia/Ho_Chi_Minh`, ECS on EC2, ClickHouse, Superset, OpenMetadata, and S3/Iceberg. Monthly
+budget, retention by data class, cold-start/readiness SLO, production RTO/RPO,
+account/environment, and the named apply approver remain TBC and block every AWS apply and any
+unsupported cost/readiness claim. They do not block credential-free local planning or the local
+release. AI, LangGraph, Restate, and AgentCore are admission-gated after the local and
+governed-data waves.
 
 ## Phases
 
@@ -80,7 +83,7 @@ LangGraph, Restate, and AgentCore are admission-gated after the local and govern
 | Local identity | Single-user localhost; hosted multi-user is an explicit evolution | Same-user race/security tests still mandatory |
 | AWS ClickHouse | Disposable serving projection rebuilt from S3/Iceberg | Rebuild/readiness/equivalence evidence and owner approval |
 | AWS catalog | Glue Iceberg REST is the leading candidate | Client/auth/lifecycle/cost compatibility evidence |
-| AWS apply | Not authorized | Budget + retention + cold-start + RTO/RPO + state/trust approvals |
+| AWS apply | Not authorized | Monthly budget + retention + cold-start/readiness SLO + production RTO/RPO + account/environment + named apply approver + state/S3/IAM/security approvals |
 | AI | Deferred optional add-on | All admission checks in Phase 12 |
 
 ## Implementation Waves
@@ -94,6 +97,31 @@ LangGraph, Restate, and AgentCore are admission-gated after the local and govern
 4. **Optional AI:** Phase 12 only after admission.
 5. **Release evidence:** Phase 13 runs clean-checkout, browser, recovery, policy, and rollback
    gates.
+
+Phases 1-5 are the only first-wave product path. Phase 5 is the earliest usable product outcome;
+Phases 6-8 cannot start product/content expansion until its real end-to-end journey passes. AWS
+and optional AI stay off the local critical path.
+
+## Planned Artifact and Command Resolution Contract
+
+- Paths that exist at the immutable planner input were verified against
+  `8ec96f92245c679d019ac3648c5c2d77a49f0429`. Paths marked `Create` are stable planned
+  destinations owned by the named follow-up issue; they are not claims that files already exist.
+- A path that depends on the Phase 2 stack decision is written as a bounded owning root plus an
+  explicit ADR gate. ADR-005 must record the final exact path and command before I5-05 may start;
+  dependent issues copy that value rather than choosing an “equivalent” silently.
+- Every planned `make` command must be added to tracked `Makefile` help, run non-interactively,
+  emit a schema-valid result beneath `.artifacts/evidence/<fitness-id>/`, and exit non-zero with a
+  typed failure/remediation message. A missing optional dependency is `not-run-optional` only
+  where the release registry declares it optional; otherwise it fails.
+- `make learn LESSON=promotion-trust` is the stable future local start command owned by I5-05.
+  It must start only the loopback portal/private runner/core dependencies, print the portal URL
+  and evidence root, refuse unsafe/dirty prerequisites without mutating progress, and support a
+  documented teardown. `make local-journey-e2e` is its automated acceptance path.
+- Existing and planned contracts use the exact files in each phase inventory. If a compatibility
+  spike rejects a planned vendor/API, that phase records the rejection in its ADR, updates the
+  stable wrapper contract, and blocks dependants; it does not invent a replacement API during
+  implementation.
 
 ## Master Acceptance
 
@@ -109,8 +137,12 @@ LangGraph, Restate, and AgentCore are admission-gated after the local and govern
   services.
 - Resource, cost, security, accessibility, recovery, Terraform, data, browser, and optional AI
   fitness functions have named commands and retained evidence.
-- No destructive rewrite, Terraform apply, cloud resource creation, validation, audit, or
-  implementation occurs in this planning phase.
+- The planner session performed no destructive rewrite, Terraform apply, cloud resource creation,
+  validation, audit, or implementation. This independent validation changes planning artifacts
+  only; readiness audit and implementation remain separate phases.
+- The user-owned `docs/code-standards.md` is never created, overwritten, deleted, or normalized by
+  this epic without a separate owner decision. If present at an implementation input SHA it is
+  hashed and preserved; if absent, the preservation manifest records `absent`.
 
 ## Companion Artifacts
 
@@ -120,3 +152,33 @@ LangGraph, Restate, and AgentCore are admission-gated after the local and govern
 - [Lesson/lab contract](./lesson-lab-contract.md)
 - [Architecture decisions](./architecture-decisions.md)
 - [Architecture view source plan](./architecture-view-plan.md)
+
+## Validation Log
+
+### Validation Session 1 — 2026-07-21 — Independent initial validation
+
+- Identity: independent Herdr/Codex initial plan validation; fresh context, distinct from the
+  planner session.
+- Questions asked: 0. The issue body/comments already supplied the binding product, risk,
+  sequencing, publication, and TBC decisions and explicitly authorized bounded planning fixes.
+- Full-tier verification: 13 phases × 15 claims = 195 repository/contract/traceability claims.
+  Input result: 178 verified, 12 failed, 5 explicitly gated/unverified. After the fixes recorded
+  in `validation/initial-validation-report.md`, all 12 failed plan claims were corrected; the five
+  unknowns remain visible owner/compatibility TBC gates and are not represented as verified facts.
+- Impact: clarified exact path/command resolution, moved curriculum/data expansion behind the
+  first runnable Phase 5 journey, versioned local/AWS equivalence contracts, strengthened
+  S3/apply gates, protected `docs/code-standards.md`, and removed overlapping follow-up ownership.
+- Raw discovery history was not modified. No red-team, readiness audit, cook, implementation,
+  Terraform apply, cloud creation, or product-file change occurred.
+
+### Whole-Plan Consistency Sweep
+
+- Re-read `plan.md`, all 13 phase files, six companion artifacts, and every discovery artifact.
+- Phase count/link/frontmatter/dependency vocabulary: consistent after fixes; Phase 5 is the first
+  usable outcome and local work does not depend on AWS/AI.
+- IDs: BO/CAP/FR/NFR/ASR, PH-C01..PH-C10, PH-H01..PH-H14, SC-01..SC-20, ADRs, views, issues, and
+  evidence commands have an owning trace.
+- Scope/ownership: one shared-core write authority; no simultaneous product-path ownership; exact
+  SHA handoffs and blockedBy/blocks are defined in the issue graph.
+- Release/rollback: additive preservation and exact-SHA evidence agree across the plan. Remaining
+  TBCs block AWS apply/claims only and remain listed in the validation report.

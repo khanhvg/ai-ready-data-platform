@@ -8,8 +8,29 @@
   local portal.
 - Planned commands become tracked, discoverable Make targets during implementation and emit
   machine-readable results under `.artifacts/evidence/` (ignored runtime output).
+- Planned paths marked `Create` are owned future destinations, not present-file claims. A
+  stack/vendor-dependent path is unresolved until its prerequisite ADR records one exact path;
+  the dependent issue must copy that path and stop on mismatch.
 - Discovery IDs never disappear. Canonical accepted findings are `PH-C01..PH-C10` and
   `PH-H01..PH-H14`.
+
+## Binding Owner Requirement Crosswalk
+
+This crosswalk is normative. “Rollback” means the safe fallback if acceptance fails; it does not
+authorize implementation or destructive action.
+
+| ID | Bounded scope | Owner / phase / issue | Acceptance criterion | Verification / evidence | Mitigation / rollback | Dependency / blocker |
+|---|---|---|---|---|---|---|
+| OWN-01 | Preserve and selectively refactor the shipped issue #3 retail spine; no whole-repo rewrite | Shared-core; P1/P7/P13; I5-01/I5-07/I5-13 | 18 generator tables/anomaly meanings, 51-model dbt lineage, 11 marts/curated assets/Rill metrics, Airflow graph, Iceberg/OpenMetadata identities, historical evidence, `release-manifest.json`, and unrelated files remain characterized; `docs/code-standards.md` is hash-preserved if present or recorded absent | `make golden-clean PROFILE=small SEED=42`; `make data-contracts-check migration-contracts-check`; preservation manifest; clean tree | Additive seams/adapters only; dual-read where needed; revert exact SHA; never edit the owner file without a separate decision | Immutable main/tree/discovery; P1 precedes refactors |
+| OWN-02 | First usable product is the credential-free promotion-trust journey using the four named marts | Product/curriculum; P2-P5; I5-02..I5-05 | `make learn LESSON=promotion-trust` reaches controlled failure→diagnose→reset→verify→evidence through real runner/data; optional tools/cloud/model credentials are absent | `make lesson-e2e LESSON=promotion-trust`; `make local-journey-e2e`; browser/a11y/evidence artifacts | Static lesson/direct expert tools; disable runner; revert lesson/contract version | P1 evidence, ADR-005, P3 contracts, P4 security; P5 before P6/P7 |
+| OWN-03 | Original web-learning experience inspired by, but not copied from, 200ms.thenodebook.com | Web/product; P2/P5; I5-02/I5-05 | Three candidates run identical reversible, progressively disclosed lesson with no-scroll completion, accessible static/reduced-motion equivalence, controlled failure/reset/verify/evidence, and a source/non-copy inventory | `plans/260721-005-enterprise-learning-sandbox/reports/web-stack-scorecard.{md,json}`; shared Playwright/a11y suite; manual visual/source review | No ADR on must-gate failure; discard candidate code; retain project-owned content/tests | Real P1 fixture; real browser gate; ADR-005 blocks P5 |
+| OWN-04 | Local single-user platform: DuckDB/Rill plus optional MinIO/Lakekeeper/OpenMetadata, 16 GiB target | Local runtime/data; P5/P7/P8/P13; I5-05/I5-07/I5-08/I5-13 | Core works without heavy profiles; profile admission prevents unsupported combinations; all bound ports intentional/loopback | `make local-journey-e2e compose-check compose-security-check profile-budget-check` | Core/no-container fallback; teardown optional profiles; keep current direct tools | Owner-set measured thresholds; local release does not depend on AWS/AI |
+| OWN-05 | Logical Experience/Process/System/Backend/Technical API taxonomy without forced physical microservices | Architecture/API; P3/P4/P6; I5-03/I5-04/I5-06 | OpenAPI metadata maps five logical layers to portal modular monolith + isolated runner; no AsyncAPI without a real channel | `make api-contracts-check architecture-check`; container-count/taxonomy assertion | Revert taxonomy metadata/ADR; no new service | ASR-01 and runner threat boundary |
+| OWN-06 | Enterprise architecture curriculum and views trace business outcomes through operations/cost | Architecture/curriculum; P6/P9/P13; I5-06/I5-09/I5-13 | Stakeholder/BO/CAP/FR/NFR/ASR/C4/dynamic/deployment/ADR/pattern/network/API/data/security/operations/cost links validate and every view names a concern | `make curriculum-check architecture-check architecture-render traceability-check`; render manifest/text alternatives | Restore prior DSL/manifest; reject untraced pattern/view | P5 journey passes before curriculum expansion; AWS annotations may retain TBC |
+| OWN-07 | Later AWS non-applying design: configurable ap-southeast-1, weekday 08:00-18:00 Asia/HCM, ECS/EC2, S3/Iceberg, ClickHouse/Superset/OpenMetadata | AWS platform; P9-P11; I5-09..I5-11 | Static/mock/offline checks pass; durable authority, readiness, residual cost, S3/IAM/state security, restore/rebuild, and local/AWS contract divergences are explicit; no resource exists by implication | `make aws-decision-check terraform-check terraform-plan-offline aws-adapters-contract engine-equivalence` | Reject adapter/topology; local track remains; revoke future role/restore state only under separate runbook | Six apply gates and explicit authorization; does not block local core |
+| OWN-08 | Optional AI/LangGraph/Restate/AgentCore remains admission-gated and core-independent | AI governance; P12; I5-12 | Governed data, identity/ACL, provenance/evals, human approval, durable workflow/idempotency, recovery, observability and cost gates all pass before add-on | `make ai-admission-check`; credential-gated `make ai-evals` | Keep AI off; revoke tools/indexes/traces; preserve local core | P7/P9/P11 and I5-14 when multi-user claims are made |
+| OWN-09 | Every implementation issue inherits risk:high, TDD, security:S3 and human pre-merge approval | Epic/integration owner; all phases/issues | Issue records tests-before/after, S3 findings disposition, exact input/output SHAs, rollback and approval; no unapproved merge | Issue evidence manifest, security review, reviewed PR and approval identity | Stop merge/fan-out; fix in owning worktree; no force-push | Independent validation then readiness audit; exact-SHA handoffs |
+| OWN-10 | Budget/retention/cold-start/readiness/production RTO/RPO/account/environment/apply approver remain explicit TBCs | Product + FinOps + operations + security; P9/P10/P11 | No AWS apply or numeric cost/readiness claim until all gates have value, owner evidence, current price/compatibility input and exact plan SHA approval | `make state-matrix-check cost-model-check aws-decision-check`; apply-gate JSON | Remain non-applying; local release continues; no “zero cost” claim | Blocks AWS apply only, not credential-free local planning |
 
 ## Requirement Catalogue
 
@@ -121,6 +142,19 @@ boundaries.
 
 ## Accepted Critical Findings
 
+The finding tables below supply owner, acceptance, verification, rollback and dependency. Their
+bounded phase/scope mapping is:
+
+| IDs | Bounded scope / phase |
+|---|---|
+| PH-C01, PH-C02, PH-C10, PH-H02, PH-H11, PH-H12 | Immutable baseline, shared contracts and additive preservation — P1; release recheck P13 |
+| PH-C05, PH-C06, PH-H13 | Privileged runner/state/workspace security — P3/P4; data seam P7 |
+| PH-C08, PH-H05, PH-H06, PH-H14 | Representative web lesson, accessibility and portal evidence — P2/P5 |
+| PH-H01 | Local profile admission/resource evidence — P8 |
+| PH-H03, PH-H04 | Local Iceberg/OpenMetadata failure and reconciliation — P7; AWS adapter recheck P11 |
+| PH-C03, PH-C04, PH-C09, PH-H07, PH-H08, PH-H09 | AWS authority/cost/state/security/readiness/equivalence — P9/P10/P11 |
+| PH-C07, PH-H10 | Optional governed AI admission — P12 |
+
 Prediction aliases: C1→PH-C01, C2→PH-C03, C3→PH-C04, C4→PH-C05, C5→PH-C06,
 C6→PH-C07, C7→PH-C02, C8→PH-C08.
 
@@ -158,28 +192,28 @@ C6→PH-C07, C7→PH-C02, C8→PH-C08.
 
 ## Scenario Traceability
 
-| Scenario | Severity | Owning issue | Test/evidence | Recovery |
-|---|---|---|---|---|
-| SC-01 novice misreads failure | High | I5-05 | prerequisite/warning/remediation Playwright route | progress unchanged; guided reset |
-| SC-02 parameter escapes boundary | Critical | I5-04 | property fuzz, traversal, subprocess argv spy, secret canary | reject pre-execution; destroy workspace |
-| SC-03 reset races publish | Critical | I5-04/I5-07 | barrier at every write boundary; pointer/base checksum | serialize or rollback journal |
-| SC-04 laptop overcommit | High | I5-08 | forced profile matrix and measured cold/warm resource JSON | pre-start denial/teardown |
-| SC-05 scale-to-zero loses state | Critical | I5-09/I5-11 | empty-start restore/rebuild, dashboard/catalog/query checks | restore known-good or keep not-ready |
-| SC-06 no cloud/optional tools | High | I5-05/I5-13 | network-disabled/no-AWS/absent-tool local E2E | optional skip; local core remains |
-| SC-07 partial catalog cascade | Critical | I5-07/I5-11 | seam partitions, replay same key, consistency oracle | bounded resume or previous pointer |
-| SC-08 cross-learner access | Critical | Later hosted I5-14 | cross-user/ID enumeration/role-expiry matrix | default deny; revoke session |
-| SC-09 golden semantic drift | Critical | I5-01 | bytes/anomalies/schema/marts/lineage/metrics | stop migration; revert SHA |
-| SC-10 catalog client mismatch | High | I5-11 | disposable catalog lifecycle + SigV4/IAM negatives | reject adapter; keep local |
-| SC-11 PII/secrets in traces | Critical | I5-12 / hosted I5-14 | canary/redaction/deletion/retention tests | delete/reindex/revoke; AI off |
-| SC-12 AWS/agent exceeds budget | High | I5-09/I5-12 | golden cost cases, retry storm, quota/teardown | kill switch and residual inventory |
-| SC-13 concurrent/stolen apply | Critical | I5-10 | mock/real lock, wrong role/account, approval replay | no apply; restore/revoke |
-| SC-14 resume after crash | High | I5-03/I5-04 | browser/process crash/reload, repeated reset | last committed state; recover/reset |
-| SC-15 delayed duplicate effect | High | I5-12 | delayed success, replay, approval expiry, accounting | reconcile uncertainty before retry |
-| SC-16 forged completion | High | I5-03/I5-05 | edited solution/evidence, SHA/verifier mismatch | reject completion; audit |
-| SC-17 schedule timezone/active work | High | I5-10 | clock/holiday/override/drain/readiness simulation | override; cancel close on unsafe state |
-| SC-18 corrupt backup | Critical | I5-09/I5-11 | scheduled empty restore, hashes/queries/search/dashboard | previous known-good; rollback migration |
-| SC-19 inaccessible motion | Medium retained | I5-02/I5-05 | axe + manual AT/keyboard/zoom/reduced-motion/static | motion disabled, content preserved |
-| SC-20 moving baseline | High | I5-01/I5-13 | SHA preflight, three-way diff, clean golden rerun | stop/rebase/rehearse/revert |
+| Scenario / severity | Bounded scope / owner / phase | Acceptance and failure behavior | Verification / evidence | Mitigation / rollback | Dependency / blocker |
+|---|---|---|---|---|---|
+| SC-01 novice misreads failure / High | First journey; Product, I5-05, P5 | Warning names controlled vs environmental failure and remediation; verifier leaves progress incomplete on misdiagnosis | Prerequisite/warning/remediation Playwright route and completion JSON | Progress unchanged; guided reset/static explanation | P3 contract + P4 runner |
+| SC-02 parameter escapes boundary / Critical | Runner input; Security, I5-04, P4 | Any traversal/metacharacter/symlink/device/oversize input is rejected before process start with typed problem | Property fuzz, argv spy, path probes, secret canary JUnit | Destroy only scoped workspace; disable runner | P1 seams + P3 schemas |
+| SC-03 reset races publish / Critical | Workspace/publish; Runner+data, I5-04/I5-07, P4/P7 | Race serializes or returns conflict; base/current pointer and evidence never enter mixed state | Barriers at each write boundary, journal and checksums | Resume journal or restore previous pointer; quarantine evidence | State/idempotency contract precedes runner/labs |
+| SC-04 laptop overcommit / High | Local profiles; Runtime, I5-08, P8 | Unsupported combinations are refused before start; admitted profile emits cold/warm resource JSON within owner-set threshold | Forced profile matrix and process/container telemetry | Teardown; core/no-container fallback | Real P5 journey + P7 profiles; threshold is measured decision |
+| SC-05 compute-zero loses state / Critical | AWS state; Data/Ops, I5-09/I5-11, P9/P11 | Empty start restores/rebuilds every declared authority and stays not-ready until dashboard/catalog/query equivalence | Empty-start drill manifest, hashes and state matrix | Previous known-good or local fallback; no ready/zero claim | RTO/RPO/cold-start TBC blocks apply |
+| SC-06 no cloud/optional tools / High | Local core; Product/release, I5-05/I5-13, P5/P13 | Network-disabled post-install journey passes with no AWS/model credentials; optional absence is explicit and does not forge pass | No-AWS/absent-tool browser E2E and credential scan | Skip only declared optional gate; local core remains | P5 runnable command |
+| SC-07 partial catalog cascade / Critical | Iceberg/catalog; Data, I5-07/I5-11, P7/P11 | Object/catalog interruption fails loud; same key resumes idempotently or retains previous current pointer | Partition/fault seams, replay and consistency oracle | Bounded resume/rollback; reject adapter readiness | Lifecycle contract + catalog compatibility |
+| SC-08 cross-learner access / Critical | Hosted identity later; Security, I5-14 | Cross-user/object enumeration and expired roles always deny; local release still uses object-shaped IDs and same-user isolation | Hosted authz/isolation matrix; local object-ID/direct-runner negatives | Revoke session; hosted feature remains off | Separate hosted decision after I5-13 |
+| SC-09 golden semantic drift / Critical | Shared data core; I5-01, P1 | Any protected byte/anomaly/schema/mart/lineage/metric drift names assertion and stops fan-out | `make golden-clean` twice plus mutation fixtures | Stop migration; revert exact SHA; preserve historical evidence | Immutable main/tree/discovery |
+| SC-10 catalog client mismatch / High | AWS catalog adapter; Data/security, I5-11, P11 | Unsupported lifecycle/auth operation rejects Glue candidate; no topology/readiness claim | Disposable lifecycle suite and SigV4/IAM negatives | Reject adapter; keep Lakekeeper/local; reopen ADR | Phase 9 interface and current-version spike |
+| SC-11 PII/secrets in traces / Critical | AI/hosted traces; Security, I5-12/I5-14, P12/later | Canary, credential or disallowed data never persists; deletion/retention request is verifiable | Redaction/canary/deletion/retention evidence | Delete/reindex/revoke; AI/hosted path off | Data classification, identity and retention decisions |
+| SC-12 AWS/agent exceeds budget / High | Cost/retry; FinOps, I5-09/I5-12, P9/P12 | Retry/failure/forgotten teardown is itemized; unresolved ceiling cannot produce a pass or “zero cost” | Golden BOM/retry-storm/quota/residual inventory JSON | Kill switch; teardown; disable AI/AWS claim | Monthly ceiling/retention TBC |
+| SC-13 concurrent/stolen apply / Critical | Terraform authority; Security, I5-10, P10 | Lock, account/role/environment/input SHA and non-replayable human approval mismatch deny before apply | Mock lock/wrong-identity/replay policy tests; future real check separately authorized | No apply; revoke role; restore prior state version under runbook | Named approver and exact plan SHA TBC; apply not authorized |
+| SC-14 resume after crash / High | Learning state/runner; I5-03/I5-04, P3/P4 | Browser/runner crash exposes last committed state; repeated reset is idempotent and no completion is fabricated | Reload/process-kill/repeated-reset state tests | Recover journal or reset workspace; retain committed evidence | Versioned state machine |
+| SC-15 delayed duplicate effect / High | Optional AI tools; I5-12, P12 | Uncertain delayed effect is reconciled before retry; approval expiry denies new effect and accounting remains bounded | Delayed-success/replay/expiry/cost eval | Cancel/reconcile; AI off | Idempotency/durable workflow/approval admission |
+| SC-16 forged completion / High | Evidence/progress; I5-03/I5-05, P3/P5 | Edited solution/state/evidence or SHA/verifier mismatch is rejected with no progress mutation | Tamper fixtures and browser completion attempt | Reject/audit; replay verifier from trusted state | Evidence canonicalization and server authority |
+| SC-17 schedule timezone/active work / High | AWS office hours; Ops, I5-10, P10 | Timezone/holiday/next-run is visible; close drains or cancels on unsafe active work/backup; desired count alone is not ready | Clock/holiday/override/drain/readiness simulation | Audited override or cancel close; local fallback | Phase 9 workflow; cold-start/RTO TBC |
+| SC-18 corrupt backup / Critical | AWS recovery; Data/Ops, I5-09/I5-11, P9/P11 | Scheduled empty restore must validate hashes, queries, search and dashboards; corruption stays not-ready | Empty-environment restore evidence | Previous known-good; rollback migration; no scale-down/readiness | Retention and production RTO/RPO TBC |
+| SC-19 inaccessible motion / Medium retained | Web accessibility; I5-02/I5-05, P2/P5 | Keyboard/AT/200%/reduced-motion/static route preserves facts, order, controls and completion without scroll-only action | Shared axe/Playwright plus recorded manual review | Disable motion; serve static equivalent; block portal release | ADR-005 must-gate |
+| SC-20 moving baseline / High | Integration/release; I5-01/I5-13, P1/P13 | Wrong input/merged dependency SHA stops work; every handoff and release records exact source/output | SHA preflight, merge-base/tree check, three-way diff, clean golden rerun | Stop/rebase on integration; rehearse rollback; never force-push | Approved validation/audit SHA and upstream merged SHAs |
 
 SC-08/SC-11 hosted multi-user portions are explicitly deferred, not waived. The first local
 release still implements object-shaped IDs, no direct runner access, same-user isolation, and

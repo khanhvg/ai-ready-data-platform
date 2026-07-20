@@ -9,6 +9,8 @@ effort: "M"
 
 # Phase 8: Local Compose Profiles and Resource Measurement
 
+<!-- Updated: Validation Session 1 - classified all file destinations as planned artifacts. -->
+
 ## Overview
 
 Package portal/runner and existing optional services into explicit local profiles, enforce
@@ -57,7 +59,7 @@ by evidence/portal status.
 
 ## File Inventory
 
-| Action | Likely path | Rough size | Test impact |
+| Action | Planned path | Rough size | Test impact |
 |---|---|---:|---|
 | Modify | `docker-compose.yml` | 150-250 lines | Learning services, bindings, mounts, limits |
 | Create | `config/profiles/local-profiles.yaml` | 120-200 lines | Admission source |

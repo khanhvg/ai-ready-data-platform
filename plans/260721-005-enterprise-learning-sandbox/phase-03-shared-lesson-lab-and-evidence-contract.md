@@ -9,6 +9,8 @@ effort: "L"
 
 # Phase 3: Shared Lesson Lab and Evidence Contract
 
+<!-- Updated: Validation Session 1 - fixed shared-core ownership and cross-track contract inputs. -->
+
 ## Overview
 
 Implement the versioned lesson, lab, progress/state, OpenAPI and evidence contracts that the
@@ -33,6 +35,9 @@ portal, runner, curriculum, local/AWS adapters and future AI consume.
 - Do not create AsyncAPI unless an actual channel is introduced.
 - Provide promotion-trust lesson/lab manifests and failure/remediation codes.
 - Preserve backward reading/migration from every released schema version.
+- Consume, without forking, Phase 1
+  `local-aws-data-product-equivalence-v1.yaml`, `iceberg-lifecycle-v1.yaml`, and
+  `openmetadata-asset-identity-v1.yaml`; learning/evidence references record their exact versions.
 
 ## Architecture
 
@@ -40,9 +45,12 @@ Contract files are source-of-truth; generated TypeScript/Python types are build 
 for drift, not independently edited. Portal and runner validate at boundaries. Evidence is
 canonicalized and hashed by a framework-neutral library.
 
+I5-03 uses the same shared-core owner and long-lived worktree as I5-01 under a sequential write
+lease. No separate feature worktree may edit `learning/contracts/**` or `contracts/**` in parallel.
+
 ## File Inventory
 
-| Action | Likely path | Rough size | Test impact |
+| Action | Planned path | Rough size | Test impact |
 |---|---|---:|---|
 | Create/modify | `learning/contracts/{lesson,lab,lab-state,evidence}.schema.json` | 500-800 lines | Schema fixtures |
 | Create | `contracts/openapi/learning-platform-v1.yaml` | 500-800 lines | API lint/examples |

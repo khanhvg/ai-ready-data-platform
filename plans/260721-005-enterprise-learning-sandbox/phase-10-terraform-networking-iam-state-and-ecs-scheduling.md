@@ -9,6 +9,8 @@ effort: "L"
 
 # Phase 10: Terraform Networking IAM State and ECS Scheduling
 
+<!-- Updated: Validation Session 1 - strengthened backend/S3 security and exact human apply gates. -->
+
 ## Overview
 
 Build test-first Terraform modules for backend contract, network, IAM, ECS on EC2 capacity and
@@ -24,8 +26,11 @@ backend bootstrap, account mutation or Terraform apply is authorized.
 
 ## Requirements
 
-- Separate bootstrap-state configuration from workload stacks; encrypted/versioned S3 lockfile
-  contract and least-privilege plan/apply roles. Never VCS/local-state production.
+- Separate bootstrap-state configuration from workload stacks. Backend contract requires S3
+  public-access block, `BucketOwnerEnforced`, an `aws:SecureTransport=false` deny, SSE-KMS,
+  versioning, Terraform S3 backend `use_lockfile = true`, least-privilege key-prefix actions,
+  logging/monitoring, retention/deletion and previous-version restore. DynamoDB locking is not a
+  new dependency. Never VCS/local-state production or static credentials.
 - Configurable two-AZ VPC, subnet/route/egress mode, security groups, DNS/TLS/ingress and endpoints
   without silently accepting NAT/public exposure cost.
 - ECS cluster with new empty ASG capacity provider, replaceable EC2, task/service roles, logs and
@@ -35,6 +40,9 @@ backend bootstrap, account mutation or Terraform apply is authorized.
 - Close workflow blocks new labs, drains/checkpoints/backups, verifies recovery artifact, stops
   schedulers/services, drives tasks/ASG to zero and inventories residual resources.
 - Wrong account/region/environment/SHA/role and placeholder secret/public ingress must fail.
+- Any future apply requires all six TBC groups resolved, Security approval of S3/IAM, and the
+  named apply approver bound to one exact non-stale account/region/environment/plan SHA. This
+  phase provides policy tests only and cannot clear that gate.
 - No default target, CI workflow or documented command may call `apply` or `destroy`.
 - Async/event services exist only if needed by the readiness workflow, not curriculum symmetry.
 
@@ -58,7 +66,7 @@ shows a smaller construct satisfies the same tests.
 
 ## File Inventory
 
-| Action | Likely path | Rough size | Test impact |
+| Action | Planned path | Rough size | Test impact |
 |---|---|---:|---|
 | Create | `infra/aws/terraform/bootstrap-state/**` | 150-250 lines | Contract/mocks only |
 | Create | `infra/aws/terraform/modules/{network,iam,ecs-capacity,ecs-services,office-hours,observability-budget}/**` | 2,000-3,000 lines | Module tests |

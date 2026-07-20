@@ -9,6 +9,8 @@ effort: "L"
 
 # Phase 13: Verification Release Recovery and Rollback
 
+<!-- Updated: Validation Session 1 - made user-file preservation and exact provenance explicit. -->
+
 ## Overview
 
 Run the release contract from a clean checkout, retain exact-SHA machine-readable evidence, review
@@ -39,6 +41,8 @@ admitted.
 - Reuse exact merge/tree/discovery evidence and record final implementation/release SHA.
 - Update user/maintainer docs only for actual shipped behavior/commands/architecture.
 - Release rollback keeps golden spine and user-owned files; no destructive migration.
+- Preservation manifest records `docs/code-standards.md` input/output hashes when present or
+  `absent` at both boundaries; release automation never creates, overwrites, deletes or formats it.
 
 ## Architecture
 
@@ -60,7 +64,7 @@ clean detached checkout
 
 ## File Inventory
 
-| Action | Likely path | Rough size | Test impact |
+| Action | Planned path | Rough size | Test impact |
 |---|---|---:|---|
 | Create | `scripts/release/run-release-evidence.py` | 400-650 LOC | Aggregate driver |
 | Create | `contracts/evidence/release-evidence.schema.json` | 180-280 lines | Result/status schema |

@@ -3,11 +3,13 @@ phase: 11
 title: "AWS Analytics BI Governance and Iceberg Adapters"
 status: pending
 priority: P1
-dependencies: [9]
+dependencies: [7, 9]
 effort: "L"
 ---
 
 # Phase 11: AWS Analytics BI Governance and Iceberg Adapters
+
+<!-- Updated: Validation Session 1 - pinned shared divergence contracts and removed Terraform ownership overlap. -->
 
 ## Overview
 
@@ -26,6 +28,9 @@ credential- and authorization-gated. No cloud resource is created here.
 ## Requirements
 
 - Preserve DuckDB/Rill local path and define exact shared versus platform-specific contracts.
+- Consume the exact Phase 1/P7 versions of `local-aws-data-product-equivalence-v1.yaml`,
+  `iceberg-lifecycle-v1.yaml`, and `openmetadata-asset-identity-v1.yaml`; an AWS deviation requires
+  a versioned ADR and cannot silently fork learning/data/evidence semantics.
 - Validate current client compatibility before accepting Glue Iceberg REST: writer, ClickHouse,
   OpenMetadata, auth, v1/v2 create/read/evolve/time-travel/rename/delete/recovery.
 - Implement ClickHouse projection hydration/readiness with empty-start, interrupted retry,
@@ -58,7 +63,7 @@ Contracts expose divergence instead of pretending identical topology/auth.
 
 ## File Inventory
 
-| Action | Likely path | Rough size | Test impact |
+| Action | Planned path | Rough size | Test impact |
 |---|---|---:|---|
 | Create | `platform/adapters/contracts/**` | 500-800 LOC | Engine-neutral interfaces/vectors |
 | Create | `platform/adapters/aws/{iceberg,clickhouse,superset,openmetadata}/**` | 1,800-2,800 LOC | AWS adapters/config |
@@ -67,7 +72,7 @@ Contracts expose divergence instead of pretending identical topology/auth.
 | Create | `tests/fixtures/engine-equivalence/**` | 300-500 lines | Null/timezone/type/query/metric vectors |
 | Create | `scripts/aws/{hydrate-clickhouse,verify-aws-adapters}.py` | 500-800 LOC | Readiness/evidence |
 | Modify | Portal status adapter registry | bounded | AWS tool states |
-| Modify | Phase 10 task definitions/outputs only through agreed interface | bounded | No state-policy change |
+| Create/modify | Adapter-owned deployment descriptors under `platform/adapters/aws/**` only | bounded | Validate against read-only Phase 10 output schema; never edit Terraform paths |
 | Modify | version/compatibility docs and ADRs | 200-350 lines | Pin evidence |
 
 ## Interface Checklist
@@ -82,7 +87,8 @@ Contracts expose divergence instead of pretending identical topology/auth.
 
 ## Dependency Map
 
-- Depends on Phase 9 accepted interfaces; can consume Phase 10 outputs concurrently.
+- Depends on Phase 7 local contract evidence and Phase 9 accepted interfaces; can consume Phase
+  10 outputs read-only when present.
 - Reuses Phase 1/7 data contracts.
 - Does not block local release. Blocks any AWS readiness claim and optional cloud AI.
 

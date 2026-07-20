@@ -9,6 +9,8 @@ effort: "L"
 
 # Phase 12: Optional AI Admission and Add-on
 
+<!-- Updated: Validation Session 1 - classified all file destinations as planned artifacts. -->
+
 ## Overview
 
 Keep AI, LangGraph, Restate and Bedrock AgentCore out of the core until a machine-readable
@@ -67,7 +69,7 @@ Durable state sits in the admitted workflow/progress store, never ephemeral runt
 
 ## File Inventory
 
-| Action | Likely path | Rough size | Test impact |
+| Action | Planned path | Rough size | Test impact |
 |---|---|---:|---|
 | Create | `ai/admission/gates.yaml`, `ai/admission/check.py` | 300-500 LOC | Machine blocker |
 | Create | `ai/contracts/{retrieval,citation,policy,approval,trace}.schema.json` | 500-800 lines | Contract tests |
