@@ -2,7 +2,7 @@
 
 ## Projection identity
 
-`contracts/data/retail-golden-v1.json` freezes the semantic projection of immutable input `7a65da010abf0e3730731b6d744b532156c48fdc`, profile `small`, seed `42`. The producer command is `make golden-clean PROFILE=small SEED=42`. Raw bytes remain in the private evidence bundle; the contract stores exact stable fields/hashes and explicitly typed contextual history.
+`contracts/data/retail-golden-v1.json` freezes the semantic projection characterized from baseline source `7a65da010abf0e3730731b6d744b532156c48fdc`, profile `small`, seed `42`. The producer command is `make golden-clean PROFILE=small SEED=42` from future clean commit C1. Raw bytes remain in the private evidence bundle; the contract stores exact stable fields/hashes and explicitly typed contextual history.
 
 Top-level projection fields are closed and ordered by schema semantics:
 
@@ -12,7 +12,7 @@ dbt, marts, rill, airflow, curatedAssets, metadataIdentities,
 historicalContext, assertions, integrity
 ```
 
-`inputIdentity` includes `testedTreeSha`, lock fingerprint, tool versions, profile and seed. It contains no run/timestamp/path fields. Every inventory is an array with an explicit stable key/order plus duplicate-key validation.
+`inputIdentity` includes distinct `baselineSourceSha=7a65da010abf0e3730731b6d744b532156c48fdc` and future `testedTreeSha=C1`, plus lock fingerprint, tool versions, profile and seed. The discovery SHA is never substituted for the clean producer/tested tree. It contains no run/timestamp/path fields. Every inventory is an array with an explicit stable key/order plus duplicate-key validation.
 
 ## Generator: exact 18 CSVs
 
@@ -94,7 +94,7 @@ Thus “nine configured warning tests” and “seven observed warnings” are i
 
 ## Canonical 11-mart summary
 
-The query contract is `SELECT * FROM main_marts.<actual-model-id> ORDER BY ALL`, followed by typed, fixed canonical row serialization. It hashes logical content, never Parquet container bytes.
+The query contract is `SELECT * FROM main_marts.<actual-model-id> ORDER BY ALL`, followed by this exact content serializer: preserve DuckDB column order; emit the column-name header then rows with comma delimiter, `"` quote, doubled embedded quotes, minimal quoting and LF terminators including one final LF; encode UTF-8 without BOM; convert `NULL` to an empty CSV field, booleans to lowercase `true`/`false`, dates to ISO `YYYY-MM-DD`, integers to base-10 and current DOUBLE/DECIMAL values through CPython-3.12 `str` under the pinned DuckDB 1.5.4 lane; preserve strings without Unicode normalization. A separate ordered `(columnName, logicalType, nullable)` schema hash and null-position projection prevent NULL/empty-string ambiguity. It hashes logical content, never Parquet container bytes.
 
 | Ordinal | Actual current mart ID | Rows | Canonical content SHA-256 |
 |---:|---|---:|---|
@@ -110,7 +110,13 @@ The query contract is `SELECT * FROM main_marts.<actual-model-id> ORDER BY ALL`,
 | 10 | `mart_supplier_purchasing` | 10 | `2b6c9c9fe4f0e1b8ea756d8765d25b4ed52dadb89d4e8ed1631f265b3985b95b` |
 | 11 | `mart_data_quality` | 10 | `cd3bb0424396aad0d902e9dc594072a5506c3b6484be3f3f2209b7cbbcdae5fa` |
 
-Ordered 11-mart summary SHA-256: `8ffb3ef70bdb460eebe28ec5fb1986ec728fcd711e658523efb93671df8418ea`.
+The normative ordered summary is the RFC-8785 canonical byte string of an array in the ordinal order above, with each object containing exactly `martId`, integer `rowCount` and lowercase-hex `contentSha256`. It has no trailing newline and SHA-256:
+
+```text
+4b8a16acd83064c374061a0f1eb4737e6b9fd6fe2fcaae3ec45a659dc684c84b
+```
+
+Discovery reported `8ffb3ef70bdb460eebe28ec5fb1986ec728fcd711e658523efb93671df8418ea` for an ordered summary whose source bytes/field contract were not retained. Preserve that value as `legacyDiscoverySummarySha256` contextual evidence only; it cannot be a normative verifier oracle. Mutation tests cover reordered entries, renamed fields, row/hash changes and accidental use of the legacy value as the v1 summary.
 
 The three actual IDs above correct discovery’s human shorthand “channel performance,” “web funnel,” and “supplier performance”; changing the current model IDs to match shorthand would be an unauthorized product change.
 

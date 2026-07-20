@@ -54,7 +54,7 @@ Each source entry declares grain, stable ordering and null placement, full-input
 
 Counts are JSON integers. Currency/AOV/refund values are fixed-scale two-decimal strings; percentages and lead time are fixed-scale one-decimal strings. `-0.00`/`-0.0` is invalid. `null` is permitted only for a source field whose declared denominator is absent. Names here are synthetic aggregate labels but still pass the credential/path/private-URL scanner.
 
-The ten data-quality rows exactly encode small/42: duplicate customers 1, duplicate orders 1, null email 7, null promotion ID 1, invalid status 10, late orders 20, orphan order-item product 6, in-transit shipments 70, orphan web event/session 1, and dangling PO-item product 0.
+The ten data-quality rows are the exact `mart_data_quality` aggregate, not the generator anomaly projection: duplicate customers 1, duplicate orders 1, null email 7, null promotion ID 879, invalid status 9, late orders 20, orphan order-item product 6, in-transit shipments 70, orphan web event/session 1, and dangling PO-item product 0. Generator-observed injected anomalies remain separately recorded as null promotion ID 1 and invalid status 10; substituting those values into the mart source is `PROMOTION_SOURCE_VALUE_MISMATCH`.
 
 ## Promotion trust contract and expected result
 

@@ -53,6 +53,10 @@ Exact Node 22.22.3 official tar.xz SHA-256 values from the [signed release archi
 
 The initial golden render claim is darwin-arm64. Linux tuples are required compatibility runs; byte equality is an implementation gate, not a completed planner claim.
 
+The package/lock candidate is reproduced only in a new private directory containing the exact package document, with Node 22.22.3/npm 10.9.8 and `npm install --package-lock-only --ignore-scripts --no-audit --no-fund` while that directory is the process CWD. Two candidates must have 119 package records and byte SHA-256 `7a56d803a47454023f40a04bcdb3b037f4ab2c2a05321292ad3b7f7225c2118c`; any registry re-resolution difference is `ARCH_TOOL_LOCK_MISMATCH`, never an implicit upgrade. The checked-in lock is then the only `npm ci` authority.
+
+The repository ignore rule matches all `package-lock.json` files and is protected. Implementation must verify the candidate, copy it to `requirements/architecture/package-lock.json`, and exact-path force-add only that file. Broad force-add and `.gitignore` edits are forbidden.
+
 ## Exact source/output layout
 
 The master’s older `architecture/structurizr/**` path was a placeholder, not an obligation to mislabel a non-Structurizr format. The truthful issue-owned layout is:
@@ -163,7 +167,7 @@ Absolute/private paths and coordinates are forbidden. Text semantics must hash t
 
 ## Deterministic SVG normalization and freshness
 
-The normalizer parses with external entities and network disabled; rejects scripts, `foreignObject`, external images/URLs and private/absolute paths; removes DTD and generator comments; normalizes NFC/LF; deterministically sorts attributes; injects stable `<title>`, `<desc>`, `role="img"`, and `aria-labelledby`; preserves geometry/child order; and emits one final newline. [Graphviz documents SVG output](https://graphviz.org/docs/outputs/svg/).
+The normalizer parses with external entities and network disabled; rejects scripts, `foreignObject`, external images/URLs and private/absolute paths. Its only removable input fields are the XML declaration, DTD and generator comments; its only rewrites are NFC/LF serialization, deterministic attribute order and insertion of stable `<title>`, `<desc>`, `role="img"` and `aria-labelledby`. It must preserve IDs, classes, `viewBox`, text, styles, links, paths, geometry, transforms and child order byte-for-byte modulo XML serialization. Mutation tests change each semantic class and require an output/freshness difference, proving normalization cannot erase meaning. It emits one final newline. [Graphviz documents SVG output](https://graphviz.org/docs/outputs/svg/).
 
 For each view, `render-manifest.json` records source-closure hashes, semantic manifest-row hash, computed semantic-projection hash, lock/package/renderer/normalizer hashes and tool versions, SVG/text byte lengths and SHA-256, review status, and evidence locator. JCS `renderInputSha256` covers source closure, semantic manifest fields, tool lock, renderer and normalization versions; it excludes generated hashes to prevent recursion.
 

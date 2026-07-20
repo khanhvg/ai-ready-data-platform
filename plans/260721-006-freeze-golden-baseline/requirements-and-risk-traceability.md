@@ -57,3 +57,19 @@ Evidence for every required I5-01 command is a schema-valid `FitnessResult` bene
 | 8 | F-09, F-11; SC-01, SC-04, SC-06, SC-11, SC-14, SC-15 |
 
 No row is closed by prose alone. The relevant phase must name the failing test, evidence schema/path and rollback rehearsal before implementation may be reported complete.
+
+## Binding master PH and authority crosswalk
+
+| Master item | I5-01 interpretation | Plan owner/path/test/evidence/rollback/STOP |
+|---|---|---|
+| PH-C01 — immutable base | Discovery `7a65da…` and planner artifact `cec9f6…` are ancestry/provenance anchors; future implementation uses only the remotely observed post-validation/readiness input | phases 1/8; SHA/ancestry/clean-tree preflight; authority evidence; no write on mismatch; `BASE_AUTHORITY_MISMATCH` STOP |
+| PH-C02 — credential-free golden twice | Exact `small`/`42`, seven-root lock, two disjoint private 300-second runs and 600-second pair guard | phases 2/3/8; `golden-clean` A/B bundles; marker-scoped cleanup/old lock rollback; any shared state, secret or semantic drift STOP |
+| PH-C06 — one completion/release authority | I5-01 defines only the exact 11-asset immutable manifest/current-pointer schema; I5-07 owns staging/switch/read-back/reconciliation | phase 5 contract paths and mutation evidence; prior complete pointer model rollback; publisher code/action in I5-01 STOP |
+| PH-C10 — versioned contracts/migration | v1 schemas/readers remain readable; registry migration and rollback are explicit and atomic | phases 4/5/8; migration evidence; restore prior registry/schema/reader/fixture set; lossy or missing N-1 path STOP |
+| PH-H02 — pinned environment | CPython 3.12 darwin-arm64, exact wheel hashes/compiler lock and no runtime resolution | phase 2 requirement locks and two install/full-run evidence; fresh prior lock rollback; sdist/unhashed/unsupported platform STOP |
+| PH-H11 — evidence integrity | Raw/projection/envelope separation, RFC 8785 payload hash, external C2/M and integrity-not-authenticity wording | phases 3/4/8; tamper/non-recursion evidence; retain prior raw/reader; signature/authenticity claim without I5-14 STOP |
+| PH-H12 — root release manifest | Root `release-manifest.json` is protected at SHA-256 `f9037b5d…`; `docs/code-standards.md` remains absent | phases 1/8 protected pre/post manifest and sentinels; abandon candidate/revert issue changes on drift; any mutation STOP |
+| Fixture/scoring authority | Exact owner-comment fixture paths only; issue #7 remains unscored until remote M and four blob/digest checks | phases 5/8; tracked fixture plus external C1/C2/M evidence; invalidate previews/scores on drift; score/ADR/pre-merge readiness claim STOP |
+| Architecture lease authority | I5-01 owns the six pre-P5 local views; after merged I5-05, I5-06 may add only new expansion sources/rows/renders under a serialized lease | phase 6 source/manifest/render hashes and simulated lease; restore coherent six-set; mutation of original six by a later lease STOP |
+| Root Make/shared-core authority | I5-01 alone adds root include/help and its seven-recipe fragment; later 47 registry entries are non-runnable declarations | phase 7 registry/Make tests and rollback; duplicate/later recipe/current-15 drift STOP |
+| Deferred security/authenticity/cloud authority | I5-04 owns generalized runner containment, I5-14 signing, I5-07 publisher, and later issues all cloud/AWS action | scope deny-list plus F-02/F-03/F-07/F-09/F-12 evidence; revert narrow seam/retain local contracts; ownership creep STOP |

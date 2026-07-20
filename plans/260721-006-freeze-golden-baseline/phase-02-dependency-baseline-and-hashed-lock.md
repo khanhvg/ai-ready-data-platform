@@ -6,6 +6,8 @@ effort: "1.0-1.5 implementation days"
 dependsOn: [1]
 ---
 
+<!-- Updated: Initial validation corrected the direct-root set and independently reproduced lock/install fingerprints. -->
+
 # Phase 2: Dependency baseline and hashed lock
 
 ## Overview
@@ -14,7 +16,7 @@ Publish the exact CPython-3.12/darwin-arm64 wheel-only hash lock selected in [de
 
 ## Requirements
 
-- Direct roots and exact 55-package graph, compiler/tool hashes, proposed lock SHA `6552bc…`, normalized environment SHA `e0b9ba…`.
+- Seven direct roots and exact 56-distribution locked graph, compiler/tool hashes, proposed repository-relative lock SHA `f41c727b…`, exact sorted-freeze SHA `cdb87ed…`.
 - Exact platform policy; unsupported interpreter/platform fails before network.
 - Empty cache/home/venv/data per run; `PIP_CONFIG_FILE=/dev/null`; wheel-only, `--require-hashes`, `--no-deps`.
 - A newer resolvable version is irrelevant and must not alter the accepted graph.
@@ -55,7 +57,7 @@ Publish the exact CPython-3.12/darwin-arm64 wheel-only hash lock selected in [de
 
 ## Tests Before
 
-1. Add parser mutations for every forbidden requirement form and candidate fingerprint drift.
+1. Add parser mutations for every forbidden requirement form, omission of direct `rfc8785`, and candidate fingerprint drift.
 2. Add preflight tests for implementation/version/platform/emulation.
 3. Run an unlocked current install in private state only to prove it can choose dbt-core 1.12.0; retain as expected failure evidence, never golden.
 4. Add two full-run tests expecting the selected lock and environment hashes; fail because tracked locks/bootstrap are absent.

@@ -24,7 +24,7 @@ learning/contracts/schema-version-registry.json
 learning/contracts/canonicalization-v1.json
 ```
 
-Every JSON Schema declares `https://json-schema.org/draft/2020-12/schema`, a stable `$id`, `type`, required fields, bounded strings/arrays, `additionalProperties: false` unless explicitly justified, and domain formats/patterns. Schema files are themselves hashed in the envelope.
+Every JSON Schema declares `$schema: "https://json-schema.org/draft/2020-12/schema"`, a stable `$id`, `type`, required fields, bounded strings/arrays, `additionalProperties: false` unless explicitly justified, and domain formats/patterns. Schema files are themselves hashed in the envelope.
 
 `schema-version-registry.json` is the only current-version pointer for evidence readers. For each family it records `family`, `currentVersion`, immutable `readableVersions`, schema path/hash, reader ID, migration edges, canonicalization profile, status and rollback version. Initial v1 families legitimately have only v1 readable and an identity migration; no fictional predecessor is published. The generic dispatcher and migration/rollback protocol are still tested with private generated v0→v1 and v1→v2 registry copies. When v2 is admitted, the tracked registry must keep v1 readable, add an explicit pure v1→v2 migration and v2→v1 rollback where lossless; a lossy edge is a STOP and requires a new fixture, not silent coercion.
 

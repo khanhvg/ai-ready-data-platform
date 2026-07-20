@@ -2,9 +2,9 @@
 
 ## Entry gate
 
-Do not implement from this planner state. The next session is independent plan validation, followed by a fresh readiness audit. Cook begins only if both publish explicit acceptance, issue #6 authority remains unchanged, the worktree is clean at the accepted plan SHA, and a human has authorized that later phase.
+Do not implement from the discovery SHA or original planner commit. Independent plan validation is followed by a fresh readiness audit. Cook begins only if both publish explicit acceptance, issue #6 authority remains unchanged, the worktree is clean at the exact remotely observed `IMPLEMENTATION_INPUT_SHA` emitted by readiness, and a human has authorized that later phase.
 
-At implementation start, prove local HEAD, tracking ref and remote branch identity are the accepted input; prove ancestry still contains integration `f9a87d0ebdb72c014a6f8c6eaae865dad4d2188c` and master readiness `e440c5855732d5d8f5d634e3cc1359c010cc5ed3`. A mismatch, active shared lease or dirty tree is `BASE_AUTHORITY_MISMATCH` and STOP.
+At implementation start, prove local HEAD, tracking ref and remote branch identity all equal that externally recorded `IMPLEMENTATION_INPUT_SHA`; prove ancestry contains planner artifact `cec9f6b02cb3bf9f2aa7e2cf26af32692008aacd`, discovery `7a65da010abf0e3730731b6d744b532156c48fdc`, integration `f9a87d0ebdb72c014a6f8c6eaae865dad4d2188c` and master readiness `e440c5855732d5d8f5d634e3cc1359c010cc5ed3`. A mismatch, active shared lease or dirty tree is `BASE_AUTHORITY_MISMATCH` and STOP.
 
 ## Exact owned paths
 
@@ -79,7 +79,9 @@ mk/issue-5/i5-02.mk through i5-14.mk
 unrelated tracked, ignored and generated files
 ```
 
-Read-only characterization of these paths is required. At the planner input, root `release-manifest.json` SHA-256 is `f9037b714a3a8aafce4dce1907261467ae5f74e7f03c8e495bf468b95595de18`; `docs/code-standards.md` is absent and must remain absent. Before/after manifests also hash all protected tracked files and create unrelated ignored sentinel files outside issue roots. The narrow Airflow file is deny-by-default: only a failing tests-before proof may activate its exact-path exception, and its diff may only forward explicit raw/warehouse/export workspace parameters while preserving the six/eight graph and current callers.
+Read-only characterization of these paths is required. At the planner input, root `release-manifest.json` SHA-256 is `f9037b5d946d14f7b1b9c020939f1a44961011f2ad933db9f2b69054abbf9539`; `docs/code-standards.md` is absent and must remain absent. Before/after manifests also hash all protected tracked files and create unrelated ignored sentinel files outside issue roots. The narrow Airflow file is deny-by-default: only a failing tests-before proof may activate its exact-path exception, and its diff may only forward explicit raw/warehouse/export workspace parameters while preserving the six/eight graph and current callers.
+
+The repository-wide ignore rule currently matches `package-lock.json`; `.gitignore` is protected. After generating and verifying the exact 119-record architecture lock, stage only `requirements/architecture/package-lock.json` with an exact-path force-add. Never force-add a directory or change ignore rules. The Python `requirements/*.lock` paths are not ignored and use normal staging.
 
 The already-discovered narrow seam is concrete: preserve every existing default while allowing `seed` to append `--out <raw-dir>`; `load_raw` to append `--raw-dir <raw-dir> --duckdb-path <warehouse-file>`; `health_check` to receive the same warehouse file; dbt build/docs to honor a caller-supplied private `DBT_PROFILES_DIR` (whose generated profile points at that warehouse and whose target/log paths are private) instead of always overwriting it with the product project directory; and export to append `--duckdb-path <warehouse-file> --export-dir <export-dir>`. No DAG file, task ID/edge, `_run` containment, publisher callable or default behavior changes. Bounded golden process execution wraps this seam outside Airflow; generalized Airflow subprocess containment remains I5-04.
 

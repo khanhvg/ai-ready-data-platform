@@ -6,6 +6,8 @@ effort: "1.5-2.0 implementation days"
 dependsOn: []
 ---
 
+<!-- Updated: Initial validation made mart content and summary canonicalization executable. -->
+
 # Phase 1: Immutable anchors and tests-first harness
 
 ## Overview
@@ -23,7 +25,7 @@ Write read-only characterization and negative tests before any golden producer o
 
 - Characterize all 18 exact CSV bytes/6,812 rows/checksum-list/manifest projection and observed anomalies separately from configured rates.
 - Characterize 18 sources, 51 models by layer/materialization, 141 generic tests plus `assert_non_negative_shipment_lead_time.sql`, graph hash, all nine warning-configured IDs and 7-warn/2-pass distinction, and 179/7/0/186 result.
-- Characterize 11 actual mart IDs/rows/content hashes/summary hash and every Rill model/dimension/expression/weighting rule.
+- Characterize 11 actual mart IDs/rows/content hashes, exact CSV value/dialect rules, normative JCS summary SHA `4b8a16…`, contextual legacy summary SHA `8ffb3e…`, and every Rill model/dimension/expression/weighting rule.
 - Characterize six default plus two optional Airflow IDs/edges, ordered 11 curated assets, Iceberg/OpenMetadata identifiers, and historical issue #3 parsing with context retained.
 - Every coarse-total-preserving semantic mutation fails a named assertion.
 

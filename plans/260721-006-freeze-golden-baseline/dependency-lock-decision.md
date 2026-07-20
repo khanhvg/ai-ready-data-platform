@@ -11,6 +11,7 @@ duckdb==1.5.4
 dbt-core==1.11.12
 dbt-adapters==1.24.4
 dbt-duckdb==1.10.1
+rfc8785==0.1.4
 ```
 
 This selects the historically proven dbt 1.11.12 family rather than allowing the resolver to choose a later core. `dbt-core==1.12.0` is not a patch-equivalent refresh: current metadata requires `dbt-adapters>=1.24.5` and adds `dbt-core-experimental-parser`, MetricFlow, and `python-dotenv`. Adopting it would change the parser/semantic dependency surface without a product requirement or golden evidence. A resolver that selects 1.12.0 or any version not listed below is a hard failure `LOCK_RESOLUTION_DRIFT`.
@@ -29,7 +30,7 @@ requirements/golden-lock-tools.in
 requirements/golden-lock-tools.lock
 ```
 
-The application `.in` contains the six direct roots above. The application `.lock` is pip requirements hash-checking syntax emitted by `pip-tools==7.6.0`: every package is exact `==`, every accepted wheel has `--hash=sha256:…`, and global policy is wheel-only. No editable/local/VCS/path/sdist entry, unbounded specifier, index/trusted-host override, or unhashed line is allowed. The metadata records schema version, Python/platform policy, direct pins, compiler identity, command, distribution count, lock byte SHA-256, and two run evidence locators. Metadata never replaces `pip --require-hashes`.
+The application `.in` contains the seven direct roots above. `rfc8785` is direct because phase 4 imports it for the normative evidence canonicalizer; relying on an unrelated transitive graph would make the required import unverifiable. The application `.lock` is pip requirements hash-checking syntax emitted by `pip-tools==7.6.0`: every package is exact `==`, every accepted wheel has `--hash=sha256:…`, and global policy is wheel-only. No editable/local/VCS/path/sdist entry, unbounded specifier, index/trusted-host override, or unhashed line is allowed. The metadata records schema version, Python/platform policy, direct pins, compiler identity, command, distribution count, lock byte SHA-256, and two run evidence locators. Metadata never replaces `pip --require-hashes`.
 
 `golden-lock-tools.in` contains exactly `pip==26.1.1` and `pip-tools==7.6.0`. Its independently reproduced 40-line wheel-only lock has exact path-sensitive SHA-256 `ece1d20658685e8673a98a12135e1680321f0c04e0f1ec35b5c30e15135a7bc4` and this complete eight-package graph:
 
@@ -44,12 +45,12 @@ The application `.in` contains the six direct roots above. The application `.loc
 | pip | 26.1.1 | `99cb1c2899893b075ff56e4ed0af55669a955b49ad7fb8d8603ecdaf4ed653fb` |
 | setuptools | 83.0.0 | `29b23c360f22f414dc7336bb39178cc7bcbf6021ed2733cde173f09dba19abb3` |
 
-`pip` and `setuptools` remain pinned/hashed in the compiler lock’s allow-unsafe section. The accepted CPython 3.12 distribution and its stdlib `venv`/bundled pip are the explicit local bootstrap trust anchor; pinning the CPython installer itself is outside this issue’s dependency-lock scope. Bundled pip may install only this pre-reviewed hash-closed tool lock. The disposable empty-cache proof began with bundled pip 24.0, installed exactly these eight wheels with `--require-hashes --only-binary=:all: --no-deps`, passed `pip check`, reported pip 26.1.1/pip-compile 7.6.0, and produced normalized tool freeze SHA-256 `f6f0623f2ce09da6df640b9e447693f0c5361b829a02d983e51fc0f1141b2af0`.
+`pip` and `setuptools` remain pinned/hashed in the compiler lock’s allow-unsafe section. The accepted CPython 3.12 distribution and its stdlib `venv`/bundled pip are the explicit local bootstrap trust anchor; pinning the CPython installer itself is outside this issue’s dependency-lock scope. Bundled pip may install only this pre-reviewed hash-closed tool lock. The independent validation empty-cache proof installed exactly these eight wheels with `--require-hashes --only-binary=:all: --no-deps`, passed `pip check`, reported pip 26.1.1/pip-compile 7.6.0, and produced SHA-256 `432758222db2606f750ec97edbbe96510cbf3e42a8704c4d59d0982ff37928f8` from the exact algorithm `sorted(pip freeze --all lines)`, LF-joined with one final LF. The metadata must name this algorithm; “normalized freeze” without it is not an executable claim.
 
 Exact tool-lock regeneration command, using the previously accepted compiler environment, is:
 
 ```bash
-PIP_CONFIG_FILE=/dev/null "$RUN_ROOT/lock-compiler/bin/pip-compile" - < "$REPO_ROOT/requirements/golden-lock-tools.in" --output-file="$REPO_ROOT/requirements/golden-lock-tools.lock" --no-config --resolver=backtracking --generate-hashes --allow-unsafe --strip-extras --no-reuse-hashes --no-emit-index-url --no-emit-trusted-host --pip-args='--only-binary=:all: --no-cache-dir --index-url https://pypi.org/simple'
+( cd "$REPO_ROOT" && PIP_CONFIG_FILE=/dev/null "$RUN_ROOT/lock-compiler/bin/pip-compile" - < requirements/golden-lock-tools.in --output-file=requirements/golden-lock-tools.lock --no-config --resolver=backtracking --generate-hashes --allow-unsafe --strip-extras --no-reuse-hashes --no-emit-index-url --no-emit-trusted-host --pip-args='--only-binary=:all: --no-cache-dir --index-url https://pypi.org/simple' )
 ```
 
 Exact compile command, run after the secure runner binds `RUN_ROOT` to a new private directory and `REPO_ROOT` to the verified worktree, with an empty pip cache:
@@ -61,14 +62,14 @@ PIP_CONFIG_FILE=/dev/null PIP_CACHE_DIR="$RUN_ROOT/compiler-pip-cache" "$RUN_ROO
 "$RUN_ROOT/lock-compiler/bin/python" -m pip check
 "$RUN_ROOT/lock-compiler/bin/python" -m pip --version
 "$RUN_ROOT/lock-compiler/bin/pip-compile" --version
-PIP_CONFIG_FILE=/dev/null PIP_CACHE_DIR="$RUN_ROOT/compiler-pip-cache" "$RUN_ROOT/lock-compiler/bin/pip-compile" - < "$REPO_ROOT/requirements/golden-py312-macos-arm64.in" --output-file="$REPO_ROOT/requirements/golden-py312-macos-arm64.lock" --no-config --resolver=backtracking --generate-hashes --allow-unsafe --strip-extras --no-reuse-hashes --no-emit-index-url --no-emit-trusted-host --pip-args='--only-binary=:all: --no-cache-dir --index-url https://pypi.org/simple'
+( cd "$REPO_ROOT" && PIP_CONFIG_FILE=/dev/null PIP_CACHE_DIR="$RUN_ROOT/compiler-pip-cache" "$RUN_ROOT/lock-compiler/bin/pip-compile" - < requirements/golden-py312-macos-arm64.in --output-file=requirements/golden-py312-macos-arm64.lock --no-config --resolver=backtracking --generate-hashes --allow-unsafe --strip-extras --no-reuse-hashes --no-emit-index-url --no-emit-trusted-host --pip-args='--only-binary=:all: --no-cache-dir --index-url https://pypi.org/simple' )
 ```
 
 The compiler version itself must be checked before compile. `--allow-unsafe` makes installer-class roots such as the explicit pip pin visible rather than silently omitting them. The implementer regenerates the candidate once, reviews the complete diff, then records the exact byte fingerprint. Regeneration that differs from the reviewed graph or expected candidate SHA is `LOCK_REGEN_MISMATCH`, not an implicit update.
 
-## Exact selected transitive graph
+## Exact selected locked graph
 
-The disposable read-only analysis on 2026-07-21 resolved exactly 55 application distributions; the pip installer/compiler wheel identity is pinned separately in the tool bootstrap contract:
+Independent validation on 2026-07-21 resolved exactly 56 distributions in the application lock: 55 runtime/import distributions plus the explicit `pip` installer root. The separate compiler lock independently pins the compiler environment.
 
 | Distribution | Version | Distribution | Version |
 |---|---:|---|---:|
@@ -99,12 +100,14 @@ The disposable read-only analysis on 2026-07-21 resolved exactly 55 application 
 | snowplow-tracker | 1.1.0 | sqlparse | 0.5.5 |
 | text-unidecode | 1.3 | typing-extensions | 4.16.0 |
 | typing-inspection | 0.4.2 | urllib3 | 2.7.0 |
-| zipp | 4.1.0 |  |  |
+| zipp | 4.1.0 | pip | 26.1.1 |
 
-Two independent disposable compiles using the same relative output filename produced byte-identical 837-line locks (SHA-256 `042ca2a806328067b1ce8584bfd0cd3ab18255c3dde71a0854d10c2cc71ea9bf`). With the exact committed output header/path above, the expected lock byte SHA-256 is:
+The superseded six-root planner probe remains provenance only: it produced a byte-identical 837-line lock with generic SHA-256 `042ca2a806328067b1ce8584bfd0cd3ab18255c3dde71a0854d10c2cc71ea9bf` and repository-relative output-header SHA-256 `6552bc4c96df53656a83f5c4d7e01317bc29a094fa7e3ac948d35f8d1b997d6a`, but it omitted `rfc8785` and therefore could not satisfy the required import. It is not an acceptable implementation lock.
+
+Two independent disposable validation compiles from separately bootstrapped compiler environments produced byte-identical corrected 840-line locks. With a generic same-directory output filename the SHA-256 is `08ad36af321bac52a32f160694b98446e07d74c971116dfd5afd16cf1af712c1`. With the exact repository-relative output header produced by the commands above, the expected lock byte SHA-256 is:
 
 ```text
-6552bc4c96df53656a83f5c4d7e01317bc29a094fa7e3ac948d35f8d1b997d6a
+f41c727b39f99106f95b7937b2811e8d27db89d1d5106e9f1d9effd4403143d2
 ```
 
 This fingerprint is a decision input, not a published repository lock at the planner SHA. The implementer must fail if the tracked lock produced from the reviewed input differs.
@@ -124,11 +127,13 @@ DBT_PROFILES_DIR="$REPO_ROOT/transform/dbt" "$RUN_ROOT/venv/bin/dbt" parse --pro
 VENV_PY="$RUN_ROOT/venv/bin/python" "$RUN_ROOT/venv/bin/python" -c 'import hashlib,os,subprocess; rows=sorted(subprocess.check_output([os.environ["VENV_PY"],"-m","pip","freeze","--all"], text=True).splitlines()); print(hashlib.sha256(("\n".join(rows)+"\n").encode()).hexdigest())'
 ```
 
-Two stronger disposable planning proofs used separate `git archive` extractions, homes, venvs and caches. Both passed the hash-only install and `pip check`, reported dbt-core 1.11.12/dbt-duckdb 1.10.1, produced 18 tables/6,812 rows, returned dbt 179 pass/7 warn/0 error/186 total, reported docs metadata 51 models/141 tests/18 sources/485 macros, and exported all 11 marts with identical row counts. Their normalized `pip freeze --all` package/version SHA-256 was:
+Two independent validation installs used separate homes, venvs and empty caches. Both passed the hash-only install and `pip check`, imported `dbt`, `duckdb`, `faker`, `jsonschema`, `rfc8785` and `yaml`, and produced the same exact sorted-`pip freeze --all` SHA-256:
 
 ```text
-e0b9ba79a6889cc0ab8f5d3b2d30ea3c9b37900f830094cd17affa389a9354bd
+cdb87ed71e0996f90041371cc25138afa02d78b134cbdc4afe9c25baa6649bba
 ```
+
+One independent disposable archive then produced 18 tables/6,812 rows, returned dbt 179 pass/7 warn/0 error/186 total, reported 51 models/141 tests/18 sources, and exported all 11 marts in 13 seconds on the validation host. These checks substantiate compatibility, not the formal two-clean-full-run release gate. Implementation must perform both complete runs from C1 and record their exact evidence.
 
 Implementation repeats these as formal tests, then each environment executes the full `small`/`42` pipeline. Independent test A and B must agree on lock bytes, freeze hash, package inventory, dbt graph, semantic projection, and artifact hashes. Network access is permitted only during the bounded artifact-download step; the pipeline run is offline. Missing binary wheels fail `LOCK_BINARY_UNAVAILABLE`; source builds and relaxed hashes are forbidden.
 

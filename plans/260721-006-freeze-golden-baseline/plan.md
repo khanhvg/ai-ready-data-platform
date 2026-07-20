@@ -13,6 +13,7 @@ createdBy: "ck:plan"
 source: skill
 planningMode: "deep-tdd"
 inputSha: "7a65da010abf0e3730731b6d744b532156c48fdc"
+plannerArtifactSha: "cec9f6b02cb3bf9f2aa7e2cf26af32692008aacd"
 integrationSha: "f9a87d0ebdb72c014a6f8c6eaae865dad4d2188c"
 masterReadinessSha: "e440c5855732d5d8f5d634e3cc1359c010cc5ed3"
 ---
@@ -27,7 +28,7 @@ This directory is a planning artifact only. Every command and path described as 
 
 ## Binding decisions
 
-1. **Dependency baseline:** CPython `3.12.x` only on the required darwin-arm64 lane (planning proof patch `3.12.3`), with `pip==26.1.1`, `dbt-core==1.11.12`, `dbt-adapters==1.24.4`, `dbt-duckdb==1.10.1`, `duckdb==1.5.4`, and `faker==40.28.1`. The wheel-only fully hashed lock is compiled by `pip-tools==7.6.0`; the exact proposed-path candidate has 55 distributions and SHA-256 `6552bc4c96df53656a83f5c4d7e01317bc29a094fa7e3ac948d35f8d1b997d6a`. Two independent clean full installs/runs produced the same normalized environment SHA-256 `e0b9ba79a6889cc0ab8f5d3b2d30ea3c9b37900f830094cd17affa389a9354bd` and the required data/dbt outputs. `dbt-core` 1.12.0 is intentionally not selected because it adds a new parser/MetricFlow dependency surface and would silently redefine the golden baseline.
+1. **Dependency baseline:** CPython `3.12.x` only on the required darwin-arm64 lane (validation proof patch `3.12.3`), with `pip==26.1.1`, `dbt-core==1.11.12`, `dbt-adapters==1.24.4`, `dbt-duckdb==1.10.1`, `duckdb==1.5.4`, `faker==40.28.1`, and the evidence canonicalizer `rfc8785==0.1.4`. The wheel-only fully hashed lock is compiled by `pip-tools==7.6.0`; two independent validation compiles produced the corrected 56-distribution, 840-line candidate with generic relative-output SHA-256 `08ad36af321bac52a32f160694b98446e07d74c971116dfd5afd16cf1af712c1` and repository-relative output-header SHA-256 `f41c727b39f99106f95b7937b2811e8d27db89d1d5106e9f1d9effd4403143d2`. Two empty-cache installs produced normalized environment SHA-256 `cdb87ed71e0996f90041371cc25138afa02d78b134cbdc4afe9c25baa6649bba`; one disposable full compatibility run reproduced the required data/dbt outputs. The formal two-clean-full-run result remains an implementation gate. `dbt-core` 1.12.0 is intentionally not selected because it adds a new parser/MetricFlow dependency surface and would silently redefine the golden baseline.
 2. **Architecture chain:** pin Java-free LikeC4 `1.59.1` for `.c4` semantic validation/computed model output and `@hpcc-js/wasm-graphviz` `1.22.2` (embedded Graphviz `15.0.0`) for SVG, behind a project fitness/text/normalization wrapper. The renderer must fail on missing tools, malformed references, stale output, or non-deterministic bytes; it must not claim a Structurizr CLI export.
 3. **Fixture handoff:** the owner clarification authorizes only `tests/fixtures/learning/promotion-trust/{evidence-v1.json,manifest.json}` and issue-owned negative cases under `tests/fixtures/learning/promotion-trust/invalid/**`. The fixture contains four separately grained, sanitized aggregate projections and the expected decision `insufficient-evidence`; all other fixtures and every score/ADR/attribution are forbidden.
 
@@ -35,7 +36,7 @@ Details and probe evidence are normative in [dependency-lock-decision.md](./depe
 
 ## Authority and invariants
 
-- Exact implementation input: `7a65da010abf0e3730731b6d744b532156c48fdc`; its ancestry contains integration `f9a87d0ebdb72c014a6f8c6eaae865dad4d2188c` and master readiness/audit `e440c5855732d5d8f5d634e3cc1359c010cc5ed3`.
+- Immutable discovery source: `7a65da010abf0e3730731b6d744b532156c48fdc`; immutable planner artifact/validation input: `cec9f6b02cb3bf9f2aa7e2cf26af32692008aacd`. The future exact `IMPLEMENTATION_INPUT_SHA` is the clean, remotely observed output accepted by this validation **and** the subsequent fresh readiness audit; it must descend from the planner artifact and contain integration `f9a87d0ebdb72c014a6f8c6eaae865dad4d2188c` plus master readiness `e440c5855732d5d8f5d634e3cc1359c010cc5ed3`. Discovery SHA is a provenance anchor, not the future `testedTreeSha`.
 - Writable product scope is limited to `scripts/golden/**`; the three named `contracts/data/**` files; base `learning/contracts/**`; evidence core; six architecture source/render/text/manifest paths; dependency locks; root Make include/help plus `mk/issue-5/i5-01.mk`; the exact fixture paths above; and only a proven Airflow workspace-path forwarding seam.
 - Root `release-manifest.json`, `docs/code-standards.md` (currently absent), discovery history, unrelated tracked/ignored/generated paths, later issue fragments, portal/runner/Terraform/cloud paths, and every other fixture are protected.
 - I5-01 defines the `CuratedReleaseManifest` schema and current-pointer contract. I5-07 implements staging, switch, read-back, reconciliation, and the publisher. I5-14 owns trusted signing. I5-02 owns framework score/ADR. I5-04 owns generalized privileged-runner containment. I5-06 receives only a serialized additions-only architecture lease.
@@ -103,3 +104,11 @@ Read in this order:
 7. [implementation-handoff.md](./implementation-handoff.md)
 
 After this planner commit, the next authorized state is **independent plan validation**, not implementation. Validation and a fresh readiness audit must be separate sessions and may amend the plan before any cook phase.
+
+## Validation session 1 — independent initial validation
+
+- **Validator mandate:** user-authorized `$ck:plan validate`; no red-team, readiness audit, cook, implementation, product/config/data change, fixture generation, dependency publication, cloud action, PR or merge.
+- **Validation input:** planner artifact `cec9f6b02cb3bf9f2aa7e2cf26af32692008aacd`; discovery `7a65da010abf0e3730731b6d744b532156c48fdc`; integration `f9a87d0ebdb72c014a6f8c6eaae865dad4d2188c`; master readiness `e440c5855732d5d8f5d634e3cc1359c010cc5ed3`.
+- **Questions asked:** 0. The validator mandate already supplied the authority, platform, toolchain, fixture, scope and publication decisions; no unresolved product choice was inferred.
+- **Bounded corrections:** added the missing direct `rfc8785` root and independently reproduced fingerprints; separated discovery/planner/implementation/tested-tree identities; corrected promotion fixture mart values and made mart summary bytes executable; corrected the protected release-manifest hash; made ignored npm-lock staging explicit; tightened SVG semantic preservation; restored validation/readiness ordering; added master PH/authority traceability.
+- **Report:** [initial-validation-report.md](./validation/initial-validation-report.md).

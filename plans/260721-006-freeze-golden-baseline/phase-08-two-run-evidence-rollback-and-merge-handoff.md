@@ -6,6 +6,8 @@ effort: "1.5-2.0 implementation days plus review wait"
 dependsOn: [1, 2, 3, 4, 5, 6, 7]
 ---
 
+<!-- Updated: Initial validation restored pre-implementation validation/readiness ordering. -->
+
 # Phase 8: Two-run evidence, rollback and merge handoff
 
 ## Overview
@@ -34,7 +36,7 @@ From committed clean tree C1, execute two completely independent bounded golden 
 
 - Requires every prior phase and clean committed C1.
 - Produces issue #7’s merge-blocked handoff; issue #7 waits for remote M.
-- Independent validation/readiness and human pre-merge review still follow the future implementation workflow; this planner does not run them.
+- Independent initial validation and the fresh readiness audit precede implementation and publish the exact implementation input. After implementation, independent implementation validation/readiness evidence and human pre-merge review still precede any merge. This plan never bypasses either gate.
 
 ## Test scenario matrix
 

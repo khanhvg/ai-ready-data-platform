@@ -6,6 +6,8 @@ effort: "2.0-3.0 implementation days"
 dependsOn: [1, 2, 3, 4]
 ---
 
+<!-- Updated: Initial validation made npm-lock reproduction/staging and SVG semantic preservation explicit. -->
+
 # Phase 6: Architecture source validation and deterministic render
 
 ## Overview
@@ -20,6 +22,7 @@ Create exactly six minimum-useful LikeC4 source views and deterministically deri
 - SVG normalization/accessibility/security and JCS render input freshness.
 - Two renders plus second empty-cache install yield byte equality on primary platform; Linux tuples are compatibility tests and may not be claimed until passing.
 - I5-06 additions-only lease cannot mutate the original six.
+- The 119-record npm lock is reproduced twice at SHA-256 `7a56d803…`; because `package-lock.json` is ignored and `.gitignore` is protected, only its exact path may be force-added after verification.
 
 ## File inventory
 
@@ -65,7 +68,7 @@ Create exactly six minimum-useful LikeC4 source views and deterministically deri
 
 1. Add manifest schema and exact six/minimum-useful-view expectations.
 2. Add malformed references, abstraction/concern/legend/orphan/later-view mutations.
-3. Add deterministic text/SVG normalization/security/freshness vectors.
+3. Add deterministic text/SVG normalization/security/freshness vectors, including semantic ID/text/style/path/geometry mutations that normalization must preserve.
 4. Add missing-tool/version/lock and atomic staging failure cases.
 5. Confirm expected failures because sources/locks/renders are absent.
 
