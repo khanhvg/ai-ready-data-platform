@@ -27,8 +27,8 @@ measures:
     format_preset: currency_usd
   - name: avg_order_value
     display_name: Avg Order Value
-    expression: AVG(avg_order_value)
+    expression: SUM(net_revenue) / NULLIF(SUM(order_count), 0)
     format_preset: currency_usd
   - name: avg_discount_pct_of_gross
     display_name: Discount % of Gross
-    expression: AVG(discount_pct_of_gross)
+    expression: 100.0 * SUM(total_discount_amount) / NULLIF(SUM(gross_revenue), 0)
