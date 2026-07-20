@@ -26,7 +26,7 @@ diagnosis and never appears in decision evidence.
 ## Requirements
 
 - Pin Vite `8.1.5` and React/React DOM `19.2.7`; own independent npm 10 lockfile with exact
-  top-level versions.
+  top-level versions. Explicitly force-add only that ignored lockfile and prove it is tracked.
 - Generate complete semantic HTML at build time using a bounded candidate-native prerender/MPA
   approach, then progressively enhance only explicit controls.
 - Keep the typed adapter explicit and read-only in issue #7. `VITE_*` values are public by design;
@@ -118,6 +118,8 @@ building a general SSR framework. Manual AT/real-fixture comparison remains Gate
 - Record package/lock, lifecycle/advisory/license/provenance, build manifest, initial/interactive
   JS, CSP, start/stop, timer, and non-copy evidence.
 - Mark only `PROVISIONAL_UNSCORED` or `ELIMINATED` at cap; score remains null.
+  A provisional record is `foundation` scope and enumerates browser/manual/real-fixture checks as
+  required pending `decision` scope.
 
 ## Regression Gate
 
@@ -127,14 +129,15 @@ Planned future commands:
 make -f mk/issue-5/i5-02.mk web-vite-install
 make -f mk/issue-5/i5-02.mk web-vite-build
 make -f mk/issue-5/i5-02.mk web-vite-test
-make -f mk/issue-5/i5-02.mk web-vite-a11y
-make -f mk/issue-5/i5-02.mk web-vite-e2e
-make -f mk/issue-5/i5-02.mk web-vite-evidence
+make -f mk/issue-5/i5-02.mk web-vite-evidence SCOPE=foundation
 ```
 
 Targets emit `fitness-result-v1` evidence and exit non-zero on missing tools, empty/non-semantic
 HTML, unsafe public env, dev-server substitution, test/mode/fixture drift, or required must-pass
 failure. Evidence rejects any pre-Gate-C numeric score/winner.
+It also rejects a provisional record missing the required pending decision-scope gate list.
+`web-vite-a11y` and `web-vite-e2e` remain mandatory Gate C targets and are not optional
+foundation results.
 
 ## Success Criteria
 

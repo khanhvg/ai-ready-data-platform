@@ -14,11 +14,15 @@ evidence exists. No command below is run in the planning phase.
 | Astro | [`astro@7.1.3`](https://github.com/withastro/astro/releases/tag/astro%407.1.3), [`react@19.2.7`](https://github.com/facebook/react/releases/tag/v19.2.7), `react-dom@19.2.7`; static output + smallest React control island; common static host |
 | Next | [`next@16.2.10`](https://github.com/vercel/next.js/releases/tag/v16.2.10), `react@19.2.7`, `react-dom@19.2.7`; self-hosted standalone App Router; prerenderable lesson; narrow client boundary; read-only Route Handler |
 | Vite | [`vite@8.1.5`](https://github.com/vitejs/vite/releases/tag/v8.1.5), `react@19.2.7`, `react-dom@19.2.7`; prerendered/MPA static semantic artifact + progressive React; common static host |
-| Package policy | Exact top-level versions, independent lockfile per common harness/candidate, clean `npm ci`, reviewed lifecycle scripts; no package workspace that couples candidates |
+| Package policy | Exact top-level versions, one independent lockfile per candidate, clean `npm ci`, reviewed lifecycle scripts; dependency-free common harness with no package manifest/lock; no package workspace that couples candidates |
 
 All remaining packages are pinned exactly in their owning manifest/lock during implementation.
 Changing a top-level or transitive lock, candidate mode, common test semantics, fixture digest, or
 browser version invalidates affected evidence. It never extends a candidate or total cap.
+Root `.gitignore` ignores `package-lock.json`, so implementation must use exactly
+`git add -f -- spikes/web/candidates/astro/package-lock.json spikes/web/candidates/next/package-lock.json spikes/web/candidates/vite/package-lock.json`
+and prove those paths are tracked. Broad force-add, ignore-rule edits, or a root/common lock is a
+hard failure.
 
 ## Fairness Boundary
 
@@ -55,13 +59,21 @@ authoring, builds, tests, measurements, and fixes count. Only an external regist
 or required owner decision may pause, with evidence; no candidate receives compensating time.
 Gate 0 and Barrier B waiting do no product work and are outside the active budget.
 
-Pre-Barrier-B candidate dispositions:
+Pre-Barrier-B candidate dispositions use `evidenceScope: foundation`:
 
-- `PROVISIONAL_UNSCORED`: all currently executable candidate/common must-passes are green; real
-  fixture, fresh comparison, and manual Gate C review are still pending.
+- `PROVISIONAL_UNSCORED`: all foundation-scope candidate/common unit, schema, semantic-static,
+  lifecycle, content, S3, supply-chain, and non-copy must-passes are green. Browser E2E/manual
+  review and the real fixture are enumerated as required `decisionScope` Gate C inputs, not as
+  optional, passed, or silently skipped.
 - `ELIMINATED`: 90-minute/3-hour kill or a permanent must-pass breach; `numericScore` is null.
 
 No other successful pre-Barrier-B status is permitted.
+
+Candidate `*-a11y` and `*-e2e` targets belong to `evidenceScope: decision` and execute only in
+Gate C after Barrier B and the frozen browser environment exist. Invoking them earlier still
+exits non-zero; that expected unavailable-gate result does not by itself eliminate an otherwise
+green foundation. Gate C invokes all decision-scope targets, and any failure then eliminates the
+candidate. `not-run-optional` is never used.
 
 ## Environment and Sample Rotation
 
@@ -106,7 +118,12 @@ The exact 12-item must-pass list is in Phase 7 and the acceptance matrix. Any re
 `ELIMINATED`, never scored. A missing browser/manual record makes the decision evidence incomplete
 and prevents scoring/winner publication.
 
-Only complete passing candidates receive 0-5 anchored category scores:
+Only complete passing candidates receive 0-5 anchored category scores. Gate 0 must commit and
+digest-freeze `spikes/web/harness/score-anchors.json` before any candidate action. It contains all
+seven categories and every integer level 0..5, with each level defined by machine-checkable
+numeric thresholds and/or a fixed reviewer predicate checklist tied to the raw evidence below.
+Missing levels, free-form interpolation, candidate-relative/post-observation criteria, or any edit
+after the freeze invalidates all candidate evidence:
 
 | Category | Weight |
 |---|---:|
@@ -148,6 +165,7 @@ Every `fitness-result-v1` record includes:
   "runId": "<opaque-safe-id>",
   "gate": "gate-0|gate-a|candidate|barrier-b|gate-c|gate-d",
   "candidate": "common|preview|astro|next|vite|decision",
+  "evidenceScope": "foundation|decision|barrier|null",
   "resultStatus": "pass|fail|blocked-tbc|not-run-optional",
   "candidateDisposition": "PROVISIONAL_UNSCORED|ELIMINATED|PASS|WINNER|NO_WINNER|null",
   "numericScore": null,
@@ -185,26 +203,27 @@ target first invokes Gate 0 and writes/updates the canonical evidence record.
 | Command/target | Expected status and evidence | Non-zero behavior |
 |---|---|---|
 | `node --test spikes/web/harness/tests/authority.test.mjs` | Unit test report for drift/ownership negatives | Any assertion/tool error |
-| `node spikes/web/harness/scripts/authority-check.mjs --base a39251d45a56124322b9143ad16b926b2656073b` | Exact SHA/hash/path/toolchain/mode/WEB-ID record; `pass` only on equality | Any mismatch/missing required tool |
-| `make -f mk/issue-5/i5-02.mk i5-02-authority-check` | Same normalized Gate 0 record | Same |
+| `node spikes/web/harness/scripts/authority-check.mjs --implementation-input <full-40-hex-authorized-sha>` | Initial local/tracking/live-remote equality, required ancestry, hashes/path/toolchain/mode/WEB-ID/anchor record | Any input/remote/ancestry/hash/path/freeze/tool mismatch |
+| `make -f mk/issue-5/i5-02.mk i5-02-authority-check IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>` | Same normalized Gate 0 record | Same |
 | `make -f mk/issue-5/i5-02.mk i5-02-protected-hash-check` | Root/protected/discovery hash/absence report | Any drift/presence violation |
 | `make -f mk/issue-5/i5-02.mk i5-02-toolchain-check` | Exact Node/npm/top-level/mode policy report | Range/version/mode/lock-format mismatch |
-| `make -f mk/issue-5/i5-02.mk i5-02-changed-path-check BASE_SHA=<sha>` | Allow/deny path report | Forbidden/shared/protected/discovery path or missing base |
+| `make -f mk/issue-5/i5-02.mk i5-02-changed-path-check IMPLEMENTATION_INPUT_SHA=<sha>` | Allow/deny path and exact tracked candidate-lock report | Forbidden/shared/protected/discovery path, ignored/untracked lock, broad force-add, or missing input |
 | `make -f mk/issue-5/i5-02.mk i5-02-security-check` | S3 content/bundle/network/CSP/dependency/evidence negative-test index | Unsafe content/route/CSP/dependency/evidence or missing required record |
 | `make -f mk/issue-5/i5-02.mk i5-02-credential-check` | High-confidence source/bundle/source-map/trace/header/cookie/path canary report | Any credential/private-key/private-URL/absolute-path exposure |
 | `make -f mk/issue-5/i5-02.mk i5-02-non-copy-check` | Source/license/principle inventory and reviewer result | Missing inventory/reviewer or derivative prose/asset/layout/style/source |
 | `node --test spikes/web/common/tests/*.test.mjs` | Common WEB assertion results | Any applicable WEB failure |
 | `make -f mk/issue-5/i5-02.mk web-common-test` | `gate-a/common-tests.json`, test-ID digest | Any WEB failure/missing/duplicate ID |
-| `make -f mk/issue-5/i5-02.mk learn-preview LESSON=promotion-trust` | `pass`; URL/PID/fixture digest/label/evidence root; synthetic only | Wrong lesson/host/port/assets/readiness/stale PID/unsafe route |
+| `make -f mk/issue-5/i5-02.mk learn-preview LESSON=promotion-trust [PREVIEW_PORT=4173]` | `pass`; loopback URL/PID/digest/label/evidence root; fixed port and 10s readiness deadline | Wrong lesson/host, invalid/occupied port, asset/readiness timeout, stale PID, unsafe route |
 | `make -f mk/issue-5/i5-02.mk learn-preview-status` | `pass` only when recorded process and semantic readiness match | Down/stale/wrong process/readiness |
+| `make -f mk/issue-5/i5-02.mk learn-preview-reset-check LESSON=promotion-trust` | Reducer applies canonical persisted-state reset twice; baseline digest, visible count, history replacement, and idempotency evidence | Wrong fixture/digest, non-baseline state, count/history mismatch, second-reset drift |
 | `make -f mk/issue-5/i5-02.mk learn-preview-down` | `pass`; idempotent owned-tree shutdown and retained evidence | Foreign target or owned process survives |
 | `python3 -m http.server 4173 --bind 127.0.0.1 --directory spikes/web/preview` | Foreground no-build review fallback; no fitness/score claim | Python/bind/path failure |
 | `make -f mk/issue-5/i5-02.mk web-astro-install`<br>`make -f mk/issue-5/i5-02.mk web-next-install`<br>`make -f mk/issue-5/i5-02.mk web-vite-install` | Candidate lock/lifecycle/install/timer evidence | Dirty/mismatched lock, policy/advisory block, install failure, cap/authority breach |
 | `make -f mk/issue-5/i5-02.mk web-astro-build`<br>`make -f mk/issue-5/i5-02.mk web-next-build`<br>`make -f mk/issue-5/i5-02.mk web-vite-build` | Frozen mode/build/static semantic manifest | Build/mode/schema/non-semantic/unsafe output failure |
 | `make -f mk/issue-5/i5-02.mk web-astro-test`<br>`make -f mk/issue-5/i5-02.mk web-next-test`<br>`make -f mk/issue-5/i5-02.mk web-vite-test` | Candidate-specific plus unchanged common assertion index | Any required unit/schema/static/common failure |
-| `make -f mk/issue-5/i5-02.mk web-astro-a11y`<br>`make -f mk/issue-5/i5-02.mk web-next-a11y`<br>`make -f mk/issue-5/i5-02.mk web-vite-a11y` | Automated semantic/axe/reflow/motion/static results; manual status separate | Required browser/tool/assertion missing/failing; cannot mark manual pass |
-| `make -f mk/issue-5/i5-02.mk web-astro-e2e`<br>`make -f mk/issue-5/i5-02.mk web-next-e2e`<br>`make -f mk/issue-5/i5-02.mk web-vite-e2e` | Deterministic WEB E2E traces/screenshots for declared fixture | Browser missing, WEB failure, digest/mode drift |
-| `make -f mk/issue-5/i5-02.mk web-astro-evidence`<br>`make -f mk/issue-5/i5-02.mk web-next-evidence`<br>`make -f mk/issue-5/i5-02.mk web-vite-evidence` | Complete candidate record + timer + retention index; pre-B is provisional/eliminated | Incomplete/unsafe evidence, illegal score/winner/status |
+| `make -f mk/issue-5/i5-02.mk web-astro-a11y`<br>`make -f mk/issue-5/i5-02.mk web-next-a11y`<br>`make -f mk/issue-5/i5-02.mk web-vite-a11y` | Gate C `decision` scope: automated semantic/axe/reflow/motion/static results; manual status separate | Barrier/browser/tool/assertion missing/failing; cannot mark manual pass |
+| `make -f mk/issue-5/i5-02.mk web-astro-e2e`<br>`make -f mk/issue-5/i5-02.mk web-next-e2e`<br>`make -f mk/issue-5/i5-02.mk web-vite-e2e` | Gate C `decision` scope: fresh deterministic WEB traces/screenshots for merged fixture | Barrier/browser missing, WEB failure, digest/mode drift |
+| `make -f mk/issue-5/i5-02.mk web-astro-evidence SCOPE=foundation`<br>`make -f mk/issue-5/i5-02.mk web-next-evidence SCOPE=foundation`<br>`make -f mk/issue-5/i5-02.mk web-vite-evidence SCOPE=foundation` | Foundation record + timer + explicit pending decision-scope list; provisional/eliminated only | Incomplete/unsafe foundation evidence, missing pending-gate inventory, illegal score/winner/status |
 | `node --test spikes/web/harness/tests/barrier-b.test.mjs` | Absent/mixed/unmerged/tamper/invalidation results | Any assertion/tool error |
 | `make -f mk/issue-5/i5-02.mk web-barrier-b-check I5_01_MERGE_SHA=<sha>` | `pass` only with merged ancestor + four digests/schema/read-only state | Any missing/unmerged/mixed/unsafe/dirty/invalidation failure |
 | `make -f mk/issue-5/i5-02.mk web-real-fixture-rerun I5_01_MERGE_SHA=<sha>` | One rotated clean real-fixture run index for survivors | Barrier/browser/env drift, candidate/must-pass/sample/cap failure |

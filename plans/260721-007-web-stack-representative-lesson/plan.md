@@ -15,6 +15,7 @@ mode: deep-tdd
 plannerPhase: fresh-initial-plan
 requestedPlannerModel: "gpt-5.6-sol"
 requestedModelReasoningEffort: "xhigh"
+plannerOutputSha: "0890c4abab46f81d110be6cbd6de3560e631a735"
 inputDiscoverySha: "a39251d45a56124322b9143ad16b926b2656073b"
 integrationInputSha: "f9a87d0ebdb72c014a6f8c6eaae865dad4d2188c"
 masterReadinessSha: "e440c5855732d5d8f5d634e3cc1359c010cc5ed3"
@@ -55,7 +56,8 @@ validation, audit, cloud action, migration, PR, or merge.
 
 | Boundary | Status at planner input | Consequence |
 |---|---|---|
-| Branch/input | Local, tracking, and live remote equal `a39251d45a56124322b9143ad16b926b2656073b`; integration and readiness SHAs are ancestors | Gate 0 may be implemented after independent validation/readiness authorization |
+| Planner provenance | Planner output is `0890c4abab46f81d110be6cbd6de3560e631a735`; discovery, integration, and readiness inputs are the immutable SHAs in frontmatter | Validation/audit may add planning-only descendants; none authorizes implementation by itself |
+| Future implementation input | Not yet assigned; the later readiness handoff must name one exact full SHA | Gate 0 must first prove local HEAD, tracking, and live remote equal that SHA, then retain it as the changed-path base and ancestor of every tested tree |
 | Issue #7 path authority | `spikes/web/**`, ADR-005 proposal/evidence paths, and `mk/issue-5/i5-02.mk` are allowed | Issue-local Make commands are valid; root Make alias is a later shared-owner handoff |
 | Issue #6 handoff | Four required files are absent; #6 is open and `triaged` | Barrier B, score, winner, and decision-grade ADR remain blocked |
 | Browser/manual accessibility | Discovery had no browser instance | Gate C and any score/winner remain blocked until fresh current-browser and named-AT evidence exists |
@@ -134,13 +136,16 @@ Gate 0 -> Gate A -> Astro foundation ----+
 - Common sharing is limited to manifest/state/failure/evidence/client logical shapes and test
   semantics; candidate rendering/routing remains native and measurable.
 - Each candidate has an independent lockfile, identical caps, an executable foundation/must-pass
-  kill, and no score when killed.
+  kill, and no score when killed. Because the repository ignores `package-lock.json`, the three
+  exact candidate lockfiles are force-added explicitly and their tracked state is a hard gate.
 - Barrier B records an actual merged #6 SHA and exact file digests; any drift invalidates every
   candidate result and persisted browser state.
 - Gate C records fresh screenshots/traces and manual keyboard, named screen-reader, 200% reflow,
   reduced-motion, and no-JS review plus fair raw performance/resource evidence.
 - Scoring is impossible before every must-pass is complete. The weighted rubric and within-five-
   point Astro default apply only to complete passing candidates; otherwise the result is no winner.
+- The complete 0-5 category anchor registry is written, tested, and digest-frozen at Gate 0 before
+  candidate work; no observed candidate result may influence an anchor.
 - Losing sources/build entrypoints are excluded without deleting reproducibility evidence; later
   cleanup is separately authorized and reversible.
 
@@ -149,3 +154,18 @@ Gate 0 -> Gate A -> Astro foundation ----+
 Independent validation and a fresh readiness audit are the next external phases. This fresh
 initial planner performed only authority research, plan authoring, planner self-checks, and
 publication. It did not validate, red-team, audit, implement, install, build, score, or merge.
+
+## Validation Log
+
+### 2026-07-21 — Independent initial validation
+
+- Validator input: planner output `0890c4abab46f81d110be6cbd6de3560e631a735` with discovery
+  `a39251d45a56124322b9143ad16b926b2656073b`, integration
+  `f9a87d0ebdb72c014a6f8c6eaae865dad4d2188c`, and master readiness
+  `e440c5855732d5d8f5d634e3cc1359c010cc5ed3`.
+- Corrected only planning artifacts: future implementation-input authority, deterministic preview
+  lifecycle/reset evidence, pre-Barrier-B foundation versus Gate C browser scope, ignored lockfile
+  retention, and pre-candidate score-anchor freeze.
+- Raw `discovery/**` remained immutable. See
+  [initial validation report](./validation/initial-validation-report.md) for sampled evidence,
+  findings, commands, blockers, and verdict.

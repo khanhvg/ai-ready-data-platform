@@ -67,7 +67,7 @@ readiness/lifecycle/CSP only and renders no framework route.
 | Create | `spikes/web/preview/preview.css` | 150-250 lines | Reflow/reduced-motion/focus |
 | Create | `spikes/web/preview/preview.mjs` | 150-250 lines | Optional progressive/reversible enhancement |
 | Create | `spikes/web/harness/scripts/static-host.mjs` | small | Loopback/status/shutdown/CSP for preview and static candidates |
-| Create | `spikes/web/harness/scripts/preview-control.mjs` | small | Scoped PID/port/status/down |
+| Create | `spikes/web/harness/scripts/preview-control.mjs` | small | Scoped PID/port/start/status/reset-check/down |
 | Create | `spikes/web/non-copy-inventory.md` | concise | Source/reviewer gate |
 | Modify | `mk/issue-5/i5-02.mk` | small | Preview/common direct targets |
 
@@ -100,6 +100,9 @@ enter scorecard/ADR evidence.
 - [ ] Fixture kind/digest binds state and evidence; a digest change clears persisted state.
 - [ ] Allowed preview states omit `completed` and use explicit committed/transient fields.
 - [ ] Reset is idempotent, increments a visible count, and returns the same baseline digest.
+- [ ] Default port is `4173`; an explicit `PREVIEW_PORT` may choose one other loopback port, but an
+      occupied/invalid port fails rather than silently selecting another. Readiness times out after
+      10 seconds, terminates only the just-started owned process, and records the failure.
 - [ ] Verify checks only the fixture projection and displays the non-completing label.
 - [ ] Export is sanitized, relative-path-only, synthetic-labelled, and unscored.
 - [ ] Failure code, learner copy, recovery, progression, and evidence differ by class.
@@ -156,17 +159,23 @@ node --test spikes/web/common/tests/*.test.mjs
 make -f mk/issue-5/i5-02.mk web-common-test
 make -f mk/issue-5/i5-02.mk learn-preview LESSON=promotion-trust
 make -f mk/issue-5/i5-02.mk learn-preview-status
+make -f mk/issue-5/i5-02.mk learn-preview-reset-check LESSON=promotion-trust
 make -f mk/issue-5/i5-02.mk learn-preview-down
 python3 -m http.server 4173 --bind 127.0.0.1 --directory spikes/web/preview
 ```
 
 `web-common-test` emits `.artifacts/evidence/web-spike/<run-id>/gate-a/common-tests.json` and exits
 non-zero for any applicable WEB failure. `learn-preview` prints the loopback URL, PID locator,
-fixture digest, label, and evidence root; it exits non-zero on unsafe host/port, missing assets,
-wrong lesson, stale PID, or failed readiness. `status` exits non-zero unless the recorded process
-and semantic readiness probe match. `down` is idempotent, stops only the recorded process tree,
-retains evidence, and exits non-zero if an owned process survives. The Python command is a direct
-foreground fallback and creates no status/evidence claim.
+fixture digest, label, evidence root, fixed port, and 10-second readiness deadline; it binds only
+`127.0.0.1` and exits non-zero on an invalid/occupied port, unsafe host, missing assets, wrong
+lesson, stale PID, or timeout. `status` exits non-zero unless the recorded process identity and
+semantic readiness probe match. `learn-preview-reset-check` applies the same reducer used by the
+visible Reset control to the canonical persisted-state vector twice, proving the baseline digest,
+visible reset count, history replacement, and idempotency without pretending to mutate an open
+browser. `down` is idempotent, stops only the recorded process tree, retains evidence, and exits
+non-zero if an owned process survives. The Python command is a direct foreground fallback and
+creates no lifecycle/fitness/score claim; callers must stop it with their own foreground process
+control.
 
 ## Success Criteria
 

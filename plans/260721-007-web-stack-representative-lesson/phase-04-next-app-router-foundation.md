@@ -26,7 +26,7 @@ runner or using Server Actions as a private-boundary shortcut.
 ## Requirements
 
 - Pin Next `16.2.10` and React/React DOM `19.2.7`; independent npm 10 lockfile and exact top-level
-  versions.
+  versions. Explicitly force-add only that ignored lockfile and prove it is tracked.
 - Freeze `output: standalone`. Production command is the generated standalone server bound to
   loopback. Do not switch to static export, dev, edge, or another server mode to improve a metric.
 - Keep the lesson in Server Components/prerendered output where supported. Place only explicit
@@ -120,6 +120,8 @@ from unit output.
 - Record standalone output, Server/Client graph, initial/lab JS, process-tree RSS hooks, cache
   behavior, CSP, locks/supply-chain evidence, and exact timer.
 - At cap, record only `PROVISIONAL_UNSCORED` or `ELIMINATED`; numeric score must be null.
+  A provisional record is `foundation` scope and enumerates browser/manual/real-fixture checks as
+  required pending `decision` scope.
 
 ## Regression Gate
 
@@ -129,14 +131,14 @@ Planned future commands:
 make -f mk/issue-5/i5-02.mk web-next-install
 make -f mk/issue-5/i5-02.mk web-next-build
 make -f mk/issue-5/i5-02.mk web-next-test
-make -f mk/issue-5/i5-02.mk web-next-a11y
-make -f mk/issue-5/i5-02.mk web-next-e2e
-make -f mk/issue-5/i5-02.mk web-next-evidence
+make -f mk/issue-5/i5-02.mk web-next-evidence SCOPE=foundation
 ```
 
 Commands emit evidence and exit non-zero on missing tools, unsafe routes/CSP, non-semantic output,
 mode/test/fixture drift, lifecycle failure, or any applicable must-pass failure. The evidence
-target also exits non-zero if pre-Gate-C data contains a numeric score or winner field.
+target also exits non-zero if pre-Gate-C data contains a numeric score/winner or omits the pending
+decision-scope gate list. `web-next-a11y` and `web-next-e2e` remain mandatory Gate C targets; they
+are not optional foundation results.
 
 ## Success Criteria
 

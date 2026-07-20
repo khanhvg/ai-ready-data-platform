@@ -3,9 +3,12 @@
 ## Boundary
 
 This handoff becomes executable only after issue #7's independent plan validation and fresh
-readiness audit authorize cook from an exact merged planning SHA. It does not itself authorize
-implementation. Use the current worktree/branch assigned by that later phase; stop on a different
-repository, branch, dirty protected/shared path, missing dependency merge, or conflicting lease.
+readiness audit authorize cook from one exact full `IMPLEMENTATION_INPUT_SHA`. Before any write,
+local HEAD, tracking, and freshly fetched live remote must all equal that SHA; the SHA must contain
+planner output `0890c4abab46f81d110be6cbd6de3560e631a735` and the recorded validation/audit ancestry.
+It does not itself authorize implementation. Use the current worktree/branch assigned by that
+later phase; stop on a different repository, branch, dirty protected/shared path, upstream drift,
+missing dependency merge, or conflicting lease.
 
 ## Exact Allowed Paths
 
@@ -66,6 +69,7 @@ spikes/web/
     toolchain.json
     candidate-modes.json
     test-ids.json
+    score-anchors.json
     fixture-handoff.json          # only after Barrier B
     scripts/
     tests/
@@ -82,14 +86,17 @@ docs/decisions/0005-web-stack.md
 docs/decisions/evidence/adr-0005-web-stack-scorecard.{md,json}
 ```
 
-No root package workspace/lockfile is added. Common harness and candidates remain independently
-locked so one install cannot mutate another candidate's dependency evidence.
+No root package workspace/lockfile is added. The common harness is dependency-free and has no
+manifest/lock. Each candidate has its own exact manifest/lock so one install cannot mutate another
+candidate's dependency evidence. Root `.gitignore` ignores `package-lock.json`; force-add exactly
+the three candidate locks and prove they are tracked, never edit `.gitignore` or broadly add
+ignored paths.
 
 ## Start Conditions by Gate
 
 | Work | May begin when | Must remain blocked while |
 |---|---|---|
-| Gate 0 registry/tests/checker/make fragment | Independent validation + readiness audit authorize implementation from exact plan output | Wrong/dirty base, path lease conflict, protected drift |
+| Gate 0 registry/tests/checker/make fragment | Independent validation + readiness audit name exact `IMPLEMENTATION_INPUT_SHA`; initial local/tracking/live remote equality passes | Wrong/dirty/drifted base, missing ancestry, path lease conflict, protected drift |
 | Gate A common tests + neutral preview | Gate 0 passes | Common contract unstable; S3/path failure |
 | Astro/Next/Vite foundations | Gate A contract/test-ID digest frozen | Before Gate A; each stays provisional before #6 |
 | Barrier B check | #6 reviewed merge SHA is in tested ancestry and four tracked files exist | #6 open/unmerged; any digest/schema/read-only mismatch |
@@ -132,23 +139,24 @@ The target and failure/evidence contracts are complete in
 [Candidate protocol](./candidate-protocol.md#planned-command-registry). Minimum workflow:
 
 ```bash
-make -f mk/issue-5/i5-02.mk i5-02-authority-check
+make -f mk/issue-5/i5-02.mk i5-02-authority-check IMPLEMENTATION_INPUT_SHA=<full-40-hex-authorized-sha>
 make -f mk/issue-5/i5-02.mk i5-02-security-check
 make -f mk/issue-5/i5-02.mk i5-02-credential-check
 make -f mk/issue-5/i5-02.mk i5-02-non-copy-check
 make -f mk/issue-5/i5-02.mk web-common-test
 make -f mk/issue-5/i5-02.mk learn-preview LESSON=promotion-trust
 make -f mk/issue-5/i5-02.mk learn-preview-status
+make -f mk/issue-5/i5-02.mk learn-preview-reset-check LESSON=promotion-trust
 make -f mk/issue-5/i5-02.mk learn-preview-down
 
 make -f mk/issue-5/i5-02.mk web-astro-install
 make -f mk/issue-5/i5-02.mk web-astro-build
 make -f mk/issue-5/i5-02.mk web-astro-test
-make -f mk/issue-5/i5-02.mk web-astro-a11y
-make -f mk/issue-5/i5-02.mk web-astro-e2e
-make -f mk/issue-5/i5-02.mk web-astro-evidence
+make -f mk/issue-5/i5-02.mk web-astro-evidence SCOPE=foundation
 
-# Repeat the same six commands with web-next-* and web-vite-*.
+# Repeat the same four foundation commands with web-next-* and web-vite-*.
+# After all three locks exist, stage only the ignored lockfiles explicitly:
+git add -f -- spikes/web/candidates/astro/package-lock.json spikes/web/candidates/next/package-lock.json spikes/web/candidates/vite/package-lock.json
 
 make -f mk/issue-5/i5-02.mk web-barrier-b-check I5_01_MERGE_SHA=<full-40-hex-merged-sha>
 make -f mk/issue-5/i5-02.mk web-real-fixture-rerun I5_01_MERGE_SHA=<full-40-hex-merged-sha>
@@ -178,15 +186,17 @@ A future root `make learn-preview` include/alias belongs to the root/shared owne
 - Required missing tool, browser, manual record, input, or assertion is non-zero `fail`; no silent
   skip. `not-run-optional` never applies to a must-pass.
 - Barrier B non-readiness is expected but still non-zero; it is not a pass/score.
-- Candidate pre-B evidence is `PROVISIONAL_UNSCORED` or `ELIMINATED` with score null.
+- Candidate pre-B evidence has `evidenceScope: foundation`, is `PROVISIONAL_UNSCORED` or
+  `ELIMINATED` with score null, and enumerates browser/manual/real-fixture gates as required pending
+  `decision` scope. Gate C runs candidate a11y/E2E; they are never optional or provisional passes.
 - A valid explicit no-winner scorecard can pass schema/consistency while leaving I5-05 blocked.
 
 ## Changed-Path and Protected Checks
 
 The future `i5-02-changed-path-check` evaluates committed, staged, unstaged, and untracked paths
-relative to the exact implementation base. It allows only the explicit list above and rejects raw
-discovery changes. It must not rely on a broad glob that includes all `docs/**`, `mk/**`, or
-`plans/**`.
+relative to the exact `IMPLEMENTATION_INPUT_SHA`. It allows only the explicit list above, rejects
+raw discovery changes, and requires all three exact ignored candidate locks to be tracked. It must
+not rely on a broad glob that includes all `docs/**`, `mk/**`, or `plans/**`.
 
 Required protected baselines from Gate 0:
 

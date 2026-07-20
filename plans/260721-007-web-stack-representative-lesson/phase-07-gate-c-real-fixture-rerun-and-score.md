@@ -35,6 +35,8 @@ unequal, or invalid evidence consumes the remaining window and yields no winner.
   200% zoom/reflow, reduced motion, and no-JS/static comprehension.
 - Environment, ports, locale/timezone, viewport/device scale, fonts, background load, fixture
   digest, candidate modes, locks, and measurement order are frozen.
+- Gate 0's complete seven-category, 0..5 `score-anchors.json` digest predates every candidate
+  timer and matches every foundation record. No candidate observation has altered it.
 
 ## Exact Must-Pass Before Scoring
 
@@ -115,9 +117,12 @@ later from its indexes.
 | Hosted/ECS evolution and rollback | 10 |
 | Maintenance/dependency/supply-chain burden | 5 |
 
-Use predefined 0-5 anchors and `points = weight * anchor / 5`. Highest complete passing total
-wins. If passing totals are within five points, Astro is the default only if Astro itself is a
-complete must-pass candidate. The default never rescues eliminated/incomplete evidence.
+Use only Gate 0's predefined, machine-checkable 0-5 anchors and
+`points = weight * anchor / 5`. The scorer rejects missing levels, free-form interpolation,
+candidate-relative/post-observation criteria, or an anchor digest newer than any candidate start.
+Highest complete passing total wins. If passing totals are within five points, Astro is the
+default only if Astro itself is a complete must-pass candidate. The default never rescues
+eliminated/incomplete evidence.
 
 ## Dependency Map
 
@@ -152,8 +157,9 @@ Barrier B exact fixture + current browser/manual AT + frozen environment
 ## Tests Before
 
 Write scoring tests that reject synthetic fixtures, differing digests/modes/WEB IDs, missing raw
-samples, missing manual/browser/non-copy/CSP evidence, killed-candidate numbers, invalid anchors,
-unjustified retries, illegal tie default, and winner claims after cap.
+samples, missing manual/browser/non-copy/CSP evidence, killed-candidate numbers, invalid or
+post-observation anchor edits/digests, unjustified retries, illegal tie default, and winner claims
+after cap.
 
 ## Refactor
 

@@ -158,6 +158,7 @@ bundle/hash, and clean changed-path proof.
 
 ## Next Steps
 
-Independent issue #7 validation and readiness audit assess this plan before implementation. After
-implementation, I5-03/I5-05 consume only the reviewed merged ADR/handoff; a future root alias is a
-shared/root-Make owner task, not issue #7 acceptance.
+After implementation, I5-03/I5-05 consume only the reviewed merged ADR/handoff; human pre-merge
+approval remains mandatory. A future root alias is a shared/root-Make owner task, not issue #7
+acceptance. The independent validation and readiness audit that authorize Phase 1 occur before
+this phase and are not repeated as post-implementation work.

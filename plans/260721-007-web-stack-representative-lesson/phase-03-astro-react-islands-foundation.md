@@ -26,7 +26,7 @@ disposition is `PROVISIONAL_UNSCORED`; no numeric score or winner language is le
 ## Requirements
 
 - Pin Astro `7.1.3` and React/React DOM `19.2.7` with no top-level ranges; generate the candidate's
-  own npm 10 lockfile.
+  own npm 10 lockfile. Explicitly force-add only that ignored lockfile and prove it is tracked.
 - Freeze `output: static`. Use trusted project-owned build-time MDX/content collections with
   schema validation. Fixture strings remain data, never MDX/JSX or raw HTML.
 - Render complete semantic HTML before hydration. Hydrate the smallest practical React control
@@ -119,7 +119,8 @@ pending Gate C and never become provisional passes.
 - Capture package/lock hashes, install-script inventory, advisory/license/provenance disposition,
   build manifest, CSP, initial/island JS, start/stop and timer evidence.
 - At three hours, mark `PROVISIONAL_UNSCORED` only when all currently executable must-passes are
-  green; otherwise mark `ELIMINATED` with zero numeric score.
+  green in `foundation` scope; otherwise mark `ELIMINATED` with a null numeric score. Enumerate
+  fresh browser E2E/manual and real-fixture checks as required pending `decision` scope.
 
 ## Regression Gate
 
@@ -129,16 +130,16 @@ Planned future commands:
 make -f mk/issue-5/i5-02.mk web-astro-install
 make -f mk/issue-5/i5-02.mk web-astro-build
 make -f mk/issue-5/i5-02.mk web-astro-test
-make -f mk/issue-5/i5-02.mk web-astro-a11y
-make -f mk/issue-5/i5-02.mk web-astro-e2e
-make -f mk/issue-5/i5-02.mk web-astro-evidence
+make -f mk/issue-5/i5-02.mk web-astro-evidence SCOPE=foundation
 ```
 
-Every command first runs Gate 0. Install/build/test/a11y/E2E exit non-zero on a required failure or
-missing tool; no required browser gate may be reported optional. `web-astro-evidence` writes
-`fitness-result-v1`, timer, hashes, command results, provisional disposition, and retained-artifact
-index; it exits non-zero if evidence is incomplete, a score is present, or mode/fixture/test IDs
-drift. Before Gate C it must say `PROVISIONAL_UNSCORED` or `ELIMINATED`.
+Every command first runs Gate 0. Install/build/test exit non-zero on a required foundation failure
+or missing tool. `web-astro-evidence SCOPE=foundation` writes `fitness-result-v1`, timer, hashes,
+command results, provisional disposition, retained-artifact index, and an explicit list of required
+Gate C browser/manual/real-fixture inputs; it exits non-zero if foundation evidence is incomplete,
+a score is present, or mode/fixture/test IDs drift. Before Gate C it must say
+`PROVISIONAL_UNSCORED` or `ELIMINATED`. `web-astro-a11y` and `web-astro-e2e` remain mandatory
+future `decision`-scope targets invoked by Gate C; they are neither run nor marked optional here.
 
 ## Success Criteria
 
