@@ -18,10 +18,12 @@ measures:
     expression: SUM(received_pos)
   - name: avg_on_time_pct
     display_name: On-Time %
-    expression: AVG(on_time_pct)
+    expression: >-
+      SUM(on_time_pct * total_pos) / NULLIF(SUM(total_pos), 0)
   - name: avg_cycle_days
     display_name: Avg Cycle Days
-    expression: AVG(avg_cycle_days)
+    expression: >-
+      SUM(avg_cycle_days * total_pos) / NULLIF(SUM(total_pos), 0)
   - name: total_spend
     display_name: Total Spend
     expression: SUM(total_spend)

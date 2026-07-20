@@ -21,5 +21,5 @@ measures:
     format_preset: currency_usd
   - name: avg_order_value
     display_name: Avg Order Value
-    expression: AVG(avg_order_value)
+    expression: SUM(revenue) / NULLIF(SUM(completed_order_count), 0)
     format_preset: currency_usd
