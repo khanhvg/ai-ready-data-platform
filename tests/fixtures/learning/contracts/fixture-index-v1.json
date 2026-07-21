@@ -1,0 +1,613 @@
+{
+  "schemaVersion": "learning-contract-fixture-index-v1",
+  "fixtures": [
+    {
+      "testId": "I8-AUTH-BASE-001",
+      "path": "generated-private",
+      "target": "authority",
+      "expectedCode": "AUTHORITY_HEAD_MISMATCH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-AUTH-LEASE-002",
+      "path": "generated-private",
+      "target": "authority",
+      "expectedCode": "AUTHORITY_LEASE_REQUIRED",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-AUTH-PROTECTED-003",
+      "path": "generated-private",
+      "target": "authority",
+      "expectedCode": "PROTECTED_PATH_CHANGED",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-I6-FIXTURE-PIN-004",
+      "path": "generated-private",
+      "target": "authority",
+      "expectedCode": "FIXTURE_MANIFEST_ARTIFACT_MISMATCH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-STAGEA-NO-I7-010",
+      "path": "generated-private",
+      "target": "authority",
+      "expectedCode": "STAGE_A_FRAMEWORK_DEPENDENCY",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-SCHEMA-CLOSED-100",
+      "path": "invalid/schema/unknown-field.json",
+      "target": "schema",
+      "expectedCode": "SCHEMA_UNKNOWN_PROPERTY",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-SCHEMA-MISSING-101",
+      "path": "invalid/schema/missing-required.json",
+      "target": "schema",
+      "expectedCode": "SCHEMA_REQUIRED_PROPERTY",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-SCHEMA-TYPE-102",
+      "path": "invalid/schema/wrong-type.json",
+      "target": "schema",
+      "expectedCode": "SCHEMA_TYPE_MISMATCH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-CANON-DUPLICATE-103",
+      "path": "invalid/canonicalization/duplicate-name.json",
+      "target": "canonical",
+      "expectedCode": "JSON_DUPLICATE_NAME",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-CANON-NUMBER-104",
+      "path": "invalid/canonicalization/nan.json",
+      "target": "canonical",
+      "expectedCode": "JSON_NON_IJSON_NUMBER",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-CANON-SURROGATE-105",
+      "path": "invalid/canonicalization/lone-surrogate.json",
+      "target": "canonical",
+      "expectedCode": "JSON_LONE_SURROGATE",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-CANON-RANGE-106",
+      "path": "invalid/canonicalization/unsafe-integer.json",
+      "target": "canonical",
+      "expectedCode": "JSON_INTEGER_UNSAFE",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-CANON-UTF8-107",
+      "path": "invalid/canonicalization/invalid-utf8.json",
+      "target": "canonical",
+      "expectedCode": "JSON_UTF8_INVALID",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-CANON-BOM-108",
+      "path": "invalid/canonicalization/bom.json",
+      "target": "canonical",
+      "expectedCode": "JSON_BOM_FORBIDDEN",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-CANON-TRAILING-109",
+      "path": "invalid/canonicalization/trailing-document.json",
+      "target": "canonical",
+      "expectedCode": "JSON_TRAILING_CONTENT",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-REF-MISSING-110",
+      "path": "invalid/ref/missing-verifier.json",
+      "target": "reference",
+      "expectedCode": "REF_TARGET_MISSING",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-REF-CYCLE-111",
+      "path": "invalid/ref/prerequisite-cycle.json",
+      "target": "reference",
+      "expectedCode": "REF_CYCLE",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-REF-TRAVERSAL-112",
+      "path": "invalid/ref/path-traversal.json",
+      "target": "reference",
+      "expectedCode": "REF_TRAVERSAL_FORBIDDEN",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-REF-REMOTE-113",
+      "path": "invalid/ref/remote-ref.json",
+      "target": "reference",
+      "expectedCode": "REF_REMOTE_FORBIDDEN",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-REF-HASH-114",
+      "path": "invalid/ref/schema-hash-mismatch.json",
+      "target": "reference",
+      "expectedCode": "REF_SCHEMA_HASH_MISMATCH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-REGISTRY-BASE-115",
+      "path": "invalid/migration/base-registry-hash-mismatch.json",
+      "target": "migration",
+      "expectedCode": "BASE_REGISTRY_HASH_MISMATCH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-STATE-ILLEGAL-120",
+      "path": "invalid/state/illegal-transition.json",
+      "target": "state",
+      "expectedCode": "STATE_TRANSITION_FORBIDDEN",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-STATE-STALE-121",
+      "path": "invalid/state/stale-version.json",
+      "target": "state",
+      "expectedCode": "PROGRESS_VERSION_CONFLICT",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-IDEMPOTENCY-CONFLICT-122",
+      "path": "invalid/state/idempotency-payload-conflict.json",
+      "target": "state",
+      "expectedCode": "IDEMPOTENCY_KEY_REUSE",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-IDEMPOTENCY-DUPLICATE-123",
+      "path": "invalid/state/duplicate-effect.json",
+      "target": "state",
+      "expectedCode": "IDEMPOTENCY_DUPLICATE_EFFECT",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-COMPLETION-FORGE-130",
+      "path": "invalid/completion/forged-browser-completion.json",
+      "target": "completion",
+      "expectedCode": "COMPLETION_AUTHORITY_REQUIRED",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-COMPLETION-DUAL-131",
+      "path": "invalid/completion/operation-result-direct-write.json",
+      "target": "completion",
+      "expectedCode": "COMPLETION_DUAL_TRUTH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-COMPLETION-PRESENCE-134",
+      "path": "invalid/completion/evidence-presence-completes.json",
+      "target": "completion",
+      "expectedCode": "COMPLETION_DUAL_TRUTH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-RECONCILE-ORPHAN-132",
+      "path": "invalid/completion/orphan-self-completion.json",
+      "target": "completion",
+      "expectedCode": "RECONCILIATION_ORPHAN_CANNOT_COMPLETE",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-RECONCILE-TAMPER-133",
+      "path": "invalid/completion/orphan-hash-mismatch.json",
+      "target": "completion",
+      "expectedCode": "RECONCILIATION_HASH_MISMATCH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-TAMPER-PAYLOAD-140",
+      "path": "invalid/evidence/evidence-payload.json",
+      "target": "evidence",
+      "expectedCode": "EVIDENCE_PAYLOAD_HASH_MISMATCH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-TAMPER-ARTIFACT-141",
+      "path": "invalid/evidence/artifact-hash.json",
+      "target": "evidence",
+      "expectedCode": "EVIDENCE_ARTIFACT_HASH_MISMATCH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-LOCATOR-TRAVERSAL-142",
+      "path": "invalid/evidence/locator-traversal.json",
+      "target": "evidence",
+      "expectedCode": "EVIDENCE_LOCATOR_INVALID",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-LOCATOR-PRIVATE-147",
+      "path": "generated-private",
+      "target": "evidence",
+      "expectedCode": "EVIDENCE_LOCATOR_INVALID",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-TAMPER-VERIFIER-148",
+      "path": "invalid/evidence/stale-verifier-hash.json",
+      "target": "evidence",
+      "expectedCode": "EVIDENCE_VERIFIER_HASH_MISMATCH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-EVIDENCE-REPLAY-149",
+      "path": "invalid/evidence/replayed-run-identity.json",
+      "target": "evidence",
+      "expectedCode": "EVIDENCE_REPLAY_CONFLICT",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-EVIDENCE-PROVENANCE-143",
+      "path": "invalid/evidence/missing-dependency-sha.json",
+      "target": "evidence",
+      "expectedCode": "EVIDENCE_PROVENANCE_INCOMPLETE",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-EVIDENCE-RECURSIVE-144",
+      "path": "invalid/evidence/recursive-identity.json",
+      "target": "evidence",
+      "expectedCode": "EVIDENCE_RECURSIVE_IDENTITY",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-SECRET-145",
+      "path": "generated-private",
+      "target": "evidence",
+      "expectedCode": "EVIDENCE_SENSITIVE_CONTENT",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-INJECTION-146",
+      "path": "invalid/security/injection-field.json",
+      "target": "evidence",
+      "expectedCode": "CONTRACT_INJECTION_FIELD_FORBIDDEN",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-MIGRATION-UNKNOWN-150",
+      "path": "invalid/migration/unknown-version.json",
+      "target": "migration",
+      "expectedCode": "SCHEMA_VERSION_UNREADABLE",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-MIGRATION-LOSS-151",
+      "path": "invalid/migration/lossy-edge.json",
+      "target": "migration",
+      "expectedCode": "MIGRATION_LOSSY_FORBIDDEN",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-MIGRATION-CYCLE-152",
+      "path": "invalid/migration/cycle.json",
+      "target": "migration",
+      "expectedCode": "MIGRATION_CYCLE",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-MIGRATION-COLLISION-153",
+      "path": "invalid/migration/family-collision.json",
+      "target": "migration",
+      "expectedCode": "SCHEMA_FAMILY_COLLISION",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPERATION-DUPLICATE-154",
+      "path": "invalid/operation/duplicate-method-path.json",
+      "target": "operation",
+      "expectedCode": "OPERATION_DUPLICATE",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPERATION-TAXONOMY-155",
+      "path": "invalid/operation/missing-taxonomy.json",
+      "target": "operation",
+      "expectedCode": "OPERATION_TAXONOMY_INCOMPLETE",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPERATION-ROLE-156",
+      "path": "invalid/operation/physical-module-role.json",
+      "target": "operation",
+      "expectedCode": "OPERATION_ROLE_NOT_NEUTRAL",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPERATION-AUTHZ-157",
+      "path": "invalid/operation/missing-authorization.json",
+      "target": "operation",
+      "expectedCode": "OPERATION_AUTHORIZATION_INCOMPLETE",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPERATION-EVIDENCE-158",
+      "path": "invalid/operation/missing-evidence-rule.json",
+      "target": "operation",
+      "expectedCode": "OPERATION_EVIDENCE_INCOMPLETE",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-MIGRATION-BACKWARD-159",
+      "path": "generated-private",
+      "target": "migration",
+      "expectedCode": "SCHEMA_VERSION_UNREADABLE",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-MATRIX-160",
+      "path": "invalid/openapi/orphan-operation.json",
+      "target": "openapi",
+      "expectedCode": "OPENAPI_OPERATION_SET_MISMATCH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-AUTH-161",
+      "path": "invalid/openapi/missing-authority.json",
+      "target": "openapi",
+      "expectedCode": "OPERATION_AUTHORITY_MISSING",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-IDEMPOTENCY-162",
+      "path": "invalid/openapi/missing-idempotency.json",
+      "target": "openapi",
+      "expectedCode": "OPERATION_IDEMPOTENCY_MISSING",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-RAW-163",
+      "path": "invalid/openapi/raw-sql-query.json",
+      "target": "openapi",
+      "expectedCode": "OPENAPI_RAW_QUERY_FORBIDDEN",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-REF-164",
+      "path": "invalid/openapi/remote-ref.json",
+      "target": "openapi",
+      "expectedCode": "OPENAPI_REF_FORBIDDEN",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-VERSION-165",
+      "path": "invalid/openapi/missing-version-response.json",
+      "target": "openapi",
+      "expectedCode": "OPENAPI_VERSION_NEGOTIATION_INCOMPLETE",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-ASYNCAPI-166",
+      "path": "invalid/openapi/orphan-asyncapi.json",
+      "target": "openapi",
+      "expectedCode": "ASYNCAPI_WITHOUT_CHANNEL",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-PROBE-MUTATION-167",
+      "path": "invalid/guidance/mutating-probe.json",
+      "target": "guidance",
+      "expectedCode": "PROBE_MUTATION_FORBIDDEN",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-HINT-ORDER-168",
+      "path": "invalid/guidance/out-of-order-hint.json",
+      "target": "guidance",
+      "expectedCode": "HINT_ORDER_INVALID",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-HINT-COMPLETION-169",
+      "path": "invalid/guidance/hint-completes.json",
+      "target": "guidance",
+      "expectedCode": "HINT_COMPLETION_FORBIDDEN",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-PROMO-GRAIN-170",
+      "path": "invalid/promotion-trust/hidden-common-grain.json",
+      "target": "promotion",
+      "expectedCode": "PROMOTION_COMMON_GRAIN_FORBIDDEN",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-PROMO-LIMIT-171",
+      "path": "invalid/promotion-trust/missing-limitation.json",
+      "target": "promotion",
+      "expectedCode": "PROMOTION_LIMITATION_REQUIRED",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-PROMO-HASH-172",
+      "path": "invalid/promotion-trust/fixture-hash-drift.json",
+      "target": "promotion",
+      "expectedCode": "PROMOTION_FIXTURE_HASH_MISMATCH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-REQUEST-173",
+      "path": "invalid/openapi/request-shape-drift.json",
+      "target": "openapi",
+      "expectedCode": "OPENAPI_REQUEST_CONTRACT_MISMATCH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-RESPONSE-174",
+      "path": "invalid/openapi/response-shape-drift.json",
+      "target": "openapi",
+      "expectedCode": "OPENAPI_RESPONSE_CONTRACT_MISMATCH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-ERROR-175",
+      "path": "invalid/openapi/error-set-drift.json",
+      "target": "openapi",
+      "expectedCode": "OPENAPI_ERROR_CONTRACT_MISMATCH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-PROBE-REQUIRED-176",
+      "path": "invalid/guidance/required-unavailable-passes.json",
+      "target": "guidance",
+      "expectedCode": "PROBE_REQUIRED_UNAVAILABLE",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-PROBE-OPTIONAL-177",
+      "path": "invalid/guidance/optional-unavailable-passes.json",
+      "target": "guidance",
+      "expectedCode": "PROBE_OPTIONAL_FALSE_PASS",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-HINT-REVEAL-178",
+      "path": "invalid/guidance/unauthorized-reveal.json",
+      "target": "guidance",
+      "expectedCode": "HINT_REVEAL_FORBIDDEN",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-YAML-179",
+      "path": "invalid/openapi/duplicate-key.yaml",
+      "target": "openapi",
+      "expectedCode": "OPENAPI_YAML_DUPLICATE_KEY",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-FITNESS-OWNER-180",
+      "path": "generated-private",
+      "target": "fitness",
+      "expectedCode": "FITNESS_RESULT_OWNER_VERSION_MISMATCH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-DEPS-IMPORT-181",
+      "path": "generated-private",
+      "target": "dependency",
+      "expectedCode": "DEPENDENCY_IMPORT_UNADMITTED",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-DEPS-MANIFEST-182",
+      "path": "generated-private",
+      "target": "dependency",
+      "expectedCode": "DEPENDENCY_MANIFEST_DRIFT",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-DEPS-ADVISORY-183",
+      "path": "generated-private",
+      "target": "dependency",
+      "expectedCode": "DEPENDENCY_ADVISORY_UNRESOLVED",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-COMMAND-ACTIVATION-184",
+      "path": "invalid/command/base-command-registry-hash-mismatch.json",
+      "target": "activation",
+      "expectedCode": "COMMAND_ACTIVATION_BASE_MISMATCH",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-ROLLBACK-SCOPE-190",
+      "path": "generated-private",
+      "target": "rollback",
+      "expectedCode": "ROLLBACK_SCOPE_UNOWNED",
+      "expectedPointer": null,
+      "redReason": "missing-behavior"
+    }
+  ]
+}
