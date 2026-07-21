@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
@@ -7,6 +8,22 @@ import test from 'node:test';
 import { ROOT, contract, scanText, validateChangedPaths, validateEvidenceManifest, validateOwnership } from '../scripts/simple-vite-v3.mjs';
 
 const wait = milliseconds => new Promise(resolveWait => setTimeout(resolveWait, milliseconds));
+const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
+
+function inspectBuiltOutput(root) {
+  if (typeof globalThis.__viteV3ScanBuiltOutput === 'function') return globalThis.__viteV3ScanBuiltOutput(root);
+  return { result: 'pass', requiredIndex: false, inventory: [], findings: [], failures: [] };
+}
+
+async function withBuiltOutputScanner(callback) {
+  const runner = await import(`../scripts/simple-vite-v3.mjs?built-output=${Date.now()}-${Math.random()}`);
+  globalThis.__viteV3ScanBuiltOutput = runner.scanBuiltOutput;
+  try {
+    return callback();
+  } finally {
+    delete globalThis.__viteV3ScanBuiltOutput;
+  }
+}
 
 function processExists(pid) {
   if (!Number.isInteger(pid) || pid <= 1) return false;
@@ -60,6 +77,66 @@ test('V3-07 S3 scanner rejects credentials, private paths, PII, injection, and r
   ];
   for (const [sample, id] of samples) assert.ok(scanText(sample).includes(id), id);
   assert.deepEqual(scanText('sanitized aggregate; insufficient-evidence; no-common-grain'), []);
+});
+
+test('V3-07 built-output scan fails closed when the required root is missing', async () => {
+  const temporaryRoot = mkdtempSync(resolve(tmpdir(), 'vite-v3-built-missing-'));
+  const missing = resolve(temporaryRoot, 'dist');
+  try {
+    await withBuiltOutputScanner(() => {
+      const scan = inspectBuiltOutput(missing);
+      assert.equal(scan.result, 'fail', 'missing required built-output root must fail closed');
+      assert.ok(scan.failures.includes('built-output-missing'));
+      assert.equal(scan.inventory.length, 0);
+    });
+  } finally {
+    rmSync(temporaryRoot, { recursive: true, force: true });
+  }
+});
+
+test('V3-07 built-output scan detects forbidden markers in generated JS, CSS, and source maps', async () => {
+  const dist = mkdtempSync(resolve(tmpdir(), 'vite-v3-built-unsafe-'));
+  try {
+    mkdirSync(resolve(dist, 'assets'));
+    writeFileSync(resolve(dist, 'index.html'), '<!doctype html><script src="/assets/app.js"></script>\n');
+    writeFileSync(resolve(dist, 'assets/app.js'), 'const token="abcdefghijk";\n');
+    writeFileSync(resolve(dist, 'assets/app.css'), '/* /Users/private/work/repo */\n');
+    writeFileSync(resolve(dist, 'assets/app.js.map'), '{"version":3,"sources":["learner@example.com"]}\n');
+    await withBuiltOutputScanner(() => {
+      const scan = inspectBuiltOutput(dist);
+      assert.equal(scan.result, 'fail', 'unsafe generated assets must fail content safety');
+      assert.deepEqual(scan.findings.map(({ path }) => path).sort(), ['assets/app.css', 'assets/app.js', 'assets/app.js.map']);
+      assert.ok(scan.findings.some(({ path, finding }) => path === 'assets/app.js' && finding === 'credential'));
+      assert.ok(scan.findings.some(({ path, finding }) => path === 'assets/app.css' && finding === 'absolutePrivatePath'));
+      assert.ok(scan.findings.some(({ path, finding }) => path === 'assets/app.js.map' && finding === 'email'));
+    });
+  } finally {
+    rmSync(dist, { recursive: true, force: true });
+  }
+});
+
+test('V3-07 clean complete built-output scan emits normalized path and SHA-256 inventory', async () => {
+  const dist = mkdtempSync(resolve(tmpdir(), 'vite-v3-built-clean-'));
+  const assets = new Map([
+    ['index.html', Buffer.from('<!doctype html><link rel="stylesheet" href="/assets/app.css"><script src="/assets/app.js"></script>\n')],
+    ['assets/app.css', Buffer.from('body { color: #123456; }\n')],
+    ['assets/app.js', Buffer.from('document.documentElement.dataset.ready = "true";\n')],
+    ['assets/app.js.map', Buffer.from('{"version":3,"sources":[],"names":[],"mappings":""}\n')],
+    ['assets/manifest.json', Buffer.from('{"entry":"assets/app.js"}\n')],
+  ]);
+  try {
+    mkdirSync(resolve(dist, 'assets'));
+    for (const [path, bytes] of assets) writeFileSync(resolve(dist, path), bytes);
+    await withBuiltOutputScanner(() => {
+      const scan = inspectBuiltOutput(dist);
+      assert.equal(scan.result, 'pass');
+      assert.equal(scan.requiredIndex, true);
+      assert.deepEqual(scan.findings, []);
+      assert.deepEqual(scan.inventory, [...assets].map(([path, bytes]) => ({ path, bytes: bytes.length, sha256: sha256(bytes) })).sort((a, b) => Buffer.from(a.path).compare(Buffer.from(b.path))));
+    });
+  } finally {
+    rmSync(dist, { recursive: true, force: true });
+  }
 });
 
 test('V3-07 ownership ledger fails closed on foreign port, missing fingerprint, and run mismatch', () => {
