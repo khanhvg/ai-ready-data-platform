@@ -52,7 +52,7 @@ identity and external signing remain I5-14; I5-05 makes no non-repudiation claim
 | PTP-S3-04 | Browser-direct runner | runner address/credential server-only; private transport; CSP `connect-src 'self'` | browser request/credential disclosure tests fail closed |
 | PTP-S3-05 | Command/path/SQL injection | exact released operation and registry enums; closed schemas | shell metacharacter, extra field, path, URL, SQL, unknown command denied |
 | PTP-S3-06 | XSS in content/error/evidence | released validation, React text escaping, no raw HTML, strict CSP | script/event/URL/HTML payload rendered inert |
-| PTP-S3-07 | Artifact traversal/type confusion | opaque ID, #9 verified immutable handle, regular-file/media/size/digest allow-list | `..`, symlink/special file, wrong media/size/digest denied |
+| PTP-S3-07 | Artifact traversal/type confusion | opaque ID, #9 verified immutable handle, descriptor-relative containment, regular-file/media/size/digest allow-list | `..`, symlink, hardlink alias, FIFO/device/socket/special file, wrong media/size/digest denied |
 | PTP-S3-08 | Completion tampering | fresh runner result + evidence + #8 transaction, no browser storage authority | forged URL/storage/result/evidence/reflection cannot complete |
 | PTP-S3-09 | Replay/race | idempotency/correlation, one in-flight mutation, runner journal/reconciliation | duplicate/reset-vs-verify/crash retry returns one outcome |
 | PTP-S3-10 | Sensitive output | bounded structured errors/log redaction; no raw env/path/credential | canary/private path/output flood never reaches UI/evidence |
@@ -126,7 +126,8 @@ are external same-origin assets or nonce-free compiled CSS.
   fixture/contract/verifier hashes, redaction and retention before completion.
 - Preserve prior evidence across reset, crash, retry, learn-down, failed migration, and rollback.
 - Evidence locators are evidence-root relative, normalized, no `..`, symlink, absolute/private
-  component, device/special file, or credential-bearing URL.
+  component, hardlink alias outside the admitted inode/ownership policy, FIFO/device/socket/special
+  file, or credential-bearing URL.
 - Evidence writes/downloads are bounded and fail on size/digest/media mismatch.
 - A local SHA-256 is called corruption detection only.
 
@@ -155,6 +156,8 @@ Future Stage A/B gates include:
 - bundled source-map/runtime config scan for runner URL/credential/private path;
 - Host/Origin/CSRF/CORS/CSP/XSS/storage/attachment negative tests;
 - runner conformance/security/race tests from the exact #9 handoff in Stage B;
+- released portal/runner process, wall-time, descendant-RSS, request/body, log/output, evidence-file,
+  aggregate-evidence, and browser-artifact ceilings; missing enforcement/tooling is fail closed;
 - final `git diff --check` and untracked/staged evidence exclusion.
 
 Ordinary prose words such as “token” or “credential” are not themselves findings. Scans report

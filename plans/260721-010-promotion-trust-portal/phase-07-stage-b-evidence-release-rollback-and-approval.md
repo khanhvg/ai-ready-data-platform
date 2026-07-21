@@ -68,7 +68,9 @@ Stage A static route before any code rollback.
 2. Add PTP-RED-B-016 plus stale/reused PID, foreign process, symlinked root, active operation,
    duplicate down, retained evidence, and static rollback failures.
 3. Add missing artifact/trace/axe/digest/dependency/human-approval metadata negatives.
-4. Prove the visual target cannot auto-approve its UAT checklist.
+4. Add hardlink-alias, FIFO/device/socket/special-file and missing resource/output-ceiling
+   enforcement negatives.
+5. Prove the visual target cannot auto-approve its UAT checklist.
 
 ## Refactor
 
@@ -115,11 +117,13 @@ clean/local=tracking=fresh-live checks.
    static-fallback rollback rehearsal.
 7. Run full exact commands/blast radius/S3/audit/protected-path checks and capture the closed
    released-#8 result/artifact graph.
-8. Obtain fresh independent exact-head code/security/accessibility review with zero unresolved
-   Critical/High findings.
-9. Obtain named human exact-head pre-merge approval; any later head change invalidates it.
-10. Only a separately authorized Git workflow may create/merge a PR; this phase stops at evidence
-    and approval readiness if no such authority exists.
+8. Obtain two fresh independent exact-head implementation reviews: code/contracts/S3 and
+   accessibility/browser/evidence/operations, each with zero unresolved Critical/High findings.
+9. Record user-facing documentation/release impact without editing `README.md`, `docs/**`, or any
+   other out-of-scope path; route required changes through a separately authorized owner handoff.
+10. Obtain named human exact-head pre-merge approval; any later head change invalidates it.
+11. Only a separately authorized Git workflow may create/merge a PR; this phase stops at evidence
+   and approval readiness if no such authority exists.
 
 ## Success Criteria
 
@@ -130,6 +134,8 @@ clean/local=tracking=fresh-live checks.
   evidence-integrity gates pass.
 - [ ] Visual/UAT artifact is bounded and does not claim automated conformance/human approval.
 - [ ] Teardown/cleanup/rollback is scoped, idempotent, evidence-preserving, and leaves a clean tree.
+- [ ] Two fresh independent implementation reviews bind the exact head with zero unresolved
+  Critical/High findings.
 - [ ] Human exact-head pre-merge approval is recorded before any merge.
 
 ## Risk Assessment

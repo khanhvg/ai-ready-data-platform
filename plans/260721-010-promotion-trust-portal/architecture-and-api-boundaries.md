@@ -45,6 +45,10 @@ The issue-level ownership ceiling is `apps/learning-portal/**` (including portal
 the `mk/issue-5/*.mk` include seam and must not change. Shared contracts, dependency source,
 fixtures, root configuration, CI, cloud, AWS, and Terraform remain read-only or denied.
 
+Repository `README.md` and `docs/**` are also outside the I5-05 product-write ceiling. A later
+implementation review records documentation/release impact, but any required change is a separate
+owner-authorized serialized handoff rather than an expansion of this portal stage.
+
 This validated plan does not select a product tree before the dependencies exist:
 
 | Stage | Authorized create/modify/delete paths now | Authorized implementation commands now | Consumable dependency SHAs now |
@@ -101,6 +105,15 @@ The later amendment must bind behavior as well as names, without inventing field
 
 If either release omits one of these semantics, the corresponding stage remains disabled and the
 owner issue must supply it; I5-05 does not create a local compatibility contract.
+
+## Runtime Loading Boundary
+
+Stage A startup resolves only the exact merged #7 runtime and exact released #8 read-only
+interfaces. It must not import, bundle, probe, or configure Issue #9 code. In Stage B, the private
+runner client and optional-tool adapters remain server-only and are loaded after the exact released
+capability/readiness gate; absence or incompatibility leaves the Stage A static route operational.
+No eager optional import may break offline/static startup or leak runner transport into the browser
+bundle.
 
 ## Logical Operation Boundary
 

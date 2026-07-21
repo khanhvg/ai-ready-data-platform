@@ -38,6 +38,8 @@ readiness-authorized implementation input. This phase remains externally blocked
 - No future SHA/version/API is guessed.
 - Local HEAD, upstream, and fresh remote input are equal and the worktree is clean.
 - Missing tool/release/digest/lease result is typed `fail`.
+- Clean-checkout frozen-lock admission and declared post-acquisition offline checks pass without
+  an undeclared framework/runtime/package-manager fallback.
 - Changed paths stay under I5-05 ownership.
 
 ## Architecture
@@ -90,7 +92,9 @@ Stage B or claim the Issue #10 Verify block.
    fresh independent revalidation and Stage A readiness at one exact input.
 2. Fetch the authorized integration ref and prove local/tracking/fresh-live equality, clean state,
    ancestry, ownership, and absence of conflicting leases.
-3. Verify GA-01 and copy/promote only the exact accepted Vite foundation/path map and lock.
+3. Verify GA-01, including human approval/merge, the bounded simple-Vite test/review scope, and
+   clean-checkout/offline runtime admission; copy/promote only the exact accepted Vite
+   foundation/path map and lock.
 4. Verify GA-02 and bind only the exact released #8 validators/types/operation/completion paths.
 5. Verify GA-04 Issue #6 hashes and schema-version identities read-only.
 6. Write and retain the RED failures before the smallest gate/binding implementation.
