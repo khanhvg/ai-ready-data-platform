@@ -230,6 +230,17 @@ class S3CommandResourceCleanupTests(unittest.TestCase):
             self.assertIn("scripts.learning_contracts.runtime launch", recipe)
             self.assertNotIn("$(LEARNING_CONTRACTS_PY)", recipe)
 
+    def test_six_high_h6_launcher_starts_with_stdlib_only(self) -> None:
+        result = subprocess.run(
+            [sys.executable, "-S", "-m", "scripts.learning_contracts.runtime", "--help"],
+            cwd=pathlib.Path(__file__).resolve().parents[3],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stdout.decode("utf-8", "replace"))
+
 
 if __name__ == "__main__":
     unittest.main()
