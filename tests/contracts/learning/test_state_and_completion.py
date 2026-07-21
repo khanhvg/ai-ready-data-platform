@@ -3,7 +3,7 @@ from __future__ import annotations
 import copy
 import unittest
 
-from scripts.learning_contracts import completion, guidance, openapi, state
+from scripts.learning_contracts import completion, guidance, openapi, schema, state
 from scripts.learning_contracts.schema import LearningContractError
 
 
@@ -16,12 +16,12 @@ OPERATIONS = [
     ("getWorkspace", "GET", "/v1/workspaces/{workspaceId}", 200),
     ("startWorkspaceOperation", "POST", "/v1/workspaces/{workspaceId}/operations", 202),
     ("getOperation", "GET", "/v1/operations/{operationId}", 200),
-    ("resetWorkspace", "POST", "/v1/workspaces/{workspaceId}/reset", 200),
-    ("verifyWorkspace", "POST", "/v1/workspaces/{workspaceId}/verify", 200),
+    ("resetWorkspace", "POST", "/v1/workspaces/{workspaceId}/reset", 202),
+    ("verifyWorkspace", "POST", "/v1/workspaces/{workspaceId}/verify", 202),
     ("getEvidence", "GET", "/v1/evidence/{evidenceId}", 200),
     ("listTools", "GET", "/v1/tools", 200),
     ("getTool", "GET", "/v1/tools/{toolId}", 200),
-    ("queryDataProduct", "POST", "/v1/data-products/{productId}/queries", 200),
+    ("queryDataProduct", "POST", "/v1/data-products/{productId}/queries", 202),
     ("getLiveness", "GET", "/health/live", 200),
     ("getReadiness", "GET", "/health/ready", 200),
 ]
