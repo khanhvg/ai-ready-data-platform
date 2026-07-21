@@ -2,6 +2,11 @@
   "schemaVersion": "i5-02-simple-vite-v3-hash-index-v1",
   "files": [
     {
+      "path": "correction.json",
+      "bytes": 1358,
+      "sha256": "9d755291be425e78cd5c69de19c42fc942f7db9a5d6d92d77f3c17e9ce4881fb"
+    },
+    {
       "path": "green/browser-results/.last-run.json",
       "bytes": 45,
       "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
@@ -78,8 +83,8 @@
     },
     {
       "path": "manifest.json",
-      "bytes": 15540,
-      "sha256": "f0f03ba4aeabd39aeccb99f2dfef9a6544f276fb164a95c37f9eeeca5920bc1b"
+      "bytes": 15686,
+      "sha256": "c9e3d222f399a21232deddf9a68a4d2a90af4ef1b49013c14cfb2cdb552ae2cd"
     },
     {
       "path": "security/built-output-scan.json",
@@ -89,7 +94,7 @@
     {
       "path": "security/final-retained-scan.json",
       "bytes": 228,
-      "sha256": "7488fc917c6efb28b04d11a8b7cc316912515947563e3b0a250439a97b0172ce"
+      "sha256": "99f46ca8d4336f1ab099cb9e66b583fb67115ad279bd36c77c8b1583791bc05b"
     },
     {
       "path": "security/npm-audit.json",
@@ -113,8 +118,8 @@
     },
     {
       "path": "tdd/fifth-targeted-review-fix-red/focused-tests.tap",
-      "bytes": 6028,
-      "sha256": "b90cde68a7a925676df0c920044b1df00deaac9be293c4a1ee986c54fb3823a1"
+      "bytes": 5740,
+      "sha256": "2ed45accc75426e43d146fbdd1eb53783dccd38d7535d1b4f7c81b048656f0d9"
     },
     {
       "path": "tdd/fifth-targeted-review-fix-red/result.json",

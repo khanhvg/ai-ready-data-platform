@@ -3,10 +3,10 @@
   "acceptedRun": "v3-20260721T202415031Z-52a03869",
   "manifest": {
     "path": "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T202415031Z-52a03869/manifest.json",
-    "sha256": "f0f03ba4aeabd39aeccb99f2dfef9a6544f276fb164a95c37f9eeeca5920bc1b"
+    "sha256": "c9e3d222f399a21232deddf9a68a4d2a90af4ef1b49013c14cfb2cdb552ae2cd"
   },
   "hashIndex": {
     "path": "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T202415031Z-52a03869/hash-index.json",
-    "sha256": "bf670df7d3ce20a79ed24b2c4f63c6afd83cea981a7216ce87c739acc9f71a7f"
+    "sha256": "858a4f0318e08ca255a6bc58659cb013f74f153979640ab39e958a8a7d397638"
   }
 }

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "i5-02-simple-vite-v3-evidence-correction-v1",
+  "ownerCommentUrl": "https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5038913224",
+  "reason": "local-absolute-path-redaction",
+  "replacement": {
+    "class": "local-absolute-path",
+    "count": 12,
+    "from": "raw-local-workspace-prefix",
+    "to": "<WORKSPACE>"
+  },
+  "contentMeaningChanged": false,
+  "priorHashes": {
+    "tapSha256": "b90cde68a7a925676df0c920044b1df00deaac9be293c4a1ee986c54fb3823a1",
+    "manifestSha256": "f0f03ba4aeabd39aeccb99f2dfef9a6544f276fb164a95c37f9eeeca5920bc1b",
+    "hashIndexSha256": "bf670df7d3ce20a79ed24b2c4f63c6afd83cea981a7216ce87c739acc9f71a7f"
+  },
+  "correctedHashes": {
+    "tapSha256": "2ed45accc75426e43d146fbdd1eb53783dccd38d7535d1b4f7c81b048656f0d9",
+    "manifestSha256": "5f02199fbffee47dfcc0b7dcccad5c009cadd6b9b4c437aabca9cc657af5e023",
+    "hashIndexSha256": "2351dc42d0e5182f9f1669dd558a282cf777c4c72dc22e74d1e782fd353d7b93",
+    "scope": "canonical-json-with-correction-digest-fields-omitted",
+    "scopeDetails": {
+      "manifest": "correctionAttestation.sha256 omitted",
+      "hashIndex": "sha256 omitted for correction.json and manifest.json entries"
+    }
+  },
+  "correctionSourceHead": "aaddb3af4dade6751d1209bf9f5b25f28b5a06ec",
+  "correctionOutputHead": "fe5246fceae63ac07f79c431ab633599b1cc7cd6"
+}

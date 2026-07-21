@@ -16,7 +16,7 @@ not ok 3 - V3-07 built-output scan fails closed when the required root is missin
   ---
   duration_ms: 3.067292
   type: 'test'
-  location: '/private/tmp/vite-fifth-red-adf79ae/spikes/web/harness/tests/simple-vite-v3.test.mjs:82:1'
+  location: '<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:82:1'
   failureType: 'testCodeFailure'
   error: |-
     missing required built-output root must fail closed
@@ -29,9 +29,9 @@ not ok 3 - V3-07 built-output scan fails closed when the required root is missin
   actual: 'pass'
   operator: 'strictEqual'
   stack: |-
-    file:///private/tmp/vite-fifth-red-adf79ae/spikes/web/harness/tests/simple-vite-v3.test.mjs:88:14
-    withBuiltOutputScanner (file:///private/tmp/vite-fifth-red-adf79ae/spikes/web/harness/tests/simple-vite-v3.test.mjs:22:12)
-    async TestContext.<anonymous> (file:///private/tmp/vite-fifth-red-adf79ae/spikes/web/harness/tests/simple-vite-v3.test.mjs:86:5)
+    file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:88:14
+    withBuiltOutputScanner (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:22:12)
+    async TestContext.<anonymous> (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:86:5)
     async Test.run (node:internal/test_runner/test:1054:7)
     async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
   ...
@@ -40,7 +40,7 @@ not ok 4 - V3-07 built-output scan detects forbidden markers in generated JS, CS
   ---
   duration_ms: 3.332917
   type: 'test'
-  location: '/private/tmp/vite-fifth-red-adf79ae/spikes/web/harness/tests/simple-vite-v3.test.mjs:97:1'
+  location: '<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:97:1'
   failureType: 'testCodeFailure'
   error: |-
     unsafe generated assets must fail content safety
@@ -53,9 +53,9 @@ not ok 4 - V3-07 built-output scan detects forbidden markers in generated JS, CS
   actual: 'pass'
   operator: 'strictEqual'
   stack: |-
-    file:///private/tmp/vite-fifth-red-adf79ae/spikes/web/harness/tests/simple-vite-v3.test.mjs:107:14
-    withBuiltOutputScanner (file:///private/tmp/vite-fifth-red-adf79ae/spikes/web/harness/tests/simple-vite-v3.test.mjs:22:12)
-    async TestContext.<anonymous> (file:///private/tmp/vite-fifth-red-adf79ae/spikes/web/harness/tests/simple-vite-v3.test.mjs:105:5)
+    file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:107:14
+    withBuiltOutputScanner (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:22:12)
+    async TestContext.<anonymous> (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:105:5)
     async Test.run (node:internal/test_runner/test:1054:7)
     async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
   ...
@@ -64,7 +64,7 @@ not ok 5 - V3-07 clean complete built-output scan emits normalized path and SHA-
   ---
   duration_ms: 3.075208
   type: 'test'
-  location: '/private/tmp/vite-fifth-red-adf79ae/spikes/web/harness/tests/simple-vite-v3.test.mjs:118:1'
+  location: '<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:118:1'
   failureType: 'testCodeFailure'
   error: |-
     Expected values to be strictly equal:
@@ -77,9 +77,9 @@ not ok 5 - V3-07 clean complete built-output scan emits normalized path and SHA-
   actual: false
   operator: 'strictEqual'
   stack: |-
-    file:///private/tmp/vite-fifth-red-adf79ae/spikes/web/harness/tests/simple-vite-v3.test.mjs:133:14
-    withBuiltOutputScanner (file:///private/tmp/vite-fifth-red-adf79ae/spikes/web/harness/tests/simple-vite-v3.test.mjs:22:12)
-    async TestContext.<anonymous> (file:///private/tmp/vite-fifth-red-adf79ae/spikes/web/harness/tests/simple-vite-v3.test.mjs:130:5)
+    file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:133:14
+    withBuiltOutputScanner (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:22:12)
+    async TestContext.<anonymous> (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:130:5)
     async Test.run (node:internal/test_runner/test:1054:7)
     async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
   ...

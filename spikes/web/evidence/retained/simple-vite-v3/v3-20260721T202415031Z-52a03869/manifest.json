@@ -293,6 +293,10 @@
     "ownership": "lifecycle/owned-resources.json",
     "rollback": "lifecycle/rollback.json"
   },
+  "correctionAttestation": {
+    "path": "correction.json",
+    "sha256": "9d755291be425e78cd5c69de19c42fc942f7db9a5d6d92d77f3c17e9ce4881fb"
+  },
   "axeSummary": {
     "invocations": 1,
     "critical": 0,
