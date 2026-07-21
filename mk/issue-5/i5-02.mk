@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := i5-02-authority-check
 
-AUTHORIZED_GOALS := i5-02-authority-check i5-02-protected-hash-check i5-02-toolchain-check i5-02-changed-path-check i5-02-security-check i5-02-credential-check i5-02-non-copy-check web-common-test learn-preview learn-preview-status learn-preview-reset-check learn-preview-down
+AUTHORIZED_GOALS := i5-02-authority-check i5-02-protected-hash-check i5-02-toolchain-check i5-02-changed-path-check i5-02-security-check i5-02-credential-check i5-02-non-copy-check web-common-test learn-preview learn-preview-status learn-preview-reset-check learn-preview-down web-barrier-b-check
 UNKNOWN_GOALS := $(filter-out $(AUTHORIZED_GOALS),$(MAKECMDGOALS))
 ifneq ($(strip $(UNKNOWN_GOALS)),)
 $(error unauthorized target(s): $(UNKNOWN_GOALS))
@@ -9,13 +9,18 @@ endif
 IMPLEMENTATION_INPUT_SHA ?=
 LESSON ?= promotion-trust
 PREVIEW_PORT ?= 4174
+I5_01_MERGE_SHA ?=
 export IMPLEMENTATION_INPUT_SHA
 export LESSON
 export PREVIEW_PORT
+export I5_01_MERGE_SHA
 AUTHORITY = node spikes/web/harness/scripts/authority-check.mjs --implementation-input "$$IMPLEMENTATION_INPUT_SHA"
 PREVIEW_CONTROL = node spikes/web/harness/scripts/preview-control.mjs
 
-.PHONY: i5-02-authority-check i5-02-protected-hash-check i5-02-toolchain-check i5-02-changed-path-check i5-02-security-check i5-02-credential-check i5-02-non-copy-check web-common-test learn-preview learn-preview-status learn-preview-reset-check learn-preview-down
+.PHONY: i5-02-authority-check i5-02-protected-hash-check i5-02-toolchain-check i5-02-changed-path-check i5-02-security-check i5-02-credential-check i5-02-non-copy-check web-common-test learn-preview learn-preview-status learn-preview-reset-check learn-preview-down web-barrier-b-check
+
+web-barrier-b-check:
+	node spikes/web/harness/scripts/barrier-b-check.mjs --merge-sha "$$I5_01_MERGE_SHA"
 
 i5-02-authority-check:
 	$(AUTHORITY) --check authority
