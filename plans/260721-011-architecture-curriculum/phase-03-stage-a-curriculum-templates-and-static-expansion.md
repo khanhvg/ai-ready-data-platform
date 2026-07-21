@@ -9,6 +9,8 @@ effort: "L after RED"
 
 # Phase 3: Stage A curriculum templates and static expansion
 
+<!-- Updated: Validation Session 1 - restored competency identity and versioned critical-flow templates. -->
+
 ## Context Links
 
 - [Architecture and Curriculum Design](./architecture-and-curriculum-design.md)
@@ -49,13 +51,19 @@ the portal, execute a lab, or create a second renderer/contract authority.
 ## Implementation Steps
 
 1. Re-run Phase 1 and confirm Phase 2 RED evidence at the exact authorized input.
-2. Encode F01-F04, J01-J06, D01/D04-D06, and M01-M04 as a reachable acyclic graph using exact
+2. Encode F01-F04, J01-J06, D01-D06, and M01-M04 as a reachable acyclic graph using exact
    released #8 fields/status/ID references; Vietnamese-first learner copy, stable machine IDs.
+   Preserve accepted ID intent (`J06` remains service-extraction criteria). `D02`/`D03` are
+   graph/trace content only and cannot claim the separately owned I5-07 data-lab runtime.
 3. For every module, provide outcome, concern, prerequisites/probes, starter, task, controlled
    failure definition, verify/evidence requirement, reset contract, hints, solution policy,
    reflection, remediation, and next path. Mark runtime fields honestly unexecuted in Stage A.
 4. Encode structured templates for stakeholder concern, FR/NFR/ASR, option matrix, C4,
    dynamic/deployment, ADR, pattern admission, fitness, capacity/cost, DR, and security review.
+   Require each instance to bind the stable Issue #11 template content ID to the exact released
+   version/hash and compatibility/supersession record; reject unregistered local copies.
+   Any critical authority/state/security/resilience/recovery flow must link both an ordered
+   dynamic/sequence view and a deployment view. Do not force C4 L1/L2/L3 without a concern.
 5. Add the full system-design force/failure/evidence matrix: API/auth, networking, scaling,
    queue/backpressure, cache, partitioning, timeouts/retry/jitter, circuit breaker, bulkhead,
    graceful degradation, SLI/SLO, DR, capacity/cost.

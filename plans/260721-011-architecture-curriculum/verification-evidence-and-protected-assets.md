@@ -125,9 +125,13 @@ later amendment. The evidence bundle must nevertheless prove these logical recor
 | Security | Negative results, secret/private-path scan, redaction class, residual risks |
 | Cleanup/rollback | Owned bytes removed/restored, evidence preserved, protected/unrelated pre/post hashes |
 | Provenance | `inputGitSha`, `testedTreeSha`, optional later attestation commit, external merge/approval identity |
+| Index | Closed ordered inventory of every required result/artifact locator, media type, size and SHA-256; reject missing, duplicate, orphaned, stale, or unindexed bytes |
 
-Bind `schemaVersion: fitness-result-v1` only after the amendment records the exact released #8
-schema path and SHA-256. The current repository copy is not a fallback.
+The current Issue #6 `fitness-result-v1` command envelope and the future Issue #8 learning/
+evidence schema are separate authorities. The amendment must record the exact released #8 path,
+version and SHA-256 plus an owner-authorized compatibility mapping to the Issue #11 command-result
+requirement. The current repository copy and the proposed unreleased Issue #8 version are not
+fallbacks.
 
 Allowed result states are inherited from the accepted master contract: `pass`, `fail`,
 `blocked-tbc`, `not-run-optional`. A required missing tool, contract, renderer, or check is `fail`.

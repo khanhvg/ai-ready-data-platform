@@ -58,7 +58,8 @@ tested head and stage outside the evidence producer.
 3. Run the full practical acceptance line exactly, followed by every amendment-bound #8/#10,
    security, accessibility, lifecycle, renderer, compatibility, and rollback blast-radius command.
 4. Run two isolated deterministic expansion renders and semantic mutation/overlap/freshness tests.
-5. Validate every evidence bundle against the exact released #8 schema/canonicalization; verify
+5. Validate every evidence bundle against the exact released #8 schema/canonicalization and the
+   owner-authorized command-result compatibility mapping; verify the closed run index plus
    input/output/tested-tree/dependency/contract/fixture/tool/artifact/rollback hashes.
 6. Compare Issue #6 protected sources/rows/renders/tool blobs and all dependency/portal/root
    deny-list paths to their exact baselines.

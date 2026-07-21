@@ -44,7 +44,7 @@ Observed after `git fetch --prune origin` and fresh GitHub reads on 2026-07-22:
 
 | Dependency | Fresh state | Why it is not consumable now |
 |---|---|---|
-| Issue #8 learning contracts | OPEN; label `ready to cook`; Stage A readiness branch head `c23106ad89d45370b06c3329f7d8963b2c62a064`; no implementation PR/release | Readiness explicitly says no PR, merge, release, closure, or downstream cook authority |
+| Issue #8 learning contracts | OPEN; label `ready to cook`; Stage A readiness branch head `c23106ad89d45370b06c3329f7d8963b2c62a064`; its validated plan proposes a separate Issue #8 evidence version; no implementation PR/release | Readiness explicitly says no PR, merge, release, closure, downstream cook authority, or permission to treat Issue #6 `fitness-result-v1` as the Issue #8 contract |
 | Issue #10 real journey/renderer | OPEN; label `ready for plan audit`; validated plan branch head `e2bba33deff76985eb3bdae361d494d162c854f8`; no implementation PR/release | Plan validation is not readiness, implementation, passing journey, merge, or renderer release |
 
 These SHAs are status evidence only. They are forbidden as future dependency placeholders.
@@ -59,9 +59,13 @@ Stage A remains blocked until one owner-authored release handoff supplies all of
    consumed lesson/lab/progress/prerequisite/hint/evidence/operation-matrix path.
 3. SHA-256 for every consumed schema, validator, registry, fixture, example, and canonicalization
    rule; exact compatibility/rollback versions.
-4. Exact evidence/fitness result schema binding. The name `fitness-result-v1` in Issue #11 is an
-   acceptance requirement, not permission to fall back to the current Issue #6 copy or invent a
-   compatible object. If the released #8 binding differs or is absent, STOP for a plan decision.
+4. Exact evidence/fitness result bindings and compatibility. The current
+   `fitness-result-v1` schema/registry is Issue #6 command-result truth; the Issue #8 validated
+   plan currently proposes a distinct Issue #8 evidence version, but that proposal is not a
+   release. The later amendment must pin the actual released #8 evidence schema and an exact
+   owner-authorized mapping to the Issue #11 command-result requirement. It may not bind the two
+   by name, copy the Issue #6 schema, consume the proposed version, or invent a compatibility
+   object. If the release supplies no authorized mapping, STOP for a plan/owner decision.
 5. Exact successful release commands, evidence locator/hash, tested tree SHA, implementation
    review, and human exact-head pre-merge approval.
 6. Confirmation that Issue #11 consumes these files read-only and creates no duplicate lesson,
@@ -121,7 +125,7 @@ commands remain empty.
 | Command allow-list | `[]` | Exact commands, arguments, tools, versions, time/resource bounds |
 | Contract bindings | `[]` | Exact paths, versions, SHA-256, reader/rollback rules |
 | Portal renderer bindings | `[]` | Stage B exact released modules/registries/build-test commands |
-| Fitness schema binding | `[]` | Exact released #8 schema path/version/SHA-256 |
+| Fitness/evidence schema bindings | `[]` | Exact released #8 evidence path/version/SHA-256 plus an owner-authorized command-result compatibility mapping; never the current #6 copy as fallback |
 | View lease | None | Exact additions-only sources/rows/renders and protected baseline |
 | Cloud/AWS/Terraform authority | None | Remains none for both stages |
 
