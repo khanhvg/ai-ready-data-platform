@@ -1,0 +1,41 @@
+{
+  "result": "pass",
+  "cleanup": {
+    "result": "pass",
+    "removed": [
+      "spikes/web/candidates/vite/node_modules",
+      "spikes/web/candidates/vite/dist",
+      "spikes/web/candidates/vite/test-results",
+      "spikes/web/candidates/vite/playwright-report"
+    ],
+    "preserved": ".artifacts/runtime/i5-02/v3-20260721T202415031Z-52a03869/gate/result.json",
+    "scope": "run-owned-candidate-runtime-only"
+  },
+  "ownedRollbackSentinel": {
+    "id": "ownedRollbackSentinel",
+    "removed": true,
+    "scope": ".artifacts/runtime/i5-02/v3-20260721T202415031Z-52a03869/rollback-simulation"
+  },
+  "unownedRollbackSentinel": {
+    "id": "unownedRollbackSentinel",
+    "preservedDuringSimulation": true,
+    "sha256": "b09e3bebc3017acb007e29cb4787f2523cf640a2bbe14aa68956cd977674e20f",
+    "controlCleanup": true
+  },
+  "retainedPreservation": {
+    "result": "pass",
+    "before": {
+      "green/result.json": "be5758db4a2c151d3ea1d7ee6e2230cdf42e3b56d3a731d9b6a6551e969006df",
+      "security/scans.json": "7b0248353697febc885a3da5eaabcc5de0300fca2dc4362917011ff8c2187549",
+      "security/built-output-scan.json": "7a68d65a5b40dcbd0bd9dac9c3e6901e49f2f448261350a63f701114c53e3e04",
+      "green/browser-results/chromium-desktop/v3-05-axe-complete.json": "515551a149b8e7a4e2c444e7149c5b7c93cd959ee86d2fa14f43989ed6106fdc"
+    },
+    "after": {
+      "green/result.json": "be5758db4a2c151d3ea1d7ee6e2230cdf42e3b56d3a731d9b6a6551e969006df",
+      "security/scans.json": "7b0248353697febc885a3da5eaabcc5de0300fca2dc4362917011ff8c2187549",
+      "security/built-output-scan.json": "7a68d65a5b40dcbd0bd9dac9c3e6901e49f2f448261350a63f701114c53e3e04",
+      "green/browser-results/chromium-desktop/v3-05-axe-complete.json": "515551a149b8e7a4e2c444e7149c5b7c93cd959ee86d2fa14f43989ed6106fdc"
+    }
+  },
+  "scope": "run-owned-sentinel-only"
+}

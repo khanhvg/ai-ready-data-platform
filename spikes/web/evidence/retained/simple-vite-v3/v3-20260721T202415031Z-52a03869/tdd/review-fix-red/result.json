@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "i5-02-targeted-review-fix-red-v1",
+  "result": "pass",
+  "command": [
+    "node",
+    "--test",
+    "spikes/web/harness/tests/simple-vite-v3.test.mjs",
+    "spikes/web/candidates/vite/tests/promotion-trust-contract.test.mjs"
+  ],
+  "rc": 1,
+  "signal": null,
+  "sourceSha": "f45aa016605c250aa26c977f2320acf75b565ecb",
+  "assertionIds": [
+    "V3-07 bounded command escalates TERM to KILL for its owned group and leaves no descendant",
+    "V3-07 host READY timeout rejects boundedly and cleans its owned process group",
+    "V3-07 authority accepts detached exact-live head and rejects detached mismatch or another branch",
+    "V3-05 progressive controls use valid named group semantics"
+  ]
+}

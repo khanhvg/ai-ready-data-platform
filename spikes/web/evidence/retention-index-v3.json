@@ -1,12 +1,12 @@
 {
   "schemaVersion": "i5-02-simple-vite-v3-retention-index-v1",
-  "acceptedRun": "v3-20260721T193809656Z-082d3035",
+  "acceptedRun": "v3-20260721T202415031Z-52a03869",
   "manifest": {
-    "path": "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T193809656Z-082d3035/manifest.json",
-    "sha256": "3a964fabe23eff732785fba0ff809d69f25a70185ba6a40fff3511552922ea21"
+    "path": "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T202415031Z-52a03869/manifest.json",
+    "sha256": "f0f03ba4aeabd39aeccb99f2dfef9a6544f276fb164a95c37f9eeeca5920bc1b"
   },
   "hashIndex": {
-    "path": "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T193809656Z-082d3035/hash-index.json",
-    "sha256": "194b14e0c79ea782612dabee574d5b266647f4ab5d2cf6ce510bd752cd7cc4f4"
+    "path": "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T202415031Z-52a03869/hash-index.json",
+    "sha256": "bf670df7d3ce20a79ed24b2c4f63c6afd83cea981a7216ce87c739acc9f71a7f"
   }
 }
