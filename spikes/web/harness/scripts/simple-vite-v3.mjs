@@ -667,7 +667,10 @@ export function retainRun() {
     const content = sanitize(readFileSync(resolve(reviewFixRed.directory, name), 'utf8')).replace(/[ \t]+$/gm, '');
     writeFileSync(resolve(destination, 'tdd/review-fix-red', name), content);
   }
-  for (const name of ['focused-tests.tap', 'result.json']) copySanitized(resolve(secondReviewFixRed.directory, name), resolve(destination, 'tdd/second-targeted-review-fix-red', name));
+  for (const name of ['focused-tests.tap', 'result.json']) {
+    const content = sanitize(readFileSync(resolve(secondReviewFixRed.directory, name), 'utf8')).replace(/[ \t]+$/gm, '');
+    writeFileSync(resolve(destination, 'tdd/second-targeted-review-fix-red', name), content);
+  }
   for (const name of ['install.log', 'build.log', 'unit.log', 'harness.log', 'playwright.log', 'result.json', 'response-index.html']) if (existsSync(resolve(green.directory, name))) copySanitized(resolve(green.directory, name), resolve(destination, 'green', name));
   if (existsSync(resolve(green.directory, 'browser-results'))) cpSync(resolve(green.directory, 'browser-results'), resolve(destination, 'green/browser-results'), { recursive: true });
   for (const [key, target] of browserEvidence.required) {
