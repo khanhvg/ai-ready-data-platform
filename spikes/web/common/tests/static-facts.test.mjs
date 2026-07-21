@@ -32,6 +32,9 @@ test('WEB-A11Y-001 staticLogical uses native keyboard controls and visible focus
   assert.match(css, /--focus-inner\s*:\s*#fff(?:fff)?\b/i);
   assert.match(css, /--focus-outer\s*:\s*#111(?:111)?\b/i);
   assert.match(css, /:focus-visible\s*\{[^}]*outline[^}]*var\(--focus-inner\)[^}]*box-shadow[^}]*var\(--focus-outer\)/s);
+  assert.match(css, /\.button-secondary\s*\{[^}]*color\s*:\s*var\(--ink\)[^}]*background\s*:\s*var\(--white\)/s);
+  assert.match(css, /\.button-secondary:hover\s*\{[^}]*color\s*:\s*var\(--ink\)[^}]*background\s*:\s*var\(--paper-deep\)/s);
+  assert.match(css, /\.button-secondary:focus-visible\s*\{[^}]*color\s*:\s*var\(--ink\)[^}]*background\s*:\s*var\(--white\)/s);
 });
 
 test('WEB-A11Y-002 staticLogical has ordered landmarks, headings, tables and live status; manual AT remains pending', async () => {
@@ -40,6 +43,10 @@ test('WEB-A11Y-002 staticLogical has ordered landmarks, headings, tables and liv
   assert.equal(facets.namedScreenReader, 'required-pending');
   for (const semantic of [/<header\b/, /<nav\b/, /<main\b/, /<aside\b/, /<footer\b/, /<h1\b/, /<table\b/, /role=["']status["']/]) assert.match(html, semantic);
   assert.doesNotMatch(html, /tabindex=["'](?:[1-9]\d*)["']/);
+  const alternatives = [...html.matchAll(/<input\b(?=[^>]*\btype=["']radio["'])(?=[^>]*\bname=["']alternative["'])[^>]*>/g)]
+    .map(([input]) => input.match(/\bvalue=["']([^"']+)["']/)?.[1]);
+  assert.deepEqual(alternatives, ['headline-sufficient', 'shared-month-sufficient', 'insufficient evidence']);
+  assert.equal(new Set(alternatives).size, alternatives.length);
 });
 
 test('WEB-A11Y-003 staticLogical reflows rail/cards in flow with no 2D narrative scroll; rendered zoom remains pending', async () => {

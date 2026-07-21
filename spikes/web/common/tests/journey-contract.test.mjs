@@ -12,6 +12,7 @@ test('WEB-E2E-001 staticLogical journey is deterministic, reversible and non-com
     'frame-explicit',
     'controlled-failure-explicit',
     'diagnose-explicit',
+    'alternative-explicit',
     'reset-explicit',
     'verify-fixture-explicit',
     'review-evidence-explicit',

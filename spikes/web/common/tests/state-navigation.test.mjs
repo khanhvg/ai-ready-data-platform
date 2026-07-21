@@ -33,6 +33,29 @@ test('WEB-STATE-001 staticLogical commits only explicit navigation and restores 
     assert.equal(reviewedRestored[field], reviewed[field], field);
   }
   assert.equal(reviewedRestored.transientDraft, '');
+
+  const diagnosed = reducePreviewState(controlled, { type: 'diagnose-explicit' });
+  const alternativeDraft = reducePreviewState(diagnosed, { type: 'draft-changed', value: 'headline-sufficient' });
+  const alternative = reducePreviewState(alternativeDraft, { type: 'alternative-explicit' });
+
+  assert.equal(alternative.state, 'exploring');
+  assert.equal(alternative.currentAct, 6);
+  assert.equal(alternative.committedAct, 6);
+  assert.equal(alternative.lastExplicitAction, 'alternative-explicit');
+  assert.equal(alternative.transientDraft, '');
+  assert.equal(alternative.conclusion, 'insufficient evidence');
+  assert.equal(alternative.fixtureVerifyStatus, 'not-verified');
+  assert.equal(alternative.evidenceReviewStatus, 'not-reviewed');
+  assert.equal(alternative.evidenceCount, 0);
+  assert.equal(Object.hasOwn(alternative, 'selectedAlternative'), false);
+  assert.equal(Object.hasOwn(alternative.persistedProjection, 'selectedAlternative'), false);
+
+  const alternativeRestored = restoreCommittedState(alternative.persistedProjection, alternative.fixtureDigest);
+  assert.equal(alternativeRestored.state, 'exploring');
+  assert.equal(alternativeRestored.committedAct, 6);
+  assert.equal(alternativeRestored.lastExplicitAction, 'alternative-explicit');
+  assert.equal(alternativeRestored.transientDraft, '');
+  assert.equal(Object.hasOwn(alternativeRestored, 'selectedAlternative'), false);
 });
 
 test('WEB-NOSCROLL-001 staticLogical ignores scroll, hover, motion, time, visitation and focus for commit/verify', async () => {

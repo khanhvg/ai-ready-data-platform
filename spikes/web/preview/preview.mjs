@@ -24,7 +24,7 @@ const PASSIVE_EVENTS = new Set([
 ]);
 const COMMITTED_ACTIONS = new Set([
   null, 'hint-explicit', 'next-explicit', 'navigate-explicit', 'previous-explicit', 'frame-explicit',
-  'controlled-failure-explicit', 'diagnose-explicit', 'reset-explicit',
+  'controlled-failure-explicit', 'diagnose-explicit', 'alternative-explicit', 'reset-explicit',
   'verify-fixture-explicit', 'review-evidence-explicit',
 ]);
 
@@ -124,6 +124,9 @@ export function reducePreviewState(current, event = {}) {
   }
   if (type === 'diagnose-explicit') {
     return commit(state, type, { state: 'diagnosing', currentAct: 5, committedAct: 5 });
+  }
+  if (type === 'alternative-explicit') {
+    return commit(state, type, { state: 'exploring', currentAct: 6, committedAct: 6 });
   }
   if (type === 'reset-explicit') {
     const baseline = baseFields();
@@ -400,9 +403,14 @@ if (typeof document !== 'undefined') {
   });
   one('[data-action="alternative-explicit"]').addEventListener('click', () => {
     const selected = one('input[name="alternative"]:checked');
-    one('[data-alternative-status]').textContent = selected?.value === 'insufficient evidence'
-      ? 'Lựa chọn tạm thời phù hợp với giới hạn fixture.'
-      : 'Lựa chọn tạm thời đã ghi trên trang; kết quả fixture không đổi.';
+    const selectedValue = selected?.value;
+    commit({ type: 'alternative-explicit' });
+    if (selected) selected.checked = false;
+    one('[data-alternative-status]').textContent = selectedValue === 'insufficient evidence'
+      ? 'Đã ghi hồi 6; lựa chọn phù hợp nhưng không được lưu.'
+      : selectedValue
+        ? 'Đã ghi hồi 6; lựa chọn không được lưu và kết quả fixture không đổi.'
+        : 'Đã ghi hồi 6; không có lựa chọn nào được lưu và kết quả fixture không đổi.';
   });
   one('[data-action="verify-fixture-explicit"]').addEventListener('click', () => {
     const verified = verifyTrustedFixtureProjection(TRUSTED_FIXTURE_PROJECTION);
