@@ -14,6 +14,9 @@ The output is a Vietnamese-first learning product, not a documentation dump.
 - Every module is independently versioned through the exact released Issue #8 contract. Issue #11
   owns content/trace data only; it does not duplicate schemas, progress, completion, evidence,
   operation matrices, or portal rendering truth.
+- Every reusable template has one stable language-neutral content ID, a released-contract version
+  token, content hash, compatibility/supersession relation, and reciprocal registry reference.
+  Exact serialized version field names come only from the released Issue #8 contract.
 - Every module must expose prerequisites, observable outcome, starter, task, controlled failure,
   verify, evidence, reset, progressive hints, gated solution, reflection, and next path. Stage A
   may describe and statically validate that structure but cannot claim the executable elements ran.
@@ -56,20 +59,25 @@ and prerequisite status values come from the future released Issue #8 contracts.
 | J03 | Junior | So sánh biên module/service theo lực thực | J02 | Logical API categories become premature services | Option matrix + physical-boundary ADR |
 | J04 | Junior | Thiết kế trạng thái và khả năng chịu lỗi | J03 | Retry duplicates effects; overload cascades | Fault/replay/backpressure evidence |
 | J05 | Junior | Bảo vệ biên thực thi và dữ liệu | J03, J04 | Input becomes traversal/RCE/object abuse | Threat review + negative evidence |
-| J06 | Junior | Vận hành bằng SLI/SLO và graceful degradation | J04, J05 | System is “up” but decision path is unusable | SLI/SLO/degradation exercise |
+| J06 | Junior | Quyết định khi nào tách modular monolith thành service | J03 | Framework/service count drives extraction, or an “up” service cannot protect the decision path | Extraction ADR/dependency rule plus SLI/SLO/degradation evidence |
 | D01 | Foundation/Junior | Hiểu grain, hợp đồng và nguồn quyết định | F03 | Equal totals hide semantic drift | Grain/contract trace; architecture content only |
-| D04 | Junior | So sánh metric/BI theo grain | D01, J01 | Aggregate-of-aggregates changes a KPI | DuckDB/Rill conceptual mapping |
-| D05 | Junior/Mid | Phân biệt object, Iceberg metadata và catalog pointer | D01, J04 | Data exists but current pointer/catalog is absent | Lifecycle/recovery design evidence |
-| D06 | Mid | Gắn data product với ownership/governance | D05, J05 | Lineage lacks owner/classification/access intent | OpenMetadata identity/governance review |
+| D02 | Junior | Mô hình hóa dbt, chất lượng và lineage | D01 | Controlled warnings are treated as failures or silently removed | Contract/lineage/warning oracle; graph content only, no data-lab runtime claim |
+| D03 | Junior | Điều phối, retry và phục hồi pipeline | D02, J04 | Partial publication or retry reports false success | Task/recovery/idempotency evidence contract; graph content only, no data-lab runtime claim |
+| D04 | Junior | So sánh metric/BI theo grain | D02 | Aggregate-of-aggregates changes a KPI | DuckDB/Rill conceptual mapping |
+| D05 | Junior/Mid | Phân biệt object, Iceberg metadata và catalog pointer | D02, D03, D04 | Data exists but current pointer/catalog is absent | Lifecycle/recovery design evidence |
+| D06 | Mid | Gắn data product với ownership/governance | D05 | Lineage lacks owner/classification/access intent | OpenMetadata identity/governance review |
 | M01 | Mid | Thiết kế topology, state, scale và chi phí | J02-J06, D05 | Compute reaches zero but durable state/cost remains | Capacity/cost/state matrix |
 | M02 | Mid | Thiết kế readiness, DR, RTO/RPO | M01, J04 | Office opens before restore/hydration is ready | Recovery/deployment dynamic review |
-| M03 | Mid | So sánh local và AWS không giả vờ tương đương | D04-D06, M01 | DuckDB/Rill and ClickHouse/Superset silently diverge | Explicit invariants/deviations |
+| M03 | Mid | So sánh local và AWS không giả vờ tương đương | D04, D05, M01 | DuckDB/Rill and ClickHouse/Superset silently diverge | Explicit invariants/deviations |
 | M04 | Mid | Rà soát bảo mật hosted như một tương lai có gate | J05, M01 | Object ID is treated as authorization | Threat/security review; no hosted claim |
 
 Graph rules:
 
 - Acyclic; all nodes reachable from at least one foundation node.
 - Missing/unknown prerequisite, self-edge, cycle, unreachable required node, or illegal skip fails.
+- `D02`/`D03` preserve accepted graph identity and trace handoff only. Issue #11 does not create
+  the I5-07 data-platform labs, verifiers, pipeline seams, or runtime evidence; those remain a
+  separate owner/release. Static graph inclusion is not executable data-lab delivery.
 - Required environment/tool probes are non-mutating and return learner-language remediation.
 - Optional tool absence never forges a pass. AWS credentials, cloud access, Docker-heavy profiles,
   Rill UI, OpenMetadata UI, or Superset never block the foundation route.
@@ -99,20 +107,30 @@ real lifecycle through the Issue #10 renderer and the Issue #8 completion/eviden
 
 Templates are structured content governed by released contracts, not free-form Markdown files.
 
-| Template | Required sections | Reject when |
-|---|---|---|
-| Stakeholder concern | Actor, decision, outcome, concern, capability/value stream, owner | No decision/outcome or generic “user” |
-| FR/NFR/ASR | Stable ID, type, statement, metric/threshold or explicit TBC, owner, verifier | Adjective-only NFR; unowned TBC |
-| Option matrix | Decision, forces, constraints, 2+ viable options, failure modes, cost/ops/security, evidence, rejection reason | Winner by preference or framework fashion |
-| C4 view | Stable external ID, audience, concern, scope, type, source, expected elements/relations, legend, text alternative, trace IDs; L1 context and L2 container as needed, L3 component only for a valuable high-risk boundary | Decorative/unowned view, forced L3, or mixed abstraction |
-| Dynamic/sequence | One critical flow, ordered steps, failure/retry/reset/recovery branch, actor/authority | Sequence adds no ordering insight |
-| Deployment | Environment, compute/network/state/trust nodes, ownership, residual state/cost, failure/recovery | Diagram implies deployment or scale-to-zero |
-| ADR | Context, forces, decision, alternatives, consequences, status, supersession, requirements/views/tests/evidence | No alternatives/evidence or accepted TBC |
-| Pattern admission | Pattern, named force, concrete failure, quality attribute, boundary, verifier/evidence, removal trigger | Pattern without failure/evidence |
-| Fitness function | Claim, scope, input/version, deterministic oracle, command owner, result/evidence, false-positive boundary | Prose-only or missing failure behavior |
-| Capacity/cost | Workload, assumptions, units, active/off-hours, bottleneck, residual cost, source date/TBC, sensitivity | Hard-coded stale price or “free at zero EC2” |
-| DR/recovery | Authority, backup/rebuild, failure point, RTO/RPO/TBC, restore verification, rollback | Backup exit code substitutes for restore |
-| Security review | Assets, actors, trust boundaries, threats, controls, negative tests, residual risk, owner | Generic checklist/no threat model |
+| Stable content ID | Template | Required sections | Reject when |
+|---|---|---|---|
+| `tpl-stakeholder-concern` | Stakeholder concern | Actor, decision, outcome, concern, capability/value stream, owner | No decision/outcome or generic “user” |
+| `tpl-fr-nfr-asr` | FR/NFR/ASR | Stable ID, type, statement, metric/threshold or explicit TBC, owner, verifier | Adjective-only NFR; unowned TBC |
+| `tpl-option-matrix` | Option matrix | Decision, forces, constraints, 2+ viable options, failure modes, cost/ops/security, evidence, rejection reason | Winner by preference or framework fashion |
+| `tpl-c4-view` | C4 view | Stable external ID, audience, concern, scope, type, source, expected elements/relations, legend, text alternative, trace IDs; L1 context and L2 container only when useful, L3 component only for a valuable high-risk boundary | Decorative/unowned view, forced level/L3, or mixed abstraction |
+| `tpl-dynamic-sequence` | Dynamic/sequence | One critical flow, ordered steps, failure/retry/reset/recovery branch, actor/authority | Sequence adds no ordering insight |
+| `tpl-deployment` | Deployment | Environment, compute/network/state/trust nodes, ownership, residual state/cost, failure/recovery | Diagram implies deployment or scale-to-zero |
+| `tpl-adr` | ADR | Context, forces, decision, alternatives, consequences, status, supersession, requirements/views/tests/evidence | No alternatives/evidence or accepted TBC |
+| `tpl-pattern-admission` | Pattern admission | Pattern, named force, concrete failure, quality attribute, boundary, verifier/evidence, removal trigger | Pattern without failure/evidence |
+| `tpl-fitness-function` | Fitness function | Claim, scope, input/version, deterministic oracle, command owner, result/evidence, false-positive boundary | Prose-only or missing failure behavior |
+| `tpl-capacity-cost` | Capacity/cost | Workload, assumptions, units, active/off-hours, bottleneck, residual cost, source date/TBC, sensitivity | Hard-coded stale price or “free at zero EC2” |
+| `tpl-dr-recovery` | DR/recovery | Authority, backup/rebuild, failure point, RTO/RPO/TBC, restore verification, rollback | Backup exit code substitutes for restore |
+| `tpl-security-review` | Security review | Assets, actors, trust boundaries, threats, controls, negative tests, residual risk, owner | Generic checklist/no threat model |
+
+Every instance records the stable template ID and the exact released template version/hash it
+uses. A superseded version stays readable until the released compatibility/rollback rule permits
+removal; an unregistered local copy fails. Stable IDs above are Issue #11 content identities, not
+invented Issue #8 schema field names.
+
+A flow marked critical because it crosses authority, state, deployment, security, resilience, or
+recovery boundaries must link both an ordered dynamic/sequence view and a deployment view. C4
+L1/L2 are included only when they answer a named concern; L3 is admitted only for a valuable
+high-risk internal boundary. A critical flow cannot waive dynamic/deployment coverage with prose.
 
 ## System-Design Coverage and Pattern Admission
 

@@ -24,7 +24,7 @@
 | I11-CUR-02 | Every module supplies prerequisite check, starter, task, controlled failure, verify, evidence, reset, hints, solution, reflection | A structure; B runtime | Schema/static then E2E lifecycle evidence |
 | I11-CUR-03 | Learning product uses progressive disclosure and verification; no scroll/time/reflection/solution completion | A/B | Static contract + Stage B completion negatives |
 | I11-TRACE-01 | Close business outcome → capability → concern → FR/NFR → option → views → ADR/pattern → implementation intent → evidence → operations chain | A/B | Broken/orphan/reciprocal trace fixtures |
-| I11-TPL-01 | Structured templates cover concerns, FR/NFR/ASR, option matrix, C4, dynamic/deployment, ADR, fitness, capacity/cost, DR, security | A | Template registry/required-field tests |
+| I11-TPL-01 | Structured templates have stable content IDs, released-contract version/hash and compatibility/supersession; cover concerns, FR/NFR/ASR, option matrix, C4, dynamic/deployment, ADR, fitness, capacity/cost, DR, security; every critical flow links ordered dynamic/sequence and deployment evidence | A | Template registry/version/supersession/required-field/critical-flow tests |
 | I11-SYS-01 | Cover API/auth, network, scaling, queue/backpressure, cache, partitioning, timeout/retry/jitter, circuit breaker, bulkhead, graceful degradation, SLI/SLO, DR, capacity/cost | A | Topic-force-failure-evidence matrix |
 | I11-PAT-01 | Admit a pattern only with named forces, failure, quality attribute, boundary, verifier/evidence, and removal/rejection condition | A/B | Admission mutations |
 | I11-PAT-02 | Negative `pattern-without-failure` fixture fails deterministically and cannot pass with generic prose/null evidence | A | Required RED fixture |
@@ -37,7 +37,7 @@
 | I11-LAB-01 | Stage B lab consumes exact #8/#10 truth without copied schema/state/completion/renderer logic | B | Path/blob/consumer boundary inspection |
 | I11-LAB-02 | Stage B covers F01→F04→J01/J04/J05 and real controlled failure→hint→reset→verify→evidence→reflection | B | `architecture-lab-e2e` evidence |
 | I11-SEC-01 | Complete S3 threat/data-security disposition, negative tests, residual risks, secret/private-path controls | A/B | Threat crosswalk + scans |
-| I11-EVID-01 | Emit exact-command/tool/input/output/tested-tree/dependency/contract/fixture/artifact/redaction/rollback evidence | A/B | Released schema + digest validation |
+| I11-EVID-01 | Emit exact-command/tool/input/output/tested-tree/dependency/contract/fixture/artifact/redaction/rollback evidence plus one closed immutable run index covering every required result and artifact hash | A/B | Released schema + digest/index completeness, duplicate/orphan/tamper validation |
 | I11-ROLL-01 | Roll back only Issue #11-owned candidate/workspace state; preserve prior evidence, protected six, dependencies, and unrelated data | A/B | Rehearsal and pre/post hashes |
 | I11-OPS-01 | Teach operations/resilience/security/cost/governance consequences without live cloud claims | A | Trace/content policy tests |
 | I11-PREMERGE-01 | Require fresh independent implementation review and repository-authorized human exact-head pre-merge approval | A/B | External approval attestation |

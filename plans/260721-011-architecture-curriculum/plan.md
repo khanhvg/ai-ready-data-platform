@@ -15,6 +15,9 @@ mode: fast-tdd-no-tasks
 modelProfile: "gpt-5.6-sol"
 modelReasoningEffort: "xhigh"
 inputSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
+validationStatus: passed-with-fixes-not-readiness
+validationInputSha: "7620d168fb96cf9ae11e963501f65ea5a416af43"
+validationReport: "validation/independent-validation-report.md"
 stageAStatus: blocked-on-issue-8-released-contracts
 stageBStatus: blocked-on-issue-10-passing-merged-real-journey
 currentImplementationFileAllowList: []
@@ -118,9 +121,74 @@ Issue #6 local-view, cloud/AWS/Terraform, other plan, or other worktree write is
   scans only.
 - Not run: plan validation, red-team/readiness, curriculum/architecture commands, renderer,
   lab/portal tests, native GUI/manual matrix, cook, PR, merge, cloud, AWS, or Terraform.
-- Next phase: fresh independent plan validation at the exact committed planner output SHA.
+- Validation completed with bounded fixes at the exact planner input. Next phase: fresh
+  dependency-aware readiness audit after this validation output is committed/pushed and
+  local = tracking = fresh-live is clean; readiness is expected to remain dependency-blocked.
 
 ## Unresolved Questions
 
 None for planning. Exact dependency releases and the implementation authorities derived from
 them are intentionally absent and block cook, not completion of this planner-only artifact.
+
+## Validation Log
+
+### Session 1 — 2026-07-22 — Fresh independent initial validation
+
+**Trigger:** Validate exact planner output
+`7620d168fb96cf9ae11e963501f65ea5a416af43` adversarially before readiness.
+
+**Questions asked:** 0. The user supplied the exact dependency, stage, ownership, toolchain,
+security, verification, transition, and publication decisions. Fresh repository/GitHub evidence
+resolved the remaining factual checks; no genuine product decision was reopened.
+
+#### Confirmed Decisions
+
+- Stage A remains blocked on released Issue #8 contracts and may claim only static curriculum,
+  template, traceability, and authorized deterministic expansion results.
+- Stage B alone may consume the passing merged Issue #10 real journey/renderer and claim the real
+  controlled-failure, reset, verify, evidence, completion, and portal lifecycle.
+- Current file, command, dependency-release, renderer, fitness/evidence-schema, and view-lease
+  authorities remain empty. Issue #6 `fitness-result-v1` is not a fallback for a future Issue #8
+  evidence contract.
+- The six Issue #6 views, rows, renders, hashes, toolchain, and source closure remain read-only;
+  Structurizr wording grants no renderer or migration authority.
+- Independent implementation review and repository-authorized human exact-head pre-merge
+  approval remain mandatory for every future staged release.
+
+#### Objective Corrections
+
+- Separated the current Issue #6 command-result envelope from the future Issue #8 learning/
+  evidence binding and required an exact released compatibility decision rather than a guessed
+  direct schema binding.
+- Restored accepted competency ID intent, including `J06`, and restored `D02`/`D03` in the
+  curriculum graph without claiming I5-07 data-lab runtime delivery.
+- Added stable template identity/version/supersession obligations and an explicit rule requiring
+  dynamic/sequence plus deployment views for critical flows while keeping L3 concern-driven.
+- Made the immutable evidence hash index a required, closed, orphan-rejecting record.
+
+#### Verification Results
+
+- **Tier:** Full (7 phases; Fact Checker, Flow Tracer, Scope Auditor, Contract Verifier)
+- **Claims checked:** 105
+- **Verified:** 105 | **Failed:** 0 | **Unverified:** 0
+- Dependency absence is verified blocked state, not an implementation verification result.
+- Full evidence: [Independent Validation Report](./validation/independent-validation-report.md).
+
+#### Impact on Phases
+
+- Phase 1: exact evidence-schema compatibility gate corrected; authority remains empty.
+- Phase 2: RED obligations now cover template version/supersession and evidence-index integrity.
+- Phase 3: competency IDs/prerequisites, template versioning, and critical-flow view admission
+  corrected.
+- Phase 4: evidence index and schema compatibility are explicit release criteria.
+- Phases 5-7: no authority or execution change; whole-plan terminology rechecked.
+
+### Whole-Plan Consistency Sweep
+
+- Files reread: `plan.md`, all seven `phase-*.md` files, all five companion contracts, and the
+  validation report.
+- Decision deltas checked: 4.
+- Reconciled stale references: 12.
+- Unresolved contradictions: 0.
+- Recommendation: proceed only to a fresh dependency-aware readiness audit; do not cook while
+  either stage authority remains empty.

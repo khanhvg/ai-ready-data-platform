@@ -9,6 +9,8 @@ effort: "Gate; repeated before each staged cook"
 
 # Phase 1: Freeze authority and dependency gates
 
+<!-- Updated: Validation Session 1 - separated Issue #6 command envelopes from future Issue #8 evidence bindings. -->
+
 ## Context Links
 
 - [Plan](./plan.md)
@@ -67,9 +69,11 @@ Stage B starts a new chain; Stage A readiness cannot authorize Stage B.
    at the prospective stage input.
 3. For Stage A, reject current Issue #8 plan/readiness commits. Accept only an exact released
    contract SHA plus registry/schema/validator/fixture/canonicalization paths and hashes.
-4. Bind the Issue #11 `fitness-result-v1` acceptance name to the exact released Issue #8 schema
-   path/hash. If absent/incompatible, stop for plan correction; never use the current base copy as
-   fallback.
+4. Treat the current Issue #6 `fitness-result-v1` command envelope and the future Issue #8
+   learning/evidence contract as separate authorities. Pin the exact released #8 path/hash plus
+   an owner-authorized compatibility mapping to the Issue #11 command-result requirement. If the
+   release or mapping is absent/incompatible, stop for plan correction; never use the current
+   base copy or the proposed Issue #8 version as fallback.
 5. For Stage B, additionally reject current Issue #10 plan/validation commits. Accept only the
    passing merged real-journey SHA with exact portal renderer/registry/publication seams and test
    evidence.
@@ -108,7 +112,8 @@ planner-level gate is inspection only and cannot mark a stage cookable.
 
 - [ ] Exact released dependency SHA(s), blobs, evidence, and compatibility/rollback are pinned.
 - [ ] Exact stage file and command allow-lists are non-empty, closed, and owner-valid.
-- [ ] Fitness schema and, for Stage B, portal renderer are bound to released paths/hashes.
+- [ ] Released evidence schema plus command-result compatibility and, for Stage B, portal
+      renderer are bound to exact released paths/hashes.
 - [ ] Protected view/tool/shared-contract/portal boundaries and lease are proven.
 - [ ] Fresh independent validation and fresh readiness authorize one exact stage input.
 - [ ] Any unmet item keeps the stage `blocked`, with no partial cook.

@@ -9,6 +9,8 @@ effort: "M after Stage A readiness"
 
 # Phase 2: Stage A tests-first contract and preservation
 
+<!-- Updated: Validation Session 1 - added template-version and evidence-index RED obligations. -->
+
 ## Context Links
 
 - [Plan](./plan.md)
@@ -63,6 +65,8 @@ from implementation output and binds the exact input/dependency/tool hashes.
    taxonomy misrepresented as physical services.
 10. Record failing assertion IDs, exit status, bounded output hashes, input/dependency/tool hashes,
     and protected pre-state before any implementation behavior changes.
+11. Add template identity/version/supersession mutations and evidence-index missing/duplicate/
+    orphan/tamper mutations under the existing stable reference/trace fixture classes.
 
 ## Tests Before
 

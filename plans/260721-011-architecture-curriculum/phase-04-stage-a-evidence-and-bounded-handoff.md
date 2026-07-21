@@ -9,6 +9,8 @@ effort: "M"
 
 # Phase 4: Stage A evidence and bounded handoff
 
+<!-- Updated: Validation Session 1 - made evidence compatibility and the immutable run index explicit. -->
+
 ## Context Links
 
 - [Verification, Evidence, and Protected Assets](./verification-evidence-and-protected-assets.md)
@@ -34,7 +36,9 @@ At the current planner output this phase is blocked and has no file or command a
 
 Evidence is produced under `.artifacts/evidence/architecture-curriculum/<run-id>/` through the
 exact released #8 binding. It distinguishes input, tested tree, optional attestation commit, and
-external merge/approval. Stage A results never synthesize an `architecture-lab-e2e` pass.
+external merge/approval. One closed immutable run index enumerates every required result/artifact
+and byte hash; missing, duplicate, orphaned, or unindexed bytes fail. Stage A results never
+synthesize an `architecture-lab-e2e` pass.
 
 ## Related Code Files
 
@@ -84,7 +88,10 @@ Exact Stage A amendment-authorized command list plus static checks. The immutabl
 ## Success Criteria
 
 - [ ] RED/GREEN/static/render/trace/security/rollback evidence is complete at exact tested tree.
-- [ ] `fitness-result-v1` is bound to exact released #8 path/hash, not fallback.
+- [ ] Exact released #8 evidence path/hash and owner-authorized compatibility with the Issue #11
+      command-result requirement are pinned; Issue #6 `fitness-result-v1` is not a fallback.
+- [ ] The immutable run index is complete and rejects missing, duplicate, orphaned, stale, or
+      tampered results/artifacts.
 - [ ] Protected six and dependency/portal/root/cloud deny-list remain unchanged.
 - [ ] Cleanup and rollback preserve prior evidence and unrelated state.
 - [ ] Stage A handoff explicitly denies portal/executable/completion claims.
