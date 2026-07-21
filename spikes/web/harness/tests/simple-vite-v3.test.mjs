@@ -188,7 +188,9 @@ test('V3-07 authority accepts detached exact-live head and rejects detached mism
     assert.equal(exact.rc, 0, exact.stderr || JSON.stringify(exact.output));
     assert.equal(exact.output.authorityMode, 'detached-exact-live');
 
-    assert.equal(run(['checkout', '--quiet', '--detach', 'HEAD^']).status, 0);
+    assert.equal(run(['checkout', '--quiet', '-b', 'review-detached-mismatch']).status, 0);
+    assert.equal(run(['-c', 'user.name=Review Fixture', '-c', 'user.email=review-fixture@example.invalid', 'commit', '--quiet', '--allow-empty', '-m', 'test fixture: detached mismatch']).status, 0);
+    assert.equal(run(['checkout', '--quiet', '--detach', 'HEAD']).status, 0);
     const mismatch = preflight();
     assert.notEqual(mismatch.rc, 0);
     assert.ok(mismatch.output.failures.includes('detached-head-mismatch'));
