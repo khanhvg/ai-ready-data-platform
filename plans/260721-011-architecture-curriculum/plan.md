@@ -18,8 +18,12 @@ inputSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
 validationStatus: passed-with-fixes-not-readiness
 validationInputSha: "7620d168fb96cf9ae11e963501f65ea5a416af43"
 validationReport: "validation/independent-validation-report.md"
-stageAStatus: blocked-on-issue-8-released-contracts
-stageBStatus: blocked-on-issue-10-passing-merged-real-journey
+readinessAuditInputSha: "1287fe35aa9ab29a97daa541f39a624d01a77d31"
+readinessAuditReport: "audit/readiness-audit-report.md"
+readinessVerdict: blocked-dependencies
+implementationAuthority: none
+stageAStatus: blocked-on-issue-8-released-contracts-and-additions-only-view-seam
+stageBStatus: blocked-on-stage-a-and-issue-10-passing-merged-real-journey
 currentImplementationFileAllowList: []
 currentImplementationCommandAllowList: []
 ---
@@ -67,10 +71,13 @@ released handoffs by later amendments; a guessed equivalent is a hard STOP.
   present in this exact input tree and plan branches are not release artifacts. External release
   gates are normative in [Dependency and Release Gates](./dependency-and-release-gates.md).
 - **Stage A:** exact released Issue #8 learning contracts. Issue #8 is currently OPEN; its
-  Stage A readiness commit is implementation input for Issue #8, not a downstream release.
+  latest repair candidate is awaiting a fresh exact-head review. It has no passing review,
+  human approval, merge, release, or downstream authority. Stage A also requires an admitted
+  additions-only architecture seam and exact view lease.
 - **Stage B:** passing Stage A plus the exact passing merged Issue #10 real journey and released
-  portal renderer SHA. Issue #10 is currently OPEN at plan-audit readiness, with no implementation
-  PR or merged real-journey release.
+  portal renderer SHA. Issue #10 is currently OPEN at `ready for plan audit`; its blocked
+  readiness audit authorizes no cook scope, and no implementation PR or merged real-journey
+  release exists.
 - Owner comment
   [#5036142770](https://github.com/khanhvg/ai-ready-data-platform/issues/5#issuecomment-5036142770)
   authorizes parallel planning only. It does not bypass either release dependency or a serialized
@@ -111,6 +118,10 @@ fitnessSchemaBindings: []
 
 No root `Makefile`, `docs/code-standards.md`, `release-manifest.json`, portal/shared-contract,
 Issue #6 local-view, cloud/AWS/Terraform, other plan, or other worktree write is allowed.
+`README.md`, other `docs/**`, and release metadata are also outside future Issue #11 cook
+authority. Any user-facing documentation or release-note impact discovered during a staged
+implementation requires a separate owner-authorized serialized handoff; it cannot broaden the
+Stage A or Stage B allow-list.
 
 ## Workflow and Exit
 
@@ -119,11 +130,13 @@ Issue #6 local-view, cloud/AWS/Terraform, other plan, or other worktree write is
 - Checks in this planner: plan status, frontmatter/static structure, local links/anchors,
   dependency state, protected hashes/blobs, staged scope, formatting, and S3 secret/private-path
   scans only.
-- Not run: plan validation, red-team/readiness, curriculum/architecture commands, renderer,
+- Not run by the planner: plan validation, red-team/readiness, curriculum/architecture commands, renderer,
   lab/portal tests, native GUI/manual matrix, cook, PR, merge, cloud, AWS, or Terraform.
-- Validation completed with bounded fixes at the exact planner input. Next phase: fresh
-  dependency-aware readiness audit after this validation output is committed/pushed and
-  local = tracking = fresh-live is clean; readiness is expected to remain dependency-blocked.
+- Validation completed with bounded fixes at the exact planner input. The fresh dependency-aware
+  readiness audit at exact input `1287fe35aa9ab29a97daa541f39a624d01a77d31` is
+  `BLOCKED_DEPENDENCIES` with no implementation authority. The next phase is dependency release,
+  then an exact-SHA amendment, fresh independent revalidation, and fresh readiness. No partial
+  cook is authorized.
 
 ## Unresolved Questions
 
