@@ -12,8 +12,9 @@ created: "2026-07-21T16:49:00.989Z"
 createdBy: "ck:plan"
 source: skill
 mode: fast-tdd-no-tasks
-inputSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
-planningValidation: not-run
+integrationBaseSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
+validationInputSha: "ad87c3f6090129dd30cfb626c6f396567f567a42"
+planningValidation: independent-pass-with-fixes
 stageAStatus: blocked-on-issue-7-merged-vite-and-issue-8-released-stage-a
 stageBStatus: blocked-on-issue-9-released-runner-sha
 ---
@@ -30,8 +31,9 @@ runner-unavailable behavior. Stage B alone may integrate the real Issue #9 runne
 controlled failure → `insufficient-evidence / no-common-grain` decision → reset → fresh verify
 sequence, and claim a complete local journey through the single Issue #8 completion authority.
 
-No plan text assigns a future dependency SHA, contract version, OpenAPI route, runner endpoint, or
-registry command. Exact released handoffs must be pinned and verified before each stage.
+No plan text assigns a future dependency SHA, contract version, OpenAPI route, runner endpoint,
+registry command, or concrete stage file/command allow-list. Exact released handoffs must be
+pinned by a later amendment, independently revalidated, and readiness-audited before each stage.
 
 ## Phases
 
@@ -75,13 +77,61 @@ registry command. Exact released handoffs must be pinned and verified before eac
 
 ## Ownership
 
-Implementation may change only winning `apps/learning-portal/**`, portal tests within that tree,
-and `mk/issue-5/i5-05.mk`. It may emit untracked issue-owned runtime/evidence beneath the
-registered `.artifacts` roots. Any shared-contract, runner, root Make, architecture-view, fixture,
-data-pipeline, cloud, AWS, Terraform, or unrelated-path change is a hard STOP.
+The maximum Issue #10 ownership ceiling is winning `apps/learning-portal/**`, portal tests within
+that tree, `mk/issue-5/i5-05.mk`, and Issue #10 plan/evidence artifacts. This is not present cook
+authority: Stage A and Stage B file, command, and dependency SHA allow-lists are all `[]` until a
+later exact-SHA amendment passes revalidation and readiness. Any shared-contract, runner, root
+Make, architecture-view, fixture, data-pipeline, cloud, AWS, Terraform, or unrelated-path change
+is a hard STOP.
 
 ## Plan Exit
 
-This artifact is `PLANNER_ONLY_NOT_VALIDATED`. The only next phase is fresh independent plan
-validation at the exact published plan head, followed by fresh dependency-aware readiness before
-any staged cook. Human exact-head pre-merge approval remains mandatory for every future merge.
+Independent validation passed with objective fixes at input
+`ad87c3f6090129dd30cfb626c6f396567f567a42`; this is
+`INDEPENDENT_VALIDATION_PASS_NOT_READINESS`. The only next phase is a fresh dependency-aware
+readiness audit, which must remain blocked until real #7/#8/#9 releases permit an exact-SHA
+amendment and revalidation. Human exact-head pre-merge approval remains mandatory for every
+future merge.
+
+## Validation Log
+
+### Session 1 — 2026-07-22
+
+**Trigger:** Fresh independent Issue #10 plan validation at exact input
+`ad87c3f6090129dd30cfb626c6f396567f567a42`.
+
+**Questions asked:** 0. The owner supplied ten exact validation decisions in the invocation; no
+unresolved product choice remained and repeating them as an interview would add no information.
+
+#### Confirmed Decisions
+
+- Stage A is runner-independent, static/read-only, explicitly unavailable, and non-completing.
+- Stage B alone may consume released #9 and claim the real controlled-failure → four-grain
+  decision → reset → verified-evidence journey.
+- #8 is the sole completion/evidence authority; #9 is private and server-only.
+- Both stage file/command/dependency SHA allow-lists remain empty until a later amendment pins
+  real releases and passes revalidation/readiness.
+- The practical TDD, Chromium desktop+narrow, axe Critical/Serious, no-JS, recovery, S3,
+  evidence-integrity, cleanup, residual UAT, independent-review, and human exact-head gates remain.
+
+#### Verification Results
+
+- **Tier:** Full (7 phases; Fact Checker, Flow Tracer, Scope Auditor, Contract Verifier)
+- **Claims checked:** 105
+- **Verified:** 105 | **Failed:** 0 | **Unverified:** 0
+- **Corrections applied:** empty staged authorities; stale dependency state; deferred #7/#8/#9
+  routes/modules/viewports/result schema; explicit #8 CAS/version/reconciliation and #9 private
+  crash/retry/reset/error/unavailable semantics.
+
+#### Impact on Phases
+
+- Phases 1–4: remain Stage A design only; no file/command/dependency authority exists today.
+- Phases 5–7: remain Stage B design only; no file/command/dependency authority exists today.
+- Every phase now starts with the later-amendment/revalidation/readiness STOP.
+
+### Whole-Plan Consistency Sweep
+
+- Files reread: `plan.md`, seven phase files, and five companion contracts.
+- Decision deltas checked: 8.
+- Reconciled stale references: 13 plan files.
+- Unresolved contradictions: 0.

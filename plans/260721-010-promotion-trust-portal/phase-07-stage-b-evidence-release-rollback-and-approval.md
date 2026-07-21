@@ -44,26 +44,22 @@ pre-merge approval. No PR/merge is implied by this plan.
 
 ## Architecture
 
-`portal-lifecycle.mjs` owns only the portal process record and delegates runner lifecycle through
-the exact #9 API/launcher contract. `i5-05.mk` is a thin command registry fragment. All results
+The issue-local lifecycle boundary authorized by the later amendment owns only the portal process
+record and delegates runner lifecycle through the exact #9 API/launcher contract.
+`mk/issue-5/i5-05.mk` remains the only permitted Make fragment and must stay thin. All results
 write atomically under one run root and refer to artifacts by relative locator/hash. Status/down
 validate PID start identity/process group/namespace; rollback disables Stage B and verifies the
 Stage A static route before any code rollback.
 
 ## Related Code Files
 
-- Modify: `apps/learning-portal/scripts/portal-lifecycle.mjs`
-- Create/modify: `apps/learning-portal/tests/e2e/promotion-trust-real-journey.spec.ts`
-- Create/modify: `apps/learning-portal/tests/e2e/runner-crash-retry.spec.ts`
-- Create/modify: `apps/learning-portal/tests/e2e/reset-idempotency.spec.ts`
-- Create/modify: `apps/learning-portal/tests/e2e/evidence-integrity.spec.ts`
-- Modify: `apps/learning-portal/tests/visual/portal-visual-review.spec.ts`
-- Create: `apps/learning-portal/tests/e2e/lifecycle-cleanup.spec.ts`
-- Create: `apps/learning-portal/tests/e2e/rollback-static-fallback.spec.ts`
-- Modify: `apps/learning-portal/playwright.config.ts`
-- Modify: `mk/issue-5/i5-05.mk`
-- Runtime only, untracked: `.artifacts/evidence/local-journey/{run-id}/**`
-- Delete: none
+- Authorized Stage B create/modify/delete paths now: `[]`.
+- Authorized Stage B implementation commands now: `[]`.
+- Consumable Stage B dependency SHAs now: `[]`.
+- The later amendment must explicitly authorize the smallest portal/test subset and
+  `mk/issue-5/i5-05.mk`; the root Makefile remains denied.
+- Future runtime evidence may use only the issue-body root
+  `.artifacts/evidence/local-journey/{run-id}/**` after an exact #8 schema is pinned.
 
 ## Tests Before
 
@@ -109,7 +105,8 @@ clean/local=tracking=fresh-live checks.
 
 ## Implementation Steps
 
-1. Retain failing lifecycle/command/evidence/cleanup/rollback assertions at the exact head.
+1. Stop until the later amendment pins real dependencies and exact Stage B paths/commands, then
+   retain failing lifecycle/command/evidence/cleanup/rollback assertions at the exact head.
 2. Complete thin I5-05 Make delegates and scoped portal/runner lifecycle orchestration.
 3. Start from a clean namespace with Docker unavailable and no cloud/model credentials.
 4. Run the exact real journey, fault/retry/idempotency, accessibility, no-JS, and download checks.
@@ -117,7 +114,7 @@ clean/local=tracking=fresh-live checks.
 6. Run `learn-status`, `learn-down` twice, stale/foreign PID negatives, evidence retention, and
    static-fallback rollback rehearsal.
 7. Run full exact commands/blast radius/S3/audit/protected-path checks and capture the closed
-   FitnessResult/artifact graph.
+   released-#8 result/artifact graph.
 8. Obtain fresh independent exact-head code/security/accessibility review with zero unresolved
    Critical/High findings.
 9. Obtain named human exact-head pre-merge approval; any later head change invalidates it.

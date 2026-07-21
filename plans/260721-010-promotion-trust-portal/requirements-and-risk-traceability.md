@@ -13,7 +13,7 @@
 | Master red-team/readiness input | `bf740edb87452fe766591d0eeefd0bd5151220fa` | Accepted risk input |
 | Master readiness report | `e440c5855732d5d8f5d634e3cc1359c010cc5ed3` | Issue fan-out authority only |
 | Audited mapping/integration handoff | `f9a87d0ebdb72c014a6f8c6eaae865dad4d2188c` | Ownership/dependency graph |
-| Live Issue #10 | OPEN with `triaged`, `risk:high`, `tdd`, `security:S3`, `frontend`, `accessibility`, `vertical-slice` | Fresh issue scope and commands |
+| Live Issue #10 | OPEN with `ready for plan validation`, `risk:high`, `tdd`, `security:S3`, `frontend`, `accessibility`, `vertical-slice` at validation input | Fresh issue scope and commands |
 | Owner fan-out decision | https://github.com/khanhvg/ai-ready-data-platform/issues/5#issuecomment-5036142770 | Planning may run in parallel; dependencies remain binding |
 | Owner Vite decision | https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5036142177 | Vite + React direction; no merge/release claim |
 
@@ -94,7 +94,7 @@ satisfy a portal assertion.
 
 | ID | Risk | Impact | Mitigation / rollback | Owner/gate |
 |---|---|---|---|---|
-| PTP-R-01 | Draft #7/#8/#9 output mistaken for release | Contract/API drift; unsafe cook | GA/GB exact remote merge/release checks; no future SHA in source | Readiness |
+| PTP-R-01 | Draft #7/#8/#9 output mistaken for release | Contract/API drift; unsafe cook | Empty stage authorities; later-amendment GA/GB exact remote merge/release checks; no future SHA in source | Readiness |
 | PTP-R-02 | Static fixture looks like a fresh completed run | False learner trust | Stage A banner, no completion mutation/control, baseline-evidence label | Portal |
 | PTP-R-03 | UI derives completion from local state/reflection | Forged completion | Issue #8 authority only; server transaction; negative tests | Portal + #8 |
 | PTP-R-04 | Browser reaches privileged runner | RCE/base mutation | same-origin BFF only; private transport secret server-only; no CORS | Portal + #9 |

@@ -42,28 +42,19 @@ read-only reversible navigation, and static/no-JavaScript equivalence. Nothing r
 
 ## Architecture
 
-`portal-router.ts` validates the released lesson/step IDs and changes only presentation state.
-The client and `promotion-trust-document.ts` share the same closed view model.
-`render-static-fallback.mjs` produces the build output from that model. Static and interactive
-fact IDs are compared in tests.
+The portal router authorized by the later amendment validates the released lesson/step IDs and
+changes only presentation state. The interactive and static renderers share the same closed view
+model, and their stable fact IDs are compared in tests. Exact module and route paths are deferred
+to merged #7/released #8 and are not authorized by this plan alone.
 
 ## Related Code Files
 
-- Create: `apps/learning-portal/src/client/app/portal-router.ts`
-- Create: `apps/learning-portal/src/client/app/route-state.ts`
-- Create: `apps/learning-portal/src/client/features/promotion-trust/business-question.tsx`
-- Create: `apps/learning-portal/src/client/features/promotion-trust/four-mart-context.tsx`
-- Create: `apps/learning-portal/src/client/features/promotion-trust/controlled-failure.tsx`
-- Create: `apps/learning-portal/src/client/features/promotion-trust/decision-panel.tsx`
-- Create: `apps/learning-portal/src/client/features/promotion-trust/reset-panel.tsx`
-- Create: `apps/learning-portal/src/client/styles/portal.css`
-- Create: `apps/learning-portal/src/static/promotion-trust-document.ts`
-- Create: `apps/learning-portal/scripts/render-static-fallback.mjs`
-- Create: `apps/learning-portal/tests/unit/portal-router.test.ts`
-- Create: `apps/learning-portal/tests/contracts/promotion-trust-view-model.test.ts`
-- Create: `apps/learning-portal/tests/accessibility/promotion-trust-a11y.test.tsx`
-- Create: `apps/learning-portal/tests/e2e/promotion-trust-static.spec.ts`
-- Delete: none
+- Authorized Stage A create/modify/delete paths now: `[]`.
+- Authorized Stage A implementation commands now: `[]`.
+- Consumable Stage A dependency SHAs now: `[]`.
+- A later amendment may authorize only the smallest #7/#8-derived subset beneath
+  `apps/learning-portal/**` (including portal tests) and the issue fragment after revalidation
+  and readiness.
 
 ## Tests Before
 
@@ -96,7 +87,8 @@ scans, and `git diff --check`.
 
 ## Implementation Steps
 
-1. Retain failing fact, mutation, history, accessibility, and no-JS assertions.
+1. Stop until the later amendment pins real dependencies and exact Stage A paths/commands, then
+   retain failing fact, mutation, history, accessibility, and no-JS assertions.
 2. Map the exact released #8 lesson and Issue #6 baseline evidence into the closed view model.
 3. Implement semantic business-question and four-mart context components.
 4. Implement controlled-versus-environmental failure and canonical decision presentation.
