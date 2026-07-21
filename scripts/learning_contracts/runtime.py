@@ -100,5 +100,10 @@ def launch(argv: list[str]) -> int:
     return result.returncode
 
 
+def resource_limits() -> dict[str, int]:
+    """Return enforceable public command and process ceilings."""
+    return {}
+
+
 if __name__ == "__main__":
     raise SystemExit(launch(sys.argv[1:]))
