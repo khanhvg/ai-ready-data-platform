@@ -45,7 +45,7 @@ function processGroup(pid) {
 async function loadInstrumentedRunner(transform = source => source) {
   const sourcePath = resolve(ROOT, 'spikes/web/harness/scripts/simple-vite-v3.mjs');
   const temporaryPath = resolve(dirname(sourcePath), `.simple-vite-v3-test-${process.pid}-${Date.now()}.mjs`);
-  const source = `${transform(readFileSync(sourcePath, 'utf8'))}\nexport { cleanupCandidateRuntime, runBounded, startHost };\n`;
+  const source = `${transform(readFileSync(sourcePath, 'utf8'))}\nexport { cleanupCandidateRuntime, runBounded, sanitize, startHost };\n`;
   writeFileSync(temporaryPath, source);
   try {
     return { module: await import(`${new URL(`file://${temporaryPath}`).href}?test=${Date.now()}`), temporaryPath };
@@ -78,6 +78,90 @@ test('V3-07 S3 scanner rejects credentials, private paths, PII, injection, and r
   ];
   for (const [sample, id] of samples) assert.ok(scanText(sample).includes(id), id);
   assert.deepEqual(scanText('sanitized aggregate; insufficient-evidence; no-common-grain'), []);
+});
+
+test('V3-07 retained scanner catches local temporary workspace paths without flagging neutral locators', () => {
+  for (const sample of [
+    '/private/tmp/vite-red/work/focused-tests.tap',
+    '/private/var/folders/ab/cd/T/vite-red/result.json',
+    '/var/folders/ab/cd/T/vite-red/result.json',
+    '/tmp/vite-red/result.json',
+    'file:///private/tmp/vite-red/work/focused-tests.tap:19:1',
+    'file:///var/folders/ab/cd/T/vite-red/result.json',
+    'file:///tmp/vite-red/result.json',
+  ]) assert.ok(scanText(sample).includes('absolutePrivatePath'), sample);
+  for (const neutral of [
+    '/tmp/',
+    '/var/folders/',
+    '/private/',
+    'file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:1:1',
+    'https://example.com/tmp/report.json',
+    'spikes/web/evidence/retained/simple-vite-v3/manifest.json',
+    'Document the /tmp/ and /var/folders/ workspace classes.',
+  ]) assert.equal(scanText(neutral).includes('absolutePrivatePath'), false, neutral);
+});
+
+test('V3-07 retained sanitizer normalizes local temporary workspace paths before writing evidence', async () => {
+  const loaded = await loadInstrumentedRunner();
+  try {
+    const input = [
+      '/private/tmp/vite-red/work/focused-tests.tap',
+      'file:///private/tmp/vite-red/work/focused-tests.tap:19:1',
+      '/private/var/folders/ab/cd/T/vite-red/result.json',
+      '/var/folders/ab/cd/T/vite-red/result.json',
+      '/tmp/vite-red/result.json',
+      'https://example.com/tmp/report.json',
+      'spikes/web/evidence/retained/simple-vite-v3/manifest.json',
+    ].join('\n');
+    assert.equal(loaded.module.sanitize(input), [
+      '<WORKSPACE>/work/focused-tests.tap',
+      'file://<WORKSPACE>/work/focused-tests.tap:19:1',
+      '<WORKSPACE>/result.json',
+      '<WORKSPACE>/result.json',
+      '<WORKSPACE>/result.json',
+      'https://example.com/tmp/report.json',
+      'spikes/web/evidence/retained/simple-vite-v3/manifest.json',
+    ].join('\n'));
+  } finally {
+    rmSync(loaded.temporaryPath, { force: true });
+  }
+});
+
+test('V3-07 authorized retained correction replaces exactly 12 paths and binds its attestation', () => {
+  const run = 'spikes/web/evidence/retained/simple-vite-v3/v3-20260721T202415031Z-52a03869';
+  const tapLocator = `${run}/tdd/fifth-targeted-review-fix-red/focused-tests.tap`;
+  const original = spawnSync('git', ['show', `aaddb3af4dade6751d1209bf9f5b25f28b5a06ec:${tapLocator}`], { cwd: ROOT, encoding: 'utf8' });
+  assert.equal(original.status, 0, original.stderr);
+  const rawPrefix = /\/private\/tmp\/vite-fifth-red-adf79ae/g;
+  assert.equal(original.stdout.match(rawPrefix)?.length, 12);
+  const corrected = readFileSync(resolve(ROOT, tapLocator), 'utf8');
+  assert.equal(corrected.match(rawPrefix)?.length ?? 0, 0);
+  assert.equal(corrected, original.stdout.replace(rawPrefix, '<WORKSPACE>'), 'only the 12 authorized path prefixes may change');
+
+  const correctionLocator = `${run}/correction.json`;
+  assert.equal(existsSync(resolve(ROOT, correctionLocator)), true, 'authorized correction attestation must exist');
+  const correction = JSON.parse(readFileSync(resolve(ROOT, correctionLocator), 'utf8'));
+  assert.equal(correction.ownerCommentUrl, 'https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5038913224');
+  assert.deepEqual(correction.replacement, { class: 'local-absolute-path', count: 12, from: '/private/tmp/vite-fifth-red-adf79ae', to: '<WORKSPACE>' });
+  assert.equal(correction.reason, 'local-absolute-path-redaction');
+  assert.equal(correction.contentMeaningChanged, false);
+  assert.deepEqual(correction.priorHashes, {
+    tapSha256: 'b90cde68a7a925676df0c920044b1df00deaac9be293c4a1ee986c54fb3823a1',
+    manifestSha256: 'f0f03ba4aeabd39aeccb99f2dfef9a6544f276fb164a95c37f9eeeca5920bc1b',
+    hashIndexSha256: 'bf670df7d3ce20a79ed24b2c4f63c6afd83cea981a7216ce87c739acc9f71a7f',
+  });
+  assert.equal(correction.correctedHashes.tapSha256, sha256(corrected));
+  assert.match(correction.correctedHashes.manifestSha256, /^[0-9a-f]{64}$/);
+  assert.match(correction.correctedHashes.hashIndexSha256, /^[0-9a-f]{64}$/);
+  assert.equal(correction.correctedHashes.scope, 'canonical-json-with-correction-digest-fields-omitted');
+  assert.equal(correction.correctionSourceHead, 'aaddb3af4dade6751d1209bf9f5b25f28b5a06ec');
+  assert.match(correction.correctionOutputHead, /^[0-9a-f]{40}$/);
+
+  const manifest = JSON.parse(readFileSync(resolve(ROOT, run, 'manifest.json'), 'utf8'));
+  assert.equal(manifest.correctionAttestation.path, 'correction.json');
+  assert.equal(manifest.correctionAttestation.sha256, sha256(readFileSync(resolve(ROOT, correctionLocator))));
+  const hashIndex = JSON.parse(readFileSync(resolve(ROOT, run, 'hash-index.json'), 'utf8'));
+  assert.ok(hashIndex.files.some(entry => entry.path === 'correction.json' && entry.sha256 === manifest.correctionAttestation.sha256));
 });
 
 test('V3-07 scanner context keeps authored injection detection while built output excludes only that rule', async () => {
