@@ -41,7 +41,7 @@ export function validateChangedPaths(paths, configuration = contract) {
 export const SCAN_RULES = Object.freeze({
   privateKey: /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/i,
   credential: /(?:api[_-]?key|client[_-]?secret|password|token)\s*[:=]\s*["'][^"']{8,}["']/i,
-  absolutePrivatePath: /\/(?:Users|home)\/[A-Za-z0-9._-]+\//,
+  absolutePrivatePath: /\/(?:Users|home)\/[A-Za-z0-9._-]+\/|(?:^|[\s("'=])(?:file:\/\/)?\/(?:private\/tmp\/[A-Za-z0-9._-]+|(?:private\/)?var\/folders\/[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+\/T\/[A-Za-z0-9._-]+|tmp\/[A-Za-z0-9._-]+)/m,
   email: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i,
   phone: /(?:phone|mobile|telephone)\s*[:=]\s*["']?(?:\+?84|0)(?:[ .-]?\d){9}\b/i,
   governmentIdentifier: /(?:citizen|national|government|identity|ssn)[_-]?(?:id|number)\s*[:=]\s*["']?\d{9,12}\b/i,
@@ -285,6 +285,7 @@ export async function preflight(implementationInput) {
 function sanitize(text) {
   return String(text)
     .split(ROOT).join('<WORKSPACE>')
+    .replace(/(^|[\s("'=])((?:file:\/\/)?)(\/(?:private\/tmp\/[A-Za-z0-9._-]+|(?:private\/)?var\/folders\/[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+\/T\/[A-Za-z0-9._-]+|tmp\/[A-Za-z0-9._-]+))/gm, '$1$2<WORKSPACE>')
     .replace(/\/Users\/[^/\s"'<>]+(?:\/[^\s"'<>]*)*/g, '<PRIVATE_PATH>')
     .replace(/\/home\/[^/\s"'<>]+(?:\/[^\s"'<>]*)*/g, '<PRIVATE_PATH>');
 }
