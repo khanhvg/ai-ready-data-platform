@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from . import registry, runtime
+from . import canonical, references, registry, runtime, schema
 
 @dataclass(frozen=True)
 class Outcome:
@@ -21,4 +21,12 @@ def evaluate(domain: str, value: Any) -> Outcome:
         return Outcome(registry.activation_code(value))
     if domain == "rollback":
         return Outcome(runtime.rollback_code(value))
+    if domain == "schema":
+        return Outcome(schema.code(value))
+    if domain == "canonical":
+        return Outcome(canonical.code(value))
+    if domain == "reference":
+        return Outcome(references.code(value))
+    if domain == "migration":
+        return Outcome(registry.migration_code(value))
     return Outcome("BEHAVIOR_NOT_IMPLEMENTED")

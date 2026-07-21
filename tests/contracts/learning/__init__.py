@@ -25,6 +25,8 @@ def fixture(relative: str) -> Any:
         return bytes.fromhex(value["encodedHex"])
     if isinstance(value, dict) and set(value) == {"encodedJson"}:
         return value["encodedJson"].encode("utf-8")
+    if relative.startswith("invalid/canonicalization/"):
+        return raw
     return value
 
 
