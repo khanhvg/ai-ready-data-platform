@@ -3,4 +3,3 @@
   "expectedCode": "PROBE_OPTIONAL_FALSE_PASS",
   "mutation": "guidance/optional-unavailable-passes"
 }
-

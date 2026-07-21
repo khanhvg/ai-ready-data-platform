@@ -3,4 +3,3 @@
   "expectedCode": "EVIDENCE_PAYLOAD_HASH_MISMATCH",
   "mutation": "evidence/evidence-payload"
 }
-

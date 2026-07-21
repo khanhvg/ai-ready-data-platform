@@ -3,4 +3,3 @@
   "expectedCode": "STATE_TRANSITION_FORBIDDEN",
   "mutation": "state/illegal-transition"
 }
-

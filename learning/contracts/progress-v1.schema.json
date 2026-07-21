@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/progress-v1.schema.json",
+  "title": "progress-v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "progressId",
+    "actor",
+    "lessonId",
+    "lessonVersion",
+    "labId",
+    "labVersion",
+    "contractSetSha256",
+    "revision",
+    "state",
+    "events",
+    "completion"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "progressId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "actor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "lessonId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "lessonVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "labId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "labVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "contractSetSha256": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "state": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "completion": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 512
+    }
+  },
+  "unevaluatedProperties": false
+}

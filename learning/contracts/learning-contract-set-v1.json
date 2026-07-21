@@ -1,0 +1,157 @@
+{
+  "schemaVersion": "learning-contract-set-v1",
+  "setId": "issue-8-stage-a-learning-contracts",
+  "registry": {
+    "path": "learning/contracts/learning-contract-version-registry-v1.json",
+    "sha256": "a50d52b4fab304bbe8ecf9c87e2e6cbf3af2d17f9de8f701de461b6536d91f82"
+  },
+  "contracts": [
+    {
+      "path": "contracts/openapi/learning-platform-openapi-profile-v1.schema.json",
+      "family": "learning-platform-openapi",
+      "version": "v1",
+      "schemaId": "https://contracts.local/openapi/learning-platform-profile-v1.schema.json",
+      "sha256": "bc1fc929426c579ae175def1e45455fa7b0afabd0978d21713cc6ddceeeefacd"
+    },
+    {
+      "path": "contracts/openapi/learning-platform-problem-details-v1.schema.json",
+      "family": "learning-platform-openapi",
+      "version": "v1",
+      "schemaId": "https://contracts.local/learning/learning-platform-problem-details-v1.schema.json",
+      "sha256": "dd791dcefee299b4721a7764f739a5f7d967ba3e5e7f9a63760b50509862bda9"
+    },
+    {
+      "path": "contracts/openapi/learning-platform-v1.yaml",
+      "family": "learning-platform-openapi",
+      "version": "v1",
+      "schemaId": "openapi-3.2.0",
+      "sha256": "e609029cd357423eb704e560e64f5d9c91ace19a2f75dc8addcc5cbb6928388a"
+    },
+    {
+      "path": "learning/contracts/command-owner-activation-i5-03-v1.json",
+      "family": "command-owner-activation-i5-03",
+      "version": "v1",
+      "schemaId": "command-owner-activation-v1",
+      "sha256": "ca083ff07e9447f942bdac347e725b168714182850f43af497323858c2848d14"
+    },
+    {
+      "path": "learning/contracts/command-owner-activation-v1.schema.json",
+      "family": "command-owner-activation",
+      "version": "v1",
+      "schemaId": "https://contracts.local/learning/command-owner-activation-v1.schema.json",
+      "sha256": "0f7a18488617e74ee8c287f71f190b9fa01b9177b426883fbf3132bcb01a0ce9"
+    },
+    {
+      "path": "learning/contracts/completion-reconciliation-v1.json",
+      "family": "completion-reconciliation",
+      "version": "v1",
+      "schemaId": "completion-reconciliation-v1",
+      "sha256": "c45e9fef2913553dc9a6153b086db227146bbacb80a104b8980cd6545b1391c8"
+    },
+    {
+      "path": "learning/contracts/completion-reconciliation-v1.schema.json",
+      "family": "completion-reconciliation",
+      "version": "v1",
+      "schemaId": "https://contracts.local/learning/completion-reconciliation-v1.schema.json",
+      "sha256": "f0a53f2e6e311ffcb47ba29dc5b14ee762881b9cf30b1f33da9261160157c6c5"
+    },
+    {
+      "path": "learning/contracts/fitness-result-v2.schema.json",
+      "family": "fitness-result",
+      "version": "v2",
+      "schemaId": "https://contracts.local/learning/fitness-result-v2.schema.json",
+      "sha256": "96ada93a039e3530d7aac115ea6d4f4eedf4c7a552f4662fc76f6b5776140a40"
+    },
+    {
+      "path": "learning/contracts/lab-v1.schema.json",
+      "family": "lab",
+      "version": "v1",
+      "schemaId": "https://contracts.local/learning/lab-v1.schema.json",
+      "sha256": "98617d8c164b1b79a0ca6634125f630fdce5a00e3c6ff7c73f32741ebfd8fa0e"
+    },
+    {
+      "path": "learning/contracts/learning-contract-set-v1.schema.json",
+      "family": "learning-contract-set",
+      "version": "v1",
+      "schemaId": "https://contracts.local/learning/learning-contract-set-v1.schema.json",
+      "sha256": "873e7ee2f5b2b31aa9fdba0423075f932894d1b9e786a99a4482e9b60d2a642e"
+    },
+    {
+      "path": "learning/contracts/learning-contract-version-registry-v1.json",
+      "family": "learning-contract-version-registry",
+      "version": "v1",
+      "schemaId": "learning-contract-version-registry-v1",
+      "sha256": "a50d52b4fab304bbe8ecf9c87e2e6cbf3af2d17f9de8f701de461b6536d91f82"
+    },
+    {
+      "path": "learning/contracts/learning-contract-version-registry-v1.schema.json",
+      "family": "learning-contract-version-registry",
+      "version": "v1",
+      "schemaId": "https://contracts.local/learning/learning-contract-version-registry-v1.schema.json",
+      "sha256": "d9581c2a7c6c21fa0f475d76cccd1ebd8ce7d747957eb34e264fdf6cda8702b8"
+    },
+    {
+      "path": "learning/contracts/learning-evidence-v1.schema.json",
+      "family": "learning-evidence",
+      "version": "v1",
+      "schemaId": "https://contracts.local/learning/learning-evidence-v1.schema.json",
+      "sha256": "94c4a25d2de22dc4e54ced02fe90464db04fd6a14eb61cba92cb69b9fac5107f"
+    },
+    {
+      "path": "learning/contracts/lesson-v1.schema.json",
+      "family": "lesson",
+      "version": "v1",
+      "schemaId": "https://contracts.local/learning/lesson-v1.schema.json",
+      "sha256": "ea1e95119bb051b7330bc1e023b710a4cd436fa88a113fbcf7dff7363b00e9c5"
+    },
+    {
+      "path": "learning/contracts/operation-matrix-v1.json",
+      "family": "operation-matrix",
+      "version": "v1",
+      "schemaId": "operation-matrix-v1",
+      "sha256": "d3beb4998d9ef3933373aafad6af3dfdc31b646f82d97fd9d1538cd353bae9e0"
+    },
+    {
+      "path": "learning/contracts/operation-matrix-v1.schema.json",
+      "family": "operation-matrix",
+      "version": "v1",
+      "schemaId": "https://contracts.local/learning/operation-matrix-v1.schema.json",
+      "sha256": "a45a795991753c43a17577c5aed43d91ae47d5975211a4e5c4b980d6e7c7dda8"
+    },
+    {
+      "path": "learning/contracts/progress-v1.schema.json",
+      "family": "progress",
+      "version": "v1",
+      "schemaId": "https://contracts.local/learning/progress-v1.schema.json",
+      "sha256": "810b89a77aeb4cdd589ed0601404c1ba19431cf53e493cc89be15116d5d6cd4b"
+    },
+    {
+      "path": "learning/contracts/promotion-trust-learning-manifest-v1.schema.json",
+      "family": "promotion-trust-learning-manifest",
+      "version": "v1",
+      "schemaId": "https://contracts.local/learning/promotion-trust-learning-manifest-v1.schema.json",
+      "sha256": "2d398be8b790ba7735da3b3ee62f9cc478d7d21dbb755e8ca51de4dd3974148b"
+    },
+    {
+      "path": "learning/labs/promotion-trust/lab-v1.json",
+      "family": "lab",
+      "version": "v1",
+      "schemaId": "lab-v1",
+      "sha256": "c56e8bfc695b78fd92c2bdd7823b4d36becaaabfcc5b70b3f2fd6b444969025c"
+    },
+    {
+      "path": "learning/lessons/promotion-trust/lesson-v1.json",
+      "family": "lesson",
+      "version": "v1",
+      "schemaId": "lesson-v1",
+      "sha256": "6e4f4bcf13e67f26cac1836626754c981a3b859d50722b287e25c1708e2e99eb"
+    },
+    {
+      "path": "learning/manifests/promotion-trust-v1.json",
+      "family": "promotion-trust-learning-manifest",
+      "version": "v1",
+      "schemaId": "promotion-trust-learning-manifest-v1",
+      "sha256": "08a1e610f41bc90d45df777f0173e20d04f68b2e6ac301c36b8bf02f04b19069"
+    }
+  ]
+}

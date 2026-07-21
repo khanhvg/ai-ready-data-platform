@@ -3,4 +3,3 @@
   "expectedCode": "OPENAPI_RAW_QUERY_FORBIDDEN",
   "mutation": "openapi/raw-sql-query"
 }
-

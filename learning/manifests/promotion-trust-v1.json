@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "promotion-trust-learning-manifest-v1",
+  "manifestId": "promotion-trust-v1",
+  "lesson": "learning/lessons/promotion-trust/lesson-v1.json",
+  "lab": "learning/labs/promotion-trust/lab-v1.json",
+  "evidenceSchema": "learning/contracts/learning-evidence-v1.schema.json",
+  "dataContract": "contracts/data/promotion-trust-v1.yaml",
+  "fixture": "tests/fixtures/learning/promotion-trust/manifest.json",
+  "sources": [
+    "promotion:promo_name+channel",
+    "fulfillment:carrier+region",
+    "returns:reason+category+region",
+    "global-dq:scenario"
+  ],
+  "decision": "insufficient-evidence/no-common-grain",
+  "limitations": [
+    "independent-grains",
+    "no-campaign-level-causal-join"
+  ],
+  "contractSetSha256": "external-release-set-binding"
+}

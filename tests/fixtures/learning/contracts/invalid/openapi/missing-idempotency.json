@@ -3,4 +3,3 @@
   "expectedCode": "OPERATION_IDEMPOTENCY_MISSING",
   "mutation": "openapi/missing-idempotency"
 }
-

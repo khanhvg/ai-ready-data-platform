@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/learning-contract-version-registry-v1.schema.json",
+  "title": "learning-contract-version-registry-v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "baseRegistry",
+    "ownedFamilies",
+    "familyExtensions"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "baseRegistry": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "const": "learning/contracts/schema-version-registry.json"
+        },
+        "sha256": {
+          "const": "8e18588f63b5d99c0b60a229758575e8badf0f055bfcb4f89908f9fa2684a57e"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "ownedFamilies": {
+      "type": "array"
+    },
+    "familyExtensions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1
+    }
+  },
+  "unevaluatedProperties": false
+}

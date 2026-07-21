@@ -3,4 +3,3 @@
   "expectedCode": "OPENAPI_OPERATION_SET_MISMATCH",
   "mutation": "openapi/orphan-operation"
 }
-

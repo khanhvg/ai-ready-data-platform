@@ -3,4 +3,3 @@
   "expectedCode": "COMPLETION_DUAL_TRUTH",
   "mutation": "completion/operation-result-direct-write"
 }
-

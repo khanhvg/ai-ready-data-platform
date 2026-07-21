@@ -3,4 +3,3 @@
   "expectedCode": "PROBE_MUTATION_FORBIDDEN",
   "mutation": "guidance/mutating-probe"
 }
-

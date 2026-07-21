@@ -3,4 +3,3 @@
   "expectedCode": "OPERATION_AUTHORITY_MISSING",
   "mutation": "openapi/missing-authority"
 }
-

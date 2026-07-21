@@ -3,4 +3,3 @@
   "expectedCode": "OPENAPI_REQUEST_CONTRACT_MISMATCH",
   "mutation": "openapi/request-shape-drift"
 }
-

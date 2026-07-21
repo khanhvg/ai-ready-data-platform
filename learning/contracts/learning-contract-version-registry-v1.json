@@ -1,0 +1,156 @@
+{
+  "schemaVersion": "learning-contract-version-registry-v1",
+  "baseRegistry": {
+    "path": "learning/contracts/schema-version-registry.json",
+    "sha256": "8e18588f63b5d99c0b60a229758575e8badf0f055bfcb4f89908f9fa2684a57e"
+  },
+  "ownedFamilies": [
+    {
+      "family": "lesson",
+      "current": "v1",
+      "versions": [
+        {
+          "version": "v1",
+          "schemaPath": "learning/contracts/lesson-v1.schema.json",
+          "schemaId": "https://contracts.local/learning/lesson-v1.schema.json",
+          "sha256": "ea1e95119bb051b7330bc1e023b710a4cd436fa88a113fbcf7dff7363b00e9c5",
+          "reader": "identity-v1"
+        }
+      ]
+    },
+    {
+      "family": "lab",
+      "current": "v1",
+      "versions": [
+        {
+          "version": "v1",
+          "schemaPath": "learning/contracts/lab-v1.schema.json",
+          "schemaId": "https://contracts.local/learning/lab-v1.schema.json",
+          "sha256": "98617d8c164b1b79a0ca6634125f630fdce5a00e3c6ff7c73f32741ebfd8fa0e",
+          "reader": "identity-v1"
+        }
+      ]
+    },
+    {
+      "family": "progress",
+      "current": "v1",
+      "versions": [
+        {
+          "version": "v1",
+          "schemaPath": "learning/contracts/progress-v1.schema.json",
+          "schemaId": "https://contracts.local/learning/progress-v1.schema.json",
+          "sha256": "810b89a77aeb4cdd589ed0601404c1ba19431cf53e493cc89be15116d5d6cd4b",
+          "reader": "identity-v1"
+        }
+      ]
+    },
+    {
+      "family": "learning-evidence",
+      "current": "v1",
+      "versions": [
+        {
+          "version": "v1",
+          "schemaPath": "learning/contracts/learning-evidence-v1.schema.json",
+          "schemaId": "https://contracts.local/learning/learning-evidence-v1.schema.json",
+          "sha256": "94c4a25d2de22dc4e54ced02fe90464db04fd6a14eb61cba92cb69b9fac5107f",
+          "reader": "identity-v1"
+        }
+      ]
+    },
+    {
+      "family": "completion-reconciliation",
+      "current": "v1",
+      "versions": [
+        {
+          "version": "v1",
+          "schemaPath": "learning/contracts/completion-reconciliation-v1.schema.json",
+          "schemaId": "https://contracts.local/learning/completion-reconciliation-v1.schema.json",
+          "sha256": "f0a53f2e6e311ffcb47ba29dc5b14ee762881b9cf30b1f33da9261160157c6c5",
+          "reader": "identity-v1"
+        }
+      ]
+    },
+    {
+      "family": "operation-matrix",
+      "current": "v1",
+      "versions": [
+        {
+          "version": "v1",
+          "schemaPath": "learning/contracts/operation-matrix-v1.schema.json",
+          "schemaId": "https://contracts.local/learning/operation-matrix-v1.schema.json",
+          "sha256": "a45a795991753c43a17577c5aed43d91ae47d5975211a4e5c4b980d6e7c7dda8",
+          "reader": "identity-v1"
+        }
+      ]
+    },
+    {
+      "family": "promotion-trust-learning-manifest",
+      "current": "v1",
+      "versions": [
+        {
+          "version": "v1",
+          "schemaPath": "learning/contracts/promotion-trust-learning-manifest-v1.schema.json",
+          "schemaId": "https://contracts.local/learning/promotion-trust-learning-manifest-v1.schema.json",
+          "sha256": "2d398be8b790ba7735da3b3ee62f9cc478d7d21dbb755e8ca51de4dd3974148b",
+          "reader": "identity-v1"
+        }
+      ]
+    },
+    {
+      "family": "learning-contract-version-registry",
+      "current": "v1",
+      "versions": [
+        {
+          "version": "v1",
+          "schemaPath": "learning/contracts/learning-contract-version-registry-v1.schema.json",
+          "schemaId": "https://contracts.local/learning/learning-contract-version-registry-v1.schema.json",
+          "sha256": "d9581c2a7c6c21fa0f475d76cccd1ebd8ce7d747957eb34e264fdf6cda8702b8",
+          "reader": "identity-v1"
+        }
+      ]
+    },
+    {
+      "family": "command-owner-activation",
+      "current": "v1",
+      "versions": [
+        {
+          "version": "v1",
+          "schemaPath": "learning/contracts/command-owner-activation-v1.schema.json",
+          "schemaId": "https://contracts.local/learning/command-owner-activation-v1.schema.json",
+          "sha256": "0f7a18488617e74ee8c287f71f190b9fa01b9177b426883fbf3132bcb01a0ce9",
+          "reader": "identity-v1"
+        }
+      ]
+    },
+    {
+      "family": "learning-contract-set",
+      "current": "v1",
+      "versions": [
+        {
+          "version": "v1",
+          "schemaPath": "learning/contracts/learning-contract-set-v1.schema.json",
+          "schemaId": "https://contracts.local/learning/learning-contract-set-v1.schema.json",
+          "sha256": "873e7ee2f5b2b31aa9fdba0423075f932894d1b9e786a99a4482e9b60d2a642e",
+          "reader": "identity-v1"
+        }
+      ]
+    }
+  ],
+  "familyExtensions": [
+    {
+      "family": "fitness-result",
+      "baseReaderId": "fitness-result-v1-reader",
+      "addedReadableVersions": [
+        "v2"
+      ],
+      "migrations": [
+        "v2-identity"
+      ],
+      "version": {
+        "schemaPath": "learning/contracts/fitness-result-v2.schema.json",
+        "schemaId": "https://contracts.local/learning/fitness-result-v2.schema.json",
+        "sha256": "96ada93a039e3530d7aac115ea6d4f4eedf4c7a552f4662fc76f6b5776140a40"
+      }
+    }
+  ]
+}

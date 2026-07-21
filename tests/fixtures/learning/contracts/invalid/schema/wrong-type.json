@@ -3,4 +3,3 @@
   "expectedCode": "SCHEMA_TYPE_MISMATCH",
   "mutation": "schema/wrong-type"
 }
-

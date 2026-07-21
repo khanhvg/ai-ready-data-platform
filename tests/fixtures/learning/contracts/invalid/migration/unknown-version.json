@@ -3,4 +3,3 @@
   "expectedCode": "SCHEMA_VERSION_UNREADABLE",
   "mutation": "migration/unknown-version"
 }
-

@@ -3,4 +3,3 @@
   "expectedCode": "OPENAPI_VERSION_NEGOTIATION_INCOMPLETE",
   "mutation": "openapi/missing-version-response"
 }
-

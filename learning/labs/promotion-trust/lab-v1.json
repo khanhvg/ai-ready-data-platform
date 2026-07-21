@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "lab-v1",
+  "id": "promotion-trust-lab",
+  "version": "1.0.0",
+  "lessonId": "promotion-trust",
+  "risk": "risk-value",
+  "profile": "profile-value",
+  "inputs": [
+    "inputs-bound"
+  ],
+  "workspace": "workspace-value",
+  "commands": [
+    "learning-contracts-check",
+    "lesson-check"
+  ],
+  "starter": "starter-value",
+  "controlledFailure": "controlledFailure-value",
+  "stateMachine": "draft>ready>running>verified>evidenced>completed",
+  "reset": "expected-version-cas-preserve-evidence",
+  "verify": "promotion-trust-four-grain-verifier",
+  "solution": "solution-value",
+  "evidence": "evidence-value",
+  "accessibility": "accessibility-value",
+  "remediation": "remediation-value"
+}

@@ -3,4 +3,3 @@
   "expectedCode": "PROGRESS_VERSION_CONFLICT",
   "mutation": "state/stale-version"
 }
-

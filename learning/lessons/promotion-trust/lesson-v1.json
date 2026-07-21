@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "lesson-v1",
+  "id": "promotion-trust",
+  "version": "1.0.0",
+  "title": "Promotion trust without false attribution",
+  "summary": "summary-value",
+  "level": "level-value",
+  "competencies": "competencies-value",
+  "outcome": "Conclude insufficient-evidence when grains do not align",
+  "stakeholder": "stakeholder-value",
+  "prerequisites": [
+    "prerequisites-bound"
+  ],
+  "prerequisiteChecks": [
+    "prerequisiteChecks-bound"
+  ],
+  "fr": [
+    "fr-bound"
+  ],
+  "nfr": [
+    "nfr-bound"
+  ],
+  "asr": [
+    "asr-bound"
+  ],
+  "architectureViews": [
+    "architectureViews-bound"
+  ],
+  "decision": "decision-value",
+  "patterns": [
+    "patterns-bound"
+  ],
+  "narrativeSteps": [
+    "narrativeSteps-bound"
+  ],
+  "lab": "promotion-trust-lab-v1",
+  "evidence": "learning-evidence-v1",
+  "reflection": "reflection-value",
+  "accessibility": "accessibility-value",
+  "remediation": "remediation-value",
+  "hints": [
+    "hints-bound"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "command-owner-activation-v1",
+  "baseRegistryPath": "learning/contracts/command-owner-registry-v1.json",
+  "baseRegistrySha256": "a94ac86bda0b70643edef9f144a59d8753d91f963b83d22cd510adbc31970e80",
+  "owner": "I5-03",
+  "fragment": "mk/issue-5/i5-03.mk#sha256=8e5202ab871d329cb50727c78851a56a8466cb0c40ae960ca2947cc8123aabd1",
+  "commands": [
+    {
+      "command": "learning-contracts-check",
+      "availability": "implemented",
+      "evidenceSchema": "fitness-result-v2",
+      "evidenceRoot": "learning-contracts"
+    },
+    {
+      "command": "lesson-check",
+      "availability": "implemented",
+      "evidenceSchema": "fitness-result-v2",
+      "evidenceRoot": "lesson-check"
+    },
+    {
+      "command": "api-contracts-check",
+      "availability": "implemented",
+      "evidenceSchema": "fitness-result-v2",
+      "evidenceRoot": "api-contracts"
+    },
+    {
+      "command": "evidence-verify",
+      "availability": "implemented",
+      "evidenceSchema": "fitness-result-v2",
+      "evidenceRoot": "evidence-verify"
+    }
+  ]
+}

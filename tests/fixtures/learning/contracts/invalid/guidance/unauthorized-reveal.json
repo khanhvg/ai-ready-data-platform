@@ -3,4 +3,3 @@
   "expectedCode": "HINT_REVEAL_FORBIDDEN",
   "mutation": "guidance/unauthorized-reveal"
 }
-

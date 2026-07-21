@@ -3,4 +3,3 @@
   "expectedCode": "REF_TRAVERSAL_FORBIDDEN",
   "mutation": "ref/path-traversal"
 }
-

@@ -1,0 +1,663 @@
+{
+  "schemaVersion": "operation-matrix-v1",
+  "apiVersion": "v1",
+  "channels": [],
+  "operations": [
+    {
+      "operationId": "listLessons",
+      "method": "GET",
+      "path": "/v1/lessons",
+      "taxonomy": "Experience",
+      "processRole": "lesson-catalog-read",
+      "authorization": {
+        "authn": "local-session",
+        "authz": "catalog-read",
+        "csrf": "N/A",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "version": {
+        "route": "v1",
+        "request": "v1",
+        "response": "v1"
+      },
+      "evidence": {
+        "required": false,
+        "authority": "operation-authority"
+      },
+      "request": {
+        "contentType": null,
+        "rawSql": false,
+        "arbitraryCommand": false
+      },
+      "response": {
+        "successStatus": 200,
+        "polling": false
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "409",
+        "412",
+        "422",
+        "500"
+      ]
+    },
+    {
+      "operationId": "getLesson",
+      "method": "GET",
+      "path": "/v1/lessons/{lessonId}",
+      "taxonomy": "Experience",
+      "processRole": "lesson-catalog-read",
+      "authorization": {
+        "authn": "local-session",
+        "authz": "catalog-read",
+        "csrf": "N/A",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "version": {
+        "route": "v1",
+        "request": "v1",
+        "response": "v1"
+      },
+      "evidence": {
+        "required": false,
+        "authority": "operation-authority"
+      },
+      "request": {
+        "contentType": null,
+        "rawSql": false,
+        "arbitraryCommand": false
+      },
+      "response": {
+        "successStatus": 200,
+        "polling": false
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "409",
+        "412",
+        "422",
+        "500"
+      ]
+    },
+    {
+      "operationId": "getProgress",
+      "method": "GET",
+      "path": "/v1/progress",
+      "taxonomy": "Experience",
+      "processRole": "progress-authority-read",
+      "authorization": {
+        "authn": "local-session",
+        "authz": "actor-owned",
+        "csrf": "N/A",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "version": {
+        "route": "v1",
+        "request": "v1",
+        "response": "v1"
+      },
+      "evidence": {
+        "required": false,
+        "authority": "operation-authority"
+      },
+      "request": {
+        "contentType": null,
+        "rawSql": false,
+        "arbitraryCommand": false
+      },
+      "response": {
+        "successStatus": 200,
+        "polling": false
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "409",
+        "412",
+        "422",
+        "500"
+      ]
+    },
+    {
+      "operationId": "getLessonProgress",
+      "method": "GET",
+      "path": "/v1/progress/{lessonId}",
+      "taxonomy": "Experience",
+      "processRole": "progress-authority-read",
+      "authorization": {
+        "authn": "local-session",
+        "authz": "actor-owned",
+        "csrf": "N/A",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "version": {
+        "route": "v1",
+        "request": "v1",
+        "response": "v1"
+      },
+      "evidence": {
+        "required": false,
+        "authority": "operation-authority"
+      },
+      "request": {
+        "contentType": null,
+        "rawSql": false,
+        "arbitraryCommand": false
+      },
+      "response": {
+        "successStatus": 200,
+        "polling": false
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "409",
+        "412",
+        "422",
+        "500"
+      ]
+    },
+    {
+      "operationId": "createWorkspace",
+      "method": "POST",
+      "path": "/v1/labs/{labId}/workspaces",
+      "taxonomy": "Process",
+      "processRole": "workspace-operation-admission",
+      "authorization": {
+        "authn": "local-session",
+        "authz": "actor-owned",
+        "csrf": "required",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "required",
+      "version": {
+        "route": "v1",
+        "request": "v1",
+        "response": "v1"
+      },
+      "evidence": {
+        "required": true,
+        "authority": "operation-authority"
+      },
+      "request": {
+        "contentType": "application/json",
+        "rawSql": false,
+        "arbitraryCommand": false
+      },
+      "response": {
+        "successStatus": 201,
+        "polling": true
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "409",
+        "412",
+        "422",
+        "500"
+      ]
+    },
+    {
+      "operationId": "getWorkspace",
+      "method": "GET",
+      "path": "/v1/workspaces/{workspaceId}",
+      "taxonomy": "System",
+      "processRole": "workspace-operation-read",
+      "authorization": {
+        "authn": "local-session",
+        "authz": "actor-owned",
+        "csrf": "N/A",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "version": {
+        "route": "v1",
+        "request": "v1",
+        "response": "v1"
+      },
+      "evidence": {
+        "required": false,
+        "authority": "operation-authority"
+      },
+      "request": {
+        "contentType": null,
+        "rawSql": false,
+        "arbitraryCommand": false
+      },
+      "response": {
+        "successStatus": 200,
+        "polling": false
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "409",
+        "412",
+        "422",
+        "500"
+      ]
+    },
+    {
+      "operationId": "startWorkspaceOperation",
+      "method": "POST",
+      "path": "/v1/workspaces/{workspaceId}/operations",
+      "taxonomy": "Process",
+      "processRole": "workspace-operation-admission",
+      "authorization": {
+        "authn": "local-session",
+        "authz": "actor-owned",
+        "csrf": "required",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "required",
+      "version": {
+        "route": "v1",
+        "request": "v1",
+        "response": "v1"
+      },
+      "evidence": {
+        "required": true,
+        "authority": "operation-authority"
+      },
+      "request": {
+        "contentType": "application/json",
+        "rawSql": false,
+        "arbitraryCommand": false
+      },
+      "response": {
+        "successStatus": 202,
+        "polling": true
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "409",
+        "412",
+        "422",
+        "500"
+      ]
+    },
+    {
+      "operationId": "getOperation",
+      "method": "GET",
+      "path": "/v1/operations/{operationId}",
+      "taxonomy": "System",
+      "processRole": "workspace-operation-read",
+      "authorization": {
+        "authn": "local-session",
+        "authz": "actor-owned",
+        "csrf": "N/A",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only-polling",
+      "version": {
+        "route": "v1",
+        "request": "v1",
+        "response": "v1"
+      },
+      "evidence": {
+        "required": false,
+        "authority": "operation-authority"
+      },
+      "request": {
+        "contentType": null,
+        "rawSql": false,
+        "arbitraryCommand": false
+      },
+      "response": {
+        "successStatus": 200,
+        "polling": false
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "409",
+        "412",
+        "422",
+        "500"
+      ]
+    },
+    {
+      "operationId": "resetWorkspace",
+      "method": "POST",
+      "path": "/v1/workspaces/{workspaceId}/reset",
+      "taxonomy": "Process",
+      "processRole": "workspace-operation-admission",
+      "authorization": {
+        "authn": "local-session",
+        "authz": "actor-owned",
+        "csrf": "required",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "required",
+      "version": {
+        "route": "v1",
+        "request": "v1",
+        "response": "v1"
+      },
+      "evidence": {
+        "required": true,
+        "authority": "operation-authority"
+      },
+      "request": {
+        "contentType": "application/json",
+        "rawSql": false,
+        "arbitraryCommand": false
+      },
+      "response": {
+        "successStatus": 202,
+        "polling": true
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "409",
+        "412",
+        "422",
+        "500"
+      ]
+    },
+    {
+      "operationId": "verifyWorkspace",
+      "method": "POST",
+      "path": "/v1/workspaces/{workspaceId}/verify",
+      "taxonomy": "Process",
+      "processRole": "verification-admission-to-progress-authority",
+      "authorization": {
+        "authn": "local-session",
+        "authz": "actor-owned",
+        "csrf": "required",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "required",
+      "version": {
+        "route": "v1",
+        "request": "v1",
+        "response": "v1"
+      },
+      "evidence": {
+        "required": true,
+        "authority": "learning-progress-authority-v1"
+      },
+      "request": {
+        "contentType": "application/json",
+        "rawSql": false,
+        "arbitraryCommand": false
+      },
+      "response": {
+        "successStatus": 202,
+        "polling": true
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "409",
+        "412",
+        "422",
+        "500"
+      ]
+    },
+    {
+      "operationId": "getEvidence",
+      "method": "GET",
+      "path": "/v1/evidence/{evidenceId}",
+      "taxonomy": "Technical",
+      "processRole": "evidence-index-blob-reader",
+      "authorization": {
+        "authn": "local-session",
+        "authz": "actor-owned",
+        "csrf": "N/A",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "version": {
+        "route": "v1",
+        "request": "v1",
+        "response": "v1"
+      },
+      "evidence": {
+        "required": false,
+        "authority": "operation-authority"
+      },
+      "request": {
+        "contentType": null,
+        "rawSql": false,
+        "arbitraryCommand": false
+      },
+      "response": {
+        "successStatus": 200,
+        "polling": false
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "409",
+        "412",
+        "422",
+        "500"
+      ]
+    },
+    {
+      "operationId": "listTools",
+      "method": "GET",
+      "path": "/v1/tools",
+      "taxonomy": "Experience",
+      "processRole": "tool-catalog-read",
+      "authorization": {
+        "authn": "local-session",
+        "authz": "catalog-read",
+        "csrf": "N/A",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "version": {
+        "route": "v1",
+        "request": "v1",
+        "response": "v1"
+      },
+      "evidence": {
+        "required": false,
+        "authority": "operation-authority"
+      },
+      "request": {
+        "contentType": null,
+        "rawSql": false,
+        "arbitraryCommand": false
+      },
+      "response": {
+        "successStatus": 200,
+        "polling": false
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "409",
+        "412",
+        "422",
+        "500"
+      ]
+    },
+    {
+      "operationId": "getTool",
+      "method": "GET",
+      "path": "/v1/tools/{toolId}",
+      "taxonomy": "Experience",
+      "processRole": "tool-catalog-read",
+      "authorization": {
+        "authn": "local-session",
+        "authz": "catalog-read",
+        "csrf": "N/A",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "version": {
+        "route": "v1",
+        "request": "v1",
+        "response": "v1"
+      },
+      "evidence": {
+        "required": false,
+        "authority": "operation-authority"
+      },
+      "request": {
+        "contentType": null,
+        "rawSql": false,
+        "arbitraryCommand": false
+      },
+      "response": {
+        "successStatus": 200,
+        "polling": false
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "409",
+        "412",
+        "422",
+        "500"
+      ]
+    },
+    {
+      "operationId": "queryDataProduct",
+      "method": "POST",
+      "path": "/v1/data-products/{productId}/queries",
+      "taxonomy": "Backend",
+      "processRole": "registered-query-admission",
+      "authorization": {
+        "authn": "local-session",
+        "authz": "actor-owned-product-read",
+        "csrf": "required",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "required",
+      "version": {
+        "route": "v1",
+        "request": "v1",
+        "response": "v1"
+      },
+      "evidence": {
+        "required": true,
+        "authority": "operation-authority"
+      },
+      "request": {
+        "contentType": "application/json",
+        "rawSql": false,
+        "arbitraryCommand": false
+      },
+      "response": {
+        "successStatus": 202,
+        "polling": true
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "409",
+        "412",
+        "422",
+        "500"
+      ]
+    },
+    {
+      "operationId": "getLiveness",
+      "method": "GET",
+      "path": "/health/live",
+      "taxonomy": "Technical",
+      "processRole": "http-process-health",
+      "authorization": {
+        "authn": "public-loopback",
+        "authz": "public-health",
+        "csrf": "N/A",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "version": {
+        "route": "v1",
+        "request": "v1",
+        "response": "v1"
+      },
+      "evidence": {
+        "required": false,
+        "authority": "operation-authority"
+      },
+      "request": {
+        "contentType": null,
+        "rawSql": false,
+        "arbitraryCommand": false
+      },
+      "response": {
+        "successStatus": 200,
+        "polling": false
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "409",
+        "412",
+        "422",
+        "500"
+      ]
+    },
+    {
+      "operationId": "getReadiness",
+      "method": "GET",
+      "path": "/health/ready",
+      "taxonomy": "Technical",
+      "processRole": "dependency-readiness-aggregate",
+      "authorization": {
+        "authn": "public-loopback",
+        "authz": "public-health",
+        "csrf": "N/A",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "version": {
+        "route": "v1",
+        "request": "v1",
+        "response": "v1"
+      },
+      "evidence": {
+        "required": false,
+        "authority": "operation-authority"
+      },
+      "request": {
+        "contentType": null,
+        "rawSql": false,
+        "arbitraryCommand": false
+      },
+      "response": {
+        "successStatus": 200,
+        "polling": false
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "409",
+        "412",
+        "422",
+        "500"
+      ]
+    }
+  ]
+}

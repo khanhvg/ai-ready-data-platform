@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/promotion-trust-learning-manifest-v1.schema.json",
+  "title": "promotion-trust-learning-manifest-v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "manifestId",
+    "lesson",
+    "lab",
+    "evidenceSchema",
+    "dataContract",
+    "fixture",
+    "sources",
+    "decision",
+    "limitations",
+    "contractSetSha256"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "manifestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "lesson": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "lab": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "evidenceSchema": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "dataContract": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "fixture": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "decision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "contractSetSha256": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    }
+  },
+  "unevaluatedProperties": false
+}

@@ -3,4 +3,3 @@
   "expectedCode": "OPERATION_EVIDENCE_INCOMPLETE",
   "mutation": "operation/missing-evidence-rule"
 }
-

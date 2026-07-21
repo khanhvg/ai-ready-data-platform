@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/learning-contract-set-v1.schema.json",
+  "title": "learning-contract-set-v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "setId",
+    "registry",
+    "contracts"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "setId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "registry": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "contracts": {
+      "type": "array"
+    }
+  },
+  "unevaluatedProperties": false
+}

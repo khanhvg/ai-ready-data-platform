@@ -1,0 +1,237 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/fitness-result-v2.schema.json",
+  "title": "fitness-result-v2",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "commandId",
+    "owner",
+    "requested",
+    "status",
+    "failureCode",
+    "remediation",
+    "inputSha",
+    "testedTreeSha",
+    "dependencyMergeShas",
+    "contractHashes",
+    "fixtureHashes",
+    "schemaHashes",
+    "toolchain",
+    "lockSha256",
+    "invocation",
+    "startedAt",
+    "finishedAt",
+    "durationMs",
+    "rawLocator",
+    "projectionLocator",
+    "envelopeLocator",
+    "projectionSha256",
+    "artifacts",
+    "redactionClass",
+    "retentionClass",
+    "rollback",
+    "canonicalization",
+    "payloadSha256"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "commandId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "requested": {
+      "type": "object",
+      "required": ["subjectType", "subjectId", "parameters"],
+      "properties": {
+        "subjectType": {"type": "string"},
+        "subjectId": {"type": "string"},
+        "parameters": {"type": "array", "maxItems": 64}
+      },
+      "unevaluatedProperties": false
+    },
+    "status": {
+      "enum": [
+        "pass",
+        "fail"
+      ]
+    },
+    "failureCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 512
+    },
+    "remediation": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 512
+    },
+    "inputSha": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "testedTreeSha": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "dependencyMergeShas": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "contractHashes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "fixtureHashes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "schemaHashes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "toolchain": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "lockSha256": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "invocation": {
+      "type": "object",
+      "required": ["publicArgv", "canonicalChildArgv", "actualChildArgvSha256", "cwdRole"],
+      "properties": {
+        "publicArgv": {"type": "array", "items": {"type": "string"}},
+        "canonicalChildArgv": {"type": "array", "items": {"type": "string"}},
+        "actualChildArgvSha256": {"type": ["string", "null"]},
+        "cwdRole": {"const": "repository-root"}
+      },
+      "unevaluatedProperties": false
+    },
+    "startedAt": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "finishedAt": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "durationMs": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "rawLocator": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 512
+    },
+    "projectionLocator": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 512
+    },
+    "envelopeLocator": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 512
+    },
+    "projectionSha256": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "redactionClass": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "retentionClass": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "rollback": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "canonicalization": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "payloadSha256": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    }
+  },
+  "unevaluatedProperties": false
+}

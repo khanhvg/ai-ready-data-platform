@@ -3,4 +3,3 @@
   "expectedCode": "COMMAND_ACTIVATION_BASE_MISMATCH",
   "mutation": "command/base-command-registry-hash-mismatch"
 }
-

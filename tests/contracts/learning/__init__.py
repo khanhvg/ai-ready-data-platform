@@ -21,4 +21,10 @@ def assert_contract_behavior(testcase: object, test_id: str) -> None:
                 (ROOT / locator).is_file(),
                 f"{test_id}: indexed negative fixture is missing",
             )
-    testcase.fail(f"{test_id}: contract behavior not implemented; expected {case['expectedCode']}")
+    from scripts.learning_contracts.check import evaluate_red_case
+
+    testcase.assertEqual(
+        evaluate_red_case(test_id),
+        case["expectedCode"],
+        f"{test_id}: frozen negative contract did not fail with its exact code",
+    )

@@ -3,4 +3,3 @@
   "expectedCode": "SCHEMA_UNKNOWN_PROPERTY",
   "mutation": "schema/unknown-field"
 }
-

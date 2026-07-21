@@ -3,4 +3,3 @@
   "expectedCode": "SCHEMA_REQUIRED_PROPERTY",
   "mutation": "schema/missing-required"
 }
-

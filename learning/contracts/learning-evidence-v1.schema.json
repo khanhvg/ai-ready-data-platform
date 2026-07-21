@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/learning-evidence-v1.schema.json",
+  "title": "learning-evidence-v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "evidenceId",
+    "lesson",
+    "lab",
+    "actor",
+    "workspaceId",
+    "runId",
+    "operationId",
+    "inputGitSha",
+    "officialGoldenMainSha",
+    "dependencyMergeShas",
+    "contractHashes",
+    "fixtureHashes",
+    "verifier",
+    "environment",
+    "parameters",
+    "transitions",
+    "commands",
+    "assertions",
+    "artifacts",
+    "timing",
+    "redactionClass",
+    "retentionClass",
+    "rollback",
+    "integrity"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "evidenceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "lesson": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "lab": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "actor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "workspaceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "runId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "operationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "inputGitSha": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "officialGoldenMainSha": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "dependencyMergeShas": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "contractHashes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "fixtureHashes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "verifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "environment": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "parameters": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "transitions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "assertions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "timing": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "redactionClass": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "retentionClass": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "rollback": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "integrity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    }
+  },
+  "unevaluatedProperties": false
+}

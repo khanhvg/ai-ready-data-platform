@@ -3,4 +3,3 @@
   "expectedCode": "BASE_REGISTRY_HASH_MISMATCH",
   "mutation": "migration/base-registry-hash-mismatch"
 }
-

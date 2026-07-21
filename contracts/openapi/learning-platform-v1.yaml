@@ -1,0 +1,492 @@
+{
+  "openapi": "3.2.0",
+  "info": {
+    "title": "Learning Platform Contract",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/v1/lessons": {
+      "get": {
+        "operationId": "listLessons",
+        "summary": "listLessons",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Authorization or CSRF failure"
+          },
+          "500": {
+            "description": "Bounded internal failure"
+          }
+        }
+      }
+    },
+    "/v1/lessons/{lessonId}": {
+      "get": {
+        "operationId": "getLesson",
+        "summary": "getLesson",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Authorization or CSRF failure"
+          },
+          "500": {
+            "description": "Bounded internal failure"
+          }
+        }
+      }
+    },
+    "/v1/progress": {
+      "get": {
+        "operationId": "getProgress",
+        "summary": "getProgress",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Authorization or CSRF failure"
+          },
+          "500": {
+            "description": "Bounded internal failure"
+          }
+        }
+      }
+    },
+    "/v1/progress/{lessonId}": {
+      "get": {
+        "operationId": "getLessonProgress",
+        "summary": "getLessonProgress",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Authorization or CSRF failure"
+          },
+          "500": {
+            "description": "Bounded internal failure"
+          }
+        }
+      }
+    },
+    "/v1/labs/{labId}/workspaces": {
+      "post": {
+        "operationId": "createWorkspace",
+        "summary": "createWorkspace",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Authorization or CSRF failure"
+          },
+          "500": {
+            "description": "Bounded internal failure"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workspaces/{workspaceId}": {
+      "get": {
+        "operationId": "getWorkspace",
+        "summary": "getWorkspace",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Authorization or CSRF failure"
+          },
+          "500": {
+            "description": "Bounded internal failure"
+          }
+        }
+      }
+    },
+    "/v1/workspaces/{workspaceId}/operations": {
+      "post": {
+        "operationId": "startWorkspaceOperation",
+        "summary": "startWorkspaceOperation",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Authorization or CSRF failure"
+          },
+          "500": {
+            "description": "Bounded internal failure"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/operations/{operationId}": {
+      "get": {
+        "operationId": "getOperation",
+        "summary": "getOperation",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Authorization or CSRF failure"
+          },
+          "500": {
+            "description": "Bounded internal failure"
+          }
+        }
+      }
+    },
+    "/v1/workspaces/{workspaceId}/reset": {
+      "post": {
+        "operationId": "resetWorkspace",
+        "summary": "resetWorkspace",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Authorization or CSRF failure"
+          },
+          "500": {
+            "description": "Bounded internal failure"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workspaces/{workspaceId}/verify": {
+      "post": {
+        "operationId": "verifyWorkspace",
+        "summary": "verifyWorkspace",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Authorization or CSRF failure"
+          },
+          "500": {
+            "description": "Bounded internal failure"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evidence/{evidenceId}": {
+      "get": {
+        "operationId": "getEvidence",
+        "summary": "getEvidence",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Authorization or CSRF failure"
+          },
+          "500": {
+            "description": "Bounded internal failure"
+          }
+        }
+      }
+    },
+    "/v1/tools": {
+      "get": {
+        "operationId": "listTools",
+        "summary": "listTools",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Authorization or CSRF failure"
+          },
+          "500": {
+            "description": "Bounded internal failure"
+          }
+        }
+      }
+    },
+    "/v1/tools/{toolId}": {
+      "get": {
+        "operationId": "getTool",
+        "summary": "getTool",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Authorization or CSRF failure"
+          },
+          "500": {
+            "description": "Bounded internal failure"
+          }
+        }
+      }
+    },
+    "/v1/data-products/{productId}/queries": {
+      "post": {
+        "operationId": "queryDataProduct",
+        "summary": "queryDataProduct",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Authorization or CSRF failure"
+          },
+          "500": {
+            "description": "Bounded internal failure"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/live": {
+      "get": {
+        "operationId": "getLiveness",
+        "summary": "getLiveness",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Authorization or CSRF failure"
+          },
+          "500": {
+            "description": "Bounded internal failure"
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "getReadiness",
+        "summary": "getReadiness",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Authorization or CSRF failure"
+          },
+          "500": {
+            "description": "Bounded internal failure"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Problem": {
+        "$ref": "./learning-platform-problem-details-v1.schema.json"
+      }
+    }
+  }
+}

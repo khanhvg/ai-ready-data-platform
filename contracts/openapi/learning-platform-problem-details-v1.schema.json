@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/learning-platform-problem-details-v1.schema.json",
+  "title": "learning-platform-problem-details-v1",
+  "type": "object",
+  "required": [
+    "type",
+    "title",
+    "status",
+    "code",
+    "detail",
+    "correlationId",
+    "retryable",
+    "remediationId",
+    "contractVersion"
+  ],
+  "properties": {
+    "type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "status": {
+      "type": "integer",
+      "minimum": 400,
+      "maximum": 599
+    },
+    "code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "detail": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "correlationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "retryable": {
+      "type": "boolean"
+    },
+    "remediationId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 512
+    },
+    "contractVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    }
+  },
+  "unevaluatedProperties": false
+}

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "completion-reconciliation-v1",
+  "authorityId": "learning-progress-authority-v1",
+  "authorityVersion": "v1",
+  "idempotencyScope": "authorityId+actorId+operationId+idempotencyKey",
+  "commitPreconditions": [
+    "committed-operation-result",
+    "immutable-evidence-hash",
+    "expected-progress-revision"
+  ],
+  "commitOrder": [
+    "commit-operation-result",
+    "stage-fsync-rename-evidence",
+    "cas-progress-and-index",
+    "acknowledge"
+  ],
+  "uniqueConstraints": [
+    "runId",
+    "evidenceId",
+    "idempotencyKey"
+  ],
+  "faultPoints": [
+    "before-evidence-rename",
+    "before-progress-cas",
+    "after-progress-cas",
+    "before-ack"
+  ],
+  "reconciliation": "already-attached|attachable-orphan|invalid-or-conflicting-orphan",
+  "resets": [
+    "expected-version-cas",
+    "preserve-evidence"
+  ],
+  "conflicts": [
+    "IDEMPOTENCY_KEY_REUSE",
+    "PROGRESS_VERSION_CONFLICT",
+    "RECONCILIATION_HASH_MISMATCH"
+  ]
+}

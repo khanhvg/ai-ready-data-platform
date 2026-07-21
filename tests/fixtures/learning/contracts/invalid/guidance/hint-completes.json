@@ -3,4 +3,3 @@
   "expectedCode": "HINT_COMPLETION_FORBIDDEN",
   "mutation": "guidance/hint-completes"
 }
-

@@ -3,4 +3,3 @@
   "expectedCode": "PROMOTION_LIMITATION_REQUIRED",
   "mutation": "promotion-trust/missing-limitation"
 }
-

@@ -3,4 +3,3 @@
   "expectedCode": "EVIDENCE_ARTIFACT_HASH_MISMATCH",
   "mutation": "evidence/artifact-hash"
 }
-

@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/operation-matrix-v1.schema.json",
+  "title": "operation-matrix-v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "apiVersion",
+    "channels",
+    "operations"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "apiVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "channels": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 16,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "required": [
+          "operationId",
+          "method",
+          "path",
+          "taxonomy",
+          "processRole",
+          "authorization",
+          "idempotency",
+          "version",
+          "evidence",
+          "request",
+          "response",
+          "errors"
+        ],
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "method": {
+            "enum": [
+              "GET",
+              "POST"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^/"
+          },
+          "taxonomy": {
+            "enum": [
+              "Experience",
+              "Process",
+              "System",
+              "Backend",
+              "Technical"
+            ]
+          },
+          "processRole": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "authorization": {
+            "type": "object",
+            "required": [
+              "authn",
+              "authz",
+              "csrf",
+              "enforcementStatus"
+            ],
+            "properties": {
+              "authn": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "authz": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "csrf": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "enforcementStatus": {
+                "const": "downstream-required"
+              }
+            },
+            "unevaluatedProperties": false
+          },
+          "idempotency": {
+            "enum": [
+              "required",
+              "read-only",
+              "read-only-polling"
+            ]
+          },
+          "version": {
+            "type": "object",
+            "required": [
+              "route",
+              "request",
+              "response"
+            ],
+            "properties": {
+              "route": {
+                "const": "v1"
+              },
+              "request": {
+                "const": "v1"
+              },
+              "response": {
+                "const": "v1"
+              }
+            },
+            "unevaluatedProperties": false
+          },
+          "evidence": {
+            "type": "object",
+            "required": [
+              "required",
+              "authority"
+            ],
+            "properties": {
+              "required": {
+                "type": "boolean"
+              },
+              "authority": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              }
+            },
+            "unevaluatedProperties": false
+          },
+          "request": {
+            "type": "object",
+            "required": [
+              "contentType",
+              "rawSql",
+              "arbitraryCommand"
+            ],
+            "properties": {
+              "contentType": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "rawSql": {
+                "const": false
+              },
+              "arbitraryCommand": {
+                "const": false
+              }
+            },
+            "unevaluatedProperties": false
+          },
+          "response": {
+            "type": "object",
+            "required": [
+              "successStatus",
+              "polling"
+            ],
+            "properties": {
+              "successStatus": {
+                "enum": [
+                  200,
+                  201,
+                  202
+                ]
+              },
+              "polling": {
+                "type": "boolean"
+              }
+            },
+            "unevaluatedProperties": false
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9]{3}$"
+            },
+            "uniqueItems": true
+          }
+        },
+        "unevaluatedProperties": false
+      }
+    }
+  },
+  "unevaluatedProperties": false
+}

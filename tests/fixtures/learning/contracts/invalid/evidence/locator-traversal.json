@@ -3,4 +3,3 @@
   "expectedCode": "EVIDENCE_LOCATOR_INVALID",
   "mutation": "evidence/locator-traversal"
 }
-

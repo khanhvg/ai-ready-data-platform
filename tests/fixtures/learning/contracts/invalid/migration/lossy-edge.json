@@ -3,4 +3,3 @@
   "expectedCode": "MIGRATION_LOSSY_FORBIDDEN",
   "mutation": "migration/lossy-edge"
 }
-

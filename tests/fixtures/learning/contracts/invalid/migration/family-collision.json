@@ -3,4 +3,3 @@
   "expectedCode": "SCHEMA_FAMILY_COLLISION",
   "mutation": "migration/family-collision"
 }
-

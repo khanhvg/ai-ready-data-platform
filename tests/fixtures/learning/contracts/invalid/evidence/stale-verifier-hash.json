@@ -3,4 +3,3 @@
   "expectedCode": "EVIDENCE_VERIFIER_HASH_MISMATCH",
   "mutation": "evidence/stale-verifier-hash"
 }
-

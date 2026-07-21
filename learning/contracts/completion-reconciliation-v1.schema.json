@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/completion-reconciliation-v1.schema.json",
+  "title": "completion-reconciliation-v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "authorityId",
+    "authorityVersion",
+    "idempotencyScope",
+    "commitPreconditions",
+    "commitOrder",
+    "uniqueConstraints",
+    "faultPoints",
+    "reconciliation",
+    "resets",
+    "conflicts"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "authorityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "authorityVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "idempotencyScope": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "commitPreconditions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "commitOrder": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "uniqueConstraints": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "faultPoints": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "reconciliation": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "resets": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 128,
+      "uniqueItems": true
+    }
+  },
+  "unevaluatedProperties": false
+}

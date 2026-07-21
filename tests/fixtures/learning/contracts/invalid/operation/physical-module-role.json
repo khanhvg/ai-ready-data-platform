@@ -3,4 +3,3 @@
   "expectedCode": "OPERATION_ROLE_NOT_NEUTRAL",
   "mutation": "operation/physical-module-role"
 }
-

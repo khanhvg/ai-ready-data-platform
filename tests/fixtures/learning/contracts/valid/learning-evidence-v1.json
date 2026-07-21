@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "learning-evidence-v1",
+  "evidenceId": "evidence-promotion-trust-001",
+  "lesson": "promotion-trust@1.0.0",
+  "lab": "promotion-trust-lab@1.0.0",
+  "actor": "actor-value",
+  "workspaceId": "workspaceId-value",
+  "runId": "runId-value",
+  "operationId": "operationId-value",
+  "inputGitSha": "24be3b34c6b0fcdbd07c5800dcab349054e34713",
+  "officialGoldenMainSha": "24be3b34c6b0fcdbd07c5800dcab349054e34713",
+  "dependencyMergeShas": [
+    "dependencyMergeShas-bound"
+  ],
+  "contractHashes": [
+    "contractHashes-bound"
+  ],
+  "fixtureHashes": [
+    "fixtureHashes-bound"
+  ],
+  "verifier": "verifier-value",
+  "environment": "environment-value",
+  "parameters": "parameters-value",
+  "transitions": [
+    "transitions-bound"
+  ],
+  "commands": [
+    "commands-bound"
+  ],
+  "assertions": [
+    "assertions-bound"
+  ],
+  "artifacts": [
+    "artifacts-bound"
+  ],
+  "timing": "timing-value",
+  "redactionClass": "redactionClass-value",
+  "retentionClass": "retentionClass-value",
+  "rollback": "rollback-value",
+  "integrity": "rfc8785-jcs-v1:payload-sha256"
+}

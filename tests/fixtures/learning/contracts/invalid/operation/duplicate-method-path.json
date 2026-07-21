@@ -3,4 +3,3 @@
   "expectedCode": "OPERATION_DUPLICATE",
   "mutation": "operation/duplicate-method-path"
 }
-

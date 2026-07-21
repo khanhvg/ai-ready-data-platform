@@ -3,4 +3,3 @@
   "expectedCode": "HINT_ORDER_INVALID",
   "mutation": "guidance/out-of-order-hint"
 }
-

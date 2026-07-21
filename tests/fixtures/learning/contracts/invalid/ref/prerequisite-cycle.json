@@ -3,4 +3,3 @@
   "expectedCode": "REF_CYCLE",
   "mutation": "ref/prerequisite-cycle"
 }
-

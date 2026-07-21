@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/command-owner-activation-v1.schema.json",
+  "title": "command-owner-activation-v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "baseRegistryPath",
+    "baseRegistrySha256",
+    "owner",
+    "fragment",
+    "commands"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "baseRegistryPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "baseRegistrySha256": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "fragment": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "commands": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4
+    }
+  },
+  "unevaluatedProperties": false
+}
