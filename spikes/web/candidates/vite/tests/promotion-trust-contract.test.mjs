@@ -68,3 +68,8 @@ test('V3-02 authored fallback exposes the complete contract in response bytes be
   assert.match(html, /data-testid="lesson-status"/);
   assert.doesNotMatch(html, /dangerouslySetInnerHTML|\bonclick\s*=|https?:\/\//i);
 });
+
+test('V3-05 progressive controls use valid named group semantics', () => {
+  const source = readFileSync(resolve(candidate, 'src/main.jsx'), 'utf8');
+  assert.match(source, /className="controls"\s+role="group"\s+aria-label="Điều khiển khảo sát"/);
+});

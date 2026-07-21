@@ -1,8 +1,35 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, resolve } from 'node:path';
 import test from 'node:test';
 import { ROOT, contract, scanText, validateChangedPaths, validateEvidenceManifest, validateOwnership } from '../scripts/simple-vite-v3.mjs';
+
+const wait = milliseconds => new Promise(resolveWait => setTimeout(resolveWait, milliseconds));
+
+function processExists(pid) {
+  if (!Number.isInteger(pid) || pid <= 1) return false;
+  try { process.kill(pid, 0); return true; } catch (error) { return error.code === 'EPERM'; }
+}
+
+function killPid(pid) {
+  if (!processExists(pid)) return;
+  try { process.kill(pid, 'SIGKILL'); } catch (error) { if (error.code !== 'ESRCH') throw error; }
+}
+
+async function loadInstrumentedRunner(transform = source => source) {
+  const sourcePath = resolve(ROOT, 'spikes/web/harness/scripts/simple-vite-v3.mjs');
+  const temporaryPath = resolve(dirname(sourcePath), `.simple-vite-v3-test-${process.pid}-${Date.now()}.mjs`);
+  const source = `${transform(readFileSync(sourcePath, 'utf8'))}\nexport { runBounded, startHost };\n`;
+  writeFileSync(temporaryPath, source);
+  try {
+    return { module: await import(`${new URL(`file://${temporaryPath}`).href}?test=${Date.now()}`), temporaryPath };
+  } catch (error) {
+    rmSync(temporaryPath, { force: true });
+    throw error;
+  }
+}
 
 test('V3-07 harness contract closes authority, seven groups, commands, and write paths', () => {
   assert.equal(contract.implementationInputSha, '4cfd01f891655670b5a43a362b1567bcaaf4a824');
@@ -78,4 +105,111 @@ test('V3-07 runner contains bounded commands and never imports comparison, nativ
   assert.match(source, /unownedRollbackSentinel/, 'runner must retain evidence that an unowned rollback sentinel was preserved');
   assert.match(source, /retainedPreservation/, 'runner must verify retained evidence survives rollback');
   assert.doesNotMatch(source, /score-anchors|Firefox|webkit|VoiceOver|CuaDriver|terraform|historicalTimer/i);
+});
+
+test('V3-07 bounded command escalates TERM to KILL for its owned group and leaves no descendant', async () => {
+  const directory = resolve(ROOT, '.artifacts/runtime/i5-02/focused-process-group');
+  const pidPath = resolve(directory, 'fixture-pids.json');
+  rmSync(directory, { recursive: true, force: true });
+  mkdirSync(directory, { recursive: true });
+  const fixture = [
+    "const { spawn } = require('node:child_process');",
+    "const { writeFileSync } = require('node:fs');",
+    "const descendant = spawn(process.execPath, ['-e', `process.on('SIGTERM',()=>{});setInterval(()=>{},1000)`], { stdio: 'ignore' });",
+    `writeFileSync(${JSON.stringify(pidPath)}, JSON.stringify({ leader: process.pid, descendant: descendant.pid }));`,
+    "process.on('SIGTERM', () => {});",
+    'setTimeout(() => process.exit(93), 1200);',
+  ].join('');
+  let temporaryPath;
+  let pids = {};
+  try {
+    const loaded = await loadInstrumentedRunner();
+    temporaryPath = loaded.temporaryPath;
+    const started = Date.now();
+    const result = await loaded.module.runBounded('term-kill-fixture', [process.execPath, '-e', fixture], 120, directory);
+    const durationMs = Date.now() - started;
+    pids = JSON.parse(readFileSync(pidPath, 'utf8'));
+    assert.equal(result.timedOut, true, 'fixture must reach the command timeout');
+    assert.equal(result.termination?.termSent, true, 'owned group must receive SIGTERM');
+    assert.equal(result.termination?.killSent, true, 'TERM-resistant owned group must receive SIGKILL');
+    assert.ok(durationMs < 900, `final wait must be bounded; observed ${durationMs}ms`);
+    await wait(50);
+    assert.equal(processExists(pids.leader), false, 'owned group leader survived cleanup');
+    assert.equal(processExists(pids.descendant), false, 'owned group descendant survived cleanup');
+  } finally {
+    killPid(pids.descendant);
+    killPid(pids.leader);
+    if (temporaryPath) rmSync(temporaryPath, { force: true });
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('V3-07 host READY timeout rejects boundedly and cleans its owned process group', async () => {
+  const directory = resolve(ROOT, '.artifacts/runtime/i5-02/focused-host-ready');
+  const fixturePath = resolve(directory, 'never-ready.mjs');
+  const pidPath = resolve(directory, 'host-pid');
+  rmSync(directory, { recursive: true, force: true });
+  mkdirSync(directory, { recursive: true });
+  writeFileSync(fixturePath, `import { writeFileSync } from 'node:fs';\nwriteFileSync(${JSON.stringify(pidPath)}, String(process.pid));\nprocess.on('SIGTERM', () => {});\nsetTimeout(() => process.exit(94), 1200);\n`);
+  let temporaryPath;
+  let pid;
+  try {
+    const loaded = await loadInstrumentedRunner(source => source
+      .replace("const hostPath = resolve(ROOT, 'spikes/web/harness/scripts/candidate-static-host.mjs');", `const hostPath = ${JSON.stringify(fixturePath)};`)
+      .replace('contract.ceilingsMs.hostReady);', '200);'));
+    temporaryPath = loaded.temporaryPath;
+    const started = Date.now();
+    await assert.rejects(loaded.module.startHost('focused-never-ready', directory), /V3 host READY timeout/);
+    const durationMs = Date.now() - started;
+    pid = Number(readFileSync(pidPath, 'utf8'));
+    assert.ok(durationMs < 900, `READY rejection plus cleanup must be bounded; observed ${durationMs}ms`);
+    await wait(50);
+    assert.equal(processExists(pid), false, 'READY-timeout host survived owned-group cleanup');
+  } finally {
+    killPid(pid);
+    if (temporaryPath) rmSync(temporaryPath, { force: true });
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('V3-07 authority accepts detached exact-live head and rejects detached mismatch or another branch', () => {
+  const temporaryRoot = mkdtempSync(resolve(tmpdir(), 'vite-v3-authority-'));
+  const clone = resolve(temporaryRoot, 'review');
+  const run = args => spawnSync('git', args, { cwd: clone, encoding: 'utf8' });
+  const preflight = () => {
+    const result = spawnSync(process.execPath, ['spikes/web/harness/scripts/simple-vite-v3.mjs', 'preflight', '--implementation-input', contract.implementationInputSha], { cwd: clone, encoding: 'utf8' });
+    return { rc: result.status, output: result.stdout ? JSON.parse(result.stdout) : null, stderr: result.stderr };
+  };
+  try {
+    const cloned = spawnSync('git', ['clone', '--quiet', '--no-hardlinks', ROOT, clone], { encoding: 'utf8' });
+    assert.equal(cloned.status, 0, cloned.stderr);
+    assert.equal(run(['checkout', '--quiet', '--detach', `origin/${contract.branch}`]).status, 0);
+    const exact = preflight();
+    assert.equal(exact.rc, 0, exact.stderr || JSON.stringify(exact.output));
+    assert.equal(exact.output.authorityMode, 'detached-exact-live');
+
+    assert.equal(run(['checkout', '--quiet', '--detach', 'HEAD^']).status, 0);
+    const mismatch = preflight();
+    assert.notEqual(mismatch.rc, 0);
+    assert.ok(mismatch.output.failures.includes('detached-head-mismatch'));
+
+    assert.equal(run(['checkout', '--quiet', '-b', 'review-other-branch', `origin/${contract.branch}`]).status, 0);
+    const otherBranch = preflight();
+    assert.notEqual(otherBranch.rc, 0);
+    assert.ok(otherBranch.output.failures.includes('branch-mismatch'));
+
+    assert.equal(run(['checkout', '--quiet', contract.branch]).status, 0);
+    writeFileSync(resolve(clone, 'spikes/web/candidates/vite/src/main.jsx'), `${readFileSync(resolve(clone, 'spikes/web/candidates/vite/src/main.jsx'), 'utf8')}\n`);
+    const dirty = preflight();
+    assert.notEqual(dirty.rc, 0);
+    assert.ok(dirty.output.failures.includes('dirty-tracked-state'));
+    assert.equal(run(['restore', 'spikes/web/candidates/vite/src/main.jsx']).status, 0);
+
+    assert.equal(run(['remote', 'set-url', 'origin', resolve(temporaryRoot, 'missing-origin')]).status, 0);
+    const unavailable = preflight();
+    assert.notEqual(unavailable.rc, 0);
+    assert.ok(unavailable.output.failures.includes('fresh-live-unavailable'));
+  } finally {
+    rmSync(temporaryRoot, { recursive: true, force: true });
+  }
 });
