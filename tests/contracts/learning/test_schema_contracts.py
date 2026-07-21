@@ -142,11 +142,11 @@ class SchemaReaderCanonicalReferenceTests(unittest.TestCase):
 
         representatives = {
             "completion": (
-                "invalid/semantics/completion/evidence-presence-completes.json",
+                "invalid/completion/evidence-presence-completes.json",
                 "completion-reconciliation",
             ),
             "state": (
-                "invalid/semantics/state/stale-version.json",
+                "invalid/state/stale-version.json",
                 "progress",
             ),
         }

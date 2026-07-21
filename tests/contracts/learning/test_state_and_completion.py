@@ -209,7 +209,7 @@ class StateCompletionApiTests(unittest.TestCase):
         before = copy.deepcopy((platform.workspaces, platform.operations, platform.evidence, platform.progress))
         verify_headers = dict(headers, **{"X-Correlation-ID": "verify", "Idempotency-Key": "verify"})
         response = platform.dispatch({"method": "POST", "path": f"/v1/workspaces/{workspace_id}/verify", "headers": verify_headers, "body": {
-            "schemaVersion": "verify-workspace-request-v1", "verifierId": "promotion-trust-verifier",
+            "schemaVersion": "verify-workspace-request-v1", "verifierId": "promotion.verify",
             "expectedWorkspaceRevision": 0, "expectedProgressRevision": 99,
         }})
         self.assertEqual(412, response["status"])
