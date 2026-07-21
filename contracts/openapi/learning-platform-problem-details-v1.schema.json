@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/openapi/learning-platform-problem-details-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["type", "title", "status", "detail", "instance", "code", "correlationId", "contractVersion"],
+  "properties": {
+    "type": {"type": "string", "format": "uri-reference", "maxLength": 256},
+    "title": {"type": "string", "minLength": 1, "maxLength": 128},
+    "status": {"type": "integer", "minimum": 400, "maximum": 599},
+    "detail": {"type": "string", "minLength": 1, "maxLength": 1024},
+    "instance": {"type": "string", "format": "uri-reference", "maxLength": 256},
+    "code": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$"},
+    "correlationId": {"type": "string", "format": "uuid"},
+    "contractVersion": {"const": "learning-platform-v1"}
+  }
+}

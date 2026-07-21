@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "lab-v1",
+  "id": "promotion-trust-v1",
+  "version": "1.0.0",
+  "lessonId": "promotion-trust",
+  "risk": "bounded-local",
+  "profile": "small-42",
+  "inputs": [
+    "profile-enum",
+    "seed-integer"
+  ],
+  "workspace": "issue-owned-relative-256MiB",
+  "commands": [
+    "workspace.prepare",
+    "retail.generate",
+    "retail.load",
+    "retail.dbt-build",
+    "retail.export",
+    "promotion.configure",
+    "promotion.verify",
+    "workspace.reset"
+  ],
+  "starter": "project-owned",
+  "controlledFailure": "headline-revenue-overweighted",
+  "stateMachine": "learning-progress-authority-v1",
+  "reset": "atomic-preserve-evidence",
+  "verify": "ordered-critical-assertions",
+  "solution": "reveal-after-hints",
+  "evidence": "learning-evidence-v1",
+  "accessibility": "announced-keyboard-static",
+  "remediation": [
+    "METRIC_REFUND_NOT_ACCOUNTED",
+    "DQ_DUPLICATE_ORDER"
+  ]
+}

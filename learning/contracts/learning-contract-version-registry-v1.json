@@ -1,0 +1,224 @@
+{
+  "schemaVersion": "learning-contract-version-registry-v1",
+  "baseRegistry": {
+    "path": "learning/contracts/schema-version-registry.json",
+    "sha256": "8e18588f63b5d99c0b60a229758575e8badf0f055bfcb4f89908f9fa2684a57e"
+  },
+  "ownedFamilies": [
+    {
+      "family": "lesson",
+      "currentVersion": "lesson-v1",
+      "readableVersions": [
+        "lesson-v1"
+      ],
+      "readerId": "lesson-reader-v1",
+      "schema": {
+        "path": "learning/contracts/lesson-v1.schema.json",
+        "sha256": "6c1fc3c06865ca832064008e2ae86987cbf932f38d30ef5586c50b727963485a"
+      },
+      "migrations": [
+        {
+          "from": "lesson-v1",
+          "to": "lesson-v1",
+          "kind": "identity"
+        }
+      ]
+    },
+    {
+      "family": "lab",
+      "currentVersion": "lab-v1",
+      "readableVersions": [
+        "lab-v1"
+      ],
+      "readerId": "lab-reader-v1",
+      "schema": {
+        "path": "learning/contracts/lab-v1.schema.json",
+        "sha256": "a498caee1b7a1bf0a5e699ada3ae27c3894fa8e083bbe40ae8aaf1c51e82c0cb"
+      },
+      "migrations": [
+        {
+          "from": "lab-v1",
+          "to": "lab-v1",
+          "kind": "identity"
+        }
+      ]
+    },
+    {
+      "family": "progress",
+      "currentVersion": "progress-v1",
+      "readableVersions": [
+        "progress-v1"
+      ],
+      "readerId": "progress-reader-v1",
+      "schema": {
+        "path": "learning/contracts/progress-v1.schema.json",
+        "sha256": "a24c27b0c9abf0d553f1005c6ff4b19506fa2b9be3888b5315356b91cdc30767"
+      },
+      "migrations": [
+        {
+          "from": "progress-v1",
+          "to": "progress-v1",
+          "kind": "identity"
+        }
+      ]
+    },
+    {
+      "family": "learning-evidence",
+      "currentVersion": "learning-evidence-v1",
+      "readableVersions": [
+        "learning-evidence-v1"
+      ],
+      "readerId": "learning-evidence-reader-v1",
+      "schema": {
+        "path": "learning/contracts/learning-evidence-v1.schema.json",
+        "sha256": "bd03918a79b4b579d59d1fbc6bdf5e1ceaea9b42af939dcd4d93ac0b99d5e263"
+      },
+      "migrations": [
+        {
+          "from": "learning-evidence-v1",
+          "to": "learning-evidence-v1",
+          "kind": "identity"
+        }
+      ]
+    },
+    {
+      "family": "completion-reconciliation",
+      "currentVersion": "completion-reconciliation-v1",
+      "readableVersions": [
+        "completion-reconciliation-v1"
+      ],
+      "readerId": "completion-reconciliation-reader-v1",
+      "schema": {
+        "path": "learning/contracts/completion-reconciliation-v1.schema.json",
+        "sha256": "246263593dabec8de1494392ab501f1cf8669934a39821a08e2cee830985603f"
+      },
+      "migrations": [
+        {
+          "from": "completion-reconciliation-v1",
+          "to": "completion-reconciliation-v1",
+          "kind": "identity"
+        }
+      ]
+    },
+    {
+      "family": "operation-matrix",
+      "currentVersion": "operation-matrix-v1",
+      "readableVersions": [
+        "operation-matrix-v1"
+      ],
+      "readerId": "operation-matrix-reader-v1",
+      "schema": {
+        "path": "learning/contracts/operation-matrix-v1.schema.json",
+        "sha256": "1bf779bd4821205461e05b18f166c790dd9d5248750783e8225925d8c3d1a6e6"
+      },
+      "migrations": [
+        {
+          "from": "operation-matrix-v1",
+          "to": "operation-matrix-v1",
+          "kind": "identity"
+        }
+      ]
+    },
+    {
+      "family": "promotion-trust-learning-manifest",
+      "currentVersion": "promotion-trust-learning-manifest-v1",
+      "readableVersions": [
+        "promotion-trust-learning-manifest-v1"
+      ],
+      "readerId": "promotion-trust-learning-manifest-reader-v1",
+      "schema": {
+        "path": "learning/contracts/promotion-trust-learning-manifest-v1.schema.json",
+        "sha256": "09937b134fe75813e846f09c800522c98ab3b010757ccaba1889745d7fa79dd6"
+      },
+      "migrations": [
+        {
+          "from": "promotion-trust-learning-manifest-v1",
+          "to": "promotion-trust-learning-manifest-v1",
+          "kind": "identity"
+        }
+      ]
+    },
+    {
+      "family": "learning-contract-version-registry",
+      "currentVersion": "learning-contract-version-registry-v1",
+      "readableVersions": [
+        "learning-contract-version-registry-v1"
+      ],
+      "readerId": "learning-contract-version-registry-reader-v1",
+      "schema": {
+        "path": "learning/contracts/learning-contract-version-registry-v1.schema.json",
+        "sha256": "d8c1881982e39e727a95f7491e6efeb288335bbef4a80d76efa891c3a8009ab8"
+      },
+      "migrations": [
+        {
+          "from": "learning-contract-version-registry-v1",
+          "to": "learning-contract-version-registry-v1",
+          "kind": "identity"
+        }
+      ]
+    },
+    {
+      "family": "command-owner-activation",
+      "currentVersion": "command-owner-activation-v1",
+      "readableVersions": [
+        "command-owner-activation-v1"
+      ],
+      "readerId": "command-owner-activation-reader-v1",
+      "schema": {
+        "path": "learning/contracts/command-owner-activation-v1.schema.json",
+        "sha256": "8fe337b7646fddc2dff4d1fc30e4a9120d0edec3f7eb293e8ead0e5d82f7a1f0"
+      },
+      "migrations": [
+        {
+          "from": "command-owner-activation-v1",
+          "to": "command-owner-activation-v1",
+          "kind": "identity"
+        }
+      ]
+    },
+    {
+      "family": "learning-contract-set",
+      "currentVersion": "learning-contract-set-v1",
+      "readableVersions": [
+        "learning-contract-set-v1"
+      ],
+      "readerId": "learning-contract-set-reader-v1",
+      "schema": {
+        "path": "learning/contracts/learning-contract-set-v1.schema.json",
+        "sha256": "cccfb62f00304d103d1824372cf8e4b28f808c2390638ba6750c475e2f26c90b"
+      },
+      "migrations": [
+        {
+          "from": "learning-contract-set-v1",
+          "to": "learning-contract-set-v1",
+          "kind": "identity"
+        }
+      ]
+    }
+  ],
+  "familyExtensions": [
+    {
+      "family": "fitness-result",
+      "baseReaderId": "fitness-result-reader-v1",
+      "addedReadableVersions": [
+        {
+          "version": "fitness-result-v2",
+          "schema": {
+            "path": "learning/contracts/fitness-result-v2.schema.json",
+            "sha256": "ae5c655b0b3f399f2f3e547a98b22d4f5b60d84af1f23f5de175ce49d2780e27"
+          },
+          "readerId": "fitness-result-reader-v2"
+        }
+      ],
+      "migrations": [
+        {
+          "from": "fitness-result-v2",
+          "to": "fitness-result-v2",
+          "kind": "identity"
+        }
+      ],
+      "baseCurrentVersion": "fitness-result-v1",
+      "emissionFallback": null
+    }
+  ]
+}

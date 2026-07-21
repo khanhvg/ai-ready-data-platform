@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/lab-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "version",
+    "lessonId",
+    "risk",
+    "profile",
+    "inputs",
+    "workspace",
+    "commands",
+    "starter",
+    "controlledFailure",
+    "stateMachine",
+    "reset",
+    "verify",
+    "solution",
+    "evidence",
+    "accessibility",
+    "remediation"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "lab-v1"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9.-]{0,63}$"
+    },
+    "lessonId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "risk": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "profile": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "inputs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      }
+    },
+    "workspace": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "commands": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      }
+    },
+    "starter": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "controlledFailure": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "stateMachine": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "reset": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "verify": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "solution": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "evidence": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "accessibility": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "remediation": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      }
+    }
+  }
+}

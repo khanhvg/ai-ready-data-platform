@@ -10,7 +10,11 @@ from .schema import LearningContractError
 
 def migrate_document(value: dict[str, Any], target_version: str) -> dict[str, Any]:
     edge = (value.get("schemaVersion"), target_version)
-    if edge not in {("private-v0", "private-v1"), ("private-v1", "private-v0")}:
+    if edge not in {
+        ("private-v0", "private-v1"), ("private-v1", "private-v0"),
+        ("private-migration-v0", "private-migration-v1"),
+        ("private-migration-v1", "private-migration-v0"),
+    }:
         raise LearningContractError("MIGRATION_EDGE_UNREGISTERED")
     migrated = copy.deepcopy(value)
     migrated["schemaVersion"] = target_version

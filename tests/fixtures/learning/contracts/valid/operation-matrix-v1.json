@@ -1,0 +1,182 @@
+{
+  "schemaVersion": "operation-matrix-v1",
+  "channels": [],
+  "operations": [
+    {
+      "operationId": "listLessons",
+      "method": "GET",
+      "path": "/v1/lessons",
+      "successStatus": 200,
+      "authorization": "bearer",
+      "idempotency": false,
+      "taxonomy": "Experience",
+      "processRole": "learning-contract-service",
+      "evidenceRule": "none"
+    },
+    {
+      "operationId": "getLesson",
+      "method": "GET",
+      "path": "/v1/lessons/{lessonId}",
+      "successStatus": 200,
+      "authorization": "bearer",
+      "idempotency": false,
+      "taxonomy": "Experience",
+      "processRole": "learning-contract-service",
+      "evidenceRule": "none"
+    },
+    {
+      "operationId": "getProgress",
+      "method": "GET",
+      "path": "/v1/progress",
+      "successStatus": 200,
+      "authorization": "bearer",
+      "idempotency": false,
+      "taxonomy": "Experience",
+      "processRole": "learning-contract-service",
+      "evidenceRule": "none"
+    },
+    {
+      "operationId": "getLessonProgress",
+      "method": "GET",
+      "path": "/v1/progress/{lessonId}",
+      "successStatus": 200,
+      "authorization": "bearer",
+      "idempotency": false,
+      "taxonomy": "Experience",
+      "processRole": "learning-contract-service",
+      "evidenceRule": "none"
+    },
+    {
+      "operationId": "createWorkspace",
+      "method": "POST",
+      "path": "/v1/labs/{labId}/workspaces",
+      "successStatus": 201,
+      "authorization": "bearer",
+      "idempotency": true,
+      "taxonomy": "Process",
+      "processRole": "learning-contract-service",
+      "evidenceRule": "none"
+    },
+    {
+      "operationId": "getWorkspace",
+      "method": "GET",
+      "path": "/v1/workspaces/{workspaceId}",
+      "successStatus": 200,
+      "authorization": "bearer",
+      "idempotency": false,
+      "taxonomy": "Experience",
+      "processRole": "learning-contract-service",
+      "evidenceRule": "none"
+    },
+    {
+      "operationId": "startWorkspaceOperation",
+      "method": "POST",
+      "path": "/v1/workspaces/{workspaceId}/operations",
+      "successStatus": 202,
+      "authorization": "bearer",
+      "idempotency": true,
+      "taxonomy": "Process",
+      "processRole": "learning-contract-service",
+      "evidenceRule": "none"
+    },
+    {
+      "operationId": "getOperation",
+      "method": "GET",
+      "path": "/v1/operations/{operationId}",
+      "successStatus": 200,
+      "authorization": "bearer",
+      "idempotency": false,
+      "taxonomy": "Experience",
+      "processRole": "learning-contract-service",
+      "evidenceRule": "none"
+    },
+    {
+      "operationId": "resetWorkspace",
+      "method": "POST",
+      "path": "/v1/workspaces/{workspaceId}/reset",
+      "successStatus": 200,
+      "authorization": "bearer",
+      "idempotency": true,
+      "taxonomy": "Process",
+      "processRole": "learning-contract-service",
+      "evidenceRule": "none"
+    },
+    {
+      "operationId": "verifyWorkspace",
+      "method": "POST",
+      "path": "/v1/workspaces/{workspaceId}/verify",
+      "successStatus": 200,
+      "authorization": "bearer",
+      "idempotency": true,
+      "taxonomy": "Process",
+      "processRole": "learning-contract-service",
+      "evidenceRule": "required"
+    },
+    {
+      "operationId": "getEvidence",
+      "method": "GET",
+      "path": "/v1/evidence/{evidenceId}",
+      "successStatus": 200,
+      "authorization": "bearer",
+      "idempotency": false,
+      "taxonomy": "Experience",
+      "processRole": "learning-contract-service",
+      "evidenceRule": "none"
+    },
+    {
+      "operationId": "listTools",
+      "method": "GET",
+      "path": "/v1/tools",
+      "successStatus": 200,
+      "authorization": "bearer",
+      "idempotency": false,
+      "taxonomy": "Experience",
+      "processRole": "learning-contract-service",
+      "evidenceRule": "none"
+    },
+    {
+      "operationId": "getTool",
+      "method": "GET",
+      "path": "/v1/tools/{toolId}",
+      "successStatus": 200,
+      "authorization": "bearer",
+      "idempotency": false,
+      "taxonomy": "Experience",
+      "processRole": "learning-contract-service",
+      "evidenceRule": "none"
+    },
+    {
+      "operationId": "queryDataProduct",
+      "method": "POST",
+      "path": "/v1/data-products/{productId}/queries",
+      "successStatus": 200,
+      "authorization": "bearer",
+      "idempotency": true,
+      "taxonomy": "Process",
+      "processRole": "learning-contract-service",
+      "evidenceRule": "none"
+    },
+    {
+      "operationId": "getLiveness",
+      "method": "GET",
+      "path": "/health/live",
+      "successStatus": 200,
+      "authorization": "public",
+      "idempotency": false,
+      "taxonomy": "Experience",
+      "processRole": "learning-contract-service",
+      "evidenceRule": "none"
+    },
+    {
+      "operationId": "getReadiness",
+      "method": "GET",
+      "path": "/health/ready",
+      "successStatus": 200,
+      "authorization": "public",
+      "idempotency": false,
+      "taxonomy": "Experience",
+      "processRole": "learning-contract-service",
+      "evidenceRule": "none"
+    }
+  ]
+}

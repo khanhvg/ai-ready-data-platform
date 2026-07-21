@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/progress-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "progressId", "actor", "lessonId", "lessonVersion", "labId", "labVersion", "contractSetSha256", "revision", "state", "events", "completion"],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "properties": {
+    "schemaVersion": {"const": "progress-v1"},
+    "progressId": {"$ref": "#/$defs/id"},
+    "actor": {"type": "object", "additionalProperties": false, "required": ["subjectId", "authContextSha256"], "properties": {"subjectId": {"$ref": "#/$defs/id"}, "authContextSha256": {"$ref": "#/$defs/sha256"}}},
+    "lessonId": {"$ref": "#/$defs/id"}, "lessonVersion": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"}, "labId": {"$ref": "#/$defs/id"}, "labVersion": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "contractSetSha256": {"$ref": "#/$defs/sha256"}, "revision": {"type": "integer", "minimum": 0}, "state": {"enum": ["not-started", "in-progress", "verified", "completed"]},
+    "events": {"type": "array", "maxItems": 256, "items": {"type": "object", "additionalProperties": false, "required": ["eventId", "kind", "revision"], "properties": {"eventId": {"$ref": "#/$defs/id"}, "kind": {"enum": ["start", "verify", "complete", "reset", "rollback"]}, "revision": {"type": "integer", "minimum": 0}}}},
+    "completion": {"anyOf": [{"type": "null"}, {"type": "object", "additionalProperties": false, "required": ["authority", "evidenceId", "revision"], "properties": {"authority": {"const": "learning-progress-authority-v1"}, "evidenceId": {"$ref": "#/$defs/id"}, "revision": {"type": "integer", "minimum": 1}}}]}
+  }
+}

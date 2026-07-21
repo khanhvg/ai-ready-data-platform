@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "lesson-v1",
+  "id": "promotion-trust",
+  "version": "1.0.0",
+  "title": "Promotion trust",
+  "summary": "Assess promotion evidence without inventing a common grain.",
+  "level": "mid",
+  "competencies": [
+    "decision-traceability",
+    "data-contracts"
+  ],
+  "outcome": "Explain why four independent evidence grains cannot prove campaign causality.",
+  "stakeholder": "Retail Operations Director | promotion decision trust",
+  "prerequisites": [
+    "golden-small-42"
+  ],
+  "prerequisiteChecks": [
+    "golden-runtime-read-only-required"
+  ],
+  "fr": [
+    "validate-four-grains"
+  ],
+  "nfr": [
+    "offline",
+    "bounded"
+  ],
+  "asr": [
+    "single-completion-authority"
+  ],
+  "architectureViews": [
+    "system-context",
+    "promotion-evaluation-dynamic"
+  ],
+  "decision": "insufficient-evidence/no-common-grain",
+  "patterns": [
+    "decision-evidence-bundle"
+  ],
+  "narrativeSteps": [
+    "frame",
+    "inspect",
+    "run",
+    "fail",
+    "trace",
+    "decide",
+    "reset",
+    "configure",
+    "verify",
+    "reflect"
+  ],
+  "lab": "promotion-trust-v1",
+  "evidence": [
+    "critical-assertions",
+    "decision-response"
+  ],
+  "reflection": "Which additive grain would support causal attribution?",
+  "accessibility": "keyboard-static-text-equivalent",
+  "remediation": [
+    "PROMOTION_COMMON_GRAIN_FORBIDDEN"
+  ],
+  "hints": [
+    "inspect-grains",
+    "compare-keys",
+    "state-limitation"
+  ]
+}

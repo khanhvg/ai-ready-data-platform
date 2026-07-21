@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from .schema import LearningContractError
+import jsonschema
+
+from .schema import ROOT, LearningContractError, read_document, read_regular_bytes
+from .canonical import parse_json
 
 
 EXPECTED_OPERATIONS = {
@@ -108,3 +111,31 @@ def validate_openapi_document(value: dict[str, Any], matrix: dict[str, Any]) -> 
         observed.add((operation_id, method, path, status))
     if observed != EXPECTED_OPERATIONS:
         raise LearningContractError("OPENAPI_OPERATION_DRIFT")
+    def walk(child: Any) -> None:
+        if isinstance(child, dict):
+            reference = child.get("$ref")
+            if isinstance(reference, str) and not (
+                reference.startswith("#/components/")
+                or reference == "./learning-platform-problem-details-v1.schema.json"
+            ):
+                raise LearningContractError("OPENAPI_REF_FORBIDDEN")
+            for nested in child.values():
+                walk(nested)
+        elif isinstance(child, list):
+            for nested in child:
+                walk(nested)
+    walk(value)
+
+
+def validate_shipped_openapi() -> None:
+    matrix = read_document(ROOT / "learning/contracts/operation-matrix-v1.json")
+    document = read_document(ROOT / "contracts/openapi/learning-platform-v1.yaml")
+    profile = parse_json(read_regular_bytes(ROOT / "contracts/openapi/learning-platform-openapi-profile-v1.schema.json"))
+    problem = parse_json(read_regular_bytes(ROOT / "contracts/openapi/learning-platform-problem-details-v1.schema.json"))
+    try:
+        jsonschema.Draft202012Validator.check_schema(profile)
+        jsonschema.Draft202012Validator.check_schema(problem)
+        jsonschema.Draft202012Validator(profile).validate(document)
+    except jsonschema.exceptions.JsonSchemaException as exc:
+        raise LearningContractError("OPENAPI_SCHEMA_INVALID") from exc
+    validate_openapi_document(document, matrix)
