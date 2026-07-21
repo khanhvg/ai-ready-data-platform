@@ -192,7 +192,10 @@ function commandVersion(program, args = ['--version']) {
 }
 
 function playwrightInventory(logPath) {
-  const report = JSON.parse(readFileSync(logPath, 'utf8'));
+  const output = readFileSync(logPath, 'utf8');
+  const reportStart = output.indexOf('{');
+  if (reportStart < 0) throw new Error('Playwright JSON report was not emitted');
+  const report = JSON.parse(output.slice(reportStart));
   const entries = report.suites.flatMap(suite => suite.specs).flatMap(spec => spec.tests.map(entry => ({
     title: spec.title,
     project: entry.projectName,
