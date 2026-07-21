@@ -1,0 +1,33 @@
+{
+  "schema": "fitness-result-v1",
+  "schemaVersion": "gate-a-review-rollback-v1",
+  "issue": 7,
+  "gate": "gate-a",
+  "candidate": "preview",
+  "fixtureKind": "synthetic-preview",
+  "resultStatus": "pass",
+  "candidateDisposition": null,
+  "numericScore": null,
+  "decisionGrade": false,
+  "issueComplete": false,
+  "opensBarrierB": false,
+  "runId": "gate-a-review-fix-20260721T013916Z",
+  "implementationInputSha": "0c73f4712c8ac7902042735ff1da96ef1e5285a3",
+  "testedTreeSha": "6ce2fc9d6af77ed9f9c722791811c6474973cf3b",
+  "startedAtUtc": "2026-07-21T01:48:20Z",
+  "endedAtUtc": "2026-07-21T01:48:25Z",
+  "lifecycle": {
+    "start": "pass",
+    "status": "pass",
+    "resetCheck": "pass",
+    "firstDown": "stopped",
+    "secondDown": "already-down",
+    "ownedProcessSurvived": false,
+    "port4174Free": true,
+    "locatorAbsent": true
+  },
+  "makeTargets": "12/12",
+  "diffCheck": "pass",
+  "rollbackResult": "pass",
+  "logSha256": "eabd7d2f53adae7ed1278572dd3d76a8195fcb6bb8c6c253b45a9ec5822e70b6"
+}

@@ -1,0 +1,84 @@
+node spikes/web/harness/scripts/authority-check.mjs --implementation-input "$IMPLEMENTATION_INPUT_SHA" --check authority
+{
+  "schema": "fitness-result-v1",
+  "issue": 7,
+  "gate": "gate-0",
+  "check": "authority",
+  "resultStatus": "pass",
+  "decisionGrade": false,
+  "issueComplete": false,
+  "opensBarrierB": false,
+  "failures": []
+}
+node spikes/web/harness/scripts/authority-check.mjs --implementation-input "$IMPLEMENTATION_INPUT_SHA" --check protected-hash
+{
+  "schema": "fitness-result-v1",
+  "issue": 7,
+  "gate": "gate-0",
+  "check": "protected-hash",
+  "resultStatus": "pass",
+  "decisionGrade": false,
+  "issueComplete": false,
+  "opensBarrierB": false,
+  "failures": []
+}
+node spikes/web/harness/scripts/authority-check.mjs --implementation-input "$IMPLEMENTATION_INPUT_SHA" --check toolchain
+{
+  "schema": "fitness-result-v1",
+  "issue": 7,
+  "gate": "gate-0",
+  "check": "toolchain",
+  "resultStatus": "pass",
+  "decisionGrade": false,
+  "issueComplete": false,
+  "opensBarrierB": false,
+  "failures": []
+}
+node spikes/web/harness/scripts/authority-check.mjs --implementation-input "$IMPLEMENTATION_INPUT_SHA" --check changed-path
+{
+  "schema": "fitness-result-v1",
+  "issue": 7,
+  "gate": "gate-0",
+  "check": "changed-path",
+  "resultStatus": "pass",
+  "decisionGrade": false,
+  "issueComplete": false,
+  "opensBarrierB": false,
+  "failures": []
+}
+node spikes/web/harness/scripts/authority-check.mjs --implementation-input "$IMPLEMENTATION_INPUT_SHA" --check security
+{
+  "schema": "fitness-result-v1",
+  "issue": 7,
+  "gate": "gate-0",
+  "check": "security",
+  "resultStatus": "pass",
+  "decisionGrade": false,
+  "issueComplete": false,
+  "opensBarrierB": false,
+  "failures": []
+}
+node spikes/web/harness/scripts/authority-check.mjs --implementation-input "$IMPLEMENTATION_INPUT_SHA" --check credential
+{
+  "schema": "fitness-result-v1",
+  "issue": 7,
+  "gate": "gate-0",
+  "check": "credential",
+  "resultStatus": "pass",
+  "decisionGrade": false,
+  "issueComplete": false,
+  "opensBarrierB": false,
+  "failures": []
+}
+node spikes/web/harness/scripts/authority-check.mjs --implementation-input "$IMPLEMENTATION_INPUT_SHA" --check non-copy
+{
+  "schema": "fitness-result-v1",
+  "issue": 7,
+  "gate": "gate-0",
+  "check": "non-copy",
+  "resultStatus": "pass",
+  "decisionGrade": false,
+  "issueComplete": false,
+  "opensBarrierB": false,
+  "failures": []
+}

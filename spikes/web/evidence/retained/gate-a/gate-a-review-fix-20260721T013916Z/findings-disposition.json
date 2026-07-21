@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "gate-a-review-findings-v1",
+  "issue": 7,
+  "runId": "gate-a-review-fix-20260721T013916Z",
+  "reviewTarget": "0c73f4712c8ac7902042735ff1da96ef1e5285a3..3dda654e0803ce0ecafd13f14e78c44ae5212f17",
+  "findings": [
+    {
+      "severity": "high",
+      "area": "secondary-button-contrast",
+      "status": "fixed",
+      "rootCause": "colored sections inherited white text while the secondary button declared only a white background",
+      "fix": "secondary buttons explicitly declare ink text plus contrasting hover and focus-visible states",
+      "verification": "WEB-A11Y-001 static logical assertions and 54/54 exact-tree suite"
+    },
+    {
+      "severity": "high",
+      "area": "radio-semantics",
+      "status": "fixed",
+      "rootCause": "two Act 6 radios omitted value attributes and exposed the browser default value on",
+      "fix": "all alternatives now use stable unique non-authoritative values",
+      "verification": "WEB-A11Y-002 unique-value assertions and 54/54 exact-tree suite"
+    },
+    {
+      "severity": "high",
+      "area": "explicit-action-state-parity",
+      "status": "fixed",
+      "rootCause": "the alternative-explicit DOM handler changed copy without invoking the canonical reducer or history commit",
+      "fix": "alternative-explicit commits Act 6 as exploring, records only its action name, clears the transient choice, and leaves conclusion, verify, evidence, score, completion, and mutation authority unchanged",
+      "verification": "WEB-STATE-001 restoration and non-persistence assertions plus journey vector"
+    },
+    {
+      "severity": "high",
+      "area": "superseded-attestation-consistency",
+      "status": "superseded-by-fresh-proof",
+      "rootCause": "the old verification record contained discoveryTreePass=false despite the correct immutable discovery tree, and the old RED result records used malformed UTC strings ending in .3NZ",
+      "fix": "old evidence remains immutable; this run freshly proves the discovery tree and uses valid ISO timestamps in a distinct attestation",
+      "verification": "discovery tree ed45ef287be3c0830466ae4a6b60a6bf22b1eb70 and hash-indexed review records"
+    }
+  ],
+  "additionalCriticalOrHighFindings": [],
+  "oldEvidenceRewritten": false,
+  "scopeExpanded": false
+}

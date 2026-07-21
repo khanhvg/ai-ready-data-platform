@@ -1,0 +1,32 @@
+{
+  "schema": "fitness-result-v1",
+  "schemaVersion": "gate-a-review-authority-v1",
+  "issue": 7,
+  "gate": "gate-a",
+  "candidate": "common",
+  "fixtureKind": "synthetic-preview",
+  "resultStatus": "pass",
+  "candidateDisposition": null,
+  "numericScore": null,
+  "decisionGrade": false,
+  "issueComplete": false,
+  "opensBarrierB": false,
+  "runId": "gate-a-review-fix-20260721T013916Z",
+  "implementationInputSha": "0c73f4712c8ac7902042735ff1da96ef1e5285a3",
+  "testedTreeSha": "6ce2fc9d6af77ed9f9c722791811c6474973cf3b",
+  "testedGitTree": "dc5b6f72cb673ef3597f3cbd6cccb4b2ddd21022",
+  "checks": {
+    "authority": "pass",
+    "protected": "pass",
+    "toolchain": "pass",
+    "changedPath": "pass",
+    "security": "pass",
+    "credential": "pass",
+    "nonCopy": "pass",
+    "discoveryTree": "pass",
+    "diffCheck": "pass",
+    "transientArtifactsFiles": 0
+  },
+  "discoveryTree": "ed45ef287be3c0830466ae4a6b60a6bf22b1eb70",
+  "logSha256": "6cdac141216f7abc587ff4f04931e6099fa82a026e7a5b12c2d91da59eabf735"
+}
