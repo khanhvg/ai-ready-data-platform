@@ -17,6 +17,7 @@ const SECOND_TARGETED_REVIEW_FIX_RED_SHA = '5264e3958a60f26e1663aa0bd940bf517652
 const THIRD_TARGETED_REVIEW_FIX_RED_SHA = '2febb813dce2e37b2af79c72e7608787fa210ae8';
 const FOURTH_TARGETED_REVIEW_FIX_RED_SHA = '47f32f863554b8286cbfa84ee2534687f73eb61b';
 const FIFTH_TARGETED_REVIEW_FIX_RED_SHA = 'adf79aee0f672a3c26604ea65624632d8ef9cd8c';
+const BUILT_OUTPUT_RULE_CONTEXT_RED_SHA = 'c5ec294ded082a0138096ad8dd851e2b7b0a117f';
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const relativePath = path => relative(ROOT, path).split(sep).join('/');
 const git = args => {
@@ -37,19 +38,23 @@ export function validateChangedPaths(paths, configuration = contract) {
   return paths.filter(path => path && !allowedPath(path, configuration));
 }
 
-export function scanText(text) {
-  const rules = {
-    privateKey: /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/i,
-    credential: /(?:api[_-]?key|client[_-]?secret|password|token)\s*[:=]\s*["'][^"']{8,}["']/i,
-    absolutePrivatePath: /\/(?:Users|home)\/[A-Za-z0-9._-]+\//,
-    email: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i,
-    phone: /(?:phone|mobile|telephone)\s*[:=]\s*["']?(?:\+?84|0)(?:[ .-]?\d){9}\b/i,
-    governmentIdentifier: /(?:citizen|national|government|identity|ssn)[_-]?(?:id|number)\s*[:=]\s*["']?\d{9,12}\b/i,
-    unsafeInjection: /dangerouslySetInnerHTML|\beval\s*\(|new\s+Function\s*\(|\.innerHTML\s*=/,
-    remoteImport: /(?:from\s*|import\s*\()\s*["']https?:\/\//,
-    sourceMap: /sourceMappingURL=|\.map(?:"|$)/,
-  };
-  return Object.entries(rules).filter(([, pattern]) => pattern.test(text)).map(([id]) => id);
+export const SCAN_RULES = Object.freeze({
+  privateKey: /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/i,
+  credential: /(?:api[_-]?key|client[_-]?secret|password|token)\s*[:=]\s*["'][^"']{8,}["']/i,
+  absolutePrivatePath: /\/(?:Users|home)\/[A-Za-z0-9._-]+\//,
+  email: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i,
+  phone: /(?:phone|mobile|telephone)\s*[:=]\s*["']?(?:\+?84|0)(?:[ .-]?\d){9}\b/i,
+  governmentIdentifier: /(?:citizen|national|government|identity|ssn)[_-]?(?:id|number)\s*[:=]\s*["']?\d{9,12}\b/i,
+  unsafeInjection: /dangerouslySetInnerHTML|\beval\s*\(|new\s+Function\s*\(|\.innerHTML\s*=/,
+  remoteImport: /(?:from\s*|import\s*\()\s*["']https?:\/\//,
+  sourceMap: /sourceMappingURL=|\.map(?:"|$)/,
+});
+export const AUTHORED_SOURCE_RULE_IDS = Object.freeze(Object.keys(SCAN_RULES));
+export const BUILT_OUTPUT_RULE_IDS = Object.freeze(AUTHORED_SOURCE_RULE_IDS.filter(id => id !== 'unsafeInjection'));
+
+export function scanText(text, { ruleIds = AUTHORED_SOURCE_RULE_IDS } = {}) {
+  if (!Array.isArray(ruleIds) || ruleIds.some(id => !Object.hasOwn(SCAN_RULES, id))) throw new Error('invalid scanner rule set');
+  return ruleIds.filter(id => SCAN_RULES[id].test(text));
 }
 
 export function scanBuiltOutput(root) {
@@ -92,7 +97,7 @@ export function scanBuiltOutput(root) {
             }
             const bytes = readFileSync(path);
             inventory.push({ path: locator, bytes: bytes.length, sha256: sha256(bytes) });
-            for (const finding of scanText(bytes.toString('utf8'))) findings.push({ path: locator, finding });
+            for (const finding of scanText(bytes.toString('utf8'), { ruleIds: BUILT_OUTPUT_RULE_IDS })) findings.push({ path: locator, finding });
           } else failures.push(`built-output-special-file:${locator}`);
         }
       };
@@ -112,6 +117,7 @@ export function scanBuiltOutput(root) {
     inventory,
     inventorySha256,
     contentCoverage: 'every-regular-file',
+    ruleIds: [...BUILT_OUTPUT_RULE_IDS],
     findings,
     failures: [...new Set(failures)].sort(),
   };
@@ -166,6 +172,7 @@ export function validateEvidenceManifest(manifest) {
   const builtOutput = manifest?.builtOutputSummary;
   if (closedRun && (!builtOutput || builtOutput.result !== 'pass' || builtOutput.requiredIndex !== true
       || !(builtOutput.inventoryCount > 0) || !/^[0-9a-f]{64}$/.test(builtOutput.inventorySha256 || '')
+      || JSON.stringify(builtOutput.ruleIds) !== JSON.stringify(BUILT_OUTPUT_RULE_IDS)
       || builtOutput.findings !== 0 || builtOutput.failures !== 0 || builtOutput.scannedBeforeCleanup !== true
       || scan?.builtOutputInventoryCount !== builtOutput.inventoryCount
       || scan?.builtOutputInventorySha256 !== builtOutput.inventorySha256)) failures.push('built-output-summary');
@@ -205,6 +212,12 @@ export function validateEvidenceManifest(manifest) {
       || !(fifthTargetedRed.rc > 0)
       || fifthTargetedRed.assertionIds?.length !== 3
       || fifthTargetedRed.log !== 'tdd/fifth-targeted-review-fix-red/focused-tests.tap')) failures.push('fifth-targeted-review-fix-red');
+  const ruleContextRed = manifest?.builtOutputRuleContextRed;
+  if (closedRun && (!ruleContextRed || ruleContextRed.result !== 'pass'
+      || ruleContextRed.sourceSha !== BUILT_OUTPUT_RULE_CONTEXT_RED_SHA
+      || !(ruleContextRed.rc > 0)
+      || ruleContextRed.assertionIds?.length !== 3
+      || ruleContextRed.log !== 'tdd/built-output-rule-context-red/focused-tests.tap')) failures.push('built-output-rule-context-red');
   return failures;
 }
 
@@ -571,7 +584,7 @@ async function execute(mode, implementationInput) {
     try {
       builtOutputScan = scanBuiltOutput(resolve(CANDIDATE, 'dist'));
     } catch {
-      builtOutputScan = { schemaVersion: 'i5-02-simple-vite-v3-built-output-scan-v1', result: 'fail', requiredIndex: false, inventory: [], inventorySha256: sha256(Buffer.from('[]')), contentCoverage: 'every-regular-file', findings: [], failures: ['built-output-scan-error'] };
+      builtOutputScan = { schemaVersion: 'i5-02-simple-vite-v3-built-output-scan-v1', result: 'fail', requiredIndex: false, inventory: [], inventorySha256: sha256(Buffer.from('[]')), contentCoverage: 'every-regular-file', ruleIds: [...BUILT_OUTPUT_RULE_IDS], findings: [], failures: ['built-output-scan-error'] };
     }
     inventory = builtOutputScan.inventory.map(({ path }) => path);
     writeFileSync(resolve(directory, 'built-output-scan.json'), `${JSON.stringify(builtOutputScan, null, 2)}\n`);
@@ -587,7 +600,7 @@ async function execute(mode, implementationInput) {
       && packageBefore === packageAfter && lockBefore === lockAfter && builtOutputScan?.result === 'pass';
   }
   const browserInventory = smoke?.rc === 0 ? playwrightInventory(resolve(directory, 'playwright.log')) : [];
-  const builtOutput = builtOutputScan ? { result: builtOutputScan.result, requiredIndex: builtOutputScan.requiredIndex, inventoryCount: builtOutputScan.inventory.length, inventorySha256: builtOutputScan.inventorySha256, findings: builtOutputScan.findings.length, failures: builtOutputScan.failures.length, evidence: 'built-output-scan.json' } : null;
+  const builtOutput = builtOutputScan ? { result: builtOutputScan.result, requiredIndex: builtOutputScan.requiredIndex, inventoryCount: builtOutputScan.inventory.length, inventorySha256: builtOutputScan.inventorySha256, ruleIds: builtOutputScan.ruleIds, findings: builtOutputScan.findings.length, failures: builtOutputScan.failures.length, evidence: 'built-output-scan.json' } : null;
   const summary = { schemaVersion: `i5-02-simple-vite-v3-${mode}-v1`, result: pass ? 'pass' : 'fail', runId: id, implementationInputSha: implementationInput, sourceSha: git(['rev-parse', 'HEAD']), testedTreeSha: treeSha(), authority, packageBefore, packageAfter, lockBefore, lockAfter, inventory, builtOutput, browserInventory, tools: { node: process.version, npm: commandVersion('npm'), chrome: commandVersion('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome') }, commands: results.map(({ name, command, rc, timedOut, durationMs }) => ({ name, command, rc, timedOut, durationMs })) };
   writeFileSync(resolve(directory, 'result.json'), `${JSON.stringify(summary, null, 2)}\n`);
   if (mode === 'gate') {
@@ -696,6 +709,16 @@ function fifthTargetedReviewFixRed() {
   return { directory, result };
 }
 
+function builtOutputRuleContextRed() {
+  const directory = resolve(RUNTIME, 'built-output-rule-context-red');
+  const resultPath = resolve(directory, 'result.json');
+  const logPath = resolve(directory, 'focused-tests.tap');
+  if (!existsSync(resultPath) || !existsSync(logPath)) throw new Error('built-output rule-context RED evidence is unavailable');
+  const result = JSON.parse(readFileSync(resultPath, 'utf8'));
+  if (result.result !== 'pass' || result.rc === 0 || result.sourceSha !== BUILT_OUTPUT_RULE_CONTEXT_RED_SHA || result.assertionIds?.length !== 3) throw new Error('built-output rule-context RED evidence is invalid');
+  return { directory, result };
+}
+
 function validateBuiltOutputRecord(record) {
   const failures = [];
   const inventory = record?.inventory;
@@ -713,6 +736,7 @@ function validateBuiltOutputRecord(record) {
     if (!inventory.some(({ path }) => path === 'index.html')) failures.push('built-output-record-index-inventory');
   }
   if (record?.contentCoverage !== 'every-regular-file') failures.push('built-output-record-coverage');
+  if (JSON.stringify(record?.ruleIds) !== JSON.stringify(BUILT_OUTPUT_RULE_IDS)) failures.push('built-output-record-rule-ids');
   if (!Array.isArray(record?.findings) || record.findings.length !== 0) failures.push('built-output-record-findings');
   if (!Array.isArray(record?.failures) || record.failures.length !== 0) failures.push('built-output-record-failures');
   return failures;
@@ -752,7 +776,7 @@ export function scanRun() {
   const blockingAxe = (browserEvidence.axe.violations ?? []).filter(({ impact }) => impact === 'critical' || impact === 'serious');
   const axe = browserEvidence.axe.testEngine?.name === 'axe-core' && blockingAxe.length === 0;
   const checks = [
-    { id: 'content-safety', result: findings.length || builtOutputFailures.length ? 'fail' : 'pass', details: { scannedRoots: roots.map(relativePath), builtOutput: { root: 'spikes/web/candidates/vite/dist', phase: 'before-cleanup', evidence: relativePath(builtOutputPath), inventoryCount: builtOutput?.inventory?.length ?? 0, inventorySha256: builtOutput?.inventorySha256 ?? null, validationFailures: builtOutputFailures }, ruleIds: ['privateKey', 'credential', 'absolutePrivatePath', 'email', 'phone', 'governmentIdentifier', 'unsafeInjection', 'remoteImport', 'sourceMap'] } },
+    { id: 'content-safety', result: findings.length || builtOutputFailures.length ? 'fail' : 'pass', details: { scannedRoots: roots.map(relativePath), builtOutput: { root: 'spikes/web/candidates/vite/dist', phase: 'before-cleanup', evidence: relativePath(builtOutputPath), inventoryCount: builtOutput?.inventory?.length ?? 0, inventorySha256: builtOutput?.inventorySha256 ?? null, ruleIds: builtOutput?.ruleIds ?? [], validationFailures: builtOutputFailures }, ruleIds: [...AUTHORED_SOURCE_RULE_IDS] } },
     { id: 'csp-document', result: documentCsp ? 'pass' : 'fail', details: { expected: EXPECTED_CSP } },
     { id: 'csp-response', result: responseCsp ? 'pass' : 'fail', details: { expected: EXPECTED_CSP } },
     { id: 'same-origin', result: sameOrigin ? 'pass' : 'fail', details: { allowedOrigin: 'http://127.0.0.1:4175', projects: browserEvidence.journey.map(({ project, requestOrigins }) => ({ project, requestOrigins })) } },
@@ -850,6 +874,7 @@ export function retainRun() {
   const thirdReviewFixRed = thirdTargetedReviewFixRed();
   const fourthReviewFixRed = fourthTargetedReviewFixRed();
   const fifthReviewFixRed = fifthTargetedReviewFixRed();
+  const ruleContextRed = builtOutputRuleContextRed();
   const green = latest('gate');
   const redResult = JSON.parse(readFileSync(resolve(red.directory, 'result.json'), 'utf8'));
   const greenResult = JSON.parse(readFileSync(resolve(green.directory, 'result.json'), 'utf8'));
@@ -860,8 +885,10 @@ export function retainRun() {
     && greenResult.builtOutput?.requiredIndex === builtOutputScan.requiredIndex
     && greenResult.builtOutput?.inventoryCount === builtOutputScan.inventory.length
     && greenResult.builtOutput?.inventorySha256 === builtOutputScan.inventorySha256
+    && JSON.stringify(greenResult.builtOutput?.ruleIds) === JSON.stringify(builtOutputScan.ruleIds)
     && contentSafety?.details?.builtOutput?.inventoryCount === builtOutputScan.inventory.length
     && contentSafety?.details?.builtOutput?.inventorySha256 === builtOutputScan.inventorySha256
+    && JSON.stringify(contentSafety?.details?.builtOutput?.ruleIds) === JSON.stringify(builtOutputScan.ruleIds)
     && contentSafety?.details?.builtOutput?.validationFailures?.length === 0;
   if (redResult.result !== 'pass' || greenResult.result !== 'pass' || scans.result !== 'pass'
       || validateBuiltOutputRecord(builtOutputScan).length || !builtOutputBinding) throw new Error('cannot retain failed RED/GREEN/scan');
@@ -874,6 +901,7 @@ export function retainRun() {
   mkdirSync(resolve(destination, 'tdd/third-targeted-review-fix-red'), { recursive: true });
   mkdirSync(resolve(destination, 'tdd/fourth-targeted-review-fix-red'), { recursive: true });
   mkdirSync(resolve(destination, 'tdd/fifth-targeted-review-fix-red'), { recursive: true });
+  mkdirSync(resolve(destination, 'tdd/built-output-rule-context-red'), { recursive: true });
   mkdirSync(resolve(destination, 'green'), { recursive: true });
   mkdirSync(resolve(destination, 'security'), { recursive: true });
   mkdirSync(resolve(destination, 'lifecycle'), { recursive: true });
@@ -893,6 +921,10 @@ export function retainRun() {
   for (const name of ['focused-tests.tap', 'result.json']) {
     const content = sanitize(readFileSync(resolve(fifthReviewFixRed.directory, name), 'utf8')).replace(/[ \t]+$/gm, '');
     writeFileSync(resolve(destination, 'tdd/fifth-targeted-review-fix-red', name), content);
+  }
+  for (const name of ['focused-tests.tap', 'result.json']) {
+    const content = sanitize(readFileSync(resolve(ruleContextRed.directory, name), 'utf8')).replace(/[ \t]+$/gm, '');
+    writeFileSync(resolve(destination, 'tdd/built-output-rule-context-red', name), content);
   }
   for (const name of ['focused-tests.tap', 'result.json']) {
     const content = sanitize(readFileSync(resolve(secondReviewFixRed.directory, name), 'utf8')).replace(/[ \t]+$/gm, '');
@@ -967,9 +999,9 @@ export function retainRun() {
     responseSha256: sha256(browserEvidence.response),
   };
   const scanSummary = { result: scans.result, findings: scans.findings.length, checks: scans.checkInventory?.length ?? 0, checkInventory: scans.checkInventory?.map(({ id, result }) => ({ id, result })) ?? [], builtOutputInventoryCount: builtOutputScan.inventory.length, builtOutputInventorySha256: builtOutputScan.inventorySha256, finalRetained: 'pass' };
-  const builtOutputSummary = { result: builtOutputScan.result, requiredIndex: builtOutputScan.requiredIndex, inventoryCount: builtOutputScan.inventory.length, inventorySha256: builtOutputScan.inventorySha256, findings: builtOutputScan.findings.length, failures: builtOutputScan.failures.length, scannedBeforeCleanup: true };
+  const builtOutputSummary = { result: builtOutputScan.result, requiredIndex: builtOutputScan.requiredIndex, inventoryCount: builtOutputScan.inventory.length, inventorySha256: builtOutputScan.inventorySha256, ruleIds: builtOutputScan.ruleIds, findings: builtOutputScan.findings.length, failures: builtOutputScan.failures.length, scannedBeforeCleanup: true };
   const ownedResourceSummary = { result: validateOwnership(ledger, { runId: green.runId }).length === 0 && rollback.result === 'pass' ? 'pass' : 'fail', serverCount: 1, port: ledger.port, cleanup: cleanup.result, rollbackSimulation: rollback.result };
-  const manifest = { schemaVersion: 'i5-02-simple-vite-v3-evidence-v1', acceptanceRevision: contract.acceptanceRevision, runId: green.runId, implementationInputSha: contract.implementationInputSha, testedSourceSha: greenResult.sourceSha, testedTreeSha: greenResult.testedTreeSha, branch: contract.branch, authorityMode: greenResult.authority.authorityMode, freshLiveHead: greenResult.authority.freshLiveHead, issue6IntegrationSha: contract.issue6IntegrationSha, fixtureIdentities: contract.fixtureIdentities, lockSha256: contract.lockSha256, tools: greenResult.tools, commands: greenResult.commands, browserInventory: browser, groups, redProvenance: { result: 'pass', testOnlySha: redResult.sourceSha, testedTreeSha: redResult.testedTreeSha }, targetedReviewFixRed: { result: reviewFixRed.result.result, sourceSha: reviewFixRed.result.sourceSha, rc: reviewFixRed.result.rc, assertionIds: reviewFixRed.result.assertionIds, log: 'tdd/review-fix-red/focused-tests.tap' }, secondTargetedReviewFixRed: { result: secondReviewFixRed.result.result, sourceSha: secondReviewFixRed.result.sourceSha, testedTreeSha: secondReviewFixRed.result.testedTreeSha, rc: secondReviewFixRed.result.rc, assertionIds: secondReviewFixRed.result.assertionIds, log: 'tdd/second-targeted-review-fix-red/focused-tests.tap' }, thirdTargetedReviewFixRed: { result: thirdReviewFixRed.result.result, sourceSha: thirdReviewFixRed.result.sourceSha, testedTreeSha: thirdReviewFixRed.result.testedTreeSha, rc: thirdReviewFixRed.result.rc, assertionIds: thirdReviewFixRed.result.assertionIds, log: 'tdd/third-targeted-review-fix-red/focused-tests.tap' }, fourthTargetedReviewFixRed: { result: fourthReviewFixRed.result.result, sourceSha: fourthReviewFixRed.result.sourceSha, testedTreeSha: fourthReviewFixRed.result.testedTreeSha, rc: fourthReviewFixRed.result.rc, assertionIds: fourthReviewFixRed.result.assertionIds, log: 'tdd/fourth-targeted-review-fix-red/focused-tests.tap' }, fifthTargetedReviewFixRed: { result: fifthReviewFixRed.result.result, sourceSha: fifthReviewFixRed.result.sourceSha, testedTreeSha: fifthReviewFixRed.result.testedTreeSha, rc: fifthReviewFixRed.result.rc, assertionIds: fifthReviewFixRed.result.assertionIds, log: 'tdd/fifth-targeted-review-fix-red/focused-tests.tap' }, evidenceClosureRedSha: EVIDENCE_CLOSURE_RED_SHA, testNameInventory, artifactLocators, axeSummary, noJsFacts, scanSummary, builtOutputSummary, ownedResourceSummary, audit: audit.metadata?.vulnerabilities, redaction: { result: 'pass', findings: [] }, cleanupRollback: rollback, limitations: ['Chromium and axe automation are not a full WCAG or screen-reader conformance claim.', 'Production accessibility and manual UAT remain deferred.'] };
+  const manifest = { schemaVersion: 'i5-02-simple-vite-v3-evidence-v1', acceptanceRevision: contract.acceptanceRevision, runId: green.runId, implementationInputSha: contract.implementationInputSha, testedSourceSha: greenResult.sourceSha, testedTreeSha: greenResult.testedTreeSha, branch: contract.branch, authorityMode: greenResult.authority.authorityMode, freshLiveHead: greenResult.authority.freshLiveHead, issue6IntegrationSha: contract.issue6IntegrationSha, fixtureIdentities: contract.fixtureIdentities, lockSha256: contract.lockSha256, tools: greenResult.tools, commands: greenResult.commands, browserInventory: browser, groups, redProvenance: { result: 'pass', testOnlySha: redResult.sourceSha, testedTreeSha: redResult.testedTreeSha }, targetedReviewFixRed: { result: reviewFixRed.result.result, sourceSha: reviewFixRed.result.sourceSha, rc: reviewFixRed.result.rc, assertionIds: reviewFixRed.result.assertionIds, log: 'tdd/review-fix-red/focused-tests.tap' }, secondTargetedReviewFixRed: { result: secondReviewFixRed.result.result, sourceSha: secondReviewFixRed.result.sourceSha, testedTreeSha: secondReviewFixRed.result.testedTreeSha, rc: secondReviewFixRed.result.rc, assertionIds: secondReviewFixRed.result.assertionIds, log: 'tdd/second-targeted-review-fix-red/focused-tests.tap' }, thirdTargetedReviewFixRed: { result: thirdReviewFixRed.result.result, sourceSha: thirdReviewFixRed.result.sourceSha, testedTreeSha: thirdReviewFixRed.result.testedTreeSha, rc: thirdReviewFixRed.result.rc, assertionIds: thirdReviewFixRed.result.assertionIds, log: 'tdd/third-targeted-review-fix-red/focused-tests.tap' }, fourthTargetedReviewFixRed: { result: fourthReviewFixRed.result.result, sourceSha: fourthReviewFixRed.result.sourceSha, testedTreeSha: fourthReviewFixRed.result.testedTreeSha, rc: fourthReviewFixRed.result.rc, assertionIds: fourthReviewFixRed.result.assertionIds, log: 'tdd/fourth-targeted-review-fix-red/focused-tests.tap' }, fifthTargetedReviewFixRed: { result: fifthReviewFixRed.result.result, sourceSha: fifthReviewFixRed.result.sourceSha, testedTreeSha: fifthReviewFixRed.result.testedTreeSha, rc: fifthReviewFixRed.result.rc, assertionIds: fifthReviewFixRed.result.assertionIds, log: 'tdd/fifth-targeted-review-fix-red/focused-tests.tap' }, builtOutputRuleContextRed: { result: ruleContextRed.result.result, sourceSha: ruleContextRed.result.sourceSha, testedTreeSha: ruleContextRed.result.testedTreeSha, rc: ruleContextRed.result.rc, assertionIds: ruleContextRed.result.assertionIds, log: 'tdd/built-output-rule-context-red/focused-tests.tap' }, evidenceClosureRedSha: EVIDENCE_CLOSURE_RED_SHA, testNameInventory, artifactLocators, axeSummary, noJsFacts, scanSummary, builtOutputSummary, ownedResourceSummary, audit: audit.metadata?.vulnerabilities, redaction: { result: 'pass', findings: [] }, cleanupRollback: rollback, limitations: ['Chromium and axe automation are not a full WCAG or screen-reader conformance claim.', 'Production accessibility and manual UAT remain deferred.'] };
   if (validateEvidenceManifest(manifest).length) throw new Error('generated manifest is invalid');
   writeFileSync(resolve(destination, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
   const finalScan = finalRetainedScan(destination);
