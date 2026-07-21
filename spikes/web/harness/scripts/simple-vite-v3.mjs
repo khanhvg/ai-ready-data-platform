@@ -550,7 +550,13 @@ function targetedReviewFixRed() {
 }
 
 function secondTargetedReviewFixRed() {
-  const directory = resolve(RUNTIME, 'second-targeted-review-fix-red');
+  let directory = resolve(RUNTIME, 'second-targeted-review-fix-red');
+  if (!existsSync(resolve(directory, 'result.json')) && existsSync(resolve(ROOT, contract.retentionIndex))) {
+    const retainedIndex = JSON.parse(readFileSync(resolve(ROOT, contract.retentionIndex), 'utf8'));
+    const manifestPath = resolve(ROOT, retainedIndex.manifest?.path || '');
+    if (sha256(readFileSync(manifestPath)) !== retainedIndex.manifest.sha256) throw new Error('second targeted review-fix retained manifest hash mismatch');
+    directory = resolve(dirname(manifestPath), 'tdd/second-targeted-review-fix-red');
+  }
   const resultPath = resolve(directory, 'result.json');
   const logPath = resolve(directory, 'focused-tests.tap');
   if (!existsSync(resultPath) || !existsSync(logPath)) throw new Error('second targeted review-fix RED evidence is unavailable');
