@@ -1,0 +1,12 @@
+618f4bf0dd1cd78dd5da84a2d8a91029acddd19f2185d6a1e191f9262e0d5375  plans/260721-009-privileged-local-runner/implementation-boundary-and-design.md
+64c5bc57dfd4d16a896e979fec646ce32654814510d355cd307a30be72f29242  plans/260721-009-privileged-local-runner/phase-01-characterize-seams-and-design-red-fixtures.md
+177e60a5ad2835c5031df0848738f123c4e0aa41d5d20f8e490cc11bce766deb  plans/260721-009-privileged-local-runner/phase-02-bind-released-issue-8-stage-a-contract.md
+b26c25ae72efad0e17d590b2118e2c1f137ac046987339285549096abe3c9517  plans/260721-009-privileged-local-runner/phase-03-write-transport-and-containment-red-suites.md
+bbcd91d2339f98c463a6655723c6eaa92379f1db873c24ac5edff0666138d29f  plans/260721-009-privileged-local-runner/phase-04-implement-fail-closed-runner-core.md
+48b9f8794657ee015899853b062cb9f456b7ff3c8c0bd041241c12d27656b0b4  plans/260721-009-privileged-local-runner/phase-05-implement-fencing-state-and-atomic-release.md
+e87fe471169dd1188db8c6b04a61b5ebc701a04f2ec7721e1b94337948934576  plans/260721-009-privileged-local-runner/phase-06-prove-s3-evidence-rollback-and-handoff.md
+544e37146c40fad63b651db84ec930f93a851a6f942070b7d3b74f665eea5c80  plans/260721-009-privileged-local-runner/plan.md
+cc2106f4c5e3ac384713330eb1d88e3a3f44fed015b60c85ef56300ad1ecfd8e  plans/260721-009-privileged-local-runner/planned-paths-and-admissions.md
+c9869385c385a0e3265604a6b39d1391aabddcc4848353a824a42d2b6c31c07b  plans/260721-009-privileged-local-runner/requirements-risk-threat-traceability.md
+d1a2733863db835578929bbe4672a1fdbb147e353a2e3494e022c51e0d1859e1  plans/260721-009-privileged-local-runner/validation/independent-validation-report.md
+b7b83ffbd3261c199bf27a7b2a669ef41a2f2befb45f5a08a9b1f48c37e4d8f7  plans/260721-009-privileged-local-runner/verification-evidence-and-rollback.md

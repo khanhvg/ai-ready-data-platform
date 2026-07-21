@@ -27,6 +27,8 @@ future schema, SHA, version, operation, type, or registry activation may be inve
 - Ancestry from implementation base and exact file/hash/schema/type-generation evidence.
 - Compatible runner command authority, operation matrix, state/idempotency/problem/CSRF rules,
   evidence owner/schema, and command-owner registry activation.
+- Exact readable/current version matrix, request-version placement, unknown-version refusal,
+  maximum serialized request admission, and no implicit fallback/downgrade behavior.
 - No modification or duplication of Issue #8-owned files.
 
 ## Related Code Files
@@ -48,8 +50,9 @@ until the released handoff resolves them through Issue #8 ownership.
 ## Tests Before
 
 1. Create mutation fixtures for wrong/missing SHA, non-ancestor release, changed contract bytes,
-   unknown schema version, stale generated types, absent operation, unexpected command, registry
-   still future, evidence owner mismatch, and backward-reader failure.
+   unknown/retired/duplicated/cross-command version, stale generated types, absent operation,
+   unexpected command/field/argument/environment key, registry still future, evidence owner
+   mismatch, oversized/ambiguous request framing, and backward-reader failure.
 2. Make every dependency fixture fail with one typed `RUNNER_DEPENDENCY_*` code before startup or
    workspace allocation.
 3. Assert no test reads a copied/fake contract under `apps/lab-runner/tests/fixtures`.
@@ -62,8 +65,10 @@ until the released handoff resolves them through Issue #8 ownership.
    implementation base. STOP on mismatch.
 3. Validate contract schemas/examples/migrations using Issue #8's own released commands.
 4. Verify the eight semantic runner commands and exact typed fields can be represented without
-   local extensions. Verify runner-authority operations, problem details, idempotency/correlation,
-   CSRF/auth rules, state transitions and I5-04 evidence.
+   local extensions. Verify the exact readable/current version set and negotiation rules with no
+   implicit default/range/downgrade. Verify runner-authority operations, problem details,
+   idempotency/correlation, CSRF/auth rules, finite request bounds, state transitions and I5-04
+   evidence.
 5. Verify the command-owner registry accepts only I5-04's three Make targets through its released
    activation seam and that physical evidence maps to `runner/<run-id>/`.
 6. Write only SHA/path/version/hash/generator references to `released-contract-lock.json`.

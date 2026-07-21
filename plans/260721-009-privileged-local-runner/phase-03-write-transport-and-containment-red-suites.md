@@ -29,6 +29,8 @@ conditions fail explicitly and cannot be converted to skips.
 - Assert zero process/operation/audit allocation for pre-admission request failures.
 - Assert base/protected/foreign state unchanged on every attack.
 - Retain a machine-readable RED manifest tied to exact Issue #6/#8/input SHAs.
+- Use every exact stable ID and pre-behavior oracle in the verification companion; prefixes or
+  dynamically assigned IDs are insufficient.
 
 ## Related Code Files
 
@@ -54,12 +56,13 @@ This phase is the tests-before phase. Each family must:
 1. Add pure policy/type/registry/property tests using Issue #8 bindings; unknown fields and command
    variants must fail before process resolution.
 2. Add UDS and explicit loopback-fallback tests for exact Host, absent Origin, auth, CSRF, Fetch
-   Metadata, content type, no CORS and browser-direct denial.
+   Metadata, content type/framing/body bounds, launch replay, no CORS and browser-direct denial.
 3. Add import/startup/entrypoint/env tests with canary modules/configs and an argv/env spy.
 4. Add descriptor/path/TOCTOU/base tests with barriers that swap parent, child, pointer and temp
    entries between check and use.
-5. Add CPU/RSS/disk/file/FD/process/output/descendant tests, including TERM-ignore and new-session
-   descendants, with no host-wide limit or kill primitive.
+5. Add CPU/RSS/disk/file/FD/process/output/descendant tests, including TERM-ignore, rapid
+   double-fork/reparent and new-session descendants, with no host-wide limit or kill primitive.
+   The suite must fail admission if Phase 1 did not prove a non-poll-only descendant mechanism.
 6. Add deterministic OS containment probes for network denial, base write denial, workspace write,
    required import and process cleanup.
 7. Add runner/runner, reset/export/verify, Make expert non-overlap and learner-targeted Airflow
