@@ -5,7 +5,7 @@ issue: 7
 acceptanceRevision: i5-02-acceptance-v2
 verdict: PASS_WITH_FIXES
 inputSha: ae9e2296b971c9134638e66c09302b516f8ad6e6
-validatedPlanOutputSha: PENDING_FIRST_VALIDATED_PLAN_COMMIT
+validatedPlanOutputSha: 763d37830307c9b5d09f575a27bd8a11f9bf0add
 publicationOutputSha: recorded-externally-because-a-commit-cannot-self-identify
 session: DE5D40FD-9DBB-4B97-85FA-C187E2B41313
 ---
@@ -32,6 +32,7 @@ browser/evidence execution, scoring, an ADR decision, PR creation, merge, or rel
 | Work context | `/Users/khanhvg/Documents/work/ai-ready-data-platform-issue-5-02-web-spike` |
 | Branch | `feature/issue-5-02-web-spike` |
 | Validation input | `ae9e2296b971c9134638e66c09302b516f8ad6e6` |
+| Validated plan output | `763d37830307c9b5d09f575a27bd8a11f9bf0add`; the following report-only publication commit records this non-self-referential SHA and is reported externally |
 | Local/tracking/fresh-live at start | all exactly validation input; clean; `+0/-0` |
 | Owner decision | `https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5035256304` |
 | Planner handoff | `https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5035613841`; `PLANNER_ONLY_NOT_VALIDATED` |
