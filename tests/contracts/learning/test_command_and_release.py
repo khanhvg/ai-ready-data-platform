@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import unittest
 
+from scripts.learning_contracts.check import release_documents
 from tests.contracts.learning import assert_invalid, fixture
 
 
@@ -22,3 +23,11 @@ class CommandReleaseBehaviorTest(unittest.TestCase):
         for value in vectors:
             with self.subTest(value=value):
                 assert_invalid(self, "I8-FITNESS-OWNER-180", "fitness", value, "FITNESS_RESULT_OWNER_VERSION_MISMATCH")
+
+    def test_release_model_is_complete_and_framework_neutral(self) -> None:
+        documents = release_documents()
+        self.assertEqual(len(documents), 22, f"I8-RELEASE-MODEL expected=22 actual={len(documents)}")
+        matrix = documents.get("learning/contracts/operation-matrix-v1.json", {})
+        self.assertEqual(len(matrix.get("operations", [])), 16)
+        self.assertEqual(matrix.get("channels"), [])
+        self.assertFalse(any("vite" in path.lower() or "asyncapi" in path.lower() for path in documents))

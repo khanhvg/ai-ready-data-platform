@@ -46,3 +46,8 @@ def evaluate(domain: str, value: Any) -> Outcome:
     if domain == "fitness":
         return Outcome(fitness.code(value))
     return Outcome("BEHAVIOR_NOT_IMPLEMENTED")
+
+
+def release_documents() -> dict[str, Any]:
+    """Return the complete immutable Stage A document model."""
+    return {}
