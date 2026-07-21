@@ -1,0 +1,6 @@
+views {
+  view c4_l3_runner of learning.runner {
+    title 'Privileged runner design boundary'
+    include bff, transport, policy, registry, workspace, state, verifier
+  }
+}

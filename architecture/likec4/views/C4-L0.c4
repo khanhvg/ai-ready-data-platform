@@ -1,0 +1,6 @@
+views {
+  view index {
+    title 'Learning and retail platform landscape'
+    include learner, operator, browser, learning, retail, identity, aws
+  }
+}

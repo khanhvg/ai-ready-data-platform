@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "golden-python-lock-metadata-v1",
+  "implementation": "cpython",
+  "pythonPolicy": ">=3.12,<3.13",
+  "platform": "darwin-arm64",
+  "validatedPatch": "3.12.3",
+  "directPins": [
+    "pip==26.1.1",
+    "faker==40.28.1",
+    "duckdb==1.5.4",
+    "dbt-core==1.11.12",
+    "dbt-adapters==1.24.4",
+    "dbt-duckdb==1.10.1",
+    "rfc8785==0.1.4"
+  ],
+  "compiler": {
+    "pip": "26.1.1",
+    "pipTools": "7.6.0",
+    "distributionCount": 8,
+    "lineCount": 40,
+    "lockSha256": "ece1d20658685e8673a98a12135e1680321f0c04e0f1ec35b5c30e15135a7bc4"
+  },
+  "application": {
+    "distributionCount": 56,
+    "lineCount": 840,
+    "lockSha256": "f41c727b39f99106f95b7937b2811e8d27db89d1d5106e9f1d9effd4403143d2",
+    "freezeAlgorithm": "sort pip freeze --all lines; LF join; one final LF",
+    "freezeSha256": "cdb87ed71e0996f90041371cc25138afa02d78b134cbdc4afe9c25baa6649bba"
+  },
+  "installPolicy": {
+    "requireHashes": true,
+    "onlyBinary": true,
+    "noDependencies": true,
+    "isolated": true,
+    "pipConfigFile": "/dev/null"
+  }
+}

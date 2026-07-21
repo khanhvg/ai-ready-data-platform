@@ -117,3 +117,5 @@ catalog-ingest: venv
 clean:
 	python3 -c "import pathlib, shutil; [shutil.rmtree(p, ignore_errors=True) for p in [pathlib.Path('$(VENV)'), pathlib.Path('transform/dbt/target'), pathlib.Path('transform/dbt/logs'), pathlib.Path('transform/dbt/dbt_packages'), pathlib.Path('serving/rill/.rill'), pathlib.Path('serving/rill/tmp')]]; [p.unlink(missing_ok=True) for pattern in ['data/raw/*.csv','serving/export/*.parquet','warehouse/*.duckdb','warehouse/*.duckdb.wal'] for p in pathlib.Path('.').glob(pattern)]; pathlib.Path('data/raw/manifest.json').unlink(missing_ok=True); pathlib.Path('transform/dbt/.user.yml').unlink(missing_ok=True)"
 	find . -name .DS_Store -type f -delete
+ISSUE_5_MAKE_FRAGMENTS := $(sort $(wildcard mk/issue-5/*.mk))
+-include $(ISSUE_5_MAKE_FRAGMENTS)

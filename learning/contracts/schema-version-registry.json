@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "schema-version-registry-v1",
+  "canonicalizationProfile": "rfc8785-jcs-v1",
+  "families": [
+    {
+      "family": "fitness-result",
+      "currentVersion": "fitness-result-v1",
+      "rollbackVersion": "fitness-result-v1",
+      "readerId": "fitness-result-reader-v1",
+      "readableVersions": [{"version": "fitness-result-v1", "schemaPath": "learning/contracts/fitness-result-v1.schema.json", "schemaSha256": "a104ad6330bcfc22bda0fb661fef96f067c09153da7dc2f306103e5f93a4ab6d"}],
+      "migrations": [{"from": "fitness-result-v1", "to": "fitness-result-v1", "kind": "identity"}]
+    },
+    {
+      "family": "golden-evidence",
+      "currentVersion": "golden-evidence-v1",
+      "rollbackVersion": "golden-evidence-v1",
+      "readerId": "golden-evidence-reader-v1",
+      "readableVersions": [{"version": "golden-evidence-v1", "schemaPath": "learning/contracts/golden-evidence-v1.schema.json", "schemaSha256": "cfb8e957abf2c624787e71e9ae6e2297b525f49d097bbb82e0d1c853c78fc068"}],
+      "migrations": [{"from": "golden-evidence-v1", "to": "golden-evidence-v1", "kind": "identity"}]
+    },
+    {
+      "family": "evidence-envelope",
+      "currentVersion": "golden-evidence-envelope-v1",
+      "rollbackVersion": "golden-evidence-envelope-v1",
+      "readerId": "evidence-envelope-reader-v1",
+      "readableVersions": [{"version": "golden-evidence-envelope-v1", "schemaPath": "learning/contracts/evidence-envelope-v1.schema.json", "schemaSha256": "5586e5fbfb7621a2c8a132068ac359f8b3ef6b13e62f8224916a9c8c0ece3e69"}],
+      "migrations": [{"from": "golden-evidence-envelope-v1", "to": "golden-evidence-envelope-v1", "kind": "identity"}]
+    },
+    {
+      "family": "retail-golden",
+      "currentVersion": "retail-golden-v1",
+      "rollbackVersion": "retail-golden-v1",
+      "readerId": "retail-golden-reader-v1",
+      "readableVersions": [{"version": "retail-golden-v1", "schemaPath": "learning/contracts/retail-golden-v1.schema.json", "schemaSha256": "d741261816c25e4e04f767d5475eac335de2eb24f9f0c2d5005c4cde4415eed5"}],
+      "migrations": [{"from": "retail-golden-v1", "to": "retail-golden-v1", "kind": "identity"}]
+    },
+    {
+      "family": "promotion-trust",
+      "currentVersion": "promotion-trust-v1",
+      "rollbackVersion": "promotion-trust-v1",
+      "readerId": "promotion-trust-reader-v1",
+      "readableVersions": [{"version": "promotion-trust-v1", "schemaPath": "learning/contracts/promotion-trust-v1.schema.json", "schemaSha256": "43fc68833237ef5b522f82fbbd18caba0f11e16bf66e0ff26cf44f0238c39871"}],
+      "migrations": [{"from": "promotion-trust-v1", "to": "promotion-trust-v1", "kind": "identity"}]
+    },
+    {
+      "family": "curated-release",
+      "currentVersion": "curated-release-manifest-v1",
+      "rollbackVersion": "curated-release-manifest-v1",
+      "readerId": "curated-release-reader-v1",
+      "readableVersions": [{"version": "curated-release-manifest-v1", "schemaPath": "contracts/data/curated-release-manifest.schema.json", "schemaSha256": "dcad3a4c04f44e207a26f985702db6926d4c85545d85ef5481faf036dded4e33"}],
+      "migrations": [{"from": "curated-release-manifest-v1", "to": "curated-release-manifest-v1", "kind": "identity"}]
+    },
+    {
+      "family": "promotion-trust-evidence",
+      "currentVersion": "promotion-trust-evidence-v1",
+      "rollbackVersion": "promotion-trust-evidence-v1",
+      "readerId": "promotion-trust-evidence-reader-v1",
+      "readableVersions": [{"version": "promotion-trust-evidence-v1", "schemaPath": "learning/contracts/promotion-trust-evidence-v1.schema.json", "schemaSha256": "aaf0777012fe2905d19ba7c0bc3cca1e72f9e67d448a4b4b6a8b33824db70dab"}],
+      "migrations": [{"from": "promotion-trust-evidence-v1", "to": "promotion-trust-evidence-v1", "kind": "identity"}]
+    },
+    {
+      "family": "promotion-trust-fixture-manifest",
+      "currentVersion": "promotion-trust-fixture-manifest-v1",
+      "rollbackVersion": "promotion-trust-fixture-manifest-v1",
+      "readerId": "promotion-trust-fixture-manifest-reader-v1",
+      "readableVersions": [{"version": "promotion-trust-fixture-manifest-v1", "schemaPath": "learning/contracts/promotion-trust-fixture-manifest-v1.schema.json", "schemaSha256": "82dc60e640b3f6d301bd739490b2928d88275926e26fb87e4457b7ff01a616bc"}],
+      "migrations": [{"from": "promotion-trust-fixture-manifest-v1", "to": "promotion-trust-fixture-manifest-v1", "kind": "identity"}]
+    }
+  ]
+}

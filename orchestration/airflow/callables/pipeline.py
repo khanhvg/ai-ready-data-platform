@@ -32,9 +32,8 @@ def _run(cmd: list[str], cwd: Path | None = None, extra_env: dict | None = None)
     return result.stdout
 
 
-def seed(scale: str = "small", seed: int = 42) -> None:
-    _run(
-        [
+def seed(scale: str = "small", seed: int = 42, raw_dir: Path | None = None) -> None:
+    cmd = [
             sys.executable,
             str(PROJECT_ROOT / "data-generator" / "generate.py"),
             "--profile",
@@ -42,19 +41,26 @@ def seed(scale: str = "small", seed: int = 42) -> None:
             "--seed",
             str(seed),
         ]
-    )
+    if raw_dir is not None:
+        cmd.extend(["--out", str(raw_dir)])
+    _run(cmd)
 
 
-def load_raw() -> None:
-    _run([sys.executable, str(PROJECT_ROOT / "ingestion" / "load_raw.py")])
+def load_raw(raw_dir: Path | None = None, duckdb_path: Path | None = None) -> None:
+    cmd = [sys.executable, str(PROJECT_ROOT / "ingestion" / "load_raw.py")]
+    if raw_dir is not None:
+        cmd.extend(["--raw-dir", str(raw_dir)])
+    if duckdb_path is not None:
+        cmd.extend(["--duckdb-path", str(duckdb_path)])
+    _run(cmd)
 
 
-def health_check() -> None:
+def health_check(duckdb_path: Path | None = None) -> None:
     """Assert the DuckDB file exists and the `raw` schema has tables, matching
     the check `make health` runs on the host."""
     import duckdb
 
-    duckdb_path = Path(os.environ.get("DUCKDB_PATH", str(PROJECT_ROOT / "warehouse" / "retail.duckdb")))
+    duckdb_path = duckdb_path or Path(os.environ.get("DUCKDB_PATH", str(PROJECT_ROOT / "warehouse" / "retail.duckdb")))
     if not duckdb_path.is_absolute():
         duckdb_path = PROJECT_ROOT / duckdb_path
     assert duckdb_path.exists(), f"DuckDB file missing: {duckdb_path}"
@@ -69,20 +75,47 @@ def health_check() -> None:
     print(f"OK: {duckdb_path} opens read-only, raw schema has {len(tables)} tables")
 
 
-def dbt_build() -> None:
-    _run(["dbt", "build"], cwd=DBT_PROJECT_DIR, extra_env={"DBT_PROFILES_DIR": str(DBT_PROJECT_DIR)})
+def dbt_build(
+    dbt_profiles_dir: Path | None = None,
+    dbt_target_path: Path | None = None,
+    dbt_log_path: Path | None = None,
+) -> None:
+    profiles_dir = dbt_profiles_dir or DBT_PROJECT_DIR
+    dbt_env = {"DBT_PROFILES_DIR": str(profiles_dir)}
+    if dbt_target_path is not None:
+        dbt_env["DBT_TARGET_PATH"] = str(dbt_target_path)
+    if dbt_log_path is not None:
+        dbt_env["DBT_LOG_PATH"] = str(dbt_log_path)
+    _run(["dbt", "build"], cwd=DBT_PROJECT_DIR, extra_env=dbt_env)
 
 
-def dbt_docs_generate() -> None:
+def dbt_docs_generate(
+    dbt_profiles_dir: Path | None = None,
+    dbt_target_path: Path | None = None,
+    dbt_log_path: Path | None = None,
+) -> None:
+    profiles_dir = dbt_profiles_dir or DBT_PROJECT_DIR
+    dbt_env = {"DBT_PROFILES_DIR": str(profiles_dir)}
+    if dbt_target_path is not None:
+        dbt_env["DBT_TARGET_PATH"] = str(dbt_target_path)
+    if dbt_log_path is not None:
+        dbt_env["DBT_LOG_PATH"] = str(dbt_log_path)
     _run(
         ["dbt", "docs", "generate"],
         cwd=DBT_PROJECT_DIR,
-        extra_env={"DBT_PROFILES_DIR": str(DBT_PROJECT_DIR)},
+        extra_env=dbt_env,
     )
 
 
-def export_marts_snapshot() -> None:
-    _run([sys.executable, str(PROJECT_ROOT / "serving" / "export_marts_snapshot.py")])
+def export_marts_snapshot(
+    duckdb_path: Path | None = None, export_dir: Path | None = None
+) -> None:
+    cmd = [sys.executable, str(PROJECT_ROOT / "serving" / "export_marts_snapshot.py")]
+    if duckdb_path is not None:
+        cmd.extend(["--duckdb-path", str(duckdb_path)])
+    if export_dir is not None:
+        cmd.extend(["--export-dir", str(export_dir)])
+    _run(cmd)
 
 
 def publish_iceberg() -> None:

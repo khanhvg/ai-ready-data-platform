@@ -1,0 +1,6 @@
+views {
+  view c4_l1 {
+    title 'Learning platform system context and evidence boundary'
+    include learner, operator, browser, learning, retail, identity
+  }
+}

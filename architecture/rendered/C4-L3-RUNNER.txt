@@ -1,0 +1,21 @@
+ID: C4-L3-RUNNER
+Title: Privileged runner design boundary
+Type: component
+Audience: security-reviewer
+Concern: privileged-execution-design-only
+Scope: isolated-runner
+Owner: I5-01
+Legend: C4 elements and labelled unidirectional relations
+
+Elements:
+- learning.runner.bff | component | BFF client | Sends authenticated execution requests | parent=none
+- learning.runner.policy | component | Policy chain | Applies command and workspace policy | parent=none
+- learning.runner.registry | component | Command registry | Resolves reviewed command ownership | parent=none
+- learning.runner.state | component | State and idempotency | Prevents duplicate transitions | parent=none
+- learning.runner.transport | component | Transport authentication | Authenticates the local transport | parent=none
+- learning.runner.verifier | component | Verifier and evidence | Checks outcomes and retains bounded evidence | parent=none
+- learning.runner.workspace | component | Workspace manager | Allocates marker-bound private state | parent=none
+
+Relations:
+
+Limitations: descriptive architecture only; future context is not implemented or a runtime dependency.
