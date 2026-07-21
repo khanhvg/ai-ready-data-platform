@@ -281,3 +281,15 @@ plan head. That auditor may decide whether a bounded Stage A cook is ready; it c
 without a real merged Issue #7 handoff and a newly amended/revalidated plan.
 
 `INDEPENDENT_VALIDATION_PASS_NOT_READINESS`
+
+## Post-Validation Readiness Note — 2026-07-22
+
+This report remains the historical record of candidate validation at
+`6e488a410081f12726375ca7aa2f27f62c0105cc`. The fresh staged-readiness audit subsequently found
+and corrected plan-only issues that validation did not close: fitness v2 now binds owner/command to
+a generic hash-bound activation instead of fixing another owner; its closed fields match the
+promised provenance/invocation/rollback record and provide a direct I5-04 consumption seam; one RED
+oracle now has an exact code; and the serialized cook has numeric runtime/output/disk/RSS ceilings
+plus an explicit locked-runtime precondition. The authoritative readiness result is
+`../audit/stage-a-readiness-audit-report.md`; no validation claim here independently grants cook or
+merge authority.

@@ -22,7 +22,8 @@ stage: "A"
 Add new, closed Issue #8 schema families and a framework-neutral Python reader/validator using the
 existing manifest-admitted Python 3.12, `jsonschema`, `rfc8785`, `PyYAML`, and strict Issue #6
 canonical profile. Every Issue #6 file remains immutable. An Issue #8-owned registry overlay adds
-`fitness-result-v2` only to the Issue #8 dispatcher and rejects every undeclared family collision.
+`fitness-result-v2` as a readable version, while a generic activation schema binds each emitting
+command to its real owner; every undeclared family or command collision is rejected.
 
 ## Requirements
 
@@ -34,9 +35,9 @@ canonical profile. Every Issue #6 file remains immutable. An Issue #8-owned regi
   integrity; no field dropping, coercion, Unicode normalization, YAML ambiguity or float shortcuts.
 - Functional: ordered first-error validation and exact closed field/semantic sets are normative in
   traceability; evidence locators are descriptor-bound and unsafe integers fail before JCS.
-- Compatibility: shipped `fitness-result-v1` has `owner: I5-01`; add v2 for `owner: I5-03`, retain
-  v1 schema/hash/evidence and the existing registry-driven reader, and never reinterpret a v1
-  document as v2.
+- Compatibility: shipped `fitness-result-v1` has `owner: I5-01`; add v2 with registry-bound owner/
+  command semantics, select it through the I5-03 activation instance, retain v1 schema/hash/
+  evidence and the existing registry-driven reader, and never reinterpret a v1 document as v2.
 - Non-functional: no new distribution, lock, runtime, framework, Node package or network fetch.
   Required runtime mismatch fails with typed remediation to establish the existing golden runtime.
 
@@ -58,9 +59,11 @@ Two Issue #8/Issue #6 registry roles are explicit:
 The Issue #8 dispatcher loads the immutable base plus the hash-bound overlay, rejects duplicate
 family/version/schema IDs except the one declared extension, validates each registered schema hash
 and identity edge, and never rewrites either document at runtime. New v1 families have v1 as
-current/readable/fallback plus identity reading. For I5-03 only, the extension adds v2 as the emit
-version and v1 as fallback/read-only compatibility; it does not change the base family current or
-claim that the unmodified Issue #6 reader understands v2. Rollback disables I5-03 emission while
+current/readable plus identity reading. The extension adds v2 as readable without changing the base
+family current or claiming that the unmodified Issue #6 reader understands v2. The generic
+activation schema requires an instance to match exact reserved base rows, owner, fragment and
+evidence version; the I5-03 instance selects v2 for its four commands. V1 remains read-only
+compatibility and is never an I5-03 emission fallback. Rollback disables I5-03 activation while
 retaining v2 schema/readability/evidence. Reversible private vectors exercise the migration engine
 without publishing a fictional v0.
 
@@ -81,9 +84,9 @@ without changing that module.
 | Create | `learning/contracts/operation-matrix-v1.schema.json` | operation metadata and coverage shape |
 | Create | `learning/contracts/promotion-trust-learning-manifest-v1.schema.json` | first manifest link/hash/grain contract |
 | Create | `learning/contracts/learning-contract-version-registry-v1.schema.json` | scoped family/version/hash/migration registry schema |
-| Create | `learning/contracts/learning-contract-version-registry-v1.json` | base-hash-bound owned families plus sole fitness-v2 extension/emit/fallback policy |
-| Create | `learning/contracts/fitness-result-v2.schema.json` | additive closed/bounded I5-03 result with fixed requested/toolchain/artifact shapes, JCS payload hash, `schemaVersion=v2`, `owner=I5-03` |
-| Create | `learning/contracts/command-owner-activation-i5-03-v1.schema.json` | closed activation overlay bound to the immutable command-registry hash |
+| Create | `learning/contracts/learning-contract-version-registry-v1.json` | base-hash-bound owned families plus sole fitness-v2 readable extension; no base/global emission change |
+| Create | `learning/contracts/fitness-result-v2.schema.json` | additive closed/bounded registry-owner-bound result with invocation/provenance/rollback fields and JCS payload hash |
+| Create | `learning/contracts/command-owner-activation-v1.schema.json` | generic closed activation schema bound to immutable reserved command rows |
 | Create | `scripts/learning_contracts/__init__.py` | module boundary |
 | Create | `scripts/learning_contracts/canonical.py` | strict parser/domain payload canonicalizer delegating to existing JCS profile |
 | Create | `scripts/learning_contracts/registry.py` | disjoint registry composition and migration graph |
@@ -155,7 +158,8 @@ offline validator for the observed contract set.
 ## Risk Assessment
 
 - Multiple registries can create two global “current” pointers. Mitigation: the base current stays
-  v1; the overlay uses an owner-scoped `emitVersion` for I5-03 and rejects every other overlap.
+  v1; the overlay only adds v2 readability, while owner-specific emission requires a hash-bound
+  activation instance and every undeclared overlap is rejected.
 - JSON Schema alone cannot enforce semantic uniqueness/acyclicity. Mitigation: required second
   semantic pass with mutation coverage.
 - Reimplementing JCS can drift. Mitigation: domain wrapper over the existing profile/library and
@@ -165,9 +169,9 @@ offline validator for the observed contract set.
 
 Reject remote refs, traversal, sensitive fields, schema-hash drift and unregistered migrations
 before dereference. Before publication, abandonment is limited to uncommitted Issue #8-owned
-changes. After release, rollback reselects the prior owner-scoped emit/fallback policy while
-retaining every released schema, reader and evidence record, including fitness v2; it never down-migrates owner
-identity or restores a registry by deleting its additive history.
+changes. After release, rollback disables the I5-03 activation while retaining every released
+schema, reader and evidence record, including fitness v2; it never emits owner-mismatched v1,
+down-migrates owner identity or restores a registry by deleting additive history.
 
 ## Next Steps
 

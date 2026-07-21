@@ -64,9 +64,11 @@ renderer, browser route, portal/runner implementation or completion mutation is 
 ### Evidence layers
 
 1. Learner evidence: `learning-evidence-v1`, immutable domain proof used by progress completion.
-2. Contract-check fitness evidence: additive `fitness-result-v2` for I5-03, stored under the issue
-   evidence root and proving commands/tools/SHAs/hashes/results; shipped v1 remains an I5-01
-   compatibility/blast-radius input.
+2. Contract-check fitness evidence: additive `fitness-result-v2`, selected for I5-03 by its exact
+   command activation and stored under the issue evidence root. It proves invocation, owner,
+   tools/SHAs/hashes/results/redaction/retention/rollback; shipped v1 remains an I5-01
+   compatibility/blast-radius input. Future reserved owners can consume v2 only through their own
+   matching activation instance.
 
 Both use strict I-JSON/RFC 8785/SHA-256 but are never interchangeable. The local digest provides
 corruption detection only. Hosted signing/key authority remains I5-14.
@@ -213,6 +215,11 @@ redactionClass, retentionClass, artifacts {relative locator, mediaType, size, sh
 rollback status/result, canonicalization profile, payloadSha256
 ```
 
+The v2 `invocation` object stores bounded public argv, canonical role-based child argv, an optional
+SHA-256 of actual private argv and a fixed working-directory role. It never stores an absolute
+private executable/workspace path. `owner` and `commandId` are accepted only when the exact active
+command row selects v2.
+
 Learner evidence additionally records the lesson/lab versions, local actor mode/ID, workspace/run/
 operation IDs, ordered transitions, verifier ID/hash, assertions, sanitized parameters and the
 referenced data/contract release. It must never contain tokens, environment dumps, PII canaries,
@@ -291,4 +298,5 @@ manifest version and evidence record; Issue #6 files/evidence stay intact.
 ## Next Steps
 
 Phase 5 builds public commands, compatibility/rollback proof and the candidate Stage A release
-handoff for independent validation/readiness—not an automatic merge authorization.
+handoff for independent exact-head implementation review and human pre-merge approval—not an
+automatic PR, merge or release authorization.

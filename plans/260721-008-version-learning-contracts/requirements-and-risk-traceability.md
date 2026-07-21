@@ -52,9 +52,9 @@ fields. Array item objects are equally closed and have explicit size/uniqueness 
 | `learning-evidence-v1` | `schemaVersion,evidenceId,lesson,lab,actor,workspaceId,runId,operationId,inputGitSha,officialGoldenMainSha,dependencyMergeShas,contractHashes,fixtureHashes,verifier,environment,parameters,transitions,commands,assertions,artifacts,timing,redactionClass,retentionClass,rollback,integrity` | strict provenance; relative descriptor-bound locators; artifact size/hash; last committed verified run only; payload-only JCS digest; no recursive/self/merge identity or authenticity claim |
 | `completion-reconciliation-v1` | `schemaVersion,authorityId,authorityVersion,idempotencyScope,commitPreconditions,commitOrder,uniqueConstraints,faultPoints,reconciliation,resets,conflicts` | `authorityId=learning-progress-authority-v1`; one CAS commit; deterministic attach/quarantine; no last-write-wins; no other writer emits completion |
 | `operation-matrix-v1` | `schemaVersion,apiVersion,channels,operations` | `channels` is exactly `[]`; exactly the 16 normative method/path/operationId rows; unique IDs/pairs; complete taxonomy, process role, authn/authz/CSRF, idempotency, request, response, error and evidence metadata |
-| `learning-contract-version-registry-v1` | `schemaVersion,baseRegistry,ownedFamilies,familyExtensions` | `baseRegistry={path:"learning/contracts/schema-version-registry.json",sha256:"8e18588f63b5d99c0b60a229758575e8badf0f055bfcb4f89908f9fa2684a57e"}`; disjoint owned families; exactly one extension `{family,baseReaderId,emitVersion,fallbackVersion,addedReadableVersions,migrations}` for `fitness-result`; v2 Issue #8 emit/read identity edge; v1 fallback; no base-current/reader mutation |
-| `fitness-result-v2` | `schemaVersion,commandId,owner,requested,status,failureCode,remediation,testedTreeSha,toolchain,lockSha256,startedAt,finishedAt,durationMs,rawLocator,projectionLocator,envelopeLocator,projectionSha256,artifacts,canonicalization,payloadSha256` | `owner=I5-03`; requested is closed `{lesson,evidenceLocator}` with nullable unused fields; toolchain is closed `{python,jsonschema,rfc8785,pyyaml}`; artifact items are closed `{locator,mediaType,size,sha256}`; locators are nullable or descriptor-safe relative; status/failure consistency; JCS payload digest excludes `payloadSha256` |
-| `command-owner-activation-i5-03-v1` | `schemaVersion,baseRegistryPath,baseRegistrySha256,commands` | exact immutable command registry path/hash; exactly four reserved I5-03 rows; implemented availability, I5-03 fragment and `fitness-result-v2`; no base-registry mutation |
+| `learning-contract-version-registry-v1` | `schemaVersion,baseRegistry,ownedFamilies,familyExtensions` | `baseRegistry={path:"learning/contracts/schema-version-registry.json",sha256:"8e18588f63b5d99c0b60a229758575e8badf0f055bfcb4f89908f9fa2684a57e"}`; disjoint owned families; exactly one extension `{family,baseReaderId,addedReadableVersions,migrations}` for `fitness-result`; v2 read/identity edge; v1 remains base-current/readable; no base-current, base-reader or emission-fallback mutation |
+| `fitness-result-v2` | `schemaVersion,commandId,owner,requested,status,failureCode,remediation,inputSha,testedTreeSha,dependencyMergeShas,contractHashes,fixtureHashes,schemaHashes,toolchain,lockSha256,invocation,startedAt,finishedAt,durationMs,rawLocator,projectionLocator,envelopeLocator,projectionSha256,artifacts,redactionClass,retentionClass,rollback,canonicalization,payloadSha256` | `owner` and `commandId` must match one active hash-bound command row whose evidence version is v2; requested is closed `{subjectType,subjectId,parameters}` where parameters is a sorted unique bounded array of closed `{name,valueType,value}` scalar entries; invocation is closed `{publicArgv,canonicalChildArgv,actualChildArgvSha256,cwdRole}` and never persists a private absolute argv; toolchain and hash inventories are sorted arrays of closed name/hash or name/version entries; artifacts are closed `{locator,mediaType,size,sha256}`; locators are nullable or descriptor-safe relative; status/failure/rollback consistency; JCS payload digest excludes `payloadSha256` |
+| `command-owner-activation-v1` | `schemaVersion,baseRegistryPath,baseRegistrySha256,owner,fragment,commands` | generic closed activation schema; every command must exactly match a reserved `future-owner` base row for the same owner/fragment and name one readable evidence version. The I5-03 instance contains exactly its four rows with `fitness-result-v2`; a later owner may add only an issue-owned activation instance, never edit this schema/base registry |
 | `learning-contract-set-v1` | `schemaVersion,setId,registry,contracts` | exact sorted Stage A contract paths/family/version/schema/content hashes; no own byte hash, tested/merge SHA or mutable evidence locator |
 | `promotion-trust-learning-manifest-v1` | `schemaVersion,manifestId,lesson,lab,evidenceSchema,dataContract,fixture,sources,decision,limitations,contractSetSha256` | four ordered independent grains; exact hashes; `insufficient-evidence/no-common-grain`; no cross-grain attribution |
 
@@ -82,7 +82,7 @@ Issue #8 registry overlay binds the immutable base-registry hash and carries the
 
 | Action | Exact tracked paths |
 |---|---|
-| Create — schemas/registries | `learning/contracts/lesson-v1.schema.json`; `learning/contracts/lab-v1.schema.json`; `learning/contracts/progress-v1.schema.json`; `learning/contracts/learning-evidence-v1.schema.json`; `learning/contracts/completion-reconciliation-v1.schema.json`; `learning/contracts/operation-matrix-v1.schema.json`; `learning/contracts/promotion-trust-learning-manifest-v1.schema.json`; `learning/contracts/learning-contract-version-registry-v1.schema.json`; `learning/contracts/learning-contract-version-registry-v1.json`; `learning/contracts/fitness-result-v2.schema.json`; `learning/contracts/command-owner-activation-i5-03-v1.schema.json`; `learning/contracts/command-owner-activation-i5-03-v1.json`; `learning/contracts/learning-contract-set-v1.schema.json`; `learning/contracts/learning-contract-set-v1.json` |
+| Create — schemas/registries | `learning/contracts/lesson-v1.schema.json`; `learning/contracts/lab-v1.schema.json`; `learning/contracts/progress-v1.schema.json`; `learning/contracts/learning-evidence-v1.schema.json`; `learning/contracts/completion-reconciliation-v1.schema.json`; `learning/contracts/operation-matrix-v1.schema.json`; `learning/contracts/promotion-trust-learning-manifest-v1.schema.json`; `learning/contracts/learning-contract-version-registry-v1.schema.json`; `learning/contracts/learning-contract-version-registry-v1.json`; `learning/contracts/fitness-result-v2.schema.json`; `learning/contracts/command-owner-activation-v1.schema.json`; `learning/contracts/command-owner-activation-i5-03-v1.json`; `learning/contracts/learning-contract-set-v1.schema.json`; `learning/contracts/learning-contract-set-v1.json` |
 | Create — contract instances/content | `learning/contracts/operation-matrix-v1.json`; `learning/contracts/completion-reconciliation-v1.json`; `learning/lessons/promotion-trust/lesson-v1.json`; `learning/labs/promotion-trust/lab-v1.json`; `learning/manifests/promotion-trust-v1.json`; `contracts/openapi/learning-platform-v1.yaml`; `contracts/openapi/learning-platform-openapi-profile-v1.schema.json`; `contracts/openapi/learning-platform-problem-details-v1.schema.json` |
 | Create — implementation | `scripts/learning_contracts/__init__.py`; `scripts/learning_contracts/canonical.py`; `scripts/learning_contracts/registry.py`; `scripts/learning_contracts/schema.py`; `scripts/learning_contracts/references.py`; `scripts/learning_contracts/state.py`; `scripts/learning_contracts/completion.py`; `scripts/learning_contracts/guidance.py`; `scripts/learning_contracts/openapi.py`; `scripts/learning_contracts/evidence.py`; `scripts/learning_contracts/runtime.py`; `scripts/learning_contracts/fitness.py`; `scripts/learning_contracts/check.py`; `mk/issue-5/i5-03.mk` |
 | Create — tests | `tests/contracts/learning/__init__.py`; `tests/contracts/learning/test_authority_and_stage_boundary.py`; `tests/contracts/learning/test_runtime_dependencies.py`; `tests/contracts/learning/test_schema_contracts.py`; `tests/contracts/learning/test_reference_integrity.py`; `tests/contracts/learning/test_state_and_completion.py`; `tests/contracts/learning/test_operation_matrix.py`; `tests/contracts/learning/test_prerequisite_and_hints.py`; `tests/contracts/learning/test_evidence_tamper.py`; `tests/contracts/learning/test_evidence_provenance.py`; `tests/contracts/learning/test_version_migrations.py`; `tests/contracts/learning/test_openapi_contract.py`; `tests/contracts/learning/test_promotion_trust_manifest.py`; `tests/contracts/learning/test_command_and_release.py` |
@@ -119,6 +119,43 @@ exact read-only public imports admitted above;
 cloud/AWS/Terraform; ignored runtime fixtures; `.artifacts/**` as tracked/staged content; unrelated
 user work. Read-only characterization does not grant mutation authority.
 
+### Serialized Cook and Execution Ceilings
+
+- One actor owns `feature/issue-5-03-learning-contracts` from the exact readiness output. Phases 1
+  through 5 run in order in one issue-owned worktree; there is no phase fan-out, parallel Make flag,
+  second shared-core writer or partial Stage A release.
+- Before Phase 1 tracked writes, the same worktree must contain a manifest-admitted Issue #6 golden
+  runtime with Python 3.12.3, lock SHA-256
+  `f41c727b39f99106f95b7937b2811e8d27db89d1d5106e9f1d9effd4403143d2`, freeze SHA-256
+  `cdb87ed71e0996f90041371cc25138afa02d78b134cbdc4afe9c25baa6649bba`, passing `pip check`, and
+  exact `jsonschema==4.26.0`, `rfc8785==0.1.4`, `PyYAML==6.0.3`. If absent, stop before RED. The
+  existing I5-01 `make golden-clean PROFILE=small SEED=42` may establish this generated runtime as
+  an explicit pre-cook dependency step; its lock-verified wheel download is not Stage A behavior.
+  All Stage A RED/GREEN/public checks then run with network and cloud credentials absent.
+- Every focused RED/GREEN subprocess has a 60-second monotonic deadline, 2 MiB stdout and 2 MiB
+  stderr live limits, and at most 16 MiB retained aggregate output. Public ceilings are 120 seconds
+  for `learning-contracts-check`, 60 seconds for `api-contracts-check` and `lesson-check`, 30 seconds
+  for `evidence-verify`, and the shipped 60 seconds for each I5-01 contract check. The exact
+  three-target primary invocation has a 300-second aggregate ceiling; the complete ordered Stage A
+  primary/blast/rollback sequence has a 600-second aggregate ceiling.
+- Stage A mutable workspace plus retained evidence is capped at 256 MiB per run and 2 GiB peak RSS.
+  A timeout, output/disk/RSS ceiling, missing runtime, missing tool or incomplete cleanup is a typed
+  failure. These are local admission ceilings, not product SLOs; any increase requires retained
+  measurement and a reviewed plan amendment.
+- The 121-path scope is fixture-heavy by design: 65 invalid fixtures plus 6 valid/index fixtures,
+  14 test modules, 13 implementation modules, 22 contract/content/OpenAPI files and one Make
+  fragment. All 121 paths form one coherent Stage A release; no subset is independently published.
+
+### Downstream Direct-Consumption Seam
+
+The release set exposes the exact version registry, generic activation schema, operation matrix,
+OpenAPI IDs, completion authority and evidence schemas/hashes. I5-04 can consume those JSON
+artifacts directly and publish an I5-04-owned activation instance for its already reserved base
+rows. Its commands then emit `fitness-result-v2` only when `owner`, `commandId`, fragment and
+evidence version match that activation. No `learning/contracts/**` edit, copied schema, guessed
+adapter or alternate canonicalizer is required; optional language bindings remain downstream
+generated artifacts and never become a public contract.
+
 ## Stable TDD RED Fixture and Failure Matrix
 
 Every row is created/indexed in Phase 1 and fails before the corresponding production file exists.
@@ -152,7 +189,7 @@ failure never satisfies RED.
 | `I8-STATE-ILLEGAL-120` | `tests/fixtures/learning/contracts/invalid/state/illegal-transition.json` | `STATE_TRANSITION_FORBIDDEN` |
 | `I8-STATE-STALE-121` | `tests/fixtures/learning/contracts/invalid/state/stale-version.json` | `PROGRESS_VERSION_CONFLICT` |
 | `I8-IDEMPOTENCY-CONFLICT-122` | `tests/fixtures/learning/contracts/invalid/state/idempotency-payload-conflict.json` | `IDEMPOTENCY_KEY_REUSE` with no mutation |
-| `I8-IDEMPOTENCY-DUPLICATE-123` | `tests/fixtures/learning/contracts/invalid/state/duplicate-effect.json` | assertion fails until the same committed result is returned with one effect |
+| `I8-IDEMPOTENCY-DUPLICATE-123` | `tests/fixtures/learning/contracts/invalid/state/duplicate-effect.json` | `IDEMPOTENCY_DUPLICATE_EFFECT` until the same committed result is returned with exactly one effect |
 | `I8-COMPLETION-FORGE-130` | `tests/fixtures/learning/contracts/invalid/completion/forged-browser-completion.json` | `COMPLETION_AUTHORITY_REQUIRED` |
 | `I8-COMPLETION-DUAL-131` | `tests/fixtures/learning/contracts/invalid/completion/operation-result-direct-write.json` | `COMPLETION_DUAL_TRUTH` |
 | `I8-COMPLETION-PRESENCE-134` | `tests/fixtures/learning/contracts/invalid/completion/evidence-presence-completes.json` | `COMPLETION_DUAL_TRUTH` |
@@ -198,7 +235,7 @@ failure never satisfies RED.
 | `I8-PROBE-OPTIONAL-177` | `tests/fixtures/learning/contracts/invalid/guidance/optional-unavailable-passes.json` | `PROBE_OPTIONAL_FALSE_PASS` |
 | `I8-HINT-REVEAL-178` | `tests/fixtures/learning/contracts/invalid/guidance/unauthorized-reveal.json` | `HINT_REVEAL_FORBIDDEN` |
 | `I8-OPENAPI-YAML-179` | `tests/fixtures/learning/contracts/invalid/openapi/duplicate-key.yaml` | `OPENAPI_YAML_DUPLICATE_KEY` before profile validation |
-| `I8-FITNESS-OWNER-180` | `generated-private` v1 result with `owner=I5-03` | `FITNESS_RESULT_OWNER_VERSION_MISMATCH`; resolved only by additive v2 |
+| `I8-FITNESS-OWNER-180` | `generated-private` v1 result with `owner=I5-03`, plus v2 owner/command/activation mismatches | `FITNESS_RESULT_OWNER_VERSION_MISMATCH`; resolved only by v2 whose owner, command and evidence version match the active row |
 | `I8-DEPS-IMPORT-181` | `generated-private` forbidden import/package/lock delta | `DEPENDENCY_IMPORT_UNADMITTED` |
 | `I8-DEPS-MANIFEST-182` | `generated-private` freeze/lock/manifest hash drift | `DEPENDENCY_MANIFEST_DRIFT` |
 | `I8-DEPS-ADVISORY-183` | `generated-private` missing/unreviewed inherited advisory disposition | `DEPENDENCY_ADVISORY_UNRESOLVED` |
@@ -231,7 +268,7 @@ failure never satisfies RED.
 | LC-020 | Contract release identities are exact external merge SHAs with independent exact-head review and human exact-head approval | A/5, B/6 | tested head = independently reviewed head = human-approved head; remotely observed merge identity/blob equality per repository flow | external issue/PR attestation |
 | LC-021 | All checks stay local, 16 GiB-safe and post-install offline | A/1-5, B/6 | no-network/no-cloud-credential run; no Docker/heavy profile; bounded time/output | environment/tool/resource fields |
 | LC-022 | No cloud/AWS/Terraform action or destructive migration exists in the command graph | All | command/source scan and subprocess spy | S3 negative-test result |
-| LC-023 | I5-03 fitness evidence is truthful despite shipped v1 being I5-01-only | A/1,2,5 | v1 owner mismatch RED; additive v2 schema/Issue #8 overlay; v1 reader/hash regression | fitness-version compatibility report |
+| LC-023 | I5-03 fitness evidence is truthful and later registered command owners can consume v2 without another shared-contract write | A/1,2,5 | v1 owner mismatch RED; v2 owner/command/activation mismatches; generic activation schema plus I5-03 instance; v1 reader/hash regression | fitness-version and downstream-consumption compatibility report |
 | LC-024 | OpenAPI wire semantics and compatibility are exact | A/3-4 | per-operation request/success/error/auth/idempotency table; `/v1` and body schema-version negatives | API compatibility report |
 | LC-025 | Dependency/advisory surface is bounded without inventing a tool | A/1-5 | exact lock/freeze/import/manifests unchanged; `pip check`; zero new distribution/import; inherited advisory disposition recorded | dependency inventory/advisory disposition |
 
@@ -273,9 +310,9 @@ failure never satisfies RED.
 | RK-13 | Vite consumer representation becomes a second schema/canonicalizer | Critical | any amended representation is limited to IDs/hashes; no copied schema/default/state logic; byte equality gates | Stage B drift suite |
 | RK-14 | Root Make or I5-01 target is overwritten | High | one issue fragment; command registry check; root/fragment hashes protected | changed-path report |
 | RK-15 | Contract release file recursively claims its own commit | High | tracked set contains content hashes only; release/merge SHA recorded externally | provenance check |
-| RK-16 | Staged Stage A merge is treated as planner authorization | Critical | explicit candidate-only wording; fresh validation/readiness and human exact-head approval remain mandatory | external gate attestations |
-| RK-17 | I5-03 emits invalid v1 fitness evidence because v1 fixes `owner: I5-01` | Critical | RED the mismatch; add v2 schema/Issue #8 overlay only; retain v1 and old readers | LC-023 report |
-| RK-18 | Reserved I5-03 commands remain labelled `future-owner` in the immutable command registry | High | retain base registry; add I5-03-owned activation overlay tied to its hash; `make help` already lists all four names; compose overlay only in I5-03 validation | command/activation report |
+| RK-16 | Readiness-authorized Stage A cook is mistaken for PR/merge authority or full Issue #8 completion | Critical | implementation-only wording; final independent exact-head review, repository checks, human approval and external merge identity remain mandatory; Stage B stays closed | external gate attestations |
+| RK-17 | I5-03 emits invalid v1 evidence or v2 owner becomes another hard-coded shared bottleneck | Critical | RED v1 and v2 owner/command mismatches; v2 owner is activation-bound; retain v1/readers; future owners add only issue-owned activation instances | LC-023 report |
+| RK-18 | Reserved I5-03 commands remain labelled `future-owner` in the immutable command registry | High | retain base registry; use the generic activation schema and I5-03-owned hash-bound instance; `make help` keeps the immutable snapshot view while the I5-03 validator composes activation | command/activation report |
 | RK-19 | YAML 1.1 coercion/duplicate keys make OpenAPI ambiguous | Critical | custom locked safe loader rejects non-JSON YAML features/duplicates and hashes normalized model | OpenAPI parser vectors |
 
 ## Command and Evidence Matrix

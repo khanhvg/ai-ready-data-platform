@@ -17,6 +17,11 @@ plannerBoundary: "PLANNER_ONLY_NOT_VALIDATED"
 validationInputSha: "93837667326cb7a298c21921ac04e602ea7313d0"
 validationBoundary: "INDEPENDENT_VALIDATION_PASS_NOT_READINESS"
 validationReport: "validation/independent-validation-report.md"
+readinessInputSha: "6e488a410081f12726375ca7aa2f27f62c0105cc"
+readinessBoundary: "STAGE_A_READINESS_PASS_NOT_IMPLEMENTATION"
+readinessReport: "audit/stage-a-readiness-audit-report.md"
+stageAReadiness: "ready-with-gates"
+stageBReadiness: "blocked-on-issue-7-merged-sha"
 ---
 
 # Issue #8: Version lesson, lab, progress, and evidence contracts
@@ -26,26 +31,29 @@ validationReport: "validation/independent-validation-report.md"
 Plan the full I5-03 contract release from the shipped Issue #6 integration input. Stage A creates
 the framework-neutral JSON Schema, validation, state, evidence, OpenAPI, migration, first-manifest,
 and Make surfaces. It also adds the minimum Issue #8-owned `fitness-result-v2` extension required
-because shipped `fitness-result-v1` is closed to `owner: I5-01`; the shipped registry, fixture and
-reader bytes remain unchanged.
+because shipped `fitness-result-v1` is closed to `owner: I5-01`. V2 binds `owner` to the active
+hash-bound command-activation row rather than another fixed owner, so I5-03 can emit truthfully and
+later command owners such as I5-04 can consume the released seam without another shared-contract
+write; the shipped registry, fixture and reader bytes remain unchanged.
 Stage B binds immutable Stage A outputs to the owner-selected web stack only after Issue #7
 publishes an accepted Vite ADR/handoff at an exact merged SHA.
 
-This directory is a planning artifact only. It does not validate or audit itself and authorizes no
-implementation, contract/config change, cook, PR, merge, label beyond the requested planning-state
-transition, cloud action, Terraform action, destructive migration, or synthetic human approval.
+This directory contains planning, independent-validation and staged-readiness artifacts only; it
+contains no implementation, contract or configuration change and does not validate or audit
+itself. The externally published readiness result authorizes only the exact serialized Stage A
+cook described below. It grants no PR, merge, release, Stage B/downstream cook, cloud action,
+Terraform action, destructive migration or synthetic human approval.
 
 ## Stage Decision
 
 | Stage | Scope | Dependency | Planner assessment |
 |---|---|---|---|
-| A — framework-neutral contract core | Phases 1-5 | Shipped Issue #6 input only | **Validated framework-neutral candidate, not readiness.** Independent validation confirms the corrected plan has no selected-framework, Issue #7 ADR-byte, portal/runner-internal, or future-SHA input. Only a fresh readiness audit may authorize a bounded cook/merge scope; implementation evidence, independent exact-head review, repository checks, and human exact-head approval still follow. |
+| A — framework-neutral contract core | Phases 1-5 | Shipped Issue #6 input only | **READY_WITH_GATES for one serialized Stage A TDD cook.** The fresh audit of `6e488a410081f12726375ca7aa2f27f62c0105cc` authorizes only the exact 121-path allow-list from the externally published audit output commit. One actor executes Phases 1-5 in order with no shared-core parallel writer. Implementation evidence, independent exact-head review, repository checks, and human exact-head approval still follow. |
 | B — selected-web-stack binding/handoff | Phase 6 | Exact merged Issue #7 Vite ADR/handoff SHA plus accepted Stage A contract release SHA | **Hard blocked and non-cookable.** Issue #7 is OPEN and unmerged at validation time. The owner’s Vite direction is not a merge SHA or accepted ADR. No placeholder adapter, guessed dependency path/hash/command, or future SHA is recorded. |
 
 Stage A merging, if later authorized, would not complete Issue #8 or automatically unblock any
-downstream issue. This validator decides plan correctness only. A fresh readiness audit is the next
-and only gate allowed to propose a bounded Stage A cook/merge scope; dependency owners separately
-decide downstream consumption.
+downstream issue. This readiness decision authorizes implementation only, not PR creation or merge.
+Dependency owners separately verify and pin the released Stage A SHA before downstream cook.
 
 ## Phases
 
@@ -64,6 +72,9 @@ decide downstream consumption.
   observed `origin/integration/issue-5-local-learning` Issue #6 handoff merge.
 - Immutable independent-validation input: `93837667326cb7a298c21921ac04e602ea7313d0`,
   proven equal to local HEAD, tracking and fresh live remote before validation edits.
+- Immutable staged-readiness input: `6e488a410081f12726375ca7aa2f27f62c0105cc`, proven
+  equal to local HEAD, tracking and fresh live remote before readiness edits. The non-recursive
+  implementation input is the externally published containing audit commit.
 - Issue #6 contract files, registry, readers, locks, Make fragment, and tracked promotion-trust
   fixtures are read-only inputs. Their exact bytes are captured in Phase 1 and must be unchanged by
   every stage.
@@ -129,10 +140,12 @@ absent. No Docker, AWS, Terraform, browser, or heavy profile is part of Stage A.
   `requirements/golden-*`, and `mk/issue-5/i5-01.mk` remain byte-for-byte read-only.
 - There is no protected-file exception. `learning-contract-version-registry-v1.json` is an
   Issue #8-owned additive overlay bound to shipped registry SHA-256
-  `8e18588f63b5d99c0b60a229758575e8badf0f055bfcb4f89908f9fa2684a57e`. It adds a fitness-v2
-  readable entry/current-for-I5-03/fallback-v1 policy for the Issue #8 dispatcher without changing
-  the shipped registry, global current version, Issue #6 schema/reader/fixture/command registry,
-  lock, Make file or canonicalization byte.
+  `8e18588f63b5d99c0b60a229758575e8badf0f055bfcb4f89908f9fa2684a57e`. It adds fitness v2 as a
+  readable version without changing the base current version. The generic
+  `command-owner-activation-v1` schema plus the I5-03 activation instance bind emission to the
+  exact base-registry row, owner, fragment and evidence version. V1 is readable compatibility, not
+  an I5-03 emission fallback. No shipped registry, schema, reader, fixture, lock, Make or
+  canonicalization byte changes.
 - Root `Makefile` already includes `mk/issue-5/*.mk`; Issue #8 must not edit it or duplicate the
   I5-01-owned `evidence-contracts-check` target.
 - Protected deny-list: `release-manifest.json`, `docs/code-standards.md`, `.gitignore`, raw
@@ -145,9 +158,12 @@ absent. No Docker, AWS, Terraform, browser, or heavy profile is part of Stage A.
 - New families start at v1. Do not publish a fictional predecessor. The reader/migration engine is
   exercised with private reversible vectors; every future released version must retain old readers
   and explicit additive migration edges.
-- The existing `fitness-result` family is the one deliberate non-new family: v2 is required for
-  truthful `owner: I5-03` evidence because v1 fixes `owner: I5-01`. V1 stays readable and unchanged;
-  rollback disables I5-03 emission while retaining both v1/v2 schemas, readability and evidence.
+- The existing `fitness-result` family is the one deliberate non-new family: v2 is required because
+  v1 fixes `owner: I5-01`. V2 is closed and registry-bound: `owner`, `commandId`, fragment and
+  evidence version must match one active command row. The I5-03 activation selects v2 for its four
+  commands; a later owner may publish only its own hash-bound activation instance against the same
+  released schema. V1 stays readable and unchanged. Rollback disables the I5-03 activation while
+  retaining both v1/v2 schemas, readability and evidence; it never falls back to emitting v1.
 - A lossy migration, field drop, registry-family collision, canonical-byte change, or need to edit
   an Issue #6 contract is a STOP requiring a new version and authority decision.
 - `STAGE_A_CONTRACT_RELEASE_SHA` and the final contract release SHA are externally recorded remote
@@ -187,8 +203,17 @@ absent. No Docker, AWS, Terraform, browser, or heavy profile is part of Stage A.
 - Reconciled stale references: recorded in the validation report.
 - Unresolved contradictions: 0.
 
+### Staged Readiness — 2026-07-22
+
+- Trigger: fresh independent staged-readiness audit of exact input
+  `6e488a410081f12726375ca7aa2f27f62c0105cc`.
+- Result: `STAGE_A_READY_WITH_GATES`; four plan-only readiness defects fixed and zero unresolved.
+- Boundary: `STAGE_A_READINESS_PASS_NOT_IMPLEMENTATION`; Stage B remains hard-blocked.
+- Evidence: [the Stage A readiness audit](./audit/stage-a-readiness-audit-report.md).
+
 ## Next Gate
 
-Fresh staged readiness audit only. Validation establishes a corrected framework-neutral candidate;
-it grants no cook, PR, merge, release or downstream authority. Stage B remains non-cookable until a
-real merged Issue #7 Vite ADR/handoff SHA exists and this plan is amended/revalidated against it.
+Serialized Stage A TDD cook only, from the exact externally published readiness output commit and
+under the audit report's gates. This grants no PR, merge, release or downstream cook authority.
+Stage B remains non-cookable until a real merged Issue #7 Vite ADR/handoff SHA exists and this plan
+is amended, independently revalidated and freshly readiness-audited against it.

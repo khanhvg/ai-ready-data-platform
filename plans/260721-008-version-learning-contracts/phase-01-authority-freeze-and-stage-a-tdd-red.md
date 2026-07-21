@@ -37,7 +37,10 @@ credential, or heavy profile.
   no product/config/contracts beyond the future allow-list.
 - Authority: implementation does not begin from this planner commit merely because it exists. A
   fresh independent validation and fresh readiness audit must publish the exact implementation
-  head and explicitly decide Stage A cookability.
+  input and explicitly decide Stage A cookability.
+- Authority: the readiness-authorized implementation branch is
+  `feature/issue-5-03-learning-contracts`, created once from the externally published audit output.
+  One actor executes Phases 1-5 serially; no phase fan-out or second shared-core worktree is allowed.
 
 ## Architecture
 
@@ -108,11 +111,16 @@ RED acceptance:
 
 ## Implementation Steps
 
-1. Fresh-fetch and compare the future implementation branch’s local, upstream and live remote
-   full SHA. Verify required ancestry and clean status.
+1. Prove the future implementation branch/worktree is absent, create it once from the externally
+   published readiness output, push that unchanged branch with upstream tracking, then fresh-fetch
+   and compare local, upstream and live remote full SHA. Verify required ancestry, clean status and
+   the sole shared-core lease.
 2. Verify the fresh readiness output explicitly authorizes either full I5-03 or bounded Stage A,
    names the exclusive lease, exact paths, tests and rollback, and has not been superseded.
-3. Hash every tracked Issue #6 contract, reader, lock, Make fragment and promotion-trust fixture;
+3. Before tracked RED writes, verify the manifest-admitted Issue #6 golden runtime and exact
+   package/freeze/lock identities from traceability. If absent, stop; only the existing I5-01
+   `make golden-clean PROFILE=small SEED=42` pre-cook dependency step may establish it. Then hash
+   every tracked Issue #6 contract, reader, lock, Make fragment and promotion-trust fixture;
    record `docs/code-standards.md` absent/present state without changing it.
 4. Prove the root Make wildcard already exposes issue fragments and that every I5-03 public target
    has one registry owner while `evidence-contracts-check` remains I5-01-owned.

@@ -22,14 +22,14 @@ stage: "A"
 Close all Stage A RED assertions, expose the registered Issue #8 commands through its disjoint Make
 fragment, prove backward reading and Issue #6 immutability, run the full local blast radius, and
 produce a non-recursive Stage A contract-set/evidence handoff. Then stop for fresh independent
-validation/readiness. This phase assesses whether Stage A is a merge candidate; it does not approve
-or merge it.
+exact-head implementation review and human pre-merge approval. The current readiness authorizes
+one serialized Stage A cook; this phase does not approve a PR or merge.
 
 ## Requirements
 
-- Functional: one bounded check runner emits `fitness-result-v2` with `owner: I5-03` on pass/fail
-  and validates the new learning-contract release, OpenAPI and promotion manifest. Shipped v1
-  remains unchanged/readable for I5-01.
+- Functional: one bounded check runner emits `fitness-result-v2` with the I5-03 owner/command values
+  proven by its activation row on pass/fail and validates the new learning-contract release,
+  OpenAPI and promotion manifest. Shipped v1 remains unchanged/readable for I5-01.
 - Functional: public targets exactly match the immutable I5-03 ownership reservations plus their
   hash-bound activation overlay; no root Make edit and no duplicate I5-01
   `evidence-contracts-check` recipe.
@@ -60,8 +60,9 @@ The runner locates a previously verified manifest-admitted Issue #6 golden envir
 
 The immutable `command-owner-registry-v1.json` already lists all four I5-03 command names and
 owners, so `make help` remains name/owner discovery-compatible. Because those rows truthfully described the
-Issue #6 snapshot as `future-owner`, Stage A adds
-`command-owner-activation-i5-03-v1.json`: a closed overlay containing base command-registry SHA-256
+Issue #6 snapshot as `future-owner`, Stage A adds the reusable
+`command-owner-activation-v1.schema.json` plus `command-owner-activation-i5-03-v1.json`, a closed
+instance containing base command-registry SHA-256
 `a94ac86bda0b70643edef9f144a59d8753d91f963b83d22cd510adbc31970e80`, the
 four exact rows, `availability=implemented`, the I5-03 fragment hash and `fitness-result-v2`. I5-03
 checks compose that overlay; the Issue #6 registry/help reader stays byte-for-byte unchanged.
@@ -73,8 +74,10 @@ check runner must validate the overlay as the sole I5-03 availability/evidence-v
 
 - New v1 is the first released version of each Issue #8 family; no fictional v0 is tracked.
 - `fitness-result-v2` is an Issue #8-owned extension of the existing family, not a new v1: it
-  retains the base v1 schema/hash/reader unchanged, is selected only by the Issue #8 dispatcher,
-  represents I5-03 truthfully and is never down-converted to v1.
+  retains the base v1 schema/hash/reader unchanged, binds its owner/command/version to a validated
+  activation row, represents I5-03 truthfully and is never down-converted to v1. This generic v2
+  seam lets later reserved command owners activate it through issue-owned instances without a
+  shared schema/registry edit.
 - Private migration vectors prove the engine can traverse a lossless edge and reject loss/cycles.
 - Future version admission must add a schema, readable-version/identity edge and any genuinely
   required additive reader support, keep every prior version readable, provide lossless rollback or
@@ -93,7 +96,7 @@ check runner must validate the overlay as the sole I5-03 availability/evidence-v
 | Create | `learning/contracts/command-owner-activation-i5-03-v1.json` | exact base-command-registry-bound activation of four reserved I5-03 rows |
 | Create | `scripts/learning_contracts/check.py` | bounded suite dispatch and result production |
 | Create | `scripts/learning_contracts/runtime.py` | read-only manifest-admitted runtime discovery/freeze check |
-| Create | `scripts/learning_contracts/fitness.py` | closed I5-03 `fitness-result-v2` pass/fail builder; v1 regression reader stays external/read-only |
+| Create | `scripts/learning_contracts/fitness.py` | closed activation-bound `fitness-result-v2` pass/fail builder; v1 regression reader stays external/read-only |
 | Create | `mk/issue-5/i5-03.mk` | four I5-03 recipes only |
 | Modify | `learning/contracts/learning-contract-version-registry-v1.json` | add learning contract-set and command-activation families after their schemas stabilize |
 | Modify | `tests/contracts/learning/test_command_and_release.py` | close owner/activation/recipe/set/provenance/changed-path/rollback RED IDs |
@@ -152,10 +155,20 @@ Then:
 Required missing runtime/tool/evidence is `fail`; no `not-run-optional` applies to Stage A. No
 Docker, browser, Node install, data generation, service, AWS or Terraform command runs.
 
+### Numeric command and resource ceilings
+
+The runner enforces the traceability ceilings: focused subprocesses 60 seconds with 2 MiB per
+stream and 16 MiB retained aggregate; `learning-contracts-check` 120 seconds;
+`api-contracts-check` and `lesson-check` 60 seconds each; `evidence-verify` 30 seconds; the exact
+primary invocation 300 seconds; the full ordered primary/blast/rollback sequence 600 seconds. One
+run may use at most 256 MiB mutable workspace/evidence and 2 GiB peak RSS. Commands run sequentially
+without a parallel Make flag. Any ceiling breach fails and retains bounded diagnostics.
+
 ### Exact rollback rehearsal
 
-Tracked rollback is a reviewed owner-scoped emit/fallback selection change, never file deletion of a
-released schema/reader/evidence record. Runtime cleanup first enumerates the marker-bound Issue #8
+Tracked rollback is a reviewed I5-03 activation-disable change, never owner-mismatched v1 emission
+or file deletion of a released schema/reader/evidence record. Runtime cleanup first enumerates the
+marker-bound Issue #8
 run manifest, verifies root device/inode/nonce, refuses symlink/hardlink/special-file/foreign marker
 or any path outside `.artifacts/{workspaces,evidence}/learning-contracts/<run-id>/`, and removes only
 listed mutable workspace bytes. Committed/failure evidence is retained. The rehearsal places
@@ -176,19 +189,21 @@ are forbidden.
 6. Run rollback and Stage A dependency-independence proofs.
 7. Produce a sanitized Stage A handoff report in generated evidence containing input/tested tree,
    schema/fixture/contract-set hashes, commands/tools, protected result and rollback result.
-8. Stop. A fresh readiness auditor decides whether any Stage A cook scope is allowed. After
-   implementation, at least one fresh independent exact-head read-only review and a separate human
-   exact-head pre-merge approval are mandatory before PR merge; neither may be synthesized.
+8. Stop. The readiness-authorized cook is complete, but no PR or merge is authorized. At least one
+   fresh independent exact-head read-only implementation review and a separate human exact-head
+   pre-merge approval are mandatory before PR merge; neither may be synthesized.
 
 ## Stage A Independent-Merge Decision Record
 
-Planner answer: **Stage A can be an independently merged candidate in principle**, because every
-planned input is present at the shipped Issue #6 integration and every planned output is
-framework-neutral. This is conditional, not authorization. Before any staged merge, all must hold:
+Readiness answer: **Stage A is authorized for one serialized cook and can become an independently
+merged candidate**, because every planned input is present at the shipped Issue #6 integration and
+every planned output is framework-neutral. This is implementation authority only. Before any
+staged merge, all must hold:
 
-- this independent validation proves the corrected plan and zero Issue #7/framework/portal-runner-
-  internal byte use; it does not authorize implementation;
-- fresh readiness explicitly authorizes Stage A’s exact files, commands, branch/head and rollback;
+- independent validation plus the fresh readiness report prove the corrected plan, exact scope and
+  zero Issue #7/framework/portal-runner-internal byte use;
+- the externally published readiness output exactly matches the implementation input and remains
+  the sole Stage A authority;
 - implementation evidence passes at one exact clean head and at least one fresh independent
   exact-head read-only review passes unconditionally;
 - repository-required checks and a repository-authorized human approve that exact head;
@@ -196,7 +211,8 @@ framework-neutral. This is conditional, not authorization. Before any staged mer
 - Issue #8 remains incomplete and Stage B/downstream authorization stays blocked unless separately
   cleared.
 
-Any missing condition means “not cookable/mergeable yet,” not a planner waiver.
+Any missing post-cook condition means “not mergeable/releasable yet,” not a readiness waiver or a
+reason to extend the bounded cook.
 
 ## Success Criteria
 
@@ -207,7 +223,8 @@ Any missing condition means “not cookable/mergeable yet,” not a planner waiv
   overlay and release set are closed and non-recursive.
 - [ ] No framework/ADR bytes, network/cloud credentials, new runtime or heavy service are needed.
 - [ ] Rollback preserves retained evidence and Issue #6 state.
-- [ ] Stage A handoff says candidate-only and names fresh validation/readiness/human gates.
+- [ ] Stage A handoff says implementation-complete/not-merge-authorized and names independent
+  exact-head review plus human exact-head gates.
 
 ## Risk Assessment
 
@@ -221,7 +238,7 @@ Any missing condition means “not cookable/mergeable yet,” not a planner waiv
 ## Security and Rollback
 
 Sanitize bounded stdout/stderr before evidence publication. Rollback uses only marker-verified
-Issue #8 generated roots and a reviewed owner-scoped selection switch; never broad delete/reset,
+Issue #8 generated roots and a reviewed I5-03 activation-disable change; never broad delete/reset,
 fixture rewrite, old-reader deletion or protected-path mutation.
 
 ## Next Steps
