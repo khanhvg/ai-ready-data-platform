@@ -8,9 +8,12 @@ The binding current revision is
 [owner selected Vite + React](https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5036142177).
 It passed independent validation with fixes from exact input
 `d79ce5638e4a47c5c0963bba1a546448bc0c0ea6` and fresh readiness from exact input
-`aa93dfac5cd4a5f4d351ad045b634bbd42254902`. Only the readiness publication output may become
-`IMPLEMENTATION_INPUT_SHA`; `serialized-simple-tdd-cook` is the next phase. V3 replaces all prior
-v2 blocking/readiness/cook/comparison scope. The owner selection is unscored.
+`aa93dfac5cd4a5f4d351ad045b634bbd42254902`. Exact implementation input
+`4cfd01f891655670b5a43a362b1567bcaaf4a824` produced a 7/7 cook pass at tested source
+`9b12de130ee5e2f68b7c351d9a736a33017173fa` and tested tree
+`75302b2cf968573329f419ccb90a7e3b5b810bdc`; see the
+[retained manifest](../../spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/manifest.json).
+V3 replaces all prior v2 blocking/readiness/cook/comparison scope. The owner selection is unscored.
 
 ## V3 Blocking Acceptance Matrix
 
@@ -29,9 +32,11 @@ non-scoring; missing/skipped/partial evidence is failure.
 
 ## Release Governance Conditions — Not a Test Group
 
-Contemporaneous RED and S3 evidence are outputs of the seven groups. Two prerequisite independent
-reviews must pass before ADR-005 becomes Accepted/Vite; the ADR head then receives two fresh
-independent exact-head reviews. Any repository-configured PR checks, repository-authorized human
+Contemporaneous RED and S3 evidence are outputs of the seven groups. The
+[owner clarification](https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5036722007)
+removed prerequisite reviews before cook. ADR-005 becomes Accepted/Vite on the passing cook
+evidence, and the pushed cook head then receives two fresh independent exact-head reviews. Any
+repository-configured PR checks, repository-authorized human
 approval of that same head, and pristine post-merge rerun remain release conditions; v3 creates no
 CI context. If no configured CI workflow or required context exists, record
 `CI_ABSENT_EXTERNAL_GATE`; absence does not block local cook or PR creation and does not authorize

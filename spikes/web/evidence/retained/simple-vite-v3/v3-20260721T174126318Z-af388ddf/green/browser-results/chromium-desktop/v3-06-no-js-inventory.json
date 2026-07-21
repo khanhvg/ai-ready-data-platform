@@ -1,0 +1,58 @@
+{
+  "responseBytes": 6416,
+  "csp": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'",
+  "inventory": [
+    {
+      "id": "lesson-entry",
+      "text": "Bài học đại diện: độ tin cậy của khuyến mãi\n\nTRACKED REAL FIXTURE — UNSCORED — CANNOT COMPLETE\n\nCan this promotion headline be trusted?\n\nKhảo sát có giới hạn này giữ từng nguồn ở đúng mức hạt và không đưa ra khẳng định nhân quả."
+    },
+    {
+      "id": "grain-promotion",
+      "text": "promo_name × channel"
+    },
+    {
+      "id": "grain-promotion-limitation",
+      "text": "Promotion aggregates cannot identify fulfillment, returns, or data-quality causes."
+    },
+    {
+      "id": "grain-fulfillment",
+      "text": "carrier × region_name"
+    },
+    {
+      "id": "grain-fulfillment-limitation",
+      "text": "No shared key permits attribution to a promotion."
+    },
+    {
+      "id": "grain-returns",
+      "text": "reason × category_name × region_name"
+    },
+    {
+      "id": "grain-returns-limitation",
+      "text": "No shared key permits attribution to a promotion."
+    },
+    {
+      "id": "grain-data-quality",
+      "text": "scenario"
+    },
+    {
+      "id": "grain-data-quality-limitation",
+      "text": "Scenario evidence is independent and does not establish a cause."
+    },
+    {
+      "id": "lesson-conclusion",
+      "text": "insufficient-evidence"
+    },
+    {
+      "id": "lesson-reason",
+      "text": "no-common-grain"
+    },
+    {
+      "id": "no-js-reset-limitation",
+      "text": "Without JavaScript, reset is unavailable; all facts remain in their baseline state."
+    },
+    {
+      "id": "reflection-prompt",
+      "text": "Reflection: What additional common-grain evidence would be needed before making a causal claim?"
+    }
+  ]
+}

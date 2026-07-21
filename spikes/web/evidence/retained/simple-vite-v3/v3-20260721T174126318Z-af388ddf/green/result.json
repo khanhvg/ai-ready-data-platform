@@ -1,0 +1,175 @@
+{
+  "schemaVersion": "i5-02-simple-vite-v3-gate-v1",
+  "result": "pass",
+  "runId": "v3-20260721T174126318Z-af388ddf",
+  "implementationInputSha": "4cfd01f891655670b5a43a362b1567bcaaf4a824",
+  "sourceSha": "9b12de130ee5e2f68b7c351d9a736a33017173fa",
+  "testedTreeSha": "75302b2cf968573329f419ccb90a7e3b5b810bdc",
+  "authority": {
+    "result": "pass",
+    "failures": [],
+    "changedPaths": [
+      "docs/decisions/0005-web-stack.md",
+      "docs/decisions/evidence/adr-0005-web-stack-scorecard.json",
+      "docs/decisions/evidence/adr-0005-web-stack-scorecard.md",
+      "mk/issue-5/i5-02.mk",
+      "plans/260721-007-web-stack-representative-lesson/acceptance-and-test-matrix.md",
+      "plans/260721-007-web-stack-representative-lesson/plan.md",
+      "plans/260721-007-web-stack-representative-lesson/simple-vite-acceptance-amendment-v3.md",
+      "spikes/web/candidates/vite/index.html",
+      "spikes/web/candidates/vite/package.json",
+      "spikes/web/candidates/vite/playwright.config.mjs",
+      "spikes/web/candidates/vite/src/lesson-contract.mjs",
+      "spikes/web/candidates/vite/src/main.jsx",
+      "spikes/web/candidates/vite/src/styles.css",
+      "spikes/web/candidates/vite/tests/promotion-trust-contract.test.mjs",
+      "spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs",
+      "spikes/web/candidates/vite/vite.config.mjs",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/green/browser-results/.last-run.json",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/green/build.log",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/green/harness.log",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/green/install.log",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/green/playwright.log",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/green/response-index.html",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/green/result.json",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/green/unit.log",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/hash-index.json",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/lifecycle/owned-resources.json",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/lifecycle/rollback.json",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/manifest.json",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/security/npm-audit.json",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/security/scans.json",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/tdd/red/playwright.log",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/tdd/red/result.json",
+      "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T171755885Z-e3a03518/tdd/red/unit.log",
+      "spikes/web/evidence/retention-index-v3.json",
+      "spikes/web/harness/scripts/simple-vite-v3.mjs",
+      "spikes/web/harness/simple-vite-v3.json",
+      "spikes/web/harness/tests/simple-vite-v3.test.mjs"
+    ]
+  },
+  "packageBefore": "c80eab653ba83702e37dc41d19f18408714863bbb4c5e4d5d7e2da66a7f1b871",
+  "packageAfter": "c80eab653ba83702e37dc41d19f18408714863bbb4c5e4d5d7e2da66a7f1b871",
+  "lockBefore": "96feead881be424d4c0d8d4629d7da0312722a3d7c945d08ed071542ea5d443c",
+  "lockAfter": "96feead881be424d4c0d8d4629d7da0312722a3d7c945d08ed071542ea5d443c",
+  "inventory": [
+    "assets/index-CyUjUUcQ.js",
+    "assets/index-Dr8sqhZi.css",
+    "index.html"
+  ],
+  "browserInventory": [
+    {
+      "title": "@desktop-only V3-05 one whole-page axe scan",
+      "project": "chromium-desktop",
+      "status": "expected",
+      "retries": 0
+    },
+    {
+      "title": "@desktop-only V3-06 real JavaScript-disabled response and DOM fallback",
+      "project": "chromium-desktop",
+      "status": "expected",
+      "retries": 0
+    },
+    {
+      "title": "@journey V3-03 V3-04 representative promotion-trust journey",
+      "project": "chromium-desktop",
+      "status": "expected",
+      "retries": 0
+    },
+    {
+      "title": "@journey V3-03 V3-04 representative promotion-trust journey",
+      "project": "chromium-narrow",
+      "status": "expected",
+      "retries": 0
+    }
+  ],
+  "tools": {
+    "node": "v22.22.3",
+    "npm": "10.9.8",
+    "chrome": "Google Chrome 150.0.7871.129"
+  },
+  "commands": [
+    {
+      "name": "install",
+      "command": [
+        "npm",
+        "--prefix",
+        "spikes/web/candidates/vite",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "rc": 0,
+      "timedOut": false,
+      "durationMs": 858.461209
+    },
+    {
+      "name": "build",
+      "command": [
+        "npm",
+        "--prefix",
+        "spikes/web/candidates/vite",
+        "run",
+        "build"
+      ],
+      "rc": 0,
+      "timedOut": false,
+      "durationMs": 1785.93075
+    },
+    {
+      "name": "unit",
+      "command": [
+        "npm",
+        "--prefix",
+        "spikes/web/candidates/vite",
+        "run",
+        "test:unit"
+      ],
+      "rc": 0,
+      "timedOut": false,
+      "durationMs": 235.5575
+    },
+    {
+      "name": "harness",
+      "command": [
+        "node",
+        "--test",
+        "spikes/web/harness/tests/simple-vite-v3.test.mjs"
+      ],
+      "rc": 0,
+      "timedOut": false,
+      "durationMs": 97.298125
+    },
+    {
+      "name": "playwright",
+      "command": [
+        "npm",
+        "--prefix",
+        "spikes/web/candidates/vite",
+        "run",
+        "test:smoke",
+        "--",
+        "--workers=1",
+        "--retries=0"
+      ],
+      "rc": 0,
+      "timedOut": false,
+      "durationMs": 7055.937042
+    },
+    {
+      "name": "npm-audit",
+      "command": [
+        "npm",
+        "--prefix",
+        "spikes/web/candidates/vite",
+        "audit",
+        "--audit-level=high",
+        "--json"
+      ],
+      "rc": 0,
+      "timedOut": false,
+      "durationMs": 733.630083
+    }
+  ]
+}

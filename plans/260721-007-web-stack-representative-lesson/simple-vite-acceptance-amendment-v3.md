@@ -1,7 +1,7 @@
 ---
 title: "Issue #7 Simple Vite Acceptance Amendment v3"
 description: "Tests-first plan for the owner-selected Vite candidate using seven minimal acceptance tests and exact-head release governance."
-status: ready-with-gates
+status: cook-pass-awaiting-final-reviews
 priority: P1
 issue: 7
 branch: "feature/issue-5-02-web-spike"
@@ -13,9 +13,14 @@ validationInputSha: "d79ce5638e4a47c5c0963bba1a546448bc0c0ea6"
 validationReport: "validation/simple-vite-independent-validation-report-v3.md"
 readinessAuditInputSha: "aa93dfac5cd4a5f4d351ad045b634bbd42254902"
 readinessAuditReport: "audit/simple-vite-readiness-audit-report-v3.md"
-nextPhase: "serialized-simple-tdd-cook"
+nextPhase: "two-parallel-exact-head-reviews"
 issue6IntegrationSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
 ownerDecision: "https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5036142177"
+ownerClarification: "https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5036722007"
+cookTestedSourceSha: "9b12de130ee5e2f68b7c351d9a736a33017173fa"
+cookTestedTreeSha: "75302b2cf968573329f419ccb90a7e3b5b810bdc"
+cookRunId: "v3-20260721T174126318Z-af388ddf"
+cookEvidence: "../../spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/manifest.json"
 historicalTimerRemainingSeconds: "3944.836095708"
 historicalTimerStatus: "closed-non-binding-for-v3"
 phaseCount: 4
@@ -40,6 +45,14 @@ clean local/tracking/fresh-live input `aa93dfac5cd4a5f4d351ad045b634bbd42254902`
 containing that report, attested externally in the Issue #7 publication comment, may become
 `IMPLEMENTATION_INPUT_SHA`. The next phase is `serialized-simple-tdd-cook`; no audit action itself
 authorizes a score, OS change, ADR transition, merge, or Issue #8+ write.
+
+The serialized cook later passed `V3-01..V3-07` with contemporaneous RED from test-only commit
+`d644c4fbb0e88bd4d77567a705b835a9c0eb79a0`, tested source
+`9b12de130ee5e2f68b7c351d9a736a33017173fa`, and tested tree
+`75302b2cf968573329f419ccb90a7e3b5b810bdc`. The closed retained evidence is
+[`v3-20260721T174126318Z-af388ddf`](../../spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/manifest.json).
+The owner clarification removed prerequisite reviews before cook; two fresh exact-head reviews of
+the pushed cook output remain the next phase.
 
 ## Authority and precedence
 

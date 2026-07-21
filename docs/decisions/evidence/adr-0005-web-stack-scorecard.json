@@ -1,24 +1,102 @@
 {
-  "schemaVersion": "adr-0005-web-stack-scorecard-v1",
-  "status": "Proposed",
-  "decision": "no-winner",
-  "acceptanceCanAdvance": false,
-  "implementationInputSha": "8869b9238704719caff5140d9412bb7bebcecc6f",
-  "issue6MergeSha": "24be3b34c6b0fcdbd07c5800dcab349054e34713",
-  "scoreAnchorSha256": "56a15b9babf3e354d5df8279929df0c12e61c2e2e58bc90a8364038b424c9a75",
-  "commonTree": "f00fe97715df5dd469302994349fb95c9412482b",
-  "fixtureConclusion": "insufficient-evidence",
-  "fixtureReason": "no-common-grain",
-  "missingOrInvalidEvidence": [
-    "Actual macOS keyboard traversal was not observable because System Events waited on OS Automation/Accessibility permission.",
-    "Named VoiceOver spoken/semantic traversal could not be captured honestly.",
-    "Actual 200% Chrome zoom, OS reduced-motion review, and actual no-JS comprehension review were therefore not performed.",
-    "Astro failed automated WCAG 2.2 target-size in both Chrome and Firefox."
+  "schemaVersion": "adr-0005-web-stack-decision-v2",
+  "status": "Accepted",
+  "decision": "Vite + React",
+  "scope": "local-learning-sandbox",
+  "selectionBasis": "owner-selected-unscored",
+  "numericScore": null,
+  "acceptanceRevision": "i5-02-simple-vite-v3",
+  "implementationInputSha": "4cfd01f891655670b5a43a362b1567bcaaf4a824",
+  "testedSourceSha": "9b12de130ee5e2f68b7c351d9a736a33017173fa",
+  "testedTreeSha": "75302b2cf968573329f419ccb90a7e3b5b810bdc",
+  "redTestOnlySha": "d644c4fbb0e88bd4d77567a705b835a9c0eb79a0",
+  "retainedEvidence": {
+    "runId": "v3-20260721T174126318Z-af388ddf",
+    "manifestPath": "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/manifest.json",
+    "manifestSha256": "d3c09e372df3e6f6a9e8609000074391ec0973630e8f2ae2477360b5b507a85b",
+    "hashIndexPath": "spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/hash-index.json",
+    "hashIndexSha256": "60eb775851648c62119bc8e0660748919132bb2bacead71fb8c015c59e12d225"
+  },
+  "blockingGroups": {
+    "passed": 7,
+    "required": 7,
+    "results": {
+      "V3-01": "pass",
+      "V3-02": "pass",
+      "V3-03": "pass",
+      "V3-04": "pass",
+      "V3-05": "pass",
+      "V3-06": "pass",
+      "V3-07": "pass"
+    }
+  },
+  "security": {
+    "auditVulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "s3": "pass",
+    "cleanupRollback": "pass"
+  },
+  "reviewState": {
+    "prerequisiteReviewsRequired": false,
+    "finalExactHeadReviewsRequired": 2,
+    "state": "awaiting-two-final-reviews"
+  },
+  "claimLimitations": [
+    "Production accessibility testing and manual UAT remain deferred.",
+    "Chromium and axe automation are not a full WCAG or screen-reader conformance claim.",
+    "The decision makes no production-accessibility or production-conformance claim."
   ],
-  "browsers": {"chrome":"150.0.7871.129","firefox":"151.0","playwright":"1.61.1"},
-  "candidates": {
-    "vite": {"mode":"static-mpa-progressive-react","disposition":"INCOMPLETE_MANUAL","numericScore":null,"lockSha256":"96feead881be424d4c0d8d4629d7da0312722a3d7c945d08ed071542ea5d443c"},
-    "astro": {"mode":"static-react-island","disposition":"ELIMINATED","numericScore":null,"reasons":["chrome:target-size:serious","firefox:target-size:serious"],"lockSha256":"78677d1a272fdc5c9758810343f89e82f2914625a03259a575208fe1fafef760"},
-    "next": {"mode":"standalone-app-router","disposition":"INCOMPLETE_MANUAL","numericScore":null,"lockSha256":"4939388a7e7290ec640e418afac94dc68cfba7bf6b5692df61317b4c95de2e8b"}
+  "historicalV1": {
+    "schemaVersion": "adr-0005-web-stack-scorecard-v1",
+    "status": "Proposed",
+    "decision": "no-winner",
+    "acceptanceCanAdvance": false,
+    "implementationInputSha": "8869b9238704719caff5140d9412bb7bebcecc6f",
+    "issue6MergeSha": "24be3b34c6b0fcdbd07c5800dcab349054e34713",
+    "scoreAnchorSha256": "56a15b9babf3e354d5df8279929df0c12e61c2e2e58bc90a8364038b424c9a75",
+    "commonTree": "f00fe97715df5dd469302994349fb95c9412482b",
+    "fixtureConclusion": "insufficient-evidence",
+    "fixtureReason": "no-common-grain",
+    "missingOrInvalidEvidence": [
+      "Actual macOS keyboard traversal was not observable because System Events waited on OS Automation/Accessibility permission.",
+      "Named VoiceOver spoken/semantic traversal could not be captured honestly.",
+      "Actual 200% Chrome zoom, OS reduced-motion review, and actual no-JS comprehension review were therefore not performed.",
+      "Astro failed automated WCAG 2.2 target-size in both Chrome and Firefox."
+    ],
+    "browsers": {
+      "chrome": "150.0.7871.129",
+      "firefox": "151.0",
+      "playwright": "1.61.1"
+    },
+    "candidates": {
+      "vite": {
+        "mode": "static-mpa-progressive-react",
+        "disposition": "INCOMPLETE_MANUAL",
+        "numericScore": null,
+        "lockSha256": "96feead881be424d4c0d8d4629d7da0312722a3d7c945d08ed071542ea5d443c"
+      },
+      "astro": {
+        "mode": "static-react-island",
+        "disposition": "ELIMINATED",
+        "numericScore": null,
+        "reasons": [
+          "chrome:target-size:serious",
+          "firefox:target-size:serious"
+        ],
+        "lockSha256": "78677d1a272fdc5c9758810343f89e82f2914625a03259a575208fe1fafef760"
+      },
+      "next": {
+        "mode": "standalone-app-router",
+        "disposition": "INCOMPLETE_MANUAL",
+        "numericScore": null,
+        "lockSha256": "4939388a7e7290ec640e418afac94dc68cfba7bf6b5692df61317b4c95de2e8b"
+      }
+    }
   }
 }

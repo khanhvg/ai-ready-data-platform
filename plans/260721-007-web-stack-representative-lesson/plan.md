@@ -1,7 +1,7 @@
 ---
 title: "Issue #7: Web Stack with Representative Promotion-Trust Lesson"
 description: "Owner-selected Vite + React acceptance plan using seven minimal tests, S3/TDD evidence, exact-head reviews, and no new comparison or score."
-status: ready-with-gates
+status: cook-pass-awaiting-final-reviews
 priority: P1
 issue: 7
 branch: "feature/issue-5-02-web-spike"
@@ -29,14 +29,20 @@ independentValidationReport: "validation/simple-vite-independent-validation-repo
 readinessAuditInputSha: "aa93dfac5cd4a5f4d351ad045b634bbd42254902"
 readinessAuditReport: "audit/simple-vite-readiness-audit-report-v3.md"
 ownerDecision: "https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5036142177"
-nextPhase: "serialized-simple-tdd-cook"
+ownerClarification: "https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5036722007"
+implementationInputSha: "4cfd01f891655670b5a43a362b1567bcaaf4a824"
+cookTestedSourceSha: "9b12de130ee5e2f68b7c351d9a736a33017173fa"
+cookTestedTreeSha: "75302b2cf968573329f419ccb90a7e3b5b810bdc"
+cookRunId: "v3-20260721T174126318Z-af388ddf"
+cookEvidence: "../../spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/manifest.json"
+nextPhase: "two-parallel-exact-head-reviews"
 barriers:
   historicalV1V2: retained-read-only-non-binding
   issue6Fixture: open-exact-authority-pass
   v3PlanValidation: pass-with-fixes
   v3ReadinessAudit: ready-with-gates
-  v3Implementation: open-only-at-audit-publication-output
-  adrAcceptance: blocked-on-seven-tests-s3-red-and-reviews
+  v3Implementation: pass-seven-of-seven-with-retained-evidence
+  adrAcceptance: accepted-owner-selected-unscored-vite
   merge: blocked-on-final-exact-head-reviews-configured-checks-and-human-approval
 ---
 
@@ -55,8 +61,13 @@ validated `PASS_WITH_FIXES` from exact input
 A fresh simple readiness audit then returned `READY_WITH_GATES` from exact clean input
 `aa93dfac5cd4a5f4d351ad045b634bbd42254902`; see the
 [v3 readiness report](./audit/simple-vite-readiness-audit-report-v3.md). Only its externally
-attested publication output may become `IMPLEMENTATION_INPUT_SHA`. The next phase is the
-serialized simple TDD cook.
+attested publication output became exact implementation input
+`4cfd01f891655670b5a43a362b1567bcaaf4a824`. The serialized simple TDD cook passed all seven
+groups against tested source `9b12de130ee5e2f68b7c351d9a736a33017173fa` and tested tree
+`75302b2cf968573329f419ccb90a7e3b5b810bdc`; see the
+[retained manifest](../../spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/manifest.json).
+Per the [owner clarification](https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5036722007),
+the next phase is two fresh exact-head reviews of the pushed cook output.
 
 The v3 amendment supersedes every prior v2 readiness/cook/comparison requirement as current
 blocking authority. Prior plans, validation/audit files, candidates, scorecards, screenshots,
@@ -131,8 +142,9 @@ and cleaned without signalling foreign processes or modifying browser/OS profile
   DOM/locator API to prove static comprehension; there is no third project or invented parser.
 - Exact Issue #6 identities, zero High/Critical npm advisories, S3 scans, evidence
   manifest/hash/index, owned cleanup, and rollback pass.
-- ADR-005 may become Accepted/Vite only after the minimal gate, S3, RED provenance, and prerequisite
-  reviews pass; the final ADR head then receives two fresh external exact-head reviews.
+- ADR-005 is Accepted/Vite on the owner-selected, unscored v3 basis after the minimal gate, S3,
+  RED provenance, and retained evidence passed. Two fresh external exact-head reviews of the
+  pushed cook head remain mandatory before PR/review state.
 - PR merge requires any repository-configured checks and a repository-authorized human approval of
   the exact final head; v3 creates no CI context. Current CI absence does not block local cook or
   PR creation and does not authorize workflow expansion. Pristine post-merge verification must
