@@ -2,18 +2,31 @@
 
 ## Current Fresh-Live State
 
-Rechecked on 2026-07-22 from the exact validation input after comparing local, tracking, and
-fresh-live refs and reading the live GitHub issue records.
+Rechecked on 2026-07-22 from readiness input
+`e2bba33deff76985eb3bdae361d494d162c854f8` after proving local, tracking, and fresh-live Issue
+#10 refs equal and reading the live GitHub issue and PR records.
 
 | Dependency | Fresh-live fact | Planning use | Implementation consequence |
 |---|---|---|---|
 | Issue #6 | CLOSED/`shipped`; verified merge `24be3b34c6b0fcdbd07c5800dcab349054e34713` | Binding data/fixture truth | Read-only baseline for both stages |
-| Issue #7 | OPEN/`ready to cook`; no merged Vite handoff | Vite + React is the owner-selected direction | An audited implementation input is not a merge/release; Stage A blocked |
-| Issue #8 | OPEN/`ready for plan audit`; no released Stage A contract | Confirms validated planning intent only | No consumable completion/evidence/browser contract; Stage A blocked |
-| Issue #9 | OPEN/`ready for plan audit`; no released runner | Confirms validated runner planning intent only | No consumable private runner contract; Stage B blocked |
+| Issue #7 | OPEN/`ready for human review`; PR #22 is OPEN and mergeable at head `b219ba2d3843934c3bce2fbbec2a844b48b2dfa9` onto base `24be3b34c6b0fcdbd07c5800dcab349054e34713`, with no review or merge commit | Vite + React is the owner-selected direction; the PR head is provenance only | No human exact-head approval and no merge/release; Stage A blocked |
+| Issue #8 | OPEN/`ready to cook`; serialized six-High real-path repair is active; no released Stage A contract or shared-contract lease release | Confirms owner-directed repair only | No consumable completion/evidence/browser contract; Stage A blocked |
+| Issue #9 | OPEN/`ready for plan audit`; readiness audit published at `5cea5ce248b49ff8741af1b1e65f8ac2eb64698f` with `BLOCKED` and `COOK_SCOPE=none` | Blocked audit is durable planning evidence only | No released private runner contract; Stage B blocked |
 
 These live records are provenance facts, not consumable release SHAs. A later record may
 supersede them.
+
+## Issue #7 Scope Reconciliation
+
+Gate A consumes only the final simple Vite + React release handoff. Its binding admission evidence
+is limited to the frozen-lock build, focused Node contract tests, one Chromium smoke at one desktop
+and one narrow viewport, one axe Critical/Serious scan, no-JavaScript/static fallback,
+fixture/hash identity, `npm audit` High/Critical disposition, S3 scans, cleanup/rollback, two fresh
+exact-head reviews, and human exact-head pre-merge approval.
+
+VoiceOver/System Settings/native Chrome-menu automation, a Firefox/WebKit or multi-browser
+scorecard, performance sampling, timers, and Gate-D comparison work are preserved only as history
+and are not Gate A blockers. They must not be resumed or promoted into Issue #10 scope.
 
 ## Empty Implementation Authority at Validation
 
@@ -29,13 +42,28 @@ The owner-selected Vite direction does not authorize an unmerged Issue #7 implem
 A later amendment must pin real dependency SHAs and derived file/command allow-lists, then pass
 fresh independent revalidation and dependency-aware readiness before either stage may cook.
 
+## Ownership and Writer-Overlap Decision
+
+- Issue #7 owns its open spike/PR lineage; Issue #10 cannot copy from or treat that branch as a
+  release before human approval and merge.
+- Issue #8 is the active serialized writer for shared learning contracts. Issue #10 has no shared-
+  contract lease and cannot inspect, edit, borrow, or pin its in-flight checkpoint.
+- Issue #9 owns runner source and has no released runner authority. Issue #10 may consume only a
+  later exact released server-client/API handoff.
+- Root Make, shared contracts, dependency worktrees, and portal integration remain single-writer
+  surfaces. I5-05 future writes stay inside a released-dependency-derived subset of
+  `apps/learning-portal/**` plus `mk/issue-5/i5-05.mk`.
+
+No concurrent writer may touch shared contracts, root Make, or portal integration. An active lease,
+overlapping changed path, or missing lease release is a hard STOP.
+
 ## Gate A — Static Portal Authority
 
 Stage A stays disabled until one fresh readiness phase proves all rows:
 
 | ID | Required exact handoff | Fail-closed proof |
 |---|---|---|
-| GA-01 | Issue #7 is merged into the authorized integration lineage | Remotely observed merge SHA, reviewed Vite head, ancestry/blob equality, exact package manager/Node/npm requirements, product-source promotion map, package/lock digests, minimal Chromium/axe/no-JS/build/S3 results, rollback notes |
+| GA-01 | Issue #7 has human exact-head approval and is merged into the authorized integration lineage | Remotely observed approval and merge SHA, reviewed Vite head, ancestry/blob equality, exact package manager/Node/npm requirements, product-source promotion map, package/lock digests, frozen-lock build, focused Node contracts, one Chromium desktop+narrow smoke, one axe Critical/Serious scan, no-JS/static fallback, fixture/hash identity, npm audit High/Critical, S3 scans, cleanup/rollback, and two exact-head review records |
 | GA-02 | Issue #8 Stage A is released into the authorized integration lineage | Remotely observed release SHA plus exact version matrix, schema registry activation, lesson/lab/progress/evidence schemas, promotion-trust lesson manifest/content, generated type/validator consumption path, OpenAPI and operation matrix, completion/reconciliation authority, migration/rollback matrix, artifact digests |
 | GA-03 | Fresh I5-05 implementation input contains GA-01 and GA-02 | Local HEAD = tracking ref = fresh live implementation ref; both release SHAs are ancestors; tree clean; no conflicting portal/shared-contract lease |
 | GA-04 | Issue #6 truth is unchanged | Four handoff paths match the SHA-256 and Git blob identities in `requirements-and-risk-traceability.md`; protected `release-manifest.json` hash unchanged |
@@ -77,6 +105,22 @@ Stage B stays disabled until one fresh readiness phase proves all rows:
 If Issue #9 lacks an immutable verified-artifact handle/download operation, exact idempotent reset
 semantics, or a conformance harness, Stage B stops. I5-05 cannot add those capabilities to runner
 source or infer them from draft plans.
+
+## Vite Runtime Admission at Future Gate A
+
+The later amendment must bind the exact merged #7 Node/npm/package-manager/tool versions,
+committed package and lock paths/digests, promotion map, and install/build/test commands. From a
+fresh clean checkout, the exact released install contract must use the frozen lock. After the
+declared dependency acquisition/cache step, build, focused tests, static/no-JavaScript output, and
+the admitted Chromium/axe smoke must not require undeclared network access. Missing cache/tool,
+lock drift, lifecycle-script drift, or outbound access is `fail`, never an online fallback.
+
+Stage A contains no runner import or runner-compatible placeholder. Stage B server-only runner and
+optional-tool modules must be loaded only after their released capability/readiness gate and must
+never enter the browser bundle or make the static path fail at startup. The portal consumes the
+released #8 validators/view model instead of copying contract truth. No alternate framework,
+runtime, package manager, schema, fixture, or hand-written static contract may be introduced when
+the #7/#8 handoff is absent or incompatible.
 
 ## Gate Recording
 

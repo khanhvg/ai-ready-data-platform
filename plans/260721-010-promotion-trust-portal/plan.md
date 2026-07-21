@@ -15,7 +15,13 @@ mode: fast-tdd-no-tasks
 integrationBaseSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
 validationInputSha: "ad87c3f6090129dd30cfb626c6f396567f567a42"
 planningValidation: independent-pass-with-fixes
-stageAStatus: blocked-on-issue-7-merged-vite-and-issue-8-released-stage-a
+readinessAuditInputSha: "e2bba33deff76985eb3bdae361d494d162c854f8"
+readinessVerdict: blocked-for-cook
+cookScope: none
+dependencyIssue7: BLOCKED_AWAITING_HUMAN_APPROVAL
+dependencyIssue8: BLOCKED_UNRELEASED
+dependencyIssue9: BLOCKED_UNRELEASED
+stageAStatus: blocked-on-issue-7-human-approved-merged-vite-and-issue-8-released-stage-a
 stageBStatus: blocked-on-issue-9-released-runner-sha
 ---
 
@@ -34,6 +40,9 @@ sequence, and claim a complete local journey through the single Issue #8 complet
 No plan text assigns a future dependency SHA, contract version, OpenAPI route, runner endpoint,
 registry command, or concrete stage file/command allow-list. Exact released handoffs must be
 pinned by a later amendment, independently revalidated, and readiness-audited before each stage.
+Stage A is runner-independent, not dependency-independent: it remains disabled until the exact
+human-approved and merged Issue #7 Vite authority and exact released Issue #8 Stage A authority
+are both pinned at a fresh implementation input.
 
 ## Phases
 
@@ -53,7 +62,8 @@ pinned by a later amendment, independently revalidated, and readiness-audited be
   exact input tree and are not release artifacts. External gates are normative in
   [Dependency and Release Gates](./dependency-and-release-gates.md).
 - **Stage A:** exact merged Issue #7 Vite handoff and exact released Issue #8 Stage A contract
-  handoff. It has no Issue #9 runner dependency and cannot claim runnable completion.
+  handoff. Issue #7 also requires human exact-head pre-merge approval before that merge can become
+  authority. Stage A has no Issue #9 runner dependency and cannot claim runnable completion.
 - **Stage B:** passing Stage A plus exact released Issue #9 runner API, registry, client/transport,
   idempotency, problem, and evidence handoff SHA.
 - Issue #6 data/fixture truth at input `24be3b34c6b0fcdbd07c5800dcab349054e34713`
@@ -84,14 +94,21 @@ later exact-SHA amendment passes revalidation and readiness. Any shared-contract
 Make, architecture-view, fixture, data-pipeline, cloud, AWS, Terraform, or unrelated-path change
 is a hard STOP.
 
+`README.md`, `docs/**`, dependency worktrees, and release metadata owned outside Issue #10 are not
+future I5-05 write authority. Any user-facing documentation or release-note change discovered at
+implementation review must be handed to its owner through a separately authorized serialized
+change; it cannot broaden the portal cook allow-list.
+
 ## Plan Exit
 
 Independent validation passed with objective fixes at input
 `ad87c3f6090129dd30cfb626c6f396567f567a42`; this is
-`INDEPENDENT_VALIDATION_PASS_NOT_READINESS`. The only next phase is a fresh dependency-aware
-readiness audit, which must remain blocked until real #7/#8/#9 releases permit an exact-SHA
-amendment and revalidation. Human exact-head pre-merge approval remains mandatory for every
-future merge.
+`INDEPENDENT_VALIDATION_PASS_NOT_READINESS`. The fresh dependency-aware readiness audit at exact
+input `e2bba33deff76985eb3bdae361d494d162c854f8` is `BLOCKED_FOR_COOK` with `COOK_SCOPE=none`:
+Issue #7 still lacks human approval and merge, Issue #8 remains unreleased, and Issue #9 remains
+unreleased. The only next phase is to wait for those stage-specific releases, then amend exact
+release-derived authorities and rerun independent validation and readiness. Human exact-head
+pre-merge approval remains mandatory for every future merge.
 
 ## Validation Log
 

@@ -13,7 +13,8 @@
 | Master red-team/readiness input | `bf740edb87452fe766591d0eeefd0bd5151220fa` | Accepted risk input |
 | Master readiness report | `e440c5855732d5d8f5d634e3cc1359c010cc5ed3` | Issue fan-out authority only |
 | Audited mapping/integration handoff | `f9a87d0ebdb72c014a6f8c6eaae865dad4d2188c` | Ownership/dependency graph |
-| Live Issue #10 | OPEN with `ready for plan validation`, `risk:high`, `tdd`, `security:S3`, `frontend`, `accessibility`, `vertical-slice` at validation input | Fresh issue scope and commands |
+| Independent validation output / readiness input | `e2bba33deff76985eb3bdae361d494d162c854f8` | Exact clean readiness audit input |
+| Live Issue #10 | OPEN with `ready for plan audit`, `risk:high`, `tdd`, `security:S3`, `frontend`, `accessibility`, `vertical-slice` at readiness input | Fresh issue scope and commands; state remains unpromoted |
 | Owner fan-out decision | https://github.com/khanhvg/ai-ready-data-platform/issues/5#issuecomment-5036142770 | Planning may run in parallel; dependencies remain binding |
 | Owner Vite decision | https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5036142177 | Vite + React direction; no merge/release claim |
 

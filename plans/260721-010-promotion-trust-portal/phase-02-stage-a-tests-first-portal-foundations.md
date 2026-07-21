@@ -73,6 +73,8 @@ Do not generalize a design system, state framework, API proxy, service worker, o
 - Safe view model rejects unknown/unreleased fields and attribution language.
 - Stage A has no mutation route, completion write, runner import, or browser-direct privileged
   capability.
+- The production/browser bundle and static startup contain no eager Stage B runner or optional-tool
+  import; missing optional capabilities cannot break Stage A.
 - Security headers and same-origin negative cases pass.
 - Component semantics, focus, live regions, narrow layout primitives, and reduced motion pass.
 

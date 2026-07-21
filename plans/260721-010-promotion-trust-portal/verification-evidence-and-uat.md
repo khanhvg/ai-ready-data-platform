@@ -8,6 +8,14 @@ test green through refactor, then run the phase regression gate. Do not write po
 before the corresponding RED assertion exists. Do not weaken a test, schema, fixture, S3 control,
 or accessibility expectation to obtain green.
 
+Every retained RED record binds a stable RED ID to the exact pre-behavior source and tree SHA,
+dependency SHAs, tests-only changed-path closure when applicable, exact command and return code,
+expected failure, actual failure present in a retained raw log, and raw-log digest. RED must fail
+through the real released reader/validator/operation path for the intended reason before its
+behavior exists; retrospective reconstruction, unconditional failure, missing-tool/import failure,
+or an oracle that repeats fixture expectations is invalid. The same assertion is rerun GREEN at
+the reviewed exact head without weakening it.
+
 ## Tests-Before Matrix
 
 | ID | First failing assertion | Stage |
@@ -50,6 +58,8 @@ the exact released #9 conformance path; if absent, Gate B fails.
 
 No Firefox/WebKit parity matrix, timer/scorecard, sample performance contest, native macOS
 automation, exhaustive device grid, or automated conformance claim belongs to I5-05.
+VoiceOver/System Settings/native Chrome-menu automation and Gate-D comparison work are likewise
+historical only and cannot become blocking gates.
 
 ## Exact Issue Command Contract
 
@@ -191,7 +201,10 @@ Before any Stage A or Stage B merge:
 - fresh independent plan validation and stage-specific readiness are published at exact heads;
 - required tests and S3 scans pass with zero unresolved Critical/High findings;
 - changed paths match exclusive ownership; protected/shared hashes match;
-- dependency releases and human review bind the exact PR head;
+- two fresh independent implementation reviews bind the exact PR head: one covers code/contracts/
+  S3 and one covers accessibility/browser/evidence/operations; both have zero unresolved
+  Critical/High findings;
+- dependency releases bind the exact PR head;
 - the branch is clean and local = tracking = fresh-live;
 - no cloud/AWS/Terraform/destructive action occurred;
 - human exact-head pre-merge approval is recorded.
