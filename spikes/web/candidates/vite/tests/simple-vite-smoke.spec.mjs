@@ -37,6 +37,7 @@ async function assertNoOverflow(page) {
     expect(rect.left, rect.id).toBeGreaterThanOrEqual(0);
     expect(rect.right, rect.id).toBeLessThanOrEqual(facts.viewport);
   }
+  return facts;
 }
 
 async function focusByKeyboard(page, testId, reverse = false) {
@@ -63,34 +64,40 @@ async function focusByKeyboard(page, testId, reverse = false) {
   expect(facts).toMatchObject({ active: true, outlineStyle: 'solid', inside: true, ownsHit: true });
   expect(facts.outlineWidth).toBeGreaterThanOrEqual(2);
   expect(facts.outlineOffset).toBeGreaterThanOrEqual(2);
+  return { testId, ...facts };
 }
 
 async function completeJourney(page) {
   const requests = [];
+  const facts = { checkpoints: [], focus: [], overflow: [] };
   page.on('request', request => requests.push(request.url()));
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('lang', 'vi');
   await expect(page.getByTestId('lesson-entry')).toContainText(exact.title);
   await expect(page.getByText(exact.notice, { exact: true })).toBeVisible();
   await expect(page.getByTestId('lesson-status')).toHaveText(exact.baseline);
-  await assertNoOverflow(page);
+  facts.checkpoints.push({ id: 'entry', status: exact.baseline });
+  facts.overflow.push({ checkpoint: 'entry', ...await assertNoOverflow(page) });
 
-  await focusByKeyboard(page, 'run-bounded-probe');
+  facts.focus.push(await focusByKeyboard(page, 'run-bounded-probe'));
   await page.keyboard.press('Enter');
   await expect(page.getByTestId('run-bounded-probe')).toBeFocused();
   await expect(page.getByTestId('lesson-status')).toHaveText(exact.failure);
-  await assertNoOverflow(page);
+  facts.checkpoints.push({ id: 'controlled-failure', status: exact.failure });
+  facts.overflow.push({ checkpoint: 'controlled-failure', ...await assertNoOverflow(page) });
 
   for (const [id, grain, limitation] of exact.grains) {
     await expect(page.getByTestId(id)).toHaveText(grain);
     await expect(page.getByTestId(`${id}-limitation`)).toHaveText(limitation);
-    await assertNoOverflow(page);
+    facts.checkpoints.push({ id, grain, limitation });
+    facts.overflow.push({ checkpoint: id, ...await assertNoOverflow(page) });
   }
   await expect(page.getByTestId('lesson-conclusion')).toHaveText('insufficient-evidence');
   await expect(page.getByTestId('lesson-reason')).toHaveText('no-common-grain');
   await expect(page.locator('[data-testid="relationship"], [data-testid="attribution"]')).toHaveCount(0);
+  facts.checkpoints.push({ id: 'conclusion', value: 'insufficient-evidence', reason: 'no-common-grain', relationships: 0, attribution: 0 });
 
-  await focusByKeyboard(page, 'reset-lesson');
+  facts.focus.push(await focusByKeyboard(page, 'reset-lesson'));
   await page.keyboard.press('Space');
   await expect(page.getByTestId('reset-lesson')).toBeFocused();
   await expect(page.getByTestId('lesson-status')).toHaveText(exact.reset);
@@ -103,14 +110,22 @@ async function completeJourney(page) {
     serviceWorkers: 'serviceWorker' in navigator ? (await navigator.serviceWorker.getRegistrations()).length : 0,
   }));
   expect(persistence).toEqual({ cookie: '', localStorage: 0, sessionStorage: 0, caches: 0, indexedDb: 0, serviceWorkers: 0 });
+  facts.checkpoints.push({ id: 'reset', status: exact.reset, persistence });
   await expect(page.getByTestId('reflection-prompt')).toHaveText(exact.reflection);
   await expect(page.locator('[data-testid*="complete"], [data-testid*="score"]')).toHaveCount(0);
-  await assertNoOverflow(page);
-  expect(requests.every(url => new URL(url).origin === 'http://127.0.0.1:4175')).toBe(true);
+  facts.checkpoints.push({ id: 'reflection', text: exact.reflection, completionControls: 0, scoreControls: 0 });
+  facts.overflow.push({ checkpoint: 'reflection', ...await assertNoOverflow(page) });
+  const requestOrigins = [...new Set(requests.map(url => new URL(url).origin))].sort();
+  expect(requestOrigins).toEqual(['http://127.0.0.1:4175']);
+  return { ...facts, requestOrigins };
 }
 
-test('@journey V3-03 V3-04 representative promotion-trust journey', async ({ page }) => {
-  await completeJourney(page);
+test('@journey V3-03 V3-04 representative promotion-trust journey', async ({ page }, testInfo) => {
+  const facts = await completeJourney(page);
+  await testInfo.attach('v3-03-v3-04-journey-facts.json', {
+    body: Buffer.from(JSON.stringify({ project: testInfo.project.name, viewport: testInfo.project.use.viewport, ...facts }, null, 2)),
+    contentType: 'application/json',
+  });
 });
 
 test('@desktop-only V3-05 one whole-page axe scan', async ({ page }, testInfo) => {
@@ -129,7 +144,9 @@ test('@desktop-only V3-06 real JavaScript-disabled response and DOM fallback', a
     expect(response).not.toBeNull();
     const bytes = await response.body();
     const text = bytes.toString('utf8');
-    const ordered = ['lesson-entry', ...exact.grains.map(([id]) => id), 'lesson-conclusion', 'lesson-reason', 'no-js-reset-limitation', 'reflection-prompt'];
+    const csp = response.headers()['content-security-policy'];
+    expect(csp).toBe("default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'");
+    const ordered = ['lesson-entry', ...exact.grains.flatMap(([id]) => [id, `${id}-limitation`]), 'lesson-conclusion', 'lesson-reason', 'no-js-reset-limitation', 'reflection-prompt'];
     let offset = -1;
     for (const id of ordered) {
       const next = text.indexOf(`data-testid="${id}"`);
@@ -147,7 +164,8 @@ test('@desktop-only V3-06 real JavaScript-disabled response and DOM fallback', a
     }
     await expect(page.getByTestId('run-bounded-probe')).toHaveCount(0);
     await expect(page.getByTestId('reset-lesson')).toHaveCount(0);
-    await testInfo.attach('v3-06-no-js-inventory.json', { body: Buffer.from(JSON.stringify({ responseBytes: bytes.length, inventory }, null, 2)), contentType: 'application/json' });
+    await testInfo.attach('v3-06-response.html', { body: bytes, contentType: 'text/html; charset=utf-8' });
+    await testInfo.attach('v3-06-no-js-inventory.json', { body: Buffer.from(JSON.stringify({ responseBytes: bytes.length, csp, inventory }, null, 2)), contentType: 'application/json' });
   } finally {
     await context.close();
   }

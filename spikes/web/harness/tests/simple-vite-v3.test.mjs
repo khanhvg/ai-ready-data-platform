@@ -40,16 +40,42 @@ test('V3-07 retained manifest is closed over exact-head RED, 7/7, redaction, and
     schemaVersion: 'i5-02-simple-vite-v3-evidence-v1', acceptanceRevision: contract.acceptanceRevision,
     implementationInputSha: contract.implementationInputSha, testedSourceSha: 'a'.repeat(40), testedTreeSha: 'b'.repeat(40),
     groups: contract.groups.map(id => ({ id, result: 'pass' })), redProvenance: { result: 'pass' }, redaction: { result: 'pass' }, cleanupRollback: { result: 'pass' },
+    artifactLocators: {
+      journeyFacts: ['green/browser-results/chromium-desktop/v3-03-v3-04-journey-facts.json', 'green/browser-results/chromium-narrow/v3-03-v3-04-journey-facts.json'],
+      axe: 'green/browser-results/chromium-desktop/v3-05-axe-complete.json',
+      noJsInventory: 'green/browser-results/chromium-desktop/v3-06-no-js-inventory.json',
+      noJsResponse: 'green/browser-results/chromium-desktop/v3-06-response.html',
+    },
+    testNameInventory: ['V3-02 contract', 'V3-03 V3-04 journey [chromium-desktop]', 'V3-05 axe [chromium-desktop]', 'V3-06 no-JS [chromium-desktop]', 'V3-03 V3-04 journey [chromium-narrow]'],
+    axeSummary: { invocations: 1, critical: 0, serious: 0, findingsRetained: true },
+    noJsFacts: { javaScriptEnabled: false, responseBytes: 1, csp: "default-src 'self'", inventoryCount: 13 },
+    scanSummary: { result: 'pass', findings: 0 },
+    ownedResourceSummary: { result: 'pass', serverCount: 1, port: 4175, cleanup: 'pass', rollbackSimulation: 'pass' },
   };
   assert.deepEqual(validateEvidenceManifest(base), []);
   assert.ok(validateEvidenceManifest({ ...base, groups: base.groups.slice(0, 6) }).includes('groups'));
   assert.ok(validateEvidenceManifest({ ...base, redProvenance: { result: 'fail' } }).includes('red-provenance'));
   assert.ok(validateEvidenceManifest({ ...base, cleanupRollback: { result: 'fail' } }).includes('rollback'));
+  for (const [field, failureId] of [
+    ['artifactLocators', 'artifact-locators'],
+    ['testNameInventory', 'test-name-inventory'],
+    ['axeSummary', 'axe-summary'],
+    ['noJsFacts', 'no-js-facts'],
+    ['scanSummary', 'scan-summary'],
+    ['ownedResourceSummary', 'owned-resource-summary'],
+  ]) {
+    const missing = { ...base };
+    delete missing[field];
+    assert.ok(validateEvidenceManifest(missing).includes(failureId), `missing ${field} must fail closed as ${failureId}`);
+  }
 });
 
 test('V3-07 runner contains bounded commands and never imports comparison, native, timer, or cloud paths', () => {
   const source = readFileSync(resolve(ROOT, 'spikes/web/harness/scripts/simple-vite-v3.mjs'), 'utf8');
   assert.match(source, /setTimeout/);
   assert.match(source, /refusing to signal/);
+  assert.match(source, /ownedRollbackSentinel/, 'runner must retain evidence that an owned rollback sentinel was removed');
+  assert.match(source, /unownedRollbackSentinel/, 'runner must retain evidence that an unowned rollback sentinel was preserved');
+  assert.match(source, /retainedPreservation/, 'runner must verify retained evidence survives rollback');
   assert.doesNotMatch(source, /score-anchors|Firefox|webkit|VoiceOver|CuaDriver|terraform|historicalTimer/i);
 });
