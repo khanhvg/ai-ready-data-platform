@@ -1,0 +1,152 @@
+---
+phase: 1
+title: "Authority freeze and Stage A TDD RED"
+status: pending
+priority: P1
+dependencies: []
+stage: "A"
+---
+
+# Phase 1: Authority Freeze and Stage A TDD RED
+
+## Context Links
+
+- [Plan outcome and stage decision](./plan.md#stage-decision)
+- [Requirements and risk traceability](./requirements-and-risk-traceability.md)
+- [Master Phase 3](../260721-005-enterprise-learning-sandbox/phase-03-shared-lesson-lab-and-evidence-contract.md)
+- [Issue #6 implementation handoff](../260721-006-freeze-golden-baseline/implementation-handoff.md)
+
+## Overview
+
+Freeze the future readiness-authorized implementation head, exclusive lease, Issue #6 read-only
+bytes, Stage A dependency boundary, and failing TDD corpus before any contract/validator behavior.
+Stage A must prove it can execute with no Issue #7 path, ADR byte, Node/Vite dependency, browser,
+Docker, network, cloud credential, or heavy profile.
+
+## Requirements
+
+- Functional: capture exact local/tracking/fresh-live identity, ancestry, protected hashes, command
+  ownership, new-family namespace, test IDs, and expected failure reasons.
+- Functional: characterize every shipped Issue #6 schema/registry/fixture/reader as read-only and
+  passing before writing new behavior.
+- Non-functional: one writer/worktree; bounded local output; fail closed on missing required tools;
+  no product/config/contracts beyond the future allow-list.
+- Authority: implementation does not begin from this planner commit merely because it exists. A
+  fresh independent validation and fresh readiness audit must publish the exact implementation
+  head and explicitly decide Stage A cookability.
+
+## Architecture
+
+The RED harness has three layers:
+
+1. `authority`: repository identity, clean state, lease, protected hash and runtime-lock checks;
+2. `boundary`: source/import/reference scan plus execution with Issue #7 paths absent and with an
+   inert decoy tree to prove identical Stage A results;
+3. `contract RED`: fixtures for missing schemas, broken refs, illegal state, forged completion,
+   evidence tamper, migration errors and API/matrix drift.
+
+The decoy test may create only marker-owned temporary bytes under the test workspace. It never
+checks out or copies the unmerged Issue #7 branch. A result change caused by the decoy is
+`STAGE_A_FRAMEWORK_DEPENDENCY` and a STOP.
+
+## Related Code Files
+
+Future implementation creates only these Phase 1 files before production behavior:
+
+| Action | Exact path | Purpose |
+|---|---|---|
+| Create | `tests/contracts/learning/__init__.py` | Test package marker |
+| Create | `tests/contracts/learning/test_authority_and_stage_boundary.py` | exact-head, lease, read/import/change boundary and dependency-absence tests |
+| Create | `tests/contracts/learning/test_schema_contracts.py` | schema RED IDs and read-only Issue #6 characterizers |
+| Create | `tests/contracts/learning/test_reference_integrity.py` | missing/duplicate/cyclic reference RED IDs |
+| Create | `tests/contracts/learning/test_state_and_completion.py` | illegal transition, idempotency, forged completion and dual-truth RED IDs |
+| Create | `tests/contracts/learning/test_evidence_tamper.py` | hash, secret/path, recursive identity and provenance RED IDs |
+| Create | `tests/contracts/learning/test_version_migrations.py` | unknown/lossy/cyclic/colliding migration RED IDs |
+| Create | `tests/contracts/learning/test_openapi_contract.py` | missing/ref/matrix/auth/idempotency/no-channel RED IDs |
+| Create | `tests/contracts/learning/test_promotion_trust_manifest.py` | four-grain, limitation, fixture-hash and attribution RED IDs |
+| Create | `tests/fixtures/learning/contracts/fixture-index-v1.json` | closed ID→path→expected-error registry |
+| Create | `tests/fixtures/learning/contracts/valid/private-migration-v0.json` | non-released reversible migration source vector |
+| Create | `tests/fixtures/learning/contracts/invalid/schema/unknown-field.json` | closed-schema mutation |
+| Create | `tests/fixtures/learning/contracts/invalid/ref/missing-verifier.json` | unresolved reference mutation |
+| Create | `tests/fixtures/learning/contracts/invalid/ref/prerequisite-cycle.json` | cycle mutation |
+| Create | `tests/fixtures/learning/contracts/invalid/state/illegal-transition.json` | state mutation |
+| Create | `tests/fixtures/learning/contracts/invalid/state/idempotency-payload-conflict.json` | replay collision mutation |
+| Create | `tests/fixtures/learning/contracts/invalid/completion/forged-browser-completion.json` | browser authority violation |
+| Create | `tests/fixtures/learning/contracts/invalid/completion/orphan-self-completion.json` | orphan evidence authority violation |
+| Create | `tests/fixtures/learning/contracts/invalid/tamper/evidence-payload.json` | integrity mutation |
+| Create | `tests/fixtures/learning/contracts/invalid/security/secret-canary.json` | forbidden persisted secret |
+| Create | `tests/fixtures/learning/contracts/invalid/security/absolute-path.json` | forbidden local path |
+| Create | `tests/fixtures/learning/contracts/invalid/migration/unknown-version.json` | unreadable version mutation |
+| Create | `tests/fixtures/learning/contracts/invalid/migration/lossy-edge.json` | rollback-loss mutation |
+| Create | `tests/fixtures/learning/contracts/invalid/openapi/missing-authority.json` | operation metadata mutation |
+| Create | `tests/fixtures/learning/contracts/invalid/openapi/orphan-operation.json` | matrix/OpenAPI drift mutation |
+| Create | `tests/fixtures/learning/contracts/invalid/promotion-trust/hidden-common-grain.json` | forbidden attribution mutation |
+
+No schema, validator, OpenAPI, manifest, Make, or binding file is created until the RED record is
+captured. Issue #6 test/fixture files are never edited to create RED.
+
+## Tests Before
+
+Use stable assertion IDs, including:
+
+```text
+I8-AUTH-BASE-001       I8-AUTH-LEASE-002       I8-AUTH-PROTECTED-003
+I8-STAGEA-NO-I7-010    I8-SCHEMA-CLOSED-100     I8-REF-MISSING-110
+I8-REF-CYCLE-111       I8-STATE-ILLEGAL-120     I8-IDEMPOTENCY-CONFLICT-121
+I8-COMPLETION-FORGE-130 I8-RECONCILE-ORPHAN-131 I8-TAMPER-PAYLOAD-140
+I8-MIGRATION-LOSS-150  I8-OPENAPI-MATRIX-160    I8-PROMO-GRAIN-170
+```
+
+RED acceptance:
+
+- read-only Issue #6 characterizers pass at the immutable base;
+- each new behavior assertion fails for its named missing contract/validator, not import, syntax,
+  fixture-index or runtime noise;
+- sanitized RED evidence records exact input/dependency SHAs, test IDs, commands, tool/freeze
+  hashes, pre-RED tree and expected failures;
+- no generated contract or runtime artifact is staged.
+
+## Implementation Steps
+
+1. Fresh-fetch and compare the future implementation branch’s local, upstream and live remote
+   full SHA. Verify required ancestry and clean status.
+2. Verify the fresh readiness output explicitly authorizes either full I5-03 or bounded Stage A,
+   names the exclusive lease, exact paths, tests and rollback, and has not been superseded.
+3. Hash every tracked Issue #6 contract, reader, lock, Make fragment and promotion-trust fixture;
+   record `docs/code-standards.md` absent/present state without changing it.
+4. Prove the root Make wildcard already exposes issue fragments and that every I5-03 public target
+   has one registry owner while `evidence-contracts-check` remains I5-01-owned.
+5. Write the fixture index and test modules. Run only the read-only characterizers first, then the
+   intended RED suite.
+6. Run the Stage A boundary test with Issue #7 paths unavailable, then with an inert marker-owned
+   decoy. Require identical selected inputs, imports, canonical outputs and failure IDs.
+7. Finalize bounded RED evidence below
+   `.artifacts/evidence/learning-contracts/<run-id>/tdd/red/` and leave the tree ready for Phase 2.
+
+## Success Criteria
+
+- [ ] Exact future implementation authority and one lease prove valid.
+- [ ] All Issue #6 protected hashes and read-only characterizers pass.
+- [ ] Every named RED assertion fails for the intended missing behavior.
+- [ ] Stage A has zero Issue #7/Vite/ADR imports, refs, reads or output influence.
+- [ ] RED evidence is schema-valid, sanitized, bounded and tied to exact SHAs/tool hashes.
+- [ ] Changed paths contain only the Phase 1 tests/fixtures; no behavior file exists yet.
+
+## Risk Assessment
+
+- A stale/unmerged Issue #7 path can leak into a “neutral” contract through copied preview schema.
+  Mitigation: dependency-absent and decoy invariance checks; never import preview definitions.
+- Pre-creating schemas can produce performative RED. Mitigation: capture missing-behavior failures
+  before every production file and refuse syntax/import-only failures.
+- New tests could mutate tracked fixtures. Mitigation: copy inputs into marker-owned temp roots and
+  verify exact pre/post hashes.
+
+## Security and Rollback
+
+Wrong base, missing lease, protected drift, unadmitted tool, secret/private-path finding, or a
+Stage A dependency on Issue #7 stops work. Rollback removes only marker-owned ignored RED
+workspaces/evidence when policy allows; retained failure evidence and all tracked inputs remain.
+
+## Next Steps
+
+Proceed to Phase 2 only after RED provenance is complete and the behavior-file absence check passes.
