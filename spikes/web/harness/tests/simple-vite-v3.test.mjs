@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, linkSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import test from 'node:test';
@@ -44,7 +45,7 @@ function processGroup(pid) {
 async function loadInstrumentedRunner(transform = source => source) {
   const sourcePath = resolve(ROOT, 'spikes/web/harness/scripts/simple-vite-v3.mjs');
   const temporaryPath = resolve(dirname(sourcePath), `.simple-vite-v3-test-${process.pid}-${Date.now()}.mjs`);
-  const source = `${transform(readFileSync(sourcePath, 'utf8'))}\nexport { runBounded, startHost };\n`;
+  const source = `${transform(readFileSync(sourcePath, 'utf8'))}\nexport { cleanupCandidateRuntime, runBounded, startHost };\n`;
   writeFileSync(temporaryPath, source);
   try {
     return { module: await import(`${new URL(`file://${temporaryPath}`).href}?test=${Date.now()}`), temporaryPath };
@@ -102,13 +103,15 @@ test('V3-07 built-output scan detects forbidden markers in generated JS, CSS, an
     writeFileSync(resolve(dist, 'assets/app.js'), 'const token="abcdefghijk";\n');
     writeFileSync(resolve(dist, 'assets/app.css'), '/* /Users/private/work/repo */\n');
     writeFileSync(resolve(dist, 'assets/app.js.map'), '{"version":3,"sources":["learner@example.com"]}\n');
+    writeFileSync(resolve(dist, 'assets/leak.txt'), 'client_secret="generated-secret"\n');
     await withBuiltOutputScanner(() => {
       const scan = inspectBuiltOutput(dist);
       assert.equal(scan.result, 'fail', 'unsafe generated assets must fail content safety');
-      assert.deepEqual(scan.findings.map(({ path }) => path).sort(), ['assets/app.css', 'assets/app.js', 'assets/app.js.map']);
+      assert.deepEqual(scan.findings.map(({ path }) => path).sort(), ['assets/app.css', 'assets/app.js', 'assets/app.js.map', 'assets/leak.txt']);
       assert.ok(scan.findings.some(({ path, finding }) => path === 'assets/app.js' && finding === 'credential'));
       assert.ok(scan.findings.some(({ path, finding }) => path === 'assets/app.css' && finding === 'absolutePrivatePath'));
       assert.ok(scan.findings.some(({ path, finding }) => path === 'assets/app.js.map' && finding === 'email'));
+      assert.ok(scan.findings.some(({ path, finding }) => path === 'assets/leak.txt' && finding === 'credential'));
     });
   } finally {
     rmSync(dist, { recursive: true, force: true });
@@ -136,6 +139,63 @@ test('V3-07 clean complete built-output scan emits normalized path and SHA-256 i
     });
   } finally {
     rmSync(dist, { recursive: true, force: true });
+  }
+});
+
+test('V3-07 built-output scan rejects symlinks, hardlinks, special files, and their escape targets', async () => {
+  const temporaryRoot = mkdtempSync(resolve(tmpdir(), 'vite-v3-built-structure-'));
+  const dist = resolve(temporaryRoot, 'dist');
+  const outside = resolve(temporaryRoot, 'outside.js');
+  const socket = resolve(dist, 'runtime.sock');
+  const server = createServer();
+  try {
+    mkdirSync(dist);
+    writeFileSync(resolve(dist, 'index.html'), '<!doctype html>\n');
+    writeFileSync(outside, 'const safe = true;\n');
+    linkSync(outside, resolve(dist, 'hardlink.js'));
+    symlinkSync(outside, resolve(dist, 'escape.js'));
+    await new Promise((resolveListening, reject) => server.once('error', reject).listen(socket, resolveListening));
+    await withBuiltOutputScanner(() => {
+      const scan = inspectBuiltOutput(dist);
+      assert.equal(scan.result, 'fail');
+      assert.ok(scan.failures.includes('built-output-symlink:escape.js'));
+      assert.ok(scan.failures.includes('built-output-hardlink:hardlink.js'));
+      assert.ok(scan.failures.includes('built-output-special-file:runtime.sock'));
+      assert.deepEqual(scan.inventory.map(({ path }) => path), ['index.html']);
+    });
+  } finally {
+    await new Promise(resolveClose => server.close(resolveClose));
+    rmSync(temporaryRoot, { recursive: true, force: true });
+  }
+});
+
+test('V3-07 structural built-output scan failure records evidence before run-owned cleanup', async () => {
+  const temporaryRoot = mkdtempSync(resolve(tmpdir(), 'vite-v3-built-cleanup-'));
+  const candidate = resolve(temporaryRoot, 'candidate');
+  const dist = resolve(candidate, 'dist');
+  const run = resolve(temporaryRoot, 'run');
+  let temporaryPath;
+  try {
+    mkdirSync(dist, { recursive: true });
+    mkdirSync(resolve(candidate, 'node_modules'));
+    mkdirSync(run);
+    writeFileSync(resolve(dist, 'index.html'), '<!doctype html>\n');
+    symlinkSync(resolve(temporaryRoot, 'missing.js'), resolve(dist, 'dangling.js'));
+    writeFileSync(resolve(run, 'result.json'), '{"result":"fail"}\n');
+    const loaded = await loadInstrumentedRunner(source => source.replace("const CANDIDATE = resolve(ROOT, 'spikes/web/candidates/vite');", `const CANDIDATE = ${JSON.stringify(candidate)};`));
+    temporaryPath = loaded.temporaryPath;
+    const scan = loaded.module.scanBuiltOutput(dist);
+    writeFileSync(resolve(run, 'built-output-scan.json'), `${JSON.stringify(scan, null, 2)}\n`);
+    const cleanup = loaded.module.cleanupCandidateRuntime(run);
+    assert.equal(scan.result, 'fail');
+    assert.ok(scan.failures.includes('built-output-symlink:dangling.js'));
+    assert.equal(cleanup.result, 'pass');
+    assert.equal(existsSync(dist), false);
+    assert.equal(existsSync(resolve(candidate, 'node_modules')), false);
+    assert.equal(existsSync(resolve(run, 'built-output-scan.json')), true);
+  } finally {
+    if (temporaryPath) rmSync(temporaryPath, { force: true });
+    rmSync(temporaryRoot, { recursive: true, force: true });
   }
 });
 
@@ -189,6 +249,8 @@ test('V3-07 runner contains bounded commands and never imports comparison, nativ
   assert.match(source, /ownedRollbackSentinel/, 'runner must retain evidence that an owned rollback sentinel was removed');
   assert.match(source, /unownedRollbackSentinel/, 'runner must retain evidence that an unowned rollback sentinel was preserved');
   assert.match(source, /retainedPreservation/, 'runner must verify retained evidence survives rollback');
+  assert.ok(source.indexOf('builtOutputScan = scanBuiltOutput') < source.indexOf('const cleanup = cleanupCandidateRuntime(directory)'), 'built output must be scanned and recorded before run-owned dist cleanup');
+  assert.match(source, /security\/built-output-scan\.json/, 'retained evidence must include the complete built-output inventory');
   assert.doesNotMatch(source, /score-anchors|Firefox|webkit|VoiceOver|CuaDriver|terraform|historicalTimer/i);
 });
 

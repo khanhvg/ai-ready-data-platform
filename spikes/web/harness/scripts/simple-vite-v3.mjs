@@ -1,6 +1,6 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { createHash, randomBytes } from 'node:crypto';
-import { cpSync, existsSync, mkdirSync, readFileSync, realpathSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, realpathSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -16,6 +16,7 @@ const PROCESS_FINAL_WAIT_MS = 250;
 const SECOND_TARGETED_REVIEW_FIX_RED_SHA = '5264e3958a60f26e1663aa0bd940bf5176520896';
 const THIRD_TARGETED_REVIEW_FIX_RED_SHA = '2febb813dce2e37b2af79c72e7608787fa210ae8';
 const FOURTH_TARGETED_REVIEW_FIX_RED_SHA = '47f32f863554b8286cbfa84ee2534687f73eb61b';
+const FIFTH_TARGETED_REVIEW_FIX_RED_SHA = 'adf79aee0f672a3c26604ea65624632d8ef9cd8c';
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const relativePath = path => relative(ROOT, path).split(sep).join('/');
 const git = args => {
@@ -51,6 +52,71 @@ export function scanText(text) {
   return Object.entries(rules).filter(([, pattern]) => pattern.test(text)).map(([id]) => id);
 }
 
+export function scanBuiltOutput(root) {
+  const absoluteRoot = resolve(root);
+  const inventory = [];
+  const findings = [];
+  const failures = [];
+  const normalize = path => relative(absoluteRoot, path).split(sep).join('/');
+  const insideRoot = path => path === absoluteRoot || path.startsWith(`${absoluteRoot}${sep}`);
+  if (!existsSync(absoluteRoot)) failures.push('built-output-missing');
+  else {
+    const rootStatus = lstatSync(absoluteRoot);
+    if (rootStatus.isSymbolicLink()) failures.push('built-output-root-symlink');
+    else if (!rootStatus.isDirectory()) failures.push('built-output-root-not-directory');
+    else {
+      const realRoot = realpathSync(absoluteRoot);
+      const walk = directory => {
+        for (const name of readdirSync(directory).sort((a, b) => Buffer.from(a).compare(Buffer.from(b)))) {
+          const path = resolve(directory, name);
+          const locator = normalize(path);
+          if (!insideRoot(path) || locator === '..' || locator.startsWith('../')) {
+            failures.push(`built-output-path-escape:${locator}`);
+            continue;
+          }
+          const status = lstatSync(path);
+          if (status.isSymbolicLink()) failures.push(`built-output-symlink:${locator}`);
+          else if (status.isDirectory()) {
+            const realDirectory = realpathSync(path);
+            if (realDirectory !== realRoot && !realDirectory.startsWith(`${realRoot}${sep}`)) failures.push(`built-output-path-escape:${locator}`);
+            else walk(path);
+          } else if (status.isFile()) {
+            if (status.nlink !== 1) {
+              failures.push(`built-output-hardlink:${locator}`);
+              continue;
+            }
+            const realFile = realpathSync(path);
+            if (!realFile.startsWith(`${realRoot}${sep}`)) {
+              failures.push(`built-output-path-escape:${locator}`);
+              continue;
+            }
+            const bytes = readFileSync(path);
+            inventory.push({ path: locator, bytes: bytes.length, sha256: sha256(bytes) });
+            for (const finding of scanText(bytes.toString('utf8'))) findings.push({ path: locator, finding });
+          } else failures.push(`built-output-special-file:${locator}`);
+        }
+      };
+      walk(absoluteRoot);
+    }
+  }
+  inventory.sort((a, b) => Buffer.from(a.path).compare(Buffer.from(b.path)));
+  findings.sort((a, b) => `${a.path}:${a.finding}`.localeCompare(`${b.path}:${b.finding}`));
+  const requiredIndex = inventory.some(({ path }) => path === 'index.html');
+  if (existsSync(absoluteRoot) && inventory.length === 0) failures.push('built-output-empty');
+  if (existsSync(absoluteRoot) && !requiredIndex) failures.push('built-output-index-missing');
+  const inventorySha256 = sha256(Buffer.from(JSON.stringify(inventory)));
+  return {
+    schemaVersion: 'i5-02-simple-vite-v3-built-output-scan-v1',
+    result: failures.length === 0 && findings.length === 0 ? 'pass' : 'fail',
+    requiredIndex,
+    inventory,
+    inventorySha256,
+    contentCoverage: 'every-regular-file',
+    findings,
+    failures: [...new Set(failures)].sort(),
+  };
+}
+
 export function validateOwnership(ledger, expected = {}) {
   const failures = [];
   for (const key of ['pid', 'processGroup', 'fingerprint', 'cwd', 'command', 'root', 'port', 'runId', 'childHandle']) {
@@ -80,7 +146,8 @@ export function validateEvidenceManifest(manifest) {
       || !Array.isArray(locators.journeyFacts) || locators.journeyFacts.length !== 2
       || typeof locators.axe !== 'string'
       || typeof locators.noJsInventory !== 'string'
-      || typeof locators.noJsResponse !== 'string') failures.push('artifact-locators');
+      || typeof locators.noJsResponse !== 'string'
+      || (closedRun && locators.builtOutputScan !== 'security/built-output-scan.json')) failures.push('artifact-locators');
   if (!Array.isArray(manifest?.testNameInventory)
       || manifest.testNameInventory.length < 5
       || !manifest.testNameInventory.some(name => name.includes('V3-02'))
@@ -96,6 +163,12 @@ export function validateEvidenceManifest(manifest) {
   const scan = manifest?.scanSummary;
   if (!scan || scan.result !== 'pass' || scan.findings !== 0
       || (closedRun && (scan.finalRetained !== 'pass' || !(scan.checks >= 6)))) failures.push('scan-summary');
+  const builtOutput = manifest?.builtOutputSummary;
+  if (closedRun && (!builtOutput || builtOutput.result !== 'pass' || builtOutput.requiredIndex !== true
+      || !(builtOutput.inventoryCount > 0) || !/^[0-9a-f]{64}$/.test(builtOutput.inventorySha256 || '')
+      || builtOutput.findings !== 0 || builtOutput.failures !== 0 || builtOutput.scannedBeforeCleanup !== true
+      || scan?.builtOutputInventoryCount !== builtOutput.inventoryCount
+      || scan?.builtOutputInventorySha256 !== builtOutput.inventorySha256)) failures.push('built-output-summary');
   const owned = manifest?.ownedResourceSummary;
   if (!owned || owned.result !== 'pass' || owned.serverCount !== 1
       || owned.port !== contract.port || owned.cleanup !== 'pass'
@@ -126,6 +199,12 @@ export function validateEvidenceManifest(manifest) {
       || !(fourthTargetedRed.rc > 0)
       || fourthTargetedRed.assertionIds?.length !== 1
       || fourthTargetedRed.log !== 'tdd/fourth-targeted-review-fix-red/focused-tests.tap')) failures.push('fourth-targeted-review-fix-red');
+  const fifthTargetedRed = manifest?.fifthTargetedReviewFixRed;
+  if (closedRun && (!fifthTargetedRed || fifthTargetedRed.result !== 'pass'
+      || fifthTargetedRed.sourceSha !== FIFTH_TARGETED_REVIEW_FIX_RED_SHA
+      || !(fifthTargetedRed.rc > 0)
+      || fifthTargetedRed.assertionIds?.length !== 3
+      || fifthTargetedRed.log !== 'tdd/fifth-targeted-review-fix-red/focused-tests.tap')) failures.push('fifth-targeted-review-fix-red');
   return failures;
 }
 
@@ -486,7 +565,17 @@ async function execute(mode, implementationInput) {
   }
   const lockAfter = hashFile('spikes/web/candidates/vite/package-lock.json');
   const packageAfter = hashFile('spikes/web/candidates/vite/package.json');
-  const inventory = existsSync(resolve(CANDIDATE, 'dist')) ? readdirSync(resolve(CANDIDATE, 'dist'), { recursive: true }).filter(path => statSync(resolve(CANDIDATE, 'dist', path)).isFile()).sort() : [];
+  let inventory = [];
+  let builtOutputScan = null;
+  if (mode === 'gate') {
+    try {
+      builtOutputScan = scanBuiltOutput(resolve(CANDIDATE, 'dist'));
+    } catch {
+      builtOutputScan = { schemaVersion: 'i5-02-simple-vite-v3-built-output-scan-v1', result: 'fail', requiredIndex: false, inventory: [], inventorySha256: sha256(Buffer.from('[]')), contentCoverage: 'every-regular-file', findings: [], failures: ['built-output-scan-error'] };
+    }
+    inventory = builtOutputScan.inventory.map(({ path }) => path);
+    writeFileSync(resolve(directory, 'built-output-scan.json'), `${JSON.stringify(builtOutputScan, null, 2)}\n`);
+  }
   const unit = results.find(({ name }) => name === 'unit');
   const smoke = results.find(({ name }) => name === 'playwright');
   let pass;
@@ -494,14 +583,16 @@ async function execute(mode, implementationInput) {
     const named = `${unit?.stdout || ''}${unit?.stderr || ''}${smoke?.stdout || ''}${smoke?.stderr || ''}`;
     pass = results[0]?.rc === 0 && results[1]?.rc === 0 && packageBefore === packageAfter && lockBefore === lockAfter && (unit?.rc !== 0 || smoke?.rc !== 0) && /V3-02/.test(named) && /V3-03|V3-04|V3-05|V3-06/.test(named) && !/ERR_MODULE_NOT_FOUND|Cannot find package|browserType\.launch: Executable doesn't exist/.test(named);
   } else {
-    pass = results.length === 6 && results.every(({ rc, timedOut }) => rc === 0 && !timedOut) && packageBefore === packageAfter && lockBefore === lockAfter;
+    pass = results.length === 6 && results.every(({ rc, timedOut }) => rc === 0 && !timedOut)
+      && packageBefore === packageAfter && lockBefore === lockAfter && builtOutputScan?.result === 'pass';
   }
   const browserInventory = smoke?.rc === 0 ? playwrightInventory(resolve(directory, 'playwright.log')) : [];
-  const summary = { schemaVersion: `i5-02-simple-vite-v3-${mode}-v1`, result: pass ? 'pass' : 'fail', runId: id, implementationInputSha: implementationInput, sourceSha: git(['rev-parse', 'HEAD']), testedTreeSha: treeSha(), authority, packageBefore, packageAfter, lockBefore, lockAfter, inventory, browserInventory, tools: { node: process.version, npm: commandVersion('npm'), chrome: commandVersion('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome') }, commands: results.map(({ name, command, rc, timedOut, durationMs }) => ({ name, command, rc, timedOut, durationMs })) };
+  const builtOutput = builtOutputScan ? { result: builtOutputScan.result, requiredIndex: builtOutputScan.requiredIndex, inventoryCount: builtOutputScan.inventory.length, inventorySha256: builtOutputScan.inventorySha256, findings: builtOutputScan.findings.length, failures: builtOutputScan.failures.length, evidence: 'built-output-scan.json' } : null;
+  const summary = { schemaVersion: `i5-02-simple-vite-v3-${mode}-v1`, result: pass ? 'pass' : 'fail', runId: id, implementationInputSha: implementationInput, sourceSha: git(['rev-parse', 'HEAD']), testedTreeSha: treeSha(), authority, packageBefore, packageAfter, lockBefore, lockAfter, inventory, builtOutput, browserInventory, tools: { node: process.version, npm: commandVersion('npm'), chrome: commandVersion('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome') }, commands: results.map(({ name, command, rc, timedOut, durationMs }) => ({ name, command, rc, timedOut, durationMs })) };
   writeFileSync(resolve(directory, 'result.json'), `${JSON.stringify(summary, null, 2)}\n`);
   if (mode === 'gate') {
     const cleanup = cleanupCandidateRuntime(directory);
-    if (cleanup.result !== 'pass') { summary.result = 'fail'; writeFileSync(resolve(directory, 'result.json'), `${JSON.stringify(summary, null, 2)}\n`); }
+    if (cleanup.result !== 'pass') { pass = false; summary.result = 'fail'; writeFileSync(resolve(directory, 'result.json'), `${JSON.stringify(summary, null, 2)}\n`); }
   }
   process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
   if (!pass) process.exitCode = 1;
@@ -589,10 +680,52 @@ function fourthTargetedReviewFixRed() {
   return { directory, result };
 }
 
+function fifthTargetedReviewFixRed() {
+  let directory = resolve(RUNTIME, 'fifth-targeted-review-fix-red');
+  if (!existsSync(resolve(directory, 'result.json')) && existsSync(resolve(ROOT, contract.retentionIndex))) {
+    const retainedIndex = JSON.parse(readFileSync(resolve(ROOT, contract.retentionIndex), 'utf8'));
+    const manifestPath = resolve(ROOT, retainedIndex.manifest?.path || '');
+    if (sha256(readFileSync(manifestPath)) !== retainedIndex.manifest.sha256) throw new Error('fifth targeted review-fix retained manifest hash mismatch');
+    directory = resolve(dirname(manifestPath), 'tdd/fifth-targeted-review-fix-red');
+  }
+  const resultPath = resolve(directory, 'result.json');
+  const logPath = resolve(directory, 'focused-tests.tap');
+  if (!existsSync(resultPath) || !existsSync(logPath)) throw new Error('fifth targeted review-fix RED evidence is unavailable');
+  const result = JSON.parse(readFileSync(resultPath, 'utf8'));
+  if (result.result !== 'pass' || result.rc === 0 || result.sourceSha !== FIFTH_TARGETED_REVIEW_FIX_RED_SHA || result.assertionIds?.length !== 3) throw new Error('fifth targeted review-fix RED evidence is invalid');
+  return { directory, result };
+}
+
+function validateBuiltOutputRecord(record) {
+  const failures = [];
+  const inventory = record?.inventory;
+  if (record?.schemaVersion !== 'i5-02-simple-vite-v3-built-output-scan-v1') failures.push('built-output-record-schema');
+  if (record?.result !== 'pass') failures.push('built-output-record-result');
+  if (record?.requiredIndex !== true) failures.push('built-output-record-index');
+  if (!Array.isArray(inventory) || inventory.length === 0) failures.push('built-output-record-inventory');
+  else {
+    const normalized = inventory.every(entry => typeof entry.path === 'string'
+      && entry.path.length > 0 && !entry.path.startsWith('/') && !entry.path.split('/').includes('..')
+      && Number.isInteger(entry.bytes) && entry.bytes >= 0 && /^[0-9a-f]{64}$/.test(entry.sha256 || ''));
+    const sorted = [...inventory].sort((a, b) => Buffer.from(a.path).compare(Buffer.from(b.path)));
+    if (!normalized || JSON.stringify(inventory) !== JSON.stringify(sorted) || new Set(inventory.map(({ path }) => path)).size !== inventory.length) failures.push('built-output-record-paths');
+    if (sha256(Buffer.from(JSON.stringify(inventory))) !== record.inventorySha256) failures.push('built-output-record-inventory-hash');
+    if (!inventory.some(({ path }) => path === 'index.html')) failures.push('built-output-record-index-inventory');
+  }
+  if (record?.contentCoverage !== 'every-regular-file') failures.push('built-output-record-coverage');
+  if (!Array.isArray(record?.findings) || record.findings.length !== 0) failures.push('built-output-record-findings');
+  if (!Array.isArray(record?.failures) || record.failures.length !== 0) failures.push('built-output-record-failures');
+  return failures;
+}
+
 export function scanRun() {
   const green = latest('gate');
   const browserEvidence = materializeBrowserEvidence(green.directory);
-  const roots = [resolve(ROOT, 'spikes/web/candidates/vite/index.html'), resolve(ROOT, 'spikes/web/candidates/vite/src'), resolve(ROOT, 'spikes/web/candidates/vite/dist'), green.directory];
+  const roots = [resolve(ROOT, 'spikes/web/candidates/vite/index.html'), resolve(ROOT, 'spikes/web/candidates/vite/src'), green.directory];
+  const builtOutputPath = resolve(green.directory, 'built-output-scan.json');
+  let builtOutput = null;
+  try { builtOutput = JSON.parse(readFileSync(builtOutputPath, 'utf8')); } catch { builtOutput = null; }
+  const builtOutputFailures = validateBuiltOutputRecord(builtOutput);
   const findings = [];
   const walk = path => {
     if (!existsSync(path)) return;
@@ -603,6 +736,7 @@ export function scanRun() {
     }
   };
   roots.forEach(walk);
+  if (Array.isArray(builtOutput?.findings)) findings.push(...builtOutput.findings.map(finding => ({ ...finding, path: `spikes/web/candidates/vite/dist/${finding.path}` })));
   const responseText = browserEvidence.response.toString('utf8');
   const documentCsp = responseText.includes(`http-equiv="Content-Security-Policy" content="${EXPECTED_CSP}"`);
   const responseCsp = browserEvidence.noJs.csp === EXPECTED_CSP;
@@ -618,7 +752,7 @@ export function scanRun() {
   const blockingAxe = (browserEvidence.axe.violations ?? []).filter(({ impact }) => impact === 'critical' || impact === 'serious');
   const axe = browserEvidence.axe.testEngine?.name === 'axe-core' && blockingAxe.length === 0;
   const checks = [
-    { id: 'content-safety', result: findings.length ? 'fail' : 'pass', details: { scannedRoots: roots.map(relativePath), ruleIds: ['privateKey', 'credential', 'absolutePrivatePath', 'email', 'phone', 'governmentIdentifier', 'unsafeInjection', 'remoteImport', 'sourceMap'] } },
+    { id: 'content-safety', result: findings.length || builtOutputFailures.length ? 'fail' : 'pass', details: { scannedRoots: roots.map(relativePath), builtOutput: { root: 'spikes/web/candidates/vite/dist', phase: 'before-cleanup', evidence: relativePath(builtOutputPath), inventoryCount: builtOutput?.inventory?.length ?? 0, inventorySha256: builtOutput?.inventorySha256 ?? null, validationFailures: builtOutputFailures }, ruleIds: ['privateKey', 'credential', 'absolutePrivatePath', 'email', 'phone', 'governmentIdentifier', 'unsafeInjection', 'remoteImport', 'sourceMap'] } },
     { id: 'csp-document', result: documentCsp ? 'pass' : 'fail', details: { expected: EXPECTED_CSP } },
     { id: 'csp-response', result: responseCsp ? 'pass' : 'fail', details: { expected: EXPECTED_CSP } },
     { id: 'same-origin', result: sameOrigin ? 'pass' : 'fail', details: { allowedOrigin: 'http://127.0.0.1:4175', projects: browserEvidence.journey.map(({ project, requestOrigins }) => ({ project, requestOrigins })) } },
@@ -655,6 +789,7 @@ function simulateRollback(destination, green, cleanup) {
   const retainedFiles = [
     resolve(destination, 'green/result.json'),
     resolve(destination, 'security/scans.json'),
+    resolve(destination, 'security/built-output-scan.json'),
     resolve(destination, 'green/browser-results/chromium-desktop/v3-05-axe-complete.json'),
   ];
   const before = Object.fromEntries(retainedFiles.map(path => [relative(destination, path).split(sep).join('/'), sha256(readFileSync(path))]));
@@ -687,7 +822,12 @@ function finalRetainedScan(destination) {
         const locator = relative(destination, path).split(sep).join('/');
         if (excluded.has(locator)) continue;
         scannedFiles += 1;
-        for (const finding of scanText(readFileSync(path, 'utf8'))) findings.push({ path: locator, finding });
+        if (locator === 'security/built-output-scan.json') {
+          const recordFailures = validateBuiltOutputRecord(JSON.parse(readFileSync(path, 'utf8')));
+          for (const finding of recordFailures) findings.push({ path: locator, finding });
+        } else {
+          for (const finding of scanText(readFileSync(path, 'utf8'))) findings.push({ path: locator, finding });
+        }
       }
     }
   };
@@ -709,11 +849,22 @@ export function retainRun() {
   const secondReviewFixRed = secondTargetedReviewFixRed();
   const thirdReviewFixRed = thirdTargetedReviewFixRed();
   const fourthReviewFixRed = fourthTargetedReviewFixRed();
+  const fifthReviewFixRed = fifthTargetedReviewFixRed();
   const green = latest('gate');
   const redResult = JSON.parse(readFileSync(resolve(red.directory, 'result.json'), 'utf8'));
   const greenResult = JSON.parse(readFileSync(resolve(green.directory, 'result.json'), 'utf8'));
   const scans = JSON.parse(readFileSync(resolve(green.directory, 'scans.json'), 'utf8'));
-  if (redResult.result !== 'pass' || greenResult.result !== 'pass' || scans.result !== 'pass') throw new Error('cannot retain failed RED/GREEN/scan');
+  const builtOutputScan = JSON.parse(readFileSync(resolve(green.directory, 'built-output-scan.json'), 'utf8'));
+  const contentSafety = scans.checkInventory?.find(({ id }) => id === 'content-safety');
+  const builtOutputBinding = greenResult.builtOutput?.result === builtOutputScan.result
+    && greenResult.builtOutput?.requiredIndex === builtOutputScan.requiredIndex
+    && greenResult.builtOutput?.inventoryCount === builtOutputScan.inventory.length
+    && greenResult.builtOutput?.inventorySha256 === builtOutputScan.inventorySha256
+    && contentSafety?.details?.builtOutput?.inventoryCount === builtOutputScan.inventory.length
+    && contentSafety?.details?.builtOutput?.inventorySha256 === builtOutputScan.inventorySha256
+    && contentSafety?.details?.builtOutput?.validationFailures?.length === 0;
+  if (redResult.result !== 'pass' || greenResult.result !== 'pass' || scans.result !== 'pass'
+      || validateBuiltOutputRecord(builtOutputScan).length || !builtOutputBinding) throw new Error('cannot retain failed RED/GREEN/scan');
   const browserEvidence = materializeBrowserEvidence(green.directory);
   const destination = resolve(ROOT, contract.retainedPrefix, green.runId);
   if (existsSync(destination)) throw new Error('immutable run destination already exists');
@@ -722,6 +873,7 @@ export function retainRun() {
   mkdirSync(resolve(destination, 'tdd/second-targeted-review-fix-red'), { recursive: true });
   mkdirSync(resolve(destination, 'tdd/third-targeted-review-fix-red'), { recursive: true });
   mkdirSync(resolve(destination, 'tdd/fourth-targeted-review-fix-red'), { recursive: true });
+  mkdirSync(resolve(destination, 'tdd/fifth-targeted-review-fix-red'), { recursive: true });
   mkdirSync(resolve(destination, 'green'), { recursive: true });
   mkdirSync(resolve(destination, 'security'), { recursive: true });
   mkdirSync(resolve(destination, 'lifecycle'), { recursive: true });
@@ -739,6 +891,10 @@ export function retainRun() {
     writeFileSync(resolve(destination, 'tdd/fourth-targeted-review-fix-red', name), content);
   }
   for (const name of ['focused-tests.tap', 'result.json']) {
+    const content = sanitize(readFileSync(resolve(fifthReviewFixRed.directory, name), 'utf8')).replace(/[ \t]+$/gm, '');
+    writeFileSync(resolve(destination, 'tdd/fifth-targeted-review-fix-red', name), content);
+  }
+  for (const name of ['focused-tests.tap', 'result.json']) {
     const content = sanitize(readFileSync(resolve(secondReviewFixRed.directory, name), 'utf8')).replace(/[ \t]+$/gm, '');
     writeFileSync(resolve(destination, 'tdd/second-targeted-review-fix-red', name), content);
   }
@@ -751,6 +907,7 @@ export function retainRun() {
   }
   copySanitized(resolve(green.directory, 'npm-audit.log'), resolve(destination, 'security/npm-audit.json'));
   copySanitized(resolve(green.directory, 'scans.json'), resolve(destination, 'security/scans.json'));
+  copySanitized(resolve(green.directory, 'built-output-scan.json'), resolve(destination, 'security/built-output-scan.json'));
   copySanitized(resolve(green.directory, 'owned-resources.json'), resolve(destination, 'lifecycle/owned-resources.json'));
   const audit = JSON.parse(readFileSync(resolve(green.directory, 'npm-audit.log'), 'utf8'));
   const browser = greenResult.browserInventory;
@@ -763,7 +920,9 @@ export function retainRun() {
     'V3-04': has('chromium-desktop', 'V3-03 V3-04') && has('chromium-narrow', 'V3-03 V3-04'),
     'V3-05': has('chromium-desktop', 'V3-05') && (browserEvidence.axe.violations ?? []).filter(({ impact }) => impact === 'critical' || impact === 'serious').length === 0,
     'V3-06': has('chromium-desktop', 'V3-06') && browserEvidence.noJs.csp === EXPECTED_CSP && browserEvidence.noJs.inventory?.length >= 13,
-    'V3-07': commandPassed('harness') && commandPassed('npm-audit') && scans.result === 'pass' && audit.metadata?.vulnerabilities?.high === 0 && audit.metadata?.vulnerabilities?.critical === 0,
+    'V3-07': commandPassed('harness') && commandPassed('npm-audit') && scans.result === 'pass'
+      && builtOutputScan.result === 'pass' && builtOutputScan.inventory.length > 0
+      && audit.metadata?.vulnerabilities?.high === 0 && audit.metadata?.vulnerabilities?.critical === 0,
   };
   const groups = contract.groups.map(id => ({ id, result: groupChecks[id] ? 'pass' : 'fail' }));
   if (groups.some(({ result }) => result !== 'pass')) throw new Error('cannot retain incomplete blocking groups');
@@ -776,6 +935,7 @@ export function retainRun() {
     axe: 'green/browser-results/chromium-desktop/v3-05-axe-complete.json',
     noJsInventory: 'green/browser-results/chromium-desktop/v3-06-no-js-inventory.json',
     noJsResponse: 'green/browser-results/chromium-desktop/v3-06-response.html',
+    builtOutputScan: 'security/built-output-scan.json',
     scan: 'security/scans.json',
     finalRetainedScan: 'security/final-retained-scan.json',
     ownership: 'lifecycle/owned-resources.json',
@@ -806,9 +966,10 @@ export function retainRun() {
     inventoryIds: browserEvidence.noJs.inventory?.map(({ id }) => id) ?? [],
     responseSha256: sha256(browserEvidence.response),
   };
-  const scanSummary = { result: scans.result, findings: scans.findings.length, checks: scans.checkInventory?.length ?? 0, checkInventory: scans.checkInventory?.map(({ id, result }) => ({ id, result })) ?? [], finalRetained: 'pass' };
+  const scanSummary = { result: scans.result, findings: scans.findings.length, checks: scans.checkInventory?.length ?? 0, checkInventory: scans.checkInventory?.map(({ id, result }) => ({ id, result })) ?? [], builtOutputInventoryCount: builtOutputScan.inventory.length, builtOutputInventorySha256: builtOutputScan.inventorySha256, finalRetained: 'pass' };
+  const builtOutputSummary = { result: builtOutputScan.result, requiredIndex: builtOutputScan.requiredIndex, inventoryCount: builtOutputScan.inventory.length, inventorySha256: builtOutputScan.inventorySha256, findings: builtOutputScan.findings.length, failures: builtOutputScan.failures.length, scannedBeforeCleanup: true };
   const ownedResourceSummary = { result: validateOwnership(ledger, { runId: green.runId }).length === 0 && rollback.result === 'pass' ? 'pass' : 'fail', serverCount: 1, port: ledger.port, cleanup: cleanup.result, rollbackSimulation: rollback.result };
-  const manifest = { schemaVersion: 'i5-02-simple-vite-v3-evidence-v1', acceptanceRevision: contract.acceptanceRevision, runId: green.runId, implementationInputSha: contract.implementationInputSha, testedSourceSha: greenResult.sourceSha, testedTreeSha: greenResult.testedTreeSha, branch: contract.branch, authorityMode: greenResult.authority.authorityMode, freshLiveHead: greenResult.authority.freshLiveHead, issue6IntegrationSha: contract.issue6IntegrationSha, fixtureIdentities: contract.fixtureIdentities, lockSha256: contract.lockSha256, tools: greenResult.tools, commands: greenResult.commands, browserInventory: browser, groups, redProvenance: { result: 'pass', testOnlySha: redResult.sourceSha, testedTreeSha: redResult.testedTreeSha }, targetedReviewFixRed: { result: reviewFixRed.result.result, sourceSha: reviewFixRed.result.sourceSha, rc: reviewFixRed.result.rc, assertionIds: reviewFixRed.result.assertionIds, log: 'tdd/review-fix-red/focused-tests.tap' }, secondTargetedReviewFixRed: { result: secondReviewFixRed.result.result, sourceSha: secondReviewFixRed.result.sourceSha, testedTreeSha: secondReviewFixRed.result.testedTreeSha, rc: secondReviewFixRed.result.rc, assertionIds: secondReviewFixRed.result.assertionIds, log: 'tdd/second-targeted-review-fix-red/focused-tests.tap' }, thirdTargetedReviewFixRed: { result: thirdReviewFixRed.result.result, sourceSha: thirdReviewFixRed.result.sourceSha, testedTreeSha: thirdReviewFixRed.result.testedTreeSha, rc: thirdReviewFixRed.result.rc, assertionIds: thirdReviewFixRed.result.assertionIds, log: 'tdd/third-targeted-review-fix-red/focused-tests.tap' }, fourthTargetedReviewFixRed: { result: fourthReviewFixRed.result.result, sourceSha: fourthReviewFixRed.result.sourceSha, testedTreeSha: fourthReviewFixRed.result.testedTreeSha, rc: fourthReviewFixRed.result.rc, assertionIds: fourthReviewFixRed.result.assertionIds, log: 'tdd/fourth-targeted-review-fix-red/focused-tests.tap' }, evidenceClosureRedSha: EVIDENCE_CLOSURE_RED_SHA, testNameInventory, artifactLocators, axeSummary, noJsFacts, scanSummary, ownedResourceSummary, audit: audit.metadata?.vulnerabilities, redaction: { result: 'pass', findings: [] }, cleanupRollback: rollback, limitations: ['Chromium and axe automation are not a full WCAG or screen-reader conformance claim.', 'Production accessibility and manual UAT remain deferred.'] };
+  const manifest = { schemaVersion: 'i5-02-simple-vite-v3-evidence-v1', acceptanceRevision: contract.acceptanceRevision, runId: green.runId, implementationInputSha: contract.implementationInputSha, testedSourceSha: greenResult.sourceSha, testedTreeSha: greenResult.testedTreeSha, branch: contract.branch, authorityMode: greenResult.authority.authorityMode, freshLiveHead: greenResult.authority.freshLiveHead, issue6IntegrationSha: contract.issue6IntegrationSha, fixtureIdentities: contract.fixtureIdentities, lockSha256: contract.lockSha256, tools: greenResult.tools, commands: greenResult.commands, browserInventory: browser, groups, redProvenance: { result: 'pass', testOnlySha: redResult.sourceSha, testedTreeSha: redResult.testedTreeSha }, targetedReviewFixRed: { result: reviewFixRed.result.result, sourceSha: reviewFixRed.result.sourceSha, rc: reviewFixRed.result.rc, assertionIds: reviewFixRed.result.assertionIds, log: 'tdd/review-fix-red/focused-tests.tap' }, secondTargetedReviewFixRed: { result: secondReviewFixRed.result.result, sourceSha: secondReviewFixRed.result.sourceSha, testedTreeSha: secondReviewFixRed.result.testedTreeSha, rc: secondReviewFixRed.result.rc, assertionIds: secondReviewFixRed.result.assertionIds, log: 'tdd/second-targeted-review-fix-red/focused-tests.tap' }, thirdTargetedReviewFixRed: { result: thirdReviewFixRed.result.result, sourceSha: thirdReviewFixRed.result.sourceSha, testedTreeSha: thirdReviewFixRed.result.testedTreeSha, rc: thirdReviewFixRed.result.rc, assertionIds: thirdReviewFixRed.result.assertionIds, log: 'tdd/third-targeted-review-fix-red/focused-tests.tap' }, fourthTargetedReviewFixRed: { result: fourthReviewFixRed.result.result, sourceSha: fourthReviewFixRed.result.sourceSha, testedTreeSha: fourthReviewFixRed.result.testedTreeSha, rc: fourthReviewFixRed.result.rc, assertionIds: fourthReviewFixRed.result.assertionIds, log: 'tdd/fourth-targeted-review-fix-red/focused-tests.tap' }, fifthTargetedReviewFixRed: { result: fifthReviewFixRed.result.result, sourceSha: fifthReviewFixRed.result.sourceSha, testedTreeSha: fifthReviewFixRed.result.testedTreeSha, rc: fifthReviewFixRed.result.rc, assertionIds: fifthReviewFixRed.result.assertionIds, log: 'tdd/fifth-targeted-review-fix-red/focused-tests.tap' }, evidenceClosureRedSha: EVIDENCE_CLOSURE_RED_SHA, testNameInventory, artifactLocators, axeSummary, noJsFacts, scanSummary, builtOutputSummary, ownedResourceSummary, audit: audit.metadata?.vulnerabilities, redaction: { result: 'pass', findings: [] }, cleanupRollback: rollback, limitations: ['Chromium and axe automation are not a full WCAG or screen-reader conformance claim.', 'Production accessibility and manual UAT remain deferred.'] };
   if (validateEvidenceManifest(manifest).length) throw new Error('generated manifest is invalid');
   writeFileSync(resolve(destination, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
   const finalScan = finalRetainedScan(destination);
