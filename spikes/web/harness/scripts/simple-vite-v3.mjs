@@ -181,6 +181,8 @@ export function validateEvidenceManifest(manifest) {
       || owned.port !== contract.port || owned.cleanup !== 'pass'
       || owned.rollbackSimulation !== 'pass') failures.push('owned-resource-summary');
   if (closedRun && manifest?.evidenceClosureRedSha !== EVIDENCE_CLOSURE_RED_SHA) failures.push('evidence-closure-red-sha');
+  const correction = manifest?.correctionAttestation;
+  if (correction && (correction.path !== 'correction.json' || !/^[0-9a-f]{64}$/.test(correction.sha256 || ''))) failures.push('correction-attestation');
   if (closedRun && !['feature-branch', 'detached-exact-live'].includes(manifest?.authorityMode)) failures.push('authority-mode');
   if (closedRun && (!/^[0-9a-f]{40}$/.test(manifest?.freshLiveHead || '')
       || manifest?.targetedReviewFixRed?.result !== 'pass'

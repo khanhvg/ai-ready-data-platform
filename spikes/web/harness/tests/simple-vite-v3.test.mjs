@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { chmodSync, existsSync, linkSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, linkSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
@@ -142,7 +142,7 @@ test('V3-07 authorized retained correction replaces exactly 12 paths and binds i
   assert.equal(existsSync(resolve(ROOT, correctionLocator)), true, 'authorized correction attestation must exist');
   const correction = JSON.parse(readFileSync(resolve(ROOT, correctionLocator), 'utf8'));
   assert.equal(correction.ownerCommentUrl, 'https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5038913224');
-  assert.deepEqual(correction.replacement, { class: 'local-absolute-path', count: 12, from: '/private/tmp/vite-fifth-red-adf79ae', to: '<WORKSPACE>' });
+  assert.deepEqual(correction.replacement, { class: 'local-absolute-path', count: 12, from: 'raw-local-workspace-prefix', to: '<WORKSPACE>' });
   assert.equal(correction.reason, 'local-absolute-path-redaction');
   assert.equal(correction.contentMeaningChanged, false);
   assert.deepEqual(correction.priorHashes, {
@@ -162,6 +162,36 @@ test('V3-07 authorized retained correction replaces exactly 12 paths and binds i
   assert.equal(manifest.correctionAttestation.sha256, sha256(readFileSync(resolve(ROOT, correctionLocator))));
   const hashIndex = JSON.parse(readFileSync(resolve(ROOT, run, 'hash-index.json'), 'utf8'));
   assert.ok(hashIndex.files.some(entry => entry.path === 'correction.json' && entry.sha256 === manifest.correctionAttestation.sha256));
+
+  const canonicalManifest = structuredClone(manifest);
+  delete canonicalManifest.correctionAttestation.sha256;
+  assert.equal(correction.correctedHashes.manifestSha256, sha256(`${JSON.stringify(canonicalManifest, null, 2)}\n`));
+  const canonicalHashIndex = structuredClone(hashIndex);
+  for (const path of ['correction.json', 'manifest.json']) delete canonicalHashIndex.files.find(entry => entry.path === path).sha256;
+  assert.equal(correction.correctedHashes.hashIndexSha256, sha256(`${JSON.stringify(canonicalHashIndex, null, 2)}\n`));
+
+  const indexed = new Map(hashIndex.files.map(entry => [entry.path, entry]));
+  const actual = [];
+  const walk = directory => {
+    for (const name of readdirSync(directory).sort()) {
+      const path = resolve(directory, name);
+      if (statSync(path).isDirectory()) walk(path);
+      else if (!path.endsWith('/hash-index.json')) actual.push(path);
+    }
+  };
+  walk(resolve(ROOT, run));
+  assert.deepEqual([...indexed.keys()], actual.map(path => path.slice(resolve(ROOT, run).length + 1)));
+  for (const path of actual) {
+    const locator = path.slice(resolve(ROOT, run).length + 1);
+    const bytes = readFileSync(path);
+    assert.equal(indexed.get(locator).bytes, bytes.length, locator);
+    assert.equal(indexed.get(locator).sha256, sha256(bytes), locator);
+    if (locator !== 'security/final-retained-scan.json') assert.deepEqual(scanText(bytes.toString('utf8')), [], locator);
+  }
+  const finalScan = JSON.parse(readFileSync(resolve(ROOT, run, 'security/final-retained-scan.json'), 'utf8'));
+  assert.equal(finalScan.result, 'pass');
+  assert.equal(finalScan.scannedFiles, hashIndex.files.length - 1, 'every indexed text file except the scan record itself must be covered');
+  assert.deepEqual(finalScan.findings, []);
 });
 
 test('V3-07 scanner context keeps authored injection detection while built output excludes only that rule', async () => {
