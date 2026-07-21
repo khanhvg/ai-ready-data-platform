@@ -5,9 +5,12 @@ import hashlib
 import json
 import os
 import pathlib
+import resource
+import signal
 import stat
 import subprocess
 import sys
+import tempfile
 import time
 from typing import Any
 
@@ -87,22 +90,52 @@ def launch(argv: list[str]) -> int:
     python = _verified_python()
     workspace = python.parents[2]
     command = [str(python), "-m", "scripts.learning_contracts.check", *argv]
+    limits = resource_limits()
+    deadline = limits.get(argv[0] if argv else "", 30)
+    def apply_limits() -> None:
+        resource.setrlimit(resource.RLIMIT_FSIZE, (limits["streamBytes"], limits["streamBytes"]))
+        resource.setrlimit(resource.RLIMIT_CPU, (deadline, deadline + 5))
     started = time.monotonic()
-    try:
-        result = subprocess.run(command, cwd=ROOT, env=_clean_environment(workspace), stdin=subprocess.DEVNULL, capture_output=True, timeout=300, check=False)
-    except subprocess.TimeoutExpired as exc:
-        raise SystemExit("RESOURCE_TIME_LIMIT") from exc
-    if len(result.stdout) > 2 * 1024 * 1024 or len(result.stderr) > 2 * 1024 * 1024:
-        raise SystemExit("RESOURCE_OUTPUT_LIMIT")
-    if time.monotonic() - started > 300:
+    failure: str | None = None
+    with tempfile.TemporaryFile() as stdout_file, tempfile.TemporaryFile() as stderr_file:
+        process = subprocess.Popen(command, cwd=ROOT, env=_clean_environment(workspace), stdin=subprocess.DEVNULL, stdout=stdout_file, stderr=stderr_file, start_new_session=True, preexec_fn=apply_limits)
+        while process.poll() is None:
+            if time.monotonic() - started > deadline:
+                failure = "RESOURCE_TIME_LIMIT"
+            elif os.fstat(stdout_file.fileno()).st_size > limits["streamBytes"] or os.fstat(stderr_file.fileno()).st_size > limits["streamBytes"]:
+                failure = "RESOURCE_OUTPUT_LIMIT"
+            else:
+                observed = subprocess.run(["/bin/ps", "-o", "rss=", "-p", str(process.pid)], capture_output=True, text=True, check=False, timeout=2)
+                rss_kib = int(observed.stdout.strip() or "0")
+                if rss_kib * 1024 > limits["rssBytes"]:
+                    failure = "RESOURCE_RSS_LIMIT"
+            if failure:
+                try:
+                    os.killpg(process.pid, signal.SIGTERM)
+                    process.wait(timeout=5)
+                except (ProcessLookupError, subprocess.TimeoutExpired):
+                    try: os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError: pass
+                    process.wait(timeout=5)
+                break
+            time.sleep(0.02)
+        stdout_file.seek(0); stderr_file.seek(0)
+        stdout = stdout_file.read(limits["streamBytes"] + 1); stderr = stderr_file.read(limits["streamBytes"] + 1)
+    if failure:
+        raise SystemExit(failure)
+    if time.monotonic() - started > deadline:
         raise SystemExit("RESOURCE_TIME_LIMIT")
-    sys.stdout.buffer.write(result.stdout); sys.stderr.buffer.write(result.stderr)
-    return result.returncode
+    if process.returncode == -signal.SIGXFSZ or (process.returncode and max(len(stdout), len(stderr)) >= limits["streamBytes"]):
+        raise SystemExit("RESOURCE_OUTPUT_LIMIT")
+    if len(stdout) > limits["streamBytes"] or len(stderr) > limits["streamBytes"]:
+        raise SystemExit("RESOURCE_OUTPUT_LIMIT")
+    sys.stdout.buffer.write(stdout); sys.stderr.buffer.write(stderr)
+    return process.returncode
 
 
 def resource_limits() -> dict[str, int]:
     """Return enforceable public command and process ceilings."""
-    return {}
+    return {"learning-contracts-check": 120, "api-contracts-check": 60, "lesson-check": 60, "evidence-verify": 30, "streamBytes": 2 * 1024 * 1024, "runBytes": 256 * 1024 * 1024, "rssBytes": 2 * 1024 * 1024 * 1024}
 
 
 if __name__ == "__main__":
