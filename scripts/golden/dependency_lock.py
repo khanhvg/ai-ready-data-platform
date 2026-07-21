@@ -42,17 +42,24 @@ def verify_lock(path: pathlib.Path = LOCK) -> dict[str, str]:
     if any(token in active for token in forbidden) or "--only-binary :all:" not in active:
         raise LockError("LOCK_POLICY_INVALID")
     packages = {}
-    for line in text.splitlines():
+    lines = text.splitlines()
+    package_rows: list[int] = []
+    for row, line in enumerate(lines):
         match = re.match(r"^([A-Za-z0-9_.-]+)==([^ \\]+) \\$", line)
         if match:
             key = re.sub(r"[-_.]+", "-", match.group(1)).lower()
             if key in packages:
                 raise LockError("LOCK_DUPLICATE_DISTRIBUTION")
             packages[key] = match.group(2)
+            package_rows.append(row)
     if len(packages) != EXPECTED_DISTRIBUTIONS or packages.get("rfc8785") != "0.1.4":
         raise LockError("DEPENDENCY_LOCK_DRIFT")
-    if any("--hash=sha256:" not in block for block in text.split("\n# via")[:0]):
-        raise LockError("LOCK_HASH_MISSING")
+    for index, row in enumerate(package_rows):
+        end = package_rows[index + 1] if index + 1 < len(package_rows) else len(lines)
+        hashes = [line.strip().removesuffix(" \\") for line in lines[row + 1:end]
+                  if line.strip().startswith("--hash=")]
+        if not hashes or any(re.fullmatch(r"--hash=sha256:[0-9a-f]{64}", item) is None for item in hashes):
+            raise LockError("LOCK_HASH_MISSING")
     return packages
 
 

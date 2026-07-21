@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import hashlib
 import pathlib
+import tempfile
 import unittest
 
 
@@ -47,6 +48,31 @@ class DependencyLockTests(unittest.TestCase):
         self.assertIn('"--require-hashes"', text)
         self.assertIn('"--only-binary=:all:"', text)
         self.assertIn('"--no-deps"', text)
+
+    def test_structural_verifier_rejects_a_package_without_hashes(self) -> None:
+        module = ROOT / "scripts/golden/dependency_lock.py"
+        spec = importlib.util.spec_from_file_location("golden_dependency_lock_hashes", module)
+        loaded = importlib.util.module_from_spec(spec)
+        assert spec and spec.loader
+        spec.loader.exec_module(loaded)
+        original = (ROOT / "requirements/golden-py312-macos-arm64.lock").read_text()
+        tampered = original.replace(
+            "agate==1.9.1 \\\n"
+            "    --hash=sha256:1cf329510b3dde07c4ad1740b7587c9c679abc3dcd92bb1107eabc10c2e03c50\n",
+            "agate==1.9.1 \\\n",
+            1,
+        )
+        self.assertNotEqual(original, tampered, "REVIEW-RED-LOCK-HASH-COMPLETENESS")
+        with tempfile.TemporaryDirectory() as temp:
+            candidate = pathlib.Path(temp) / "candidate.lock"
+            candidate.write_text(tampered)
+            loaded.EXPECTED_LOCK_SHA = hashlib.sha256(candidate.read_bytes()).hexdigest()
+            with self.assertRaisesRegex(
+                loaded.LockError,
+                "LOCK_HASH_MISSING",
+                msg="REVIEW-RED-LOCK-HASH-COMPLETENESS",
+            ):
+                loaded.verify_lock(candidate)
 
 
 if __name__ == "__main__":
