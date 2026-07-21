@@ -6,7 +6,8 @@
 - Fresh `origin/main` observed during planning: `3cd3d41f71582774e8d9656a51d1044035f4503c`.
 - Fresh `origin/integration/issue-5-local-learning` equals the input SHA.
 - Issue #6 is shipped at the input SHA. Issue #8 is OPEN with no released Stage A SHA.
-- Issue #9 is OPEN with `triaged`, `risk:high`, `tdd`, `security:S3`, and `backend`.
+- At validation input, Issue #9 is OPEN with `ready for plan validation`, `risk:high`, `tdd`,
+  `security:S3`, and `backend`; `triaged` is no longer present.
 - This document plans future work. It does not validate, audit, implement, authorize cook, create a
   PR, merge, or waive exact-head human approval.
 
@@ -32,7 +33,8 @@
 
 ```text
 .artifacts/workspaces/runner/
-  service/<launch-id>/{runner.sock,launch.json,secret,containment-probe.json}
+  service/<launch-id>/{runner.sock,launch.json,containment-probe.json}
+  service/<launch-id>/secrets/{bearer-token,csrf-token}
   namespaces/<workspace-id>/
     .runner-owner.json
     state.sqlite3
@@ -110,11 +112,21 @@ merged/released 40-hex SHA. The implementer must then:
   mutation CSRF value are written to separate `0600` files outside child-readable roots. They are
   delivered only to the future server-side BFF; never returned in a response, URL, cookie,
   browser bundle, log, evidence, child environment, or workspace.
+- Session boundary: both credentials are bound to the exact launch ID and exact UDS inode or
+  kernel-selected loopback port, become invalid when that listener exits, and are replaced on
+  every restart. A credential or request from a prior launch is rejected before body parsing or
+  operation/audit allocation.
 - Origin policy: BFF calls are server-to-server and must omit `Origin`. Any `Origin` header,
   `Cookie`, browser `Sec-Fetch-Site` value other than `none`/absent, CORS preflight, form/simple
   content type, missing/duplicate auth header, or missing/duplicate CSRF header on a mutation is
   rejected before body parsing and before operation allocation. Responses emit no permissive
   CORS headers.
+- Request framing is fail-closed: Phase 2 must derive and pin a finite maximum serialized body
+  from the released Issue #8 request schemas and record the accepted media type/framing rules.
+  Ambiguous or duplicate length, transfer-encoding/chunked bodies, invalid UTF-8/JSON, trailing
+  bytes, and over-limit headers/body are rejected before typed operation allocation. If the
+  released request matrix cannot yield an exact bound, Phase 4 is blocked rather than assigning a
+  permissive local default.
 - Only exact released runner-authority operations are routable. Health is read-only. Every
   mutation requires released typed body validation, bearer, CSRF, correlation, and idempotency.
   The browser has no direct privileged execution path.
@@ -129,6 +141,14 @@ The initial semantic allow-list remains exactly:
 The wire shapes, versions, argument names, state transitions, and evidence fields come only from
 the released Issue #8 contract. If the release differs, the dependency gate decides; this plan
 does not guess a schema.
+
+Version negotiation is an exact-set match against the Issue #8 released operation matrix. The
+request must identify a released operation/command version exactly as that contract requires;
+unknown, retired, malformed, duplicated, or cross-command versions fail before descriptor lookup,
+and there is no implicit latest-version default, range match, downgrade, coercion, or compatibility
+alias unless the released contract explicitly defines it. Startup advertises only the pinned
+readable/current versions and their hashes from `released-contract-lock.json`; an unsupported
+matrix keeps readiness false.
 
 Each resolved descriptor contains an app-owned execution policy: exact command ID/contract
 version, absolute interpreter/binary and entrypoint, Git blob/SHA-256, fixed argv template,
@@ -158,16 +178,24 @@ staging/evidence write-set; the Git base and entrypoints are read-only. A startu
 network denial, base-write denial, workspace write success, child cleanup, and required pipeline
 imports. Probe failure sets readiness false with `RUNNER_CONTAINMENT_UNAVAILABLE`.
 
+Before any runner RED or product cook, Phase 1 must admit one Darwin-native descendant-control
+mechanism by proving, with deterministic barriers, that it observes, accounts for, terminates, and
+reaps a rapid fork plus double-fork/`setsid` process without relying on a lucky 100 ms ancestry
+sample. Process-group cleanup and polling may be defense in depth, but polling alone is not an
+accepted capability. If the exact no-sudo/no-container host cannot provide this guarantee, STOP
+and re-plan a narrower disabled runner; do not claim aggregate CPU/RSS/process quotas or complete
+descendant cleanup.
+
 One runner-wide mutation and one mutation per workspace are allowed concurrently. Exact hard
 bounds for a child operation on the 16 GiB host:
 
 | Resource | Bound | Enforcement |
 |---|---:|---|
 | Wall time | prepare/reset/configure 30 s; generate/load/export/verify 120 s; dbt 300 s | monotonic deadline, TERM 5 s, KILL/reap 5 s |
-| Aggregate process-tree CPU | 600 CPU-seconds maximum; descriptor may lower | `RLIMIT_CPU` per child plus 100 ms tree accounting |
-| Aggregate process-tree RSS | 3 GiB | 100 ms tree accounting; immediate process-tree kill |
+| Aggregate process-tree CPU | 600 CPU-seconds maximum; descriptor may lower | `RLIMIT_CPU` per child plus admitted descendant accounting at ≤100 ms |
+| Aggregate process-tree RSS | 3 GiB | admitted descendant accounting at ≤100 ms; immediate process-tree kill |
 | Workspace mutable allocation | 4 GiB logical **and** allocated bytes; 6 GiB free-space preflight | walk opened generation only; `RLIMIT_FSIZE` 1 GiB/file |
-| Descendants | 16 live processes | PID/start-time tree tracking; kill escaped sessions too |
+| Descendants | 16 live processes | admitted fork/reparent tracking + PID/start identity; kill/reap escaped sessions too |
 | File descriptors | 256/process | `RLIMIT_NOFILE` |
 | stdout/stderr | 2 MiB each; retained sanitized preview 128 KiB each | descriptor-backed files, overflow kills run; full hash/count retained |
 

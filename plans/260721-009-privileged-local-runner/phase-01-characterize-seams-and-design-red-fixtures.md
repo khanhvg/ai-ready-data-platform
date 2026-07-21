@@ -31,6 +31,8 @@ independent validation, and readiness gates clear.
 - Design deterministic, harmless malicious fixtures for every required RED family.
 - Prove expert and future learner namespaces can be disjoint without changing existing defaults.
 - Identify any truly missing seam; do not edit it in this phase.
+- Prove or reject the exact Darwin descendant-control capability before any product/RED cook; a
+  100 ms ancestry poll by itself is not admissible.
 
 ## Architecture and Characterization Matrix
 
@@ -70,13 +72,16 @@ independent validation, and readiness gates clear.
 2. Characterize each existing seam with private temporary paths; do not run broad clean, Docker,
    Airflow service, network/cloud, or production-size data.
 3. Model generated workspace profile paths for dbt and prove the base project can remain read-only.
-4. Build only test fixtures and manifests. Fixture helpers never accept arbitrary host paths and
+4. Use deterministic barriers to design a rapid fork, double-fork/`setsid`, reparent, TERM-ignore,
+   and cleanup capability probe. STOP the future cook if no no-sudo/no-container mechanism can
+   account for and reap it without a lucky polling sample.
+5. Build only test fixtures and manifests. Fixture helpers never accept arbitrary host paths and
    terminate within their own hard timeout.
-5. Exercise namespace maps with no mutation: existing Make/Airflow defaults are `expert`; future
+6. Exercise namespace maps with no mutation: existing Make/Airflow defaults are `expert`; future
    runner paths are `learner`; record the current explicit Airflow path gap for Phase 3 RED.
-6. Produce `characterization.json` and `red-fixture-design.json` as future evidence artifacts
+7. Produce `characterization.json` and `red-fixture-design.json` as future evidence artifacts
    under the issue evidence root when the phase is eventually cooked.
-7. If an existing seam cannot be isolated, STOP with exact failing assertion/path and update the
+8. If an existing seam cannot be isolated, STOP with exact failing assertion/path and update the
    plan through independent validation/readiness before any seam modification.
 
 ## Refactor

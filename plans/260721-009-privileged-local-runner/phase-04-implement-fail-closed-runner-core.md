@@ -29,6 +29,8 @@ pipeline seams read-only and turn the corresponding Phase 3 security RED familie
 - Pinned read-only entrypoints, Python `-I`, generated workspace dbt configuration.
 - Descriptor-owned workspace paths, Seatbelt write/read/network policy and fail-closed probe.
 - Complete bounded process-tree execution and sanitized output.
+- Phase 1-admitted Darwin descendant control; no aggregate quota or cleanup claim based only on
+  periodic ancestry polling.
 
 ## Architecture
 
@@ -79,8 +81,9 @@ then quotas/output/descendants. A later class cannot be used to hide an earlier 
    close other FDs, start session/process group, and `execve` Seatbelt + pinned command.
 7. Generate minimal Seatbelt profiles from fixed policy paths. Startup functional probes prove
    base read-only, workspace write, home/secret/network denial, required imports and child cleanup.
-8. Implement process-tree PID/start tracking, 100 ms aggregate CPU/RSS/disk/process monitoring,
-   output limits, secret/private-path detection, TERM/KILL/reap and typed failure results.
+8. Implement the Phase 1-admitted fork/reparent control, PID/start tracking, ≤100 ms aggregate
+   CPU/RSS/disk/process monitoring, output limits, secret/private-path detection, TERM/KILL/reap
+   and typed failure results. Fail readiness if any descendant becomes unaccounted.
 9. Add adapters that invoke current generator/loader/dbt/export with workspace paths only. Generate
    a dbt profile below the generation; never write base profiles/targets/logs/packages.
 10. Add the characterized Airflow callable guard for every explicit mutable/config path. Reject

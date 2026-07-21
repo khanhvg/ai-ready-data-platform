@@ -27,6 +27,62 @@
 | Cross-entrypoint race | `RED-XRACE-*` | runner-vs-runner, reset/export/verify, runner-vs-Make expert non-overlap, learner-targeted Airflow/direct denial, stale fence |
 | Crash/idempotency/release | `RED-CRASH-*`, `RED-IDEMP-*`, `RED-REL-*` | kill at transaction/fsync/rename/ack boundaries, same/different request replay, eleven-asset partial/mixed/duplicate/missing |
 
+## Stable RED Assertion Catalog
+
+These IDs are fixed by the independently validated plan and must appear unchanged in the future
+machine-readable RED manifest. They name app-test assertions, not Issue #8 wire problem codes. The
+exact released typed problem/status for each denial is bound in Phase 2; absence of a compatible
+mapping blocks cook. Every row must first fail after its fixture/precondition marker is reached and
+before the owning runner behavior exists. A missing tool, unsupported host, absent dependency,
+fixture/setup failure, skip, xfail, or failure before the named marker is not valid RED evidence.
+
+| Stable ID | Fixture or barrier | Exact pre-behavior RED oracle |
+|---|---|---|
+| `RED-INT-001` | Unapproved interpreter/binary | Descriptor resolution refuses before spawn; argv probe records zero child |
+| `RED-INT-002` | Entrypoint byte/blob swap | Hash/blob preflight refuses before workspace mutation or spawn |
+| `RED-INT-003` | Runtime-lock/interpreter-version drift | Service remains not-ready and allocates no operation/workspace |
+| `RED-IMP-001` | Workspace shadow module and `PYTHONPATH` canary | Canary is never imported; module origin is the pinned runtime or execution refuses |
+| `RED-IMP-002` | `PYTHONSTARTUP`, `sitecustomize`, `usercustomize` canaries | No startup canary executes or reaches output/evidence |
+| `RED-IMP-003` | Unapproved dbt plugin/profile/package hook | Hook is absent from the admitted entry-point set and execution refuses before dbt starts |
+| `RED-ARGV-001` | Unknown command/field/version/argument | Strict released decoding refuses before descriptor lookup or process allocation |
+| `RED-ARGV-002` | Metacharacter, flag smuggling, selector or Terraform-like option | Argv probe sees zero child or the one exact fixed list; injected token never appears |
+| `RED-ARGV-003` | Environment/CWD/path/URL/executable override | Strict decoding refuses; no caller value reaches descriptor, env, CWD, or child |
+| `RED-PATH-001` | Absolute, parent, NUL, Unicode/alternate-separator input | Path admission refuses before filesystem mutation |
+| `RED-PATH-002` | Symlink, hardlink, FIFO/device/socket destination | Descriptor/type/link identity refuses; outside inode is unchanged |
+| `RED-PATH-003` | Parent/child/output/pointer/temp swap barrier | Use-time identity selects the retained safe inode or returns typed failure; attacker inode is unchanged |
+| `RED-PATH-004` | Foreign marker, mount/device change, ambiguous cleanup root | Reset/rollback refuses cleanup and preserves the complete tree for inspection |
+| `RED-ENV-001` | AWS/cloud/token/password/key/proxy/SSH/Docker/tracing canaries | Child env contains none of the canary names/values and evidence scan finds none |
+| `RED-ENV-002` | Writable HOME/config/cache/startup path and env dump | Writes stay in generated private roles; raw env/home/private path is not persisted |
+| `RED-NET-001` | DNS, TCP and UDP outbound probes | Every network operation fails inside containment and produces no external side effect |
+| `RED-NET-002` | TCP/UDP listener probe | Child cannot bind/listen; runner exposes only its admitted private listener |
+| `RED-QUOTA-001` | Wall/CPU spin | Deadline or aggregate CPU bound terminates and reaps the owned tree; state/pointer does not advance |
+| `RED-QUOTA-002` | RSS allocator | Aggregate RSS bound terminates and reaps the owned tree with bounded evidence |
+| `RED-QUOTA-003` | Logical/allocated disk, sparse/large file, FD/process fan-out | First exact bound breach fails the operation; outside/base state and current pointer are unchanged |
+| `RED-OUT-001` | stdout/stderr flood | Crossing either 2 MiB stream cap terminates the operation; retained preview is at most 128 KiB per stream |
+| `RED-OUT-002` | Binary, secret and private-path output canaries | Publication refuses raw content; only permitted digest/count/typed reason can remain |
+| `RED-DESC-001` | TERM-ignore grandchild | TERM then KILL reaps every admitted descendant; postcheck finds none |
+| `RED-DESC-002` | Rapid double-fork/reparent plus `setsid` barrier | Phase 1-admitted mechanism accounts for and reaps it without a lucky poll; otherwise readiness fails |
+| `RED-BASE-001` | Create/modify/chmod/delete/rename against Git base | Containment denies every mutation and protected hashes remain exact |
+| `RED-BASE-002` | Hardlink/symlink from workspace to base/protected file | Link operation/use refuses and both source and target identities/hashes remain exact |
+| `RED-BROWSER-001` | Forged/missing/duplicate Host and DNS-rebinding host | Request is rejected before body read and operation/audit allocation |
+| `RED-BROWSER-002` | Origin, cookie, browser Fetch Metadata, CORS preflight/simple form | Request is rejected; no permissive CORS response and no operation/audit allocation |
+| `RED-BROWSER-003` | Missing/duplicate/wrong bearer or mutation CSRF | Request is rejected before typed body allocation; credentials are never echoed |
+| `RED-BROWSER-004` | Prior-launch token, chunked/ambiguous length, invalid/oversized body | Exact listener/session/framing admission rejects before operation/audit allocation |
+| `RED-XRACE-001` | Two runner mutations at the same barrier | One live fence may commit; the other conflicts/reconciles and stale state cannot advance |
+| `RED-XRACE-002` | Reset/export/verify pair barriers | Operations serialize or conflict; database/generation/current pointer is old-or-new complete |
+| `RED-XRACE-003` | Expert default Make during learner mutation | Expert repository namespace and learner private namespace remain disjoint with no mixed artifact |
+| `RED-XRACE-004` | Learner-targeted Airflow/direct callable | Guard refuses before `_run`, import, child, or write without inherited fence capability |
+| `RED-XRACE-005` | Stale lock identity/fence epoch owner | Compare-and-commit refuses every stale state/audit/evidence/pointer write |
+| `RED-CRASH-001` | Kill before/after SQLite state and audit commit | Restart exposes only the last committed transition and complete audit prefix |
+| `RED-CRASH-002` | Kill around asset/manifest write and fsync | Incomplete marker-owned stage is non-current and quarantinable; prior release remains current |
+| `RED-CRASH-003` | Kill before/after pointer rename and parent fsync | Reader observes only prior or new verified complete pointer, never partial/mixed state |
+| `RED-CRASH-004` | Kill after result commit and before response acknowledgment | Replay returns the committed result and reconciliation creates no duplicate execution |
+| `RED-IDEMP-001` | Same key + same canonical request before/after restart | Original operation/result identity is returned; no second child or release |
+| `RED-IDEMP-002` | Same key + different canonical request | Typed conflict occurs before child/state/release mutation |
+| `RED-IDEMP-003` | Duplicate in-flight request across restart/reconcile | One execution owns the fence; replay resolves to committed or typed recoverable state |
+| `RED-REL-001` | Missing/duplicate/reordered/mixed/wrong-generation asset set | Manifest/current-pointer validation refuses; prior pointer remains exact |
+| `RED-REL-002` | Same release replay and concurrent pointer reader | Replay is idempotent and every reader resolves one complete eleven-asset manifest |
+
 ## Exact Future Commands
 
 Run from the issue implementation root and record each exact command, exit code, duration,
@@ -78,6 +134,25 @@ network-denied.
 Any scanner suppression requires a code-adjacent rationale, issue-specific independent review,
 and evidence that it narrows a false positive without weakening a test. No blanket skip/exclude.
 
+### Required S3 scan matrix
+
+Every row is required inside `runner-security-test`. The future evidence locator is exact relative
+to `.artifacts/evidence/runner/<run-id>/`; missing tools, inputs, result files, or hashes fail the
+gate. Bandit and pip-audit are intentionally absent from the current global shell and must come
+only from the future hash-complete app lock.
+
+| Scan ID | Exact command or owned check | Failure rule | Evidence locator |
+|---|---|---|---|
+| `S3-SYN-001` | `python -m compileall -q apps/lab-runner/src apps/lab-runner/tests` | Any syntax/import compilation failure or missing tree | `artifacts/s3-scan/S3-SYN-001.json` |
+| `S3-CODE-001` | `python -m bandit -q -r apps/lab-runner/src` | Any unsuppressed finding or unpinned/missing Bandit | `artifacts/s3-scan/S3-CODE-001.json` |
+| `S3-DEP-001` | `python -m pip_audit --disable-pip --no-deps -r apps/lab-runner/requirements/runner-py312-macos-arm64.lock` | Any advisory, lock mismatch, dependency resolution attempt, or missing pinned tool | `artifacts/s3-scan/S3-DEP-001.json` |
+| `S3-POL-001` | App-owned deterministic AST/policy checker over exact runner source | Any forbidden shell/eval/exec/subprocess/socket/CORS/env/delete/entrypoint/import policy | `artifacts/s3-scan/S3-POL-001.json` |
+| `S3-SRC-001` | Git changed-path allow-list plus protected blob/hash comparison | Any unowned/shared/root/portal/cloud path or protected byte drift | `artifacts/s3-scan/S3-SRC-001.json` |
+| `S3-SEC-001` | Credential/private-key/token/private-path/URL and runtime-canary byte scan | Any raw secret, credential name/value, absolute private path/URL, raw env or customer row | `artifacts/s3-scan/S3-SEC-001.json` |
+| `S3-EVD-001` | Released schema/canonicalization plus artifact size/SHA-256 closure check | Unknown/duplicate/invalid field, missing artifact, hash/size mismatch, or recursive commit claim | `artifacts/s3-scan/S3-EVD-001.json` |
+| `S3-CLOUD-001` | No-Terraform/no-cloud/no-container/no-sudo command and import policy scan | Any runtime path to Terraform, AWS/GCP/Azure, Docker/Compose, package install or privilege | `artifacts/s3-scan/S3-CLOUD-001.json` |
+| `S3-RUN-001` | Containment, process-leak, base-write, browser and cross-entrypoint negative summary | Any skipped assertion, surviving listener/child, base write, browser allocation or mixed namespace | `artifacts/s3-scan/S3-RUN-001.json` |
+
 ## Evidence Layout and Manifest
 
 Each public gate generates a collision-resistant run ID and writes only below:
@@ -93,7 +168,9 @@ The Issue #8 released evidence schema is authoritative. Phase 2 must prove it su
 the issue body; otherwise STOP. At minimum the manifest must carry:
 
 - `schemaVersion: fitness-result-v1`, command ID, owner, status/failure code/remediation;
-- exact command/argv, UTC start/finish/duration, tool/runtime/OS/architecture/memory versions;
+- exact public gate command; canonical child argv expressed only with released typed values,
+  repository-relative entrypoint/runtime IDs and workspace-role locators; digest of the actual
+  executed argv; UTC start/finish/duration; tool/runtime/OS/architecture/memory versions;
 - immutable issue input, Issue #6 release, Issue #8 Stage A release, tested-tree/output and future
   attestation/merge identities without recursive containing-commit claim;
 - contract/schema/registry/entrypoint/runtime-lock/fixture/config hashes;
@@ -106,6 +183,11 @@ Canonicalization follows the released contract. Unknown security-sensitive field
 names, non-finite values, invalid UTF-8, absolute host paths, private URLs, credentials, raw env,
 raw customer/order rows, and unbounded output fail publication. Store a digest and typed reason,
 not the rejected secret/content.
+
+The raw executed child argv is never persisted because it contains absolute private runtime and
+workspace paths. Phase 2 must prove the released evidence contract can carry the canonical argv,
+role locators and actual-argv digest above without a local extension; otherwise the dependency is
+incompatible and cook remains blocked.
 
 Logical command-owner `evidenceRoot` values may remain registry identifiers, but the physical
 canonical root is the issue-authorized `runner/<run-id>/`; Phase 2 must confirm the released
