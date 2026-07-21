@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "i5-02-recovery-retained-attestation-v1",
+  "recordedAtUtc": "2026-07-21T13:10:00Z",
+  "recoveryInputSha": "8dd2fc2e0954bd933c3584a2f50a9856ff5915d4",
+  "candidateSourceAndTestedSha": "02051ed94d4e2c920f8a65a4ecab0e08a82b946a",
+  "testedOutputCommitSha": "bef2d20f9b1d8029900b88aaea2f9991b0547590",
+  "testedTreeSha": "d990cd5f7e4fff2af74d1cd0d8a2967d8f7aa23b",
+  "decision": "no-winner",
+  "adrState": "Proposed",
+  "actualManualGateC": "incomplete",
+  "issueState": "blocked",
+  "barrierB": "closed",
+  "remainingSharedSeconds": "3944.836095708",
+  "retentionIndexSelfIndexed": false,
+  "independentReview": {
+    "performed": true,
+    "findingsResolved": [
+      "corrected candidate-modes digest",
+      "removed unsupported exact-200-percent proof claim and misleading screenshot",
+      "narrowed VoiceOver output to the exact retained generic button caption and kept semantic focus separate",
+      "added final driver-session and Hermes restoration facts",
+      "preserved the pre-existing ADR and scorecards because equal complete evidence was not obtained",
+      "added recovery artifacts to the retention index"
+    ]
+  },
+  "publication": {
+    "winnerSelected": false,
+    "numericScoresPublished": false,
+    "labelsChanged": false,
+    "pullRequestCreated": false
+  }
+}

@@ -3,10 +3,10 @@
   "issue": 7,
   "decision": "no-winner",
   "sourceSha": "02051ed94d4e2c920f8a65a4ecab0e08a82b946a",
-  "testedTreeSha": "02051ed94d4e2c920f8a65a4ecab0e08a82b946a",
+  "testedTreeSha": "d990cd5f7e4fff2af74d1cd0d8a2967d8f7aa23b",
   "implementationInputSha": "8869b9238704719caff5140d9412bb7bebcecc6f",
   "issue6MergeSha": "24be3b34c6b0fcdbd07c5800dcab349054e34713",
-  "artifactCount": 106,
+  "artifactCount": 119,
   "selfIndexed": false,
   "artifacts": [
     {
@@ -538,7 +538,71 @@
       "locator": "spikes/web/evidence/retained/vite/vite-20260721T062245Z/timer.json",
       "bytes": 370,
       "sha256": "e9530d6e9ef63ba793d6bacc9e580a8371f94778146471cc5c19b792bae10ad8"
+    },
+    {
+      "locator": "spikes/web/evidence/retained/gate-c/gate-c-recovery-20260721T1231Z/hash-index.json",
+      "bytes": 1818,
+      "sha256": "a0ed40010839f14a395bdcc2e334d0fe71333e04d31d8168ea16715d1cd9affe"
+    },
+    {
+      "locator": "spikes/web/evidence/retained/gate-c/gate-c-recovery-20260721T1231Z/manual-result.json",
+      "bytes": 5871,
+      "sha256": "92a0ff80a9c3ea7746f34226be5cdbebdda51e4e70d5b1201816ea7a893fa231"
+    },
+    {
+      "locator": "spikes/web/evidence/retained/gate-c/gate-c-recovery-20260721T1231Z/preflight/preflight.json",
+      "bytes": 3479,
+      "sha256": "2c6f566925f898e0a9ad8887fe5ec7a51fbd486077fc3a441b666e5e5fd9ee21"
+    },
+    {
+      "locator": "spikes/web/evidence/retained/gate-c/gate-c-recovery-20260721T1231Z/timer.json",
+      "bytes": 565,
+      "sha256": "8d43cdb190a67db36dcf1e37bd256e7104f12b91e073793348524742a2917540"
+    },
+    {
+      "locator": "spikes/web/evidence/retained/gate-c/gate-c-recovery-20260721T1231Z/verification.json",
+      "bytes": 3036,
+      "sha256": "f3aa5b20091f8857db225fbe8885c35163f67539b8940b224b4dd8e1bd8174bb"
+    },
+    {
+      "locator": "spikes/web/evidence/retained/gate-c/gate-c-recovery-20260721T1231Z/vite/screenshots/keyboard-entry.png",
+      "bytes": 270177,
+      "sha256": "44c77f14e588255be4fa742b7f50910aefaedf106f47df22d26d72dff2c4a205"
+    },
+    {
+      "locator": "spikes/web/evidence/retained/gate-c/gate-c-recovery-20260721T1231Z/vite/screenshots/keyboard-focus-orient.png",
+      "bytes": 275139,
+      "sha256": "74389c333b96cca78b6cfdff14cb48bf5e60473ef1a4bdfb895cfb9daef80439"
+    },
+    {
+      "locator": "spikes/web/evidence/retained/gate-c/gate-c-recovery-20260721T1231Z/vite/screenshots/voiceover-run-button-window.png",
+      "bytes": 428006,
+      "sha256": "f79b9075cf0de59b555b9c1644a2ef750fdec5a76a7c00291371b223a1bd98c0"
+    },
+    {
+      "locator": "spikes/web/evidence/retained/gate-c/gate-c-recovery-20260721T1231Z/vite/screenshots/zoom-enlarged-viewport.png",
+      "bytes": 322849,
+      "sha256": "6e39a8747e0fd06a8faa947174a166c999c70e2f57629183219d1eb7c4f72225"
+    },
+    {
+      "locator": "spikes/web/evidence/retained/gate-c/gate-c-recovery-20260721T1231Z/vite/screenshots/zoom-restored-100.png",
+      "bytes": 287649,
+      "sha256": "6ee133ae35e5094dc7c4cf7f925583826964e4da8d643639ca1b7dea9935752e"
+    },
+    {
+      "locator": "spikes/web/evidence/retained/gate-c/gate-c-recovery-20260721T1231Z/vite/voiceover/caption-run-button.png",
+      "bytes": 55169,
+      "sha256": "1401d59297611f5896e9c8855f919df32b84ca17a3ad3d4f6fc71761dc7cd45a"
+    },
+    {
+      "locator": "spikes/web/evidence/retained/gate-d/gate-d-recovery-20260721T1259Z/attestation.json",
+      "bytes": 1309,
+      "sha256": "428dc6e951fcf1a06930a3dd282f5705a0b780486cc3ce9a7897cfd7cf9dc84f"
+    },
+    {
+      "locator": "spikes/web/evidence/retained/gate-d/gate-d-recovery-20260721T1259Z/result.json",
+      "bytes": 929,
+      "sha256": "10593698fee313ecccb6018908edfcd44fa6db854eef070534ce9cee3e2bbc0c"
     }
   ]
 }
-
