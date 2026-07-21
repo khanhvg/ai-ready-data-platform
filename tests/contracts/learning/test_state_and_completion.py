@@ -175,6 +175,47 @@ class StateCompletionApiTests(unittest.TestCase):
         })
         self.assertEqual(created["body"], fetched["body"])
 
+    def test_review_h3_invalid_body_returns_validated_problem(self) -> None:
+        platform = openapi.LearningPlatform()
+        response = platform.dispatch({
+            "method": "POST",
+            "path": "/v1/labs/promotion-trust-v1/workspaces",
+            "headers": {
+                "Authorization": "Bearer learner-1", "X-Correlation-ID": "correlation-invalid",
+                "Origin": "http://localhost", "Host": "localhost", "X-CSRF-Token": "csrf",
+                "Idempotency-Key": "invalid-body", "Content-Type": "application/json",
+            },
+            "body": {
+                "schemaVersion": "create-workspace-request-v1", "labVersion": "1.0.0",
+                "contractSetSha256": "not-a-sha", "parameters": {}, "expectedProgressRevision": 0,
+            },
+        })
+        self.assertEqual(422, response["status"])
+        self.assertEqual("LAB_PARAMETER_INVALID", response["body"]["code"])
+        schema.validate_document(response["body"], family="problem-details")
+
+    def test_review_h4_stale_verify_is_atomic(self) -> None:
+        platform = openapi.LearningPlatform()
+        headers = {
+            "Authorization": "Bearer learner-1", "X-Correlation-ID": "create",
+            "Origin": "http://localhost", "Host": "localhost", "X-CSRF-Token": "csrf",
+            "Idempotency-Key": "create", "Content-Type": "application/json",
+        }
+        created = platform.dispatch({"method": "POST", "path": "/v1/labs/promotion-trust-v1/workspaces", "headers": headers, "body": {
+            "schemaVersion": "create-workspace-request-v1", "labVersion": "1.0.0",
+            "contractSetSha256": "0" * 64, "parameters": {}, "expectedProgressRevision": 0,
+        }})
+        workspace_id = created["body"]["workspaceId"]
+        before = copy.deepcopy((platform.workspaces, platform.operations, platform.evidence, platform.progress))
+        verify_headers = dict(headers, **{"X-Correlation-ID": "verify", "Idempotency-Key": "verify"})
+        response = platform.dispatch({"method": "POST", "path": f"/v1/workspaces/{workspace_id}/verify", "headers": verify_headers, "body": {
+            "schemaVersion": "verify-workspace-request-v1", "verifierId": "promotion-trust-verifier",
+            "expectedWorkspaceRevision": 0, "expectedProgressRevision": 99,
+        }})
+        self.assertEqual(412, response["status"])
+        self.assertEqual("PROGRESS_VERSION_CONFLICT", response["body"]["code"])
+        self.assertEqual(before, (platform.workspaces, platform.operations, platform.evidence, platform.progress))
+
 
 if __name__ == "__main__":
     unittest.main()

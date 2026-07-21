@@ -12,6 +12,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest import mock
 
 from scripts.learning_contracts import check, runtime
 from scripts.learning_contracts.schema import LearningContractError
@@ -135,6 +136,50 @@ class S3CommandResourceCleanupTests(unittest.TestCase):
             finally:
                 foreign.terminate()
                 foreign.wait(timeout=3)
+
+    def test_review_h6_detached_descendant_is_owned_and_reaped(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            child_code = (
+                "import pathlib,subprocess,sys,time;"
+                "p=subprocess.Popen([sys.executable,'-c','import time;time.sleep(30)'],start_new_session=True);"
+                "pathlib.Path('detached.pid').write_text(str(p.pid));time.sleep(30)"
+            )
+            detached_pid = None
+            try:
+                self.assert_code("PROCESS_TIMEOUT", runtime.run_bounded, [sys.executable, "-c", child_code], cwd=root, timeout=0.2)
+                detached_pid = int((root / "detached.pid").read_text(encoding="utf-8"))
+                with self.assertRaises(ProcessLookupError):
+                    os.kill(detached_pid, 0)
+            finally:
+                if detached_pid is not None:
+                    try:
+                        os.kill(detached_pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+
+    def test_review_h5_cleanup_does_not_unlink_replacement(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            owned = pathlib.Path(temporary) / "owned"
+            owned.mkdir()
+            target = owned / "mutable.tmp"
+            target.write_bytes(b"owned")
+            marker = self.marker(owned, [{"path": "mutable.tmp", "disposition": "mutable"}])
+            self.write_marker(owned, marker)
+            original_unlink = runtime.os.unlink
+            replaced = False
+
+            def replace_before_unlink(name, *args, **kwargs):
+                nonlocal replaced
+                if name == "mutable.tmp" and not replaced:
+                    replaced = True
+                    original_unlink(name, *args, **kwargs)
+                    target.write_bytes(b"foreign")
+                return original_unlink(name, *args, **kwargs)
+
+            with mock.patch.object(runtime.os, "unlink", replace_before_unlink):
+                self.assert_code("CLEANUP_ENTRY_UNSAFE", runtime.cleanup_owned, owned, marker, owned_root=owned.parent)
+            self.assertEqual(b"foreign", target.read_bytes())
 
     def test_i8_v3_cleanup_owned_manifest_023(self) -> None:
         """I8-V3-CLEANUP-OWNED-MANIFEST-023."""

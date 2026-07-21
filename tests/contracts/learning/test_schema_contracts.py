@@ -131,6 +131,39 @@ class SchemaReaderCanonicalReferenceTests(unittest.TestCase):
                 "completion",
             )
 
+    def test_review_h1_semantic_rows_use_strict_family_reader(self) -> None:
+        original = check.read_document
+        family_reads: list[str] = []
+
+        def traced(path: pathlib.Path, *, family: str | None = None):
+            if family is not None:
+                family_reads.append(family)
+            return original(path, family=family)
+
+        representatives = {
+            "completion": (
+                "invalid/semantics/completion/evidence-presence-completes.json",
+                "completion-reconciliation",
+            ),
+            "state": (
+                "invalid/semantics/state/stale-version.json",
+                "progress",
+            ),
+        }
+        for target, (relative, required_family) in representatives.items():
+            family_reads.clear()
+            with mock.patch.object(check, "read_document", traced):
+                self.assert_code(
+                    {
+                        "completion": "COMPLETION_DUAL_TRUTH",
+                        "state": "PROGRESS_VERSION_CONFLICT",
+                    }[target],
+                    check.validate_invalid_fixture,
+                    check.FIXTURE_ROOT / relative,
+                    target,
+                )
+            self.assertIn(required_family, family_reads, target)
+
     def test_six_high_h5_intermediate_replacement_cannot_redirect_read(self) -> None:
         """A concurrent intermediate replacement must fail closed, never redirect bytes."""
         with tempfile.TemporaryDirectory() as temporary:
