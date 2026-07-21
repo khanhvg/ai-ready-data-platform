@@ -4,7 +4,7 @@ description: "Plan a retained synthetic preview, equal three-candidate web spike
 status: pending
 priority: P1
 issue: 7
-branch: "plan/issue-7-web-stack-representative-lesson"
+branch: "feature/issue-5-02-web-spike"
 tags: [frontend, accessibility, decision-gate, security-s3, tdd]
 blockedBy: []
 blocks: []
@@ -13,22 +13,40 @@ createdBy: "ck:plan"
 source: skill
 mode: deep-tdd
 plannerPhase: fresh-initial-plan
+currentPlannerPhase: fresh-automation-first-acceptance-replan
 requestedPlannerModel: "gpt-5.6-sol"
 requestedModelReasoningEffort: "xhigh"
 plannerOutputSha: "0890c4abab46f81d110be6cbd6de3560e631a735"
 inputDiscoverySha: "a39251d45a56124322b9143ad16b926b2656073b"
 integrationInputSha: "f9a87d0ebdb72c014a6f8c6eaae865dad4d2188c"
 masterReadinessSha: "e440c5855732d5d8f5d634e3cc1359c010cc5ed3"
+currentAcceptanceRevision: "i5-02-acceptance-v2"
+currentAcceptanceAmendment: "automation-first-acceptance-amendment-v2.md"
+acceptanceReplanInputSha: "abbcb049b33ee0c6190caedfb5f3ca7fc57b8f59"
+acceptanceReplanStatus: "pending-fresh-independent-plan-validation"
 barriers:
-  gate0: authorized-by-readiness-audit
-  gateA: authorized-after-gate0
-  candidateFoundations: deferred-requires-later-readiness-audit
-  barrierB: blocked-on-issue-6-merge-and-digests
-  gateC: blocked-on-barrierB-and-fresh-browser-manual-a11y
-  gateD: blocked-on-complete-gateC-evidence
+  gate0: retained-historical-evidence-read-only
+  gateA: retained-historical-evidence-read-only
+  candidateFoundations: frozen-retained-source-no-modification
+  barrierB: closed-executable-pass-on-issue-6-integration-base
+  gateC: blocked-on-revised-automated-gates-and-equal-vite-next-evidence
+  gateD: blocked-on-complete-revised-gate-c-scoring-and-independent-review
 ---
 
 # Issue #7: Web Stack with Representative Promotion-Trust Lesson
+
+## Current Acceptance Authority
+
+The binding current revision is
+[`i5-02-acceptance-v2`](./automation-first-acceptance-amendment-v2.md), planned from exact input
+`abbcb049b33ee0c6190caedfb5f3ca7fc57b8f59` after the
+[owner acceptance decision](https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5035256304).
+It is `PLANNER_ONLY_NOT_VALIDATED` until a fresh independent validator and then a fresh readiness
+auditor pass the exact amendment output SHA. It supersedes only the earlier clauses that made deep
+VoiceOver desktop-key traversal, macOS System Settings Reduce Motion, or native Chrome-menu 200%
+proof block the Issue #7 stack decision. Those three checks are deferred owner UAT/release risks;
+they contribute neither an automated pass nor score. Every other TDD, S3, fixture, fairness,
+retention, rollback, exact-head review, and human pre-merge gate remains binding.
 
 ## Overview
 
@@ -40,17 +58,20 @@ export. It has no `completed` state, runner, browser credential, mutation/cloud 
 claim. JavaScript may enhance reversible navigation; the complete facts and linear journey remain
 understandable without JavaScript and with reduced motion.
 
-In a later, separately authorized cook, after the common logical contract is frozen, time-box equal foundations for Astro + React islands,
-Next.js App Router, and React/Vite + typed API. Every pre-issue-#6 result is provisional and
-unscored. Hard Barrier B opens only after issue #6 is merged into the tested tree and exact SHA-256
-digests for the two contracts and two tracked fixture files validate. Gate C then performs one
-clean, identical real-fixture/browser/manual-accessibility rerun. Must-pass precedes scoring;
+Prior authorized cooks froze equal Astro + React islands, Next.js App Router, and React/Vite +
+typed API foundations, then closed Barrier B against Issue #6 integration base
+`24be3b34c6b0fcdbd07c5800dcab349054e34713` and the four exact handoff digests. Those sources,
+locks, and results now remain immutable; Astro remains eliminated. Under the current acceptance
+revision, Gate C performs one clean, identical automation-first real-fixture/browser rerun for the
+surviving Vite and Next candidates. Must-pass precedes scoring;
 incomplete or invalid evidence yields no winner. Gate D writes ADR-005 as a winner proposal or an
-explicit no-winner proposal and retains reproducibility evidence through I5-05.
+explicit no-winner proposal, includes the deferred manual UAT/residual-risk record, and retains
+reproducibility evidence through I5-05.
 
-This package is planning-only except for the bounded authorization recorded in
-[the Gate 0/Gate A cook scope](./audit/cook-scope-gate-a.md). That scope authorizes only Gate 0 and
-Gate A after its exact containing commit is published as `IMPLEMENTATION_INPUT_SHA`. It does not
+This automation-first replan is planning-only. The prior bounded
+[Gate 0/Gate A cook scope](./audit/cook-scope-gate-a.md) and all resulting evidence are retained
+history; they do not authorize any v2 write or run. Only a later fresh readiness-audit publication
+against the exact validated replan SHA may authorize the additive v2 paths. This phase does not
 authorize package/browser installation, candidate execution, score, ADR, cloud action, migration,
 PR, pre-merge review, or merge.
 
@@ -59,10 +80,10 @@ PR, pre-merge review, or merge.
 | Boundary | Status at planner input | Consequence |
 |---|---|---|
 | Planner provenance | Planner output is `0890c4abab46f81d110be6cbd6de3560e631a735`; discovery, integration, and readiness inputs are the immutable SHAs in frontmatter | Validation/audit may add planning-only descendants; none authorizes implementation by itself |
-| Future implementation input | The readiness publication comment must name the exact full SHA containing `audit/cook-scope-gate-a.md`; the file cannot self-reference its own containing commit | Gate 0 must first prove local HEAD, tracking, and freshly fetched live remote equal that SHA, then retain it as the changed-path base and ancestor of every tested tree |
+| Future v2 implementation input | A fresh readiness-audit publication must name the exact full validated SHA containing this amendment and its authorized v2 scope; a file cannot self-reference its own containing commit | Before any v2 write/run, prove local HEAD, tracking, and freshly fetched live remote equal that SHA, then retain it as the changed-path base and ancestor of every tested/reviewed tree |
 | Issue #7 path authority | `spikes/web/**`, ADR-005 proposal/evidence paths, and `mk/issue-5/i5-02.mk` are allowed | Issue-local Make commands are valid; root Make alias is a later shared-owner handoff |
-| Issue #6 handoff | Four required files are absent; #6 is open and `ready for plan validation` at this audit | Barrier B, score, winner, and decision-grade ADR remain blocked |
-| Browser/manual accessibility | Discovery had no browser instance | Gate C and any score/winner remain blocked until fresh current-browser and named-AT evidence exists |
+| Issue #6 handoff | Barrier B is `closed-executable-pass` against integration base `24be3b34c6b0fcdbd07c5800dcab349054e34713`; the four handoff files and their digests remain read-only | v2 must re-verify this exact ancestry/digest identity without mutating or relabelling prior evidence |
+| Automation-first accessibility | Existing automated evidence is retained historical v1 input, not a v2 pass | Gate C and any score/winner remain blocked until fresh equal v2 browser, keyboard, semantic/ARIA, reflow, reduced-motion, and no-JS evidence exists for Vite and Next |
 | Root/shared/protected paths | Forbidden and hash/absence protected | Any change is a hard STOP, not a workaround |
 
 ## Scope Boundary
@@ -91,6 +112,11 @@ runtime fixtures, and unrelated files. Issue #6 outputs are consumed read-only a
 
 ## Phases
 
+The table below is the retained v1 phase index. For execution, the amendment supersedes the
+phase 7 `manual accessibility` runtime phrase with automated Gate C v2 and moves the three named
+native-environment checks to non-scoring owner UAT before production release; phase status remains
+unchanged until the normal CLI-managed downstream transitions occur.
+
 | Phase | Name | Status | Runtime gate |
 |-------|------|--------|--------------|
 | 1 | [Gate 0 Authority and Freeze](./phase-01-gate-0-authority-and-freeze.md) | Pending | Ready after independent plan gates authorize implementation |
@@ -105,9 +131,10 @@ runtime fixtures, and unrelated files. Issue #6 outputs are consumed read-only a
 ## Dependencies and Timing
 
 ```text
+Retained v1 lineage:
 Gate 0 -> Gate A -> Astro foundation ----+
                  -> Next foundation -----+-> Barrier B (#6 merged/digests)
-                 -> Vite foundation -----+        + fresh browser/manual AT
+                 -> Vite foundation -----+        + revised automated Gate C v2
                                                   -> Gate C must-pass/score
                                                   -> Gate D ADR/retention
 ```
@@ -118,12 +145,16 @@ Gate 0 -> Gate A -> Astro foundation ----+
   timers. Any contract, preview, candidate, measurement, or ADR work counts in its assigned cap.
 - Gate D uses the remaining portion of the same final two-hour decision window; it does not add
   time. At cap, stop with the retained preview and ADR-005 `Proposed`/no-winner.
-- Candidate phases remain deferred after Gate A. They may begin before #6 only if a later readiness
-  audit explicitly authorizes their exact paths, targets, and evidence boundary. Their results
-  would be `PROVISIONAL_UNSCORED` or `ELIMINATED`, never numeric.
+- The current cumulative timer is not reset: used `3255.163904292` seconds; remaining
+  `3944.836095708` seconds. The owner decision did not grant a reset. The versioned automation-only
+  implementation resumes this same shared Gate C/D budget under the amendment's timer rules.
+- Candidate timeboxes and outcomes are retained historical evidence. Astro stays `ELIMINATED`;
+  Vite and Next source/locks are frozen and may only be exercised equally by an authorized v2 run,
+  never repaired or rewritten under this amendment.
 
 ## Companion Contracts
 
+- [Current automation-first acceptance amendment v2](./automation-first-acceptance-amendment-v2.md)
 - [Acceptance and test matrix](./acceptance-and-test-matrix.md)
 - [Candidate protocol](./candidate-protocol.md)
 - [Preview journey contract](./preview-journey-contract.md)
@@ -147,27 +178,35 @@ Gate 0 -> Gate A -> Astro foundation ----+
   exact candidate lockfiles are force-added explicitly and their tracked state is a hard gate.
 - Barrier B records an actual merged #6 SHA and exact file digests; any drift invalidates every
   candidate result and persisted browser state.
-- Gate C records fresh screenshots/traces and manual keyboard, named screen-reader, 200% reflow,
-  reduced-motion, and no-JS review plus fair raw performance/resource evidence.
-- Scoring is impossible before every must-pass is complete. The weighted rubric and within-five-
-  point Astro default apply only to complete passing candidates; otherwise the result is no winner.
-- The complete 0-5 category anchor registry is written, tested, and digest-frozen at Gate 0 before
-  candidate work; no observed candidate result may influence an anchor.
+- Gate C v2 records fresh equal Playwright journeys, deterministic keyboard/focus/no-trap evidence,
+  axe and semantic/ARIA snapshots, 200%-equivalent and narrow-reflow screenshots/assertions,
+  reduced-motion emulation, no-JS browser/static-parser comprehension, and fair raw
+  performance/resource evidence. It makes no native Chrome-menu, actual System Settings, or full
+  screen-reader-conformance claim.
+- Scoring is impossible before every must-pass is complete. The v1 within-five-point Astro default
+  remains immutable but unavailable because Astro is eliminated; a Vite/Next difference of five
+  points or less yields no winner and owner decision required.
+- The complete automated-only 0-5 v2 category anchor registry is written, tested, and
+  digest-frozen before any v2 candidate observation; v1 anchors remain immutable, and no observed
+  candidate result may influence either anchor set.
 - Losing sources/build entrypoints are excluded without deleting reproducibility evidence; later
   cleanup is separately authorized and reversible.
 
 ## Planner Boundary
 
 Independent validation and a fresh readiness audit are the next external phases. This fresh
-initial planner performed only authority research, plan authoring, planner self-checks, and
-publication. It did not validate, red-team, audit, implement, install, build, score, or merge.
+automation-first acceptance replanner performed only authority research, plan authoring,
+planning-only structure/consistency checks, and publication. It did not validate, red-team, audit,
+implement, install, build, score, or merge.
 
 ## Readiness Audit Boundary
 
-The fresh readiness audit authorizes only the exact Gate 0/Gate A task IDs in
-`audit/cook-scope-gate-a.md`. Candidate directories, candidate manifests/locks, candidate targets,
-Barrier B, browser/manual accessibility, scoring, ADR, review, PR, and merge remain unavailable.
-Gate A may leave issue #7 open and blocked for a later phase; it cannot complete the issue.
+The next fresh independent validator evaluates the exact published v2 replan SHA. Only after that
+passes may a fresh readiness auditor publish a bounded v2 cook scope. The earlier
+`audit/cook-scope-gate-a.md` remains historical and cannot authorize v2. Candidate source/locks,
+prior evidence, and Barrier B inputs remain immutable; v2 browser automation, scoring, ADR,
+review, PR, and merge remain unavailable until their explicit state transitions. Readiness audit
+cannot synthesize the required human pre-merge approval.
 
 ## Validation Log
 
