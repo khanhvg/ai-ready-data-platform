@@ -15,6 +15,7 @@ const PROCESS_TERM_GRACE_MS = 250;
 const PROCESS_FINAL_WAIT_MS = 250;
 const SECOND_TARGETED_REVIEW_FIX_RED_SHA = '5264e3958a60f26e1663aa0bd940bf5176520896';
 const THIRD_TARGETED_REVIEW_FIX_RED_SHA = '2febb813dce2e37b2af79c72e7608787fa210ae8';
+const FOURTH_TARGETED_REVIEW_FIX_RED_SHA = '47f32f863554b8286cbfa84ee2534687f73eb61b';
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const relativePath = path => relative(ROOT, path).split(sep).join('/');
 const git = args => {
@@ -119,6 +120,12 @@ export function validateEvidenceManifest(manifest) {
       || !(thirdTargetedRed.rc > 0)
       || thirdTargetedRed.assertionIds?.length !== 3
       || thirdTargetedRed.log !== 'tdd/third-targeted-review-fix-red/focused-tests.tap')) failures.push('third-targeted-review-fix-red');
+  const fourthTargetedRed = manifest?.fourthTargetedReviewFixRed;
+  if (fourthTargetedRed && (fourthTargetedRed.result !== 'pass'
+      || fourthTargetedRed.sourceSha !== FOURTH_TARGETED_REVIEW_FIX_RED_SHA
+      || !(fourthTargetedRed.rc > 0)
+      || fourthTargetedRed.assertionIds?.length !== 1
+      || fourthTargetedRed.log !== 'tdd/fourth-targeted-review-fix-red/focused-tests.tap')) failures.push('fourth-targeted-review-fix-red');
   return failures;
 }
 
@@ -138,26 +145,21 @@ function statusPaths() {
   return [...paths].sort();
 }
 
-export function preflight(implementationInput) {
+export async function preflight(implementationInput) {
   const failures = [];
   const workingStatus = porcelainStatus();
   const untrackedPaths = workingStatus.filter(entry => entry.startsWith('?? ')).map(entry => entry.slice(3));
   const branch = git(['branch', '--show-current']);
   const head = git(['rev-parse', '--verify', 'HEAD']);
-  const live = spawnSync('git', ['ls-remote', '--exit-code', 'origin', `refs/heads/${contract.branch}`], {
-    cwd: ROOT,
-    encoding: 'utf8',
-    timeout: contract.authorityLookupMs,
-    killSignal: 'SIGKILL',
-  });
-  const liveLines = live.status === 0 ? live.stdout.trim().split('\n').filter(Boolean) : [];
+  const live = await runBounded('authority-lookup', ['git', 'ls-remote', '--exit-code', 'origin', `refs/heads/${contract.branch}`], contract.authorityLookupMs);
+  const liveLines = live.rc === 0 ? live.stdout.trim().split('\n').filter(Boolean) : [];
   const liveParts = liveLines.length === 1 ? liveLines[0].trim().split(/\s+/) : [];
   const liveHead = liveParts.length === 2 && liveParts[1] === `refs/heads/${contract.branch}` ? liveParts[0] : '';
   let authorityMode = 'invalid';
   if (implementationInput !== contract.implementationInputSha) failures.push('implementation-input-mismatch');
   if (!/^[0-9a-f]{40}$/.test(head)) failures.push('invalid-head-identity');
-  if (live.error?.code === 'ETIMEDOUT') failures.push('authority-lookup-timeout');
-  else if (live.error || live.status !== 0) failures.push('authority-lookup-error');
+  if (live.timedOut) failures.push('authority-lookup-timeout');
+  else if (live.rc !== 0) failures.push('authority-lookup-error');
   else if (liveLines.length === 0) failures.push('fresh-live-unavailable');
   else if (liveLines.length !== 1 || !/^[0-9a-f]{40}$/.test(liveHead)) failures.push('fresh-live-ambiguous-or-invalid');
   if (branch === contract.branch) {
@@ -298,8 +300,10 @@ async function runBounded(name, command, ceilingMs, directory) {
     { code: null, signal: null, error: new Error('bounded final child wait expired') },
   );
   const result = { name, command, startedAt, durationMs: Number(process.hrtime.bigint() - started) / 1e6, rc: closed.code ?? 1, signal: closed.signal, timedOut, termination, stdout: sanitize(stdout), stderr: sanitize(`${stderr}${closed.error ? `${stderr ? '\n' : ''}${closed.error.message}` : ''}`) };
-  writeFileSync(resolve(directory, `${name}.json`), `${JSON.stringify(result, null, 2)}\n`);
-  writeFileSync(resolve(directory, `${name}.log`), `${result.stdout}${result.stderr}`);
+  if (directory) {
+    writeFileSync(resolve(directory, `${name}.json`), `${JSON.stringify(result, null, 2)}\n`);
+    writeFileSync(resolve(directory, `${name}.log`), `${result.stdout}${result.stderr}`);
+  }
   return result;
 }
 
@@ -454,7 +458,7 @@ function cleanupCandidateRuntime(directory) {
 }
 
 async function execute(mode, implementationInput) {
-  const authority = preflight(implementationInput);
+  const authority = await preflight(implementationInput);
   if (authority.result !== 'pass') throw new Error(`authority failed: ${authority.failures.join('; ')}`);
   for (const name of ['node_modules', 'dist', 'test-results', 'playwright-report']) {
     if (existsSync(resolve(CANDIDATE, name))) throw new Error(`pre-existing candidate runtime is not owned by this run: ${name}`);
@@ -572,6 +576,16 @@ function thirdTargetedReviewFixRed() {
   if (!existsSync(resultPath) || !existsSync(logPath)) throw new Error('third targeted review-fix RED evidence is unavailable');
   const result = JSON.parse(readFileSync(resultPath, 'utf8'));
   if (result.result !== 'pass' || result.rc === 0 || result.sourceSha !== THIRD_TARGETED_REVIEW_FIX_RED_SHA || result.assertionIds?.length !== 3) throw new Error('third targeted review-fix RED evidence is invalid');
+  return { directory, result };
+}
+
+function fourthTargetedReviewFixRed() {
+  const directory = resolve(RUNTIME, 'fourth-targeted-review-fix-red');
+  const resultPath = resolve(directory, 'result.json');
+  const logPath = resolve(directory, 'focused-tests.tap');
+  if (!existsSync(resultPath) || !existsSync(logPath)) throw new Error('fourth targeted review-fix RED evidence is unavailable');
+  const result = JSON.parse(readFileSync(resultPath, 'utf8'));
+  if (result.result !== 'pass' || result.rc === 0 || result.sourceSha !== FOURTH_TARGETED_REVIEW_FIX_RED_SHA || result.assertionIds?.length !== 1) throw new Error('fourth targeted review-fix RED evidence is invalid');
   return { directory, result };
 }
 
@@ -694,6 +708,7 @@ export function retainRun() {
   const reviewFixRed = targetedReviewFixRed();
   const secondReviewFixRed = secondTargetedReviewFixRed();
   const thirdReviewFixRed = thirdTargetedReviewFixRed();
+  const fourthReviewFixRed = fourthTargetedReviewFixRed();
   const green = latest('gate');
   const redResult = JSON.parse(readFileSync(resolve(red.directory, 'result.json'), 'utf8'));
   const greenResult = JSON.parse(readFileSync(resolve(green.directory, 'result.json'), 'utf8'));
@@ -706,6 +721,7 @@ export function retainRun() {
   mkdirSync(resolve(destination, 'tdd/review-fix-red'), { recursive: true });
   mkdirSync(resolve(destination, 'tdd/second-targeted-review-fix-red'), { recursive: true });
   mkdirSync(resolve(destination, 'tdd/third-targeted-review-fix-red'), { recursive: true });
+  mkdirSync(resolve(destination, 'tdd/fourth-targeted-review-fix-red'), { recursive: true });
   mkdirSync(resolve(destination, 'green'), { recursive: true });
   mkdirSync(resolve(destination, 'security'), { recursive: true });
   mkdirSync(resolve(destination, 'lifecycle'), { recursive: true });
@@ -717,6 +733,10 @@ export function retainRun() {
   for (const name of ['focused-tests.tap', 'result.json']) {
     const content = sanitize(readFileSync(resolve(thirdReviewFixRed.directory, name), 'utf8')).replace(/[ \t]+$/gm, '');
     writeFileSync(resolve(destination, 'tdd/third-targeted-review-fix-red', name), content);
+  }
+  for (const name of ['focused-tests.tap', 'result.json']) {
+    const content = sanitize(readFileSync(resolve(fourthReviewFixRed.directory, name), 'utf8')).replace(/[ \t]+$/gm, '');
+    writeFileSync(resolve(destination, 'tdd/fourth-targeted-review-fix-red', name), content);
   }
   for (const name of ['focused-tests.tap', 'result.json']) {
     const content = sanitize(readFileSync(resolve(secondReviewFixRed.directory, name), 'utf8')).replace(/[ \t]+$/gm, '');
@@ -788,7 +808,7 @@ export function retainRun() {
   };
   const scanSummary = { result: scans.result, findings: scans.findings.length, checks: scans.checkInventory?.length ?? 0, checkInventory: scans.checkInventory?.map(({ id, result }) => ({ id, result })) ?? [], finalRetained: 'pass' };
   const ownedResourceSummary = { result: validateOwnership(ledger, { runId: green.runId }).length === 0 && rollback.result === 'pass' ? 'pass' : 'fail', serverCount: 1, port: ledger.port, cleanup: cleanup.result, rollbackSimulation: rollback.result };
-  const manifest = { schemaVersion: 'i5-02-simple-vite-v3-evidence-v1', acceptanceRevision: contract.acceptanceRevision, runId: green.runId, implementationInputSha: contract.implementationInputSha, testedSourceSha: greenResult.sourceSha, testedTreeSha: greenResult.testedTreeSha, branch: contract.branch, authorityMode: greenResult.authority.authorityMode, freshLiveHead: greenResult.authority.freshLiveHead, issue6IntegrationSha: contract.issue6IntegrationSha, fixtureIdentities: contract.fixtureIdentities, lockSha256: contract.lockSha256, tools: greenResult.tools, commands: greenResult.commands, browserInventory: browser, groups, redProvenance: { result: 'pass', testOnlySha: redResult.sourceSha, testedTreeSha: redResult.testedTreeSha }, targetedReviewFixRed: { result: reviewFixRed.result.result, sourceSha: reviewFixRed.result.sourceSha, rc: reviewFixRed.result.rc, assertionIds: reviewFixRed.result.assertionIds, log: 'tdd/review-fix-red/focused-tests.tap' }, secondTargetedReviewFixRed: { result: secondReviewFixRed.result.result, sourceSha: secondReviewFixRed.result.sourceSha, testedTreeSha: secondReviewFixRed.result.testedTreeSha, rc: secondReviewFixRed.result.rc, assertionIds: secondReviewFixRed.result.assertionIds, log: 'tdd/second-targeted-review-fix-red/focused-tests.tap' }, thirdTargetedReviewFixRed: { result: thirdReviewFixRed.result.result, sourceSha: thirdReviewFixRed.result.sourceSha, testedTreeSha: thirdReviewFixRed.result.testedTreeSha, rc: thirdReviewFixRed.result.rc, assertionIds: thirdReviewFixRed.result.assertionIds, log: 'tdd/third-targeted-review-fix-red/focused-tests.tap' }, evidenceClosureRedSha: EVIDENCE_CLOSURE_RED_SHA, testNameInventory, artifactLocators, axeSummary, noJsFacts, scanSummary, ownedResourceSummary, audit: audit.metadata?.vulnerabilities, redaction: { result: 'pass', findings: [] }, cleanupRollback: rollback, limitations: ['Chromium and axe automation are not a full WCAG or screen-reader conformance claim.', 'Production accessibility and manual UAT remain deferred.'] };
+  const manifest = { schemaVersion: 'i5-02-simple-vite-v3-evidence-v1', acceptanceRevision: contract.acceptanceRevision, runId: green.runId, implementationInputSha: contract.implementationInputSha, testedSourceSha: greenResult.sourceSha, testedTreeSha: greenResult.testedTreeSha, branch: contract.branch, authorityMode: greenResult.authority.authorityMode, freshLiveHead: greenResult.authority.freshLiveHead, issue6IntegrationSha: contract.issue6IntegrationSha, fixtureIdentities: contract.fixtureIdentities, lockSha256: contract.lockSha256, tools: greenResult.tools, commands: greenResult.commands, browserInventory: browser, groups, redProvenance: { result: 'pass', testOnlySha: redResult.sourceSha, testedTreeSha: redResult.testedTreeSha }, targetedReviewFixRed: { result: reviewFixRed.result.result, sourceSha: reviewFixRed.result.sourceSha, rc: reviewFixRed.result.rc, assertionIds: reviewFixRed.result.assertionIds, log: 'tdd/review-fix-red/focused-tests.tap' }, secondTargetedReviewFixRed: { result: secondReviewFixRed.result.result, sourceSha: secondReviewFixRed.result.sourceSha, testedTreeSha: secondReviewFixRed.result.testedTreeSha, rc: secondReviewFixRed.result.rc, assertionIds: secondReviewFixRed.result.assertionIds, log: 'tdd/second-targeted-review-fix-red/focused-tests.tap' }, thirdTargetedReviewFixRed: { result: thirdReviewFixRed.result.result, sourceSha: thirdReviewFixRed.result.sourceSha, testedTreeSha: thirdReviewFixRed.result.testedTreeSha, rc: thirdReviewFixRed.result.rc, assertionIds: thirdReviewFixRed.result.assertionIds, log: 'tdd/third-targeted-review-fix-red/focused-tests.tap' }, fourthTargetedReviewFixRed: { result: fourthReviewFixRed.result.result, sourceSha: fourthReviewFixRed.result.sourceSha, testedTreeSha: fourthReviewFixRed.result.testedTreeSha, rc: fourthReviewFixRed.result.rc, assertionIds: fourthReviewFixRed.result.assertionIds, log: 'tdd/fourth-targeted-review-fix-red/focused-tests.tap' }, evidenceClosureRedSha: EVIDENCE_CLOSURE_RED_SHA, testNameInventory, artifactLocators, axeSummary, noJsFacts, scanSummary, ownedResourceSummary, audit: audit.metadata?.vulnerabilities, redaction: { result: 'pass', findings: [] }, cleanupRollback: rollback, limitations: ['Chromium and axe automation are not a full WCAG or screen-reader conformance claim.', 'Production accessibility and manual UAT remain deferred.'] };
   if (validateEvidenceManifest(manifest).length) throw new Error('generated manifest is invalid');
   writeFileSync(resolve(destination, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
   const finalScan = finalRetainedScan(destination);
@@ -832,7 +852,7 @@ async function main() {
   const inputIndex = process.argv.indexOf('--implementation-input');
   const input = inputIndex >= 0 ? process.argv[inputIndex + 1] : '';
   let output;
-  if (verb === 'preflight') output = preflight(input);
+  if (verb === 'preflight') output = await preflight(input);
   else if (verb === 'red' || verb === 'gate') return execute(verb, input);
   else if (verb === 'scan') output = scanRun();
   else if (verb === 'retain') output = retainRun();

@@ -298,12 +298,14 @@ test('V3-07 authority lookup timeout is bounded and fails closed deterministical
     writeFileSync(hungLookup, 'while (true) {}\n');
     const loaded = await loadInstrumentedRunner(source => source
       .replace("spawnSync('git', ['ls-remote', '--exit-code', 'origin', `refs/heads/${contract.branch}`]", `spawnSync(process.execPath, [${JSON.stringify(hungLookup)}]`)
-      .replace('timeout: contract.authorityLookupMs,', 'timeout: 100,'));
+      .replace("['git', 'ls-remote', '--exit-code', 'origin', `refs/heads/${contract.branch}`]", `[process.execPath, ${JSON.stringify(hungLookup)}]`)
+      .replace('timeout: contract.authorityLookupMs,', 'timeout: 100,')
+      .replace('contract.authorityLookupMs);', '100);'));
     temporaryPath = loaded.temporaryPath;
     const started = Date.now();
-    const timedOut = loaded.module.preflight(contract.implementationInputSha);
+    const timedOut = await loaded.module.preflight(contract.implementationInputSha);
     const durationMs = Date.now() - started;
-    assert.ok(durationMs < 1000, `authority timeout result exceeded deterministic bound: ${durationMs}ms`);
+    assert.ok(durationMs < 1500, `authority timeout result exceeded deterministic bound: ${durationMs}ms`);
     assert.equal(timedOut.result, 'fail');
     assert.ok(timedOut.failures.includes('authority-lookup-timeout'));
 
@@ -343,7 +345,7 @@ test('V3-07 authority timeout cleans its transport descendant without signaling 
   const foreign = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000)'], { detached: true, stdio: 'ignore' });
   foreign.unref();
   const currentGroup = processGroup(process.pid);
-  const signaledGroups = [];
+  const signals = [];
   const realKill = process.kill;
   let temporaryPath;
   let pids = {};
@@ -352,10 +354,10 @@ test('V3-07 authority timeout cleans its transport descendant without signaling 
       .replace("spawnSync('git', ['ls-remote', '--exit-code', 'origin', `refs/heads/${contract.branch}`]", `spawnSync(process.execPath, [${JSON.stringify(transport)}]`)
       .replace("['git', 'ls-remote', '--exit-code', 'origin', `refs/heads/${contract.branch}`]", `[process.execPath, ${JSON.stringify(transport)}]`)
       .replace('timeout: contract.authorityLookupMs,', 'timeout: 100,')
-      .replace("contract.authorityLookupMs, { writeArtifacts: false }", "100, { writeArtifacts: false }"));
+      .replace('contract.authorityLookupMs);', '100);'));
     temporaryPath = loaded.temporaryPath;
     process.kill = (pid, signal) => {
-      if (signal && signal !== 0) signaledGroups.push(pid);
+      if (signal && signal !== 0) signals.push({ pid, signal });
       return realKill(pid, signal);
     };
     const started = Date.now();
@@ -363,15 +365,17 @@ test('V3-07 authority timeout cleans its transport descendant without signaling 
     const durationMs = Date.now() - started;
     process.kill = realKill;
     pids = JSON.parse(readFileSync(pidPath, 'utf8'));
-    assert.ok(durationMs < 1000, `authority timeout and final cleanup exceeded deterministic bound: ${durationMs}ms`);
+    assert.ok(durationMs < 1200, `authority timeout and final cleanup exceeded deterministic bound: ${durationMs}ms`);
     assert.equal(timedOut.result, 'fail');
     assert.ok(timedOut.failures.includes('authority-lookup-timeout'));
     await wait(50);
     assert.equal(processExists(pids.leader), false, 'authority lookup leader survived cleanup');
     assert.equal(processExists(pids.descendant), false, 'authority transport descendant survived cleanup');
     assert.equal(processExists(foreign.pid), true, 'foreign process group was signaled');
-    assert.equal(signaledGroups.includes(-currentGroup), false, 'current process group was signaled');
-    assert.equal(signaledGroups.includes(-foreign.pid), false, 'foreign process group was signaled');
+    assert.deepEqual(signals.map(({ pid }) => pid), [-pids.leader, -pids.leader], 'only the verified authority group may be signaled');
+    assert.deepEqual(signals.map(({ signal }) => signal), ['SIGTERM', 'SIGKILL'], 'authority cleanup must escalate TERM to KILL');
+    assert.equal(signals.some(({ pid }) => pid === -currentGroup), false, 'current process group was signaled');
+    assert.equal(signals.some(({ pid }) => pid === -foreign.pid), false, 'foreign process group was signaled');
     assert.equal(process.getActiveResourcesInfo().filter(type => type === 'Timeout').length, 0, 'authority lookup left a referenced timeout handle');
   } finally {
     process.kill = realKill;
