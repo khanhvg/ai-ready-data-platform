@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
@@ -16,6 +16,12 @@ function processExists(pid) {
 function killPid(pid) {
   if (!processExists(pid)) return;
   try { process.kill(pid, 'SIGKILL'); } catch (error) { if (error.code !== 'ESRCH') throw error; }
+}
+
+function processGroup(pid) {
+  const result = spawnSync('ps', ['-p', String(pid), '-o', 'pgid='], { encoding: 'utf8' });
+  const pgid = result.status === 0 ? Number(result.stdout.trim()) : NaN;
+  return Number.isInteger(pgid) ? pgid : null;
 }
 
 async function loadInstrumentedRunner(transform = source => source) {
@@ -316,6 +322,62 @@ test('V3-07 authority lookup timeout is bounded and fails closed deterministical
       assert.ok(JSON.parse(failed.stdout).failures.includes(failure), `${mode} lookup must report ${failure}`);
     }
   } finally {
+    if (temporaryPath) rmSync(temporaryPath, { force: true });
+    rmSync(temporaryRoot, { recursive: true, force: true });
+  }
+});
+
+test('V3-07 authority timeout cleans its transport descendant without signaling current or foreign groups', async () => {
+  const temporaryRoot = mkdtempSync(resolve(tmpdir(), 'vite-v3-authority-transport-'));
+  const pidPath = resolve(temporaryRoot, 'transport-pids.json');
+  const transport = resolve(temporaryRoot, 'transport.mjs');
+  const fixture = [
+    "import { spawn } from 'node:child_process';",
+    "import { writeFileSync } from 'node:fs';",
+    "const descendant = spawn(process.execPath, ['-e', `process.on('SIGTERM',()=>{});setInterval(()=>{},1000)`], { stdio: 'ignore' });",
+    `writeFileSync(${JSON.stringify(pidPath)}, JSON.stringify({ leader: process.pid, descendant: descendant.pid }));`,
+    "process.on('SIGTERM', () => {});",
+    'setInterval(() => {}, 1000);',
+  ].join('');
+  writeFileSync(transport, fixture);
+  const foreign = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000)'], { detached: true, stdio: 'ignore' });
+  foreign.unref();
+  const currentGroup = processGroup(process.pid);
+  const signaledGroups = [];
+  const realKill = process.kill;
+  let temporaryPath;
+  let pids = {};
+  try {
+    const loaded = await loadInstrumentedRunner(source => source
+      .replace("spawnSync('git', ['ls-remote', '--exit-code', 'origin', `refs/heads/${contract.branch}`]", `spawnSync(process.execPath, [${JSON.stringify(transport)}]`)
+      .replace("['git', 'ls-remote', '--exit-code', 'origin', `refs/heads/${contract.branch}`]", `[process.execPath, ${JSON.stringify(transport)}]`)
+      .replace('timeout: contract.authorityLookupMs,', 'timeout: 100,')
+      .replace("contract.authorityLookupMs, { writeArtifacts: false }", "100, { writeArtifacts: false }"));
+    temporaryPath = loaded.temporaryPath;
+    process.kill = (pid, signal) => {
+      if (signal && signal !== 0) signaledGroups.push(pid);
+      return realKill(pid, signal);
+    };
+    const started = Date.now();
+    const timedOut = await loaded.module.preflight(contract.implementationInputSha);
+    const durationMs = Date.now() - started;
+    process.kill = realKill;
+    pids = JSON.parse(readFileSync(pidPath, 'utf8'));
+    assert.ok(durationMs < 1000, `authority timeout and final cleanup exceeded deterministic bound: ${durationMs}ms`);
+    assert.equal(timedOut.result, 'fail');
+    assert.ok(timedOut.failures.includes('authority-lookup-timeout'));
+    await wait(50);
+    assert.equal(processExists(pids.leader), false, 'authority lookup leader survived cleanup');
+    assert.equal(processExists(pids.descendant), false, 'authority transport descendant survived cleanup');
+    assert.equal(processExists(foreign.pid), true, 'foreign process group was signaled');
+    assert.equal(signaledGroups.includes(-currentGroup), false, 'current process group was signaled');
+    assert.equal(signaledGroups.includes(-foreign.pid), false, 'foreign process group was signaled');
+    assert.equal(process.getActiveResourcesInfo().filter(type => type === 'Timeout').length, 0, 'authority lookup left a referenced timeout handle');
+  } finally {
+    process.kill = realKill;
+    killPid(pids.descendant);
+    killPid(pids.leader);
+    try { realKill(-foreign.pid, 'SIGKILL'); } catch (error) { if (error.code !== 'ESRCH') throw error; }
     if (temporaryPath) rmSync(temporaryPath, { force: true });
     rmSync(temporaryRoot, { recursive: true, force: true });
   }
