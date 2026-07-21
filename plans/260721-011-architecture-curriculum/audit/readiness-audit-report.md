@@ -28,7 +28,8 @@ repository-authorized-human-approved, merged/released Issue #8 learning-contract
 released evidence/command-result compatibility decision; an admitted additions-only Issue #6
 architecture extension seam and exact lease; a closed Stage A file/command allow-list; an exact-SHA
 plan amendment; fresh independent revalidation; and fresh readiness. Issue #8 currently has only
-an unmerged candidate repair awaiting one fresh exact-head review.
+an unmerged candidate that failed fresh exact-head review with two High and one Medium findings;
+the owner has authorized a narrow follow-up repair.
 
 Stage B additionally requires passing/released Stage A and an exact passing merged Issue #10 real
 journey plus released portal renderer/registry/publication seam, followed by the same amendment,
@@ -109,17 +110,19 @@ security, or human approval. Issue #11 has no genuinely dependency-independent c
 | Issue state/label | Issue #8 OPEN at `ready to cook` |
 | Latest candidate | `393b66e93461433fcded4ce4e6defa64f937fcfa` on `feature/issue-5-03-learning-contracts-v3` |
 | Candidate tree | `881c42dc4be74d44df2dc1c0645b03b9ae37d565` |
-| Candidate claim | Six-High repair pass, awaiting one fresh independent exact-head review |
-| Review authority | No published passing review or repository-authorized human exact-head approval |
+| Candidate claim | Six-High repair pass was submitted for fresh independent exact-head review |
+| Review result | `FAIL`: two High and one Medium current defects; final gate, real operation/CAS, detached-descendant resource enforcement, and strict-number evidence integrity did not pass |
+| Follow-up | Owner comment `5040086369` authorizes one narrow repair with focused tests-first RED and another fresh combined exact-head review |
+| Review authority | No passing review or repository-authorized human exact-head approval |
 | PR/merge | No PR resolves from the candidate commit; no matching Issue #8 PR; candidate is not an ancestor of `origin/integration/issue-5-local-learning` or `origin/main` |
 | Tag/release | No containing tag and no GitHub release |
 | Integration head | Still `24be3b34c6b0fcdbd07c5800dcab349054e34713` |
 | Downstream contract handoff | Absent |
 
-Prior Issue #8 feature heads and evidence were explicitly failed or superseded. The latest repair
-may be under a live review, but an in-flight review, a passing candidate comment, a branch head,
-or a future review comment is not a reviewed+human-approved+merged/released learning-contract
-handoff. Gate A remains closed.
+Prior Issue #8 feature heads and evidence were explicitly failed or superseded. The latest review
+at `393b66e93461433fcded4ce4e6defa64f937fcfa` also failed. Its owner-authorized targeted repair,
+a future passing review comment, or a branch head is not a reviewed+human-approved+merged/released
+learning-contract handoff. Gate A remains closed.
 
 The Issue #8 contract release must also provide the exact evidence schema and an owner-authorized
 mapping to Issue #11 command-result requirements. Current Issue #6 `fitness-result-v1` is only the
@@ -300,7 +303,7 @@ new approval. Labels, automation, this auditor, and evidence producers cannot sy
 
 | ID | Severity | Finding | Bounded correction | Status |
 |---|---|---|---|---|
-| AUD-01 | High | The plan's “fresh” dependency snapshot predated the latest Issue #8 repair candidate and Issue #10 blocked audit | Refreshed provenance-only status to `393b66e…` and `4a36bab…`, explicitly preserving no-review/no-human/no-merge/no-release authority | Resolved |
+| AUD-01 | High | The plan's “fresh” dependency snapshot predated the latest Issue #8 repair/review state and Issue #10 blocked audit | Refreshed provenance-only status to the `393b66e…` failed review plus authorized follow-up repair and the `4a36bab…` blocked audit, explicitly preserving no-passing-review/no-human/no-merge/no-release authority | Resolved |
 | AUD-02 | High | Top-level metadata did not record the audit input/verdict and compressed Stage A/B blockers, omitting the view seam from Stage A status and passing Stage A from Stage B status | Added exact audit input/report/verdict/implementation fields and complete stage blocker states; no allow-list changed | Resolved |
 | AUD-03 | Medium | Shared docs/release impact was denied in places but not a reciprocal requirement/phase handoff | Added `I11-DOC-01`, Stage A/Stage B handoff criteria, and separate owner-serialized boundary | Resolved |
 

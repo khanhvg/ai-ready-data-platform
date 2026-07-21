@@ -71,9 +71,10 @@ released handoffs by later amendments; a guessed equivalent is a hard STOP.
   present in this exact input tree and plan branches are not release artifacts. External release
   gates are normative in [Dependency and Release Gates](./dependency-and-release-gates.md).
 - **Stage A:** exact released Issue #8 learning contracts. Issue #8 is currently OPEN; its
-  latest repair candidate is awaiting a fresh exact-head review. It has no passing review,
-  human approval, merge, release, or downstream authority. Stage A also requires an admitted
-  additions-only architecture seam and exact view lease.
+  latest repair candidate failed fresh exact-head review with two High and one Medium findings;
+  the owner authorized a narrow follow-up repair. It has no passing review, human approval,
+  merge, release, or downstream authority. Stage A also requires an admitted additions-only
+  architecture seam and exact view lease.
 - **Stage B:** passing Stage A plus the exact passing merged Issue #10 real journey and released
   portal renderer SHA. Issue #10 is currently OPEN at `ready for plan audit`; its blocked
   readiness audit authorizes no cook scope, and no implementation PR or merged real-journey

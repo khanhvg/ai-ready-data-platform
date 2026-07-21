@@ -44,12 +44,13 @@ Observed after `git fetch --prune origin` and fresh GitHub reads on 2026-07-22:
 
 | Dependency | Fresh state | Why it is not consumable now |
 |---|---|---|
-| Issue #8 learning contracts | OPEN; label `ready to cook`; repair candidate `393b66e93461433fcded4ce4e6defa64f937fcfa` is on `feature/issue-5-03-learning-contracts-v3` and awaits one fresh exact-head review; no matching PR, passing review, human exact-head approval, merge, tag, or release | Candidate/test evidence is not released downstream contract authority; the prior readiness input and every failed/superseded feature head are also forbidden as dependencies |
+| Issue #8 learning contracts | OPEN; label `ready to cook`; candidate `393b66e93461433fcded4ce4e6defa64f937fcfa` on `feature/issue-5-03-learning-contracts-v3` failed fresh exact-head review with two High and one Medium findings; owner comment `5040086369` authorizes one narrow follow-up repair; no matching PR, passing review, human exact-head approval, merge, tag, or release | Failed review and repair authority are not released downstream contract authority; the prior readiness input and every failed/superseded feature head are also forbidden as dependencies |
 | Issue #10 real journey/renderer | OPEN; label `ready for plan audit`; blocked readiness-audit head `4a36bab4f8a8c9f393060cf7337b2e5ca45cd9b7` has `COOK_SCOPE=none`; no matching implementation PR, passing merged journey, released renderer, tag, or release | A blocked plan audit is not implementation, passing journey, merge, renderer release, or downstream authority |
 
 These SHAs are status evidence only. They are forbidden as future dependency placeholders.
-The live #8 review may later produce new evidence, but an in-flight or published review comment
-still cannot substitute for the complete owner-authored release handoff in Gate A.
+The authorized #8 follow-up repair and its future review may later produce new evidence, but a
+repair branch or review comment still cannot substitute for the complete owner-authored release
+handoff in Gate A.
 
 ## Gate A — Released Issue #8 Contracts
 
