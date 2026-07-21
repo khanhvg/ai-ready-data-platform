@@ -127,6 +127,29 @@ test('V3-07 retained sanitizer normalizes local temporary workspace paths before
   }
 });
 
+test('V3-07 retained scanner and sanitizer cover generic private workspace paths without false positives', async () => {
+  const privatePath = '/private/work/repo/file.tap';
+  const privateFileUrl = 'file:///private/work/repo/file.tap';
+  for (const sample of [privatePath, privateFileUrl]) {
+    assert.ok(scanText(sample).includes('absolutePrivatePath'), sample);
+  }
+  for (const neutral of [
+    'https://example.com/private/work/repo/file.tap',
+    'http://example.com/private/work/repo/file.tap',
+    'private/work/repo/file.tap',
+    'spikes/web/private/work/repo/file.tap',
+    'Document the private/path policy before review.',
+  ]) assert.equal(scanText(neutral).includes('absolutePrivatePath'), false, neutral);
+
+  const loaded = await loadInstrumentedRunner();
+  try {
+    assert.equal(loaded.module.sanitize(privatePath), '<PRIVATE_PATH>');
+    assert.equal(loaded.module.sanitize(privateFileUrl), 'file://<PRIVATE_PATH>');
+  } finally {
+    rmSync(loaded.temporaryPath, { force: true });
+  }
+});
+
 test('V3-07 authorized retained correction replaces exactly 12 paths and binds its attestation', () => {
   const run = 'spikes/web/evidence/retained/simple-vite-v3/v3-20260721T202415031Z-52a03869';
   const tapLocator = `${run}/tdd/fifth-targeted-review-fix-red/focused-tests.tap`;
