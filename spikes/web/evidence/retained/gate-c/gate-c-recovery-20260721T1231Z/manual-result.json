@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "i5-02-gate-c-actual-manual-recovery-v1",
+  "issue": 7,
+  "recordedAtUtc": "2026-07-21T12:59:18.753Z",
+  "recoveryInputSha": "8dd2fc2e0954bd933c3584a2f50a9856ff5915d4",
+  "candidateSourceAndTestedSha": "02051ed94d4e2c920f8a65a4ecab0e08a82b946a",
+  "priorRetainedAttestationSha": "1d3cdf769e9c0b3ee1fa0238309f7328c0908346",
+  "resultStatus": "incomplete",
+  "manualComplete": false,
+  "decisionConsequence": "force-no-winner",
+  "barrierB": "closed",
+  "environment": {
+    "os": "macOS 26.5.1 (25F80)",
+    "architecture": "arm64",
+    "chrome": "150.0.7871.129",
+    "voiceOverUtility": "10",
+    "cuaDriver": "0.10.0",
+    "driverBundleId": "com.trycua.driver",
+    "driverTeamId": "YCK386LBJ7",
+    "profilePolicy": "driver-owned-isolated-new",
+    "networkPolicy": "same-origin-loopback-only",
+    "retryPolicy": "none"
+  },
+  "frozen": {
+    "commonTree": "f00fe97715df5dd469302994349fb95c9412482b",
+    "scoreAnchorSha256": "56a15b9babf3e354d5df8279929df0c12e61c2e2e58bc90a8364038b424c9a75",
+    "candidateModesSha256": "2957c84624ef16d0ebb037ea3fde66d20a0d2dae6d0d049b1e9c4bb7a8ce3181",
+    "viteSourceSha256": "b6b8eb8bf40065dfdda48b1755f0beb83b57bed77e614ff6138952f2f1c1a6f9",
+    "viteLockSha256": "96feead881be424d4c0d8d4629d7da0312722a3d7c945d08ed071542ea5d443c",
+    "nextSourceSha256": "2874536efcbaf4e1cd7660bc72481a654da7225458c8d265793f156e7664f616",
+    "nextLockSha256": "4939388a7e7290ec640e418afac94dc68cfba7bf6b5692df61317b4c95de2e8b"
+  },
+  "preflight": {
+    "result": "pass",
+    "semanticFormat": "semantic_v2",
+    "bindingQuality": "exact",
+    "mutationAllowed": true,
+    "nativeExactWindowScreenshots": true,
+    "healthReportCalled": false,
+    "record": "preflight/preflight.json"
+  },
+  "candidates": {
+    "vite": {
+      "status": "incomplete",
+      "serverPort": 4174,
+      "keyboard": {
+        "status": "partial",
+        "observed": ["entry", "visible-focus-on-orient", "native-tab-focus-change", "native-enter-and-space-control-activation", "escape-and-reverse-tab-attempts"],
+        "failure": "The full required entry-to-reflection journey was not captured with reliable step labels; the initial focus proof is retained and ambiguous intermediate captures were discarded."
+      },
+      "voiceOver": {
+        "status": "incomplete",
+        "actualVoiceOver": true,
+        "captionPanel": true,
+        "voiceOverPid": 85025,
+        "captionWindowId": 13830,
+        "observableCaptionText": "You are currently on a button. To click this button, press Control-Option-Space.",
+        "semanticFocus": {"role": "button", "name": "Run bounded probe", "focused": true, "semanticFormat": "semantic_v2", "snapshotComplete": true},
+        "combinedAnnouncementClaimed": false,
+        "failure": "Repeated native VO navigation commands did not move the VoiceOver cursor through non-focusable headings, landmarks, four evidence grains, conclusion, and reset. DOM or semantic inference was not substituted for directly observable VoiceOver output."
+      },
+      "zoom200Percent": {
+        "status": "incomplete-retained-exact-proof",
+        "actualChromeUi": true,
+        "operatorObservedPercent": 200,
+        "retainedExactPercentProof": false,
+        "restoredPercent": 100,
+        "observed": ["enlarged narrow viewport", "readable content", "visible focus"],
+        "failure": "The exact 200% Chrome menu capture observed during the run was not retained; the retained enlarged viewport cannot independently prove the exact percentage."
+      },
+      "reducedMotion": {"status": "not-run-after-stop"},
+      "noJavaScript": {"status": "not-run-after-stop"},
+      "manualComplete": false
+    },
+    "next": {
+      "status": "not-run-after-vite-stop",
+      "manualComplete": false
+    },
+    "astro": {
+      "status": "eliminated",
+      "numericScore": null,
+      "reasons": ["chrome:target-size:serious", "firefox:target-size:serious"]
+    }
+  },
+  "retainedScreenshots": {
+    "vite/screenshots/keyboard-entry.png": "44c77f14e588255be4fa742b7f50910aefaedf106f47df22d26d72dff2c4a205",
+    "vite/screenshots/keyboard-focus-orient.png": "74389c333b96cca78b6cfdff14cb48bf5e60473ef1a4bdfb895cfb9daef80439",
+    "vite/screenshots/zoom-enlarged-viewport.png": "6e39a8747e0fd06a8faa947174a166c999c70e2f57629183219d1eb7c4f72225",
+    "vite/screenshots/zoom-restored-100.png": "6ee133ae35e5094dc7c4cf7f925583826964e4da8d643639ca1b7dea9935752e",
+    "vite/screenshots/voiceover-run-button-window.png": "f79b9075cf0de59b555b9c1644a2ef750fdec5a76a7c00291371b223a1bd98c0",
+    "vite/voiceover/caption-run-button.png": "1401d59297611f5896e9c8855f919df32b84ca17a3ad3d4f6fc71761dc7cd45a"
+  },
+  "cleanup": {
+    "voiceOverInitial": "off",
+    "voiceOverFinal": "off",
+    "captionPanelInitial": "off",
+    "captionPanelFinal": "off",
+    "chromeZoomInitialPercent": 100,
+    "chromeZoomFinalPercent": 100,
+    "reducedMotionChanged": false,
+    "javaScriptChanged": false,
+    "ownedChromeProcessesExited": true,
+    "ownedServerExited": true,
+    "ownedProfilesRemoved": true,
+    "driverSessionEnded": true,
+    "driverSessionFinalState": "absent",
+    "ports4174Through4178Free": true,
+    "artifactsAbsent": true,
+    "frozenIdentitiesUnchanged": true,
+    "hermesPid": 19888,
+    "hermesWindowId": 6813,
+    "hermesBounds": {"x": 0, "y": 33, "width": 1512, "height": 949},
+    "hermesTitleSha256": "66e0988d1198afe049f2a5fedbb6e89c20c12dc3bc01ab3f5c13576d624f6e9b",
+    "hermesFinalVerificationScreenshotSha256": "6822c81994d1357304e1f7f19507042400f1038ecd2106d36f2cc324bd4cecef",
+    "hermesFinalScreenshotRetained": false,
+    "hermesFingerprintRestored": true,
+    "hermesRestoredFrontmost": true
+  },
+  "timer": {
+    "priorUsedSeconds": "1681.011075417",
+    "segmentUsedSeconds": "1574.152828875",
+    "cumulativeUsedSeconds": "3255.163904292",
+    "remainingSeconds": "3944.836095708"
+  }
+}

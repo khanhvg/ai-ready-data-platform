@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "manual-gate-c-recovery-preflight-v1",
+  "issue": 7,
+  "scope": "next-vite-manual-gate-c-and-gate-d",
+  "recoveryInputSha": "8dd2fc2e0954bd933c3584a2f50a9856ff5915d4",
+  "candidateSourceAndTestedSha": "02051ed94d4e2c920f8a65a4ecab0e08a82b946a",
+  "priorRetainedAttestationSha": "1d3cdf769e9c0b3ee1fa0238309f7328c0908346",
+  "completedAtUtc": "2026-07-21T12:31:47Z",
+  "monotonicObservedNs": "551440150932708",
+  "result": "pass",
+  "barrierB": "open-for-recovery",
+  "driver": {
+    "version": "0.10.0",
+    "executable": "/Applications/CuaDriver.app/Contents/MacOS/cua-driver",
+    "bundleId": "com.trycua.driver",
+    "teamId": "YCK386LBJ7",
+    "signature": "valid-notarized-developer-id",
+    "daemonMode": "standard (built_in_default)",
+    "daemonPid": 7384,
+    "policy": {"user": false, "managed": false, "session": false, "bypass": false},
+    "doctor": "pass",
+    "permissions": {
+      "accessibility": true,
+      "screenRecording": true,
+      "screenRecordingCapturable": true,
+      "surfacesAgree": true,
+      "attribution": "driver-daemon"
+    },
+    "release": {"current": "0.10.0", "latest": "0.10.0", "updateAvailable": false, "cacheHit": false},
+    "healthReportCalled": false
+  },
+  "environment": {
+    "os": "macOS 26.5.1 (25F80)",
+    "chrome": "150.0.7871.129",
+    "captureScope": "window",
+    "profilePolicy": "driver-owned-isolated-new",
+    "networkPolicy": "same-origin-loopback-only"
+  },
+  "hermes": {
+    "pid": 19888,
+    "windowId": 6813,
+    "bounds": {"x": 0, "y": 33, "width": 1512, "height": 949},
+    "titleBytes": 6,
+    "titleSha256": "66e0988d1198afe049f2a5fedbb6e89c20c12dc3bc01ab3f5c13576d624f6e9b",
+    "preScreenshotSha256": "904ffd31590e5866115efa9a75cf8f50123fc0a3b2d0ea65cde2cf7347bfbe62",
+    "postScreenshotSha256": "91166341c7140e334d8e541fc1b3ea4016e167cf236697c4c54b4815c6235aa7",
+    "restoredFrontmost": true,
+    "fingerprintRestored": true
+  },
+  "neutralPage": {
+    "initialSha256": "accc9ddbf8b0246aa256e34a329c080e9af53f5ebaa6744a2b8c676345427a63",
+    "actionPageSha256": "bdaf822aca75cf932f9bfe26d5e0f578a205b12c14bc34d9801de4ecd8347458",
+    "loopbackPort": 4207,
+    "bindingQuality": "exact",
+    "mutationAllowed": true,
+    "semanticFormat": "semantic_v2",
+    "semanticComplete": true,
+    "nativeExactWindowScreenshots": true,
+    "rawChromeProcessAxRetained": false,
+    "initialNoopCredited": false,
+    "actions": [
+      {"action": "Tab", "result": "focus-alpha-to-beta", "screenshotSha256": "c33f91996c0d65ed38ac1f4a8658f3151827233e373c187592474ae1a0f7fccc"},
+      {"action": "Shift+Tab", "result": "focus-beta-to-alpha", "screenshotSha256": "9c6bfd70117ba5ee9820c376851e8c11017d264d3308ba39550bb47bfaeb3f1e"},
+      {"action": "Tab", "result": "focus-alpha-to-beta", "screenshotSha256": "c33f91996c0d65ed38ac1f4a8658f3151827233e373c187592474ae1a0f7fccc"},
+      {"action": "Enter", "result": "beta-active-1-key-enter", "screenshotSha256": "48bc07d29259cdb078440029270288a264a2b270d03b5f48f62251b3dbf5a84c"},
+      {"action": "Space", "result": "beta-active-2-key-space", "screenshotSha256": "bd4e9c8ad969babbbd6f4e33d4c59fe81d4a57bd16a8896ee1b3926f9d2f20de"}
+    ]
+  },
+  "cleanup": {
+    "ownedChromeProcessesExited": true,
+    "ownedServerExited": true,
+    "ownedProfileAndCapturesRemoved": true,
+    "sessionEnded": true,
+    "portFree": true,
+    "repositoryCleanBeforeRecord": true,
+    "artifactsAbsentBeforeRecord": true,
+    "frozenIdentitiesUnchanged": true
+  }
+}
