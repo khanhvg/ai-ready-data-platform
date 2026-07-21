@@ -1,0 +1,133 @@
+<!-- Pages: 1 -->
+<svg width="2100pt" height="500pt"
+ viewBox="0.00 0.00 2100.00 500.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-labelledby="title desc"><title id="title">First learning journey</title><desc id="desc">dynamic view for learner-product-security: complete-first-journey</desc>
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(15.05 485.05)">
+<!-- learner -->
+<g id="node1" class="node">
+<title>learner</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="320.04,-325 0,-325 0,-145 320.04,-145 320.04,-325"/>
+<text xml:space="preserve" text-anchor="start" x="125.55" y="-238" font-family="Arial" font-size="20.00" fill="#eff6ff">Learner</text>
+<text xml:space="preserve" text-anchor="start" x="33.69" y="-215" font-family="Arial" font-size="15.00" fill="#bfdbfe">Learns through guided local exercises</text>
+</g>
+<!-- browser -->
+<g id="node2" class="node">
+<title>browser</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="859,-470 538.96,-470 538.96,-290 859,-290 859,-470"/>
+<text xml:space="preserve" text-anchor="start" x="662.3" y="-383" font-family="Arial" font-size="20.00" fill="#eff6ff">Browser</text>
+<text xml:space="preserve" text-anchor="start" x="624.77" y="-360" font-family="Arial" font-size="15.00" fill="#bfdbfe">Local learner interface</text>
+</g>
+<!-- operator -->
+<g id="node3" class="node">
+<title>operator</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="859,-180 538.96,-180 538.96,0 859,0 859,-180"/>
+<text xml:space="preserve" text-anchor="start" x="597.81" y="-93" font-family="Arial" font-size="20.00" fill="#eff6ff">Instructor and operator</text>
+<text xml:space="preserve" text-anchor="start" x="562.24" y="-70" font-family="Arial" font-size="15.00" fill="#bfdbfe">Reviews progress, failures, and evidence</text>
+</g>
+<!-- learning -->
+<g id="node4" class="node">
+<title>learning</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="1439.53,-316 1118.4,-316 1118.4,-136 1439.53,-136 1439.53,-316"/>
+<text xml:space="preserve" text-anchor="start" x="1201.14" y="-238" font-family="Arial" font-size="20.00" fill="#eff6ff">Learning platform</text>
+<text xml:space="preserve" text-anchor="start" x="1138.45" y="-215" font-family="Arial" font-size="15.00" fill="#bfdbfe">Guided learning, controlled execution, and</text>
+<text xml:space="preserve" text-anchor="start" x="1216.84" y="-197" font-family="Arial" font-size="15.00" fill="#bfdbfe">verifiable evidence</text>
+</g>
+<!-- retail -->
+<g id="node5" class="node">
+<title>retail</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="2070.32,-316 1750.28,-316 1750.28,-136 2070.32,-136 2070.32,-316"/>
+<text xml:space="preserve" text-anchor="start" x="1823.59" y="-238" font-family="Arial" font-size="20.00" fill="#eff6ff">Retail data platform</text>
+<text xml:space="preserve" text-anchor="start" x="1771.07" y="-215" font-family="Arial" font-size="15.00" fill="#bfdbfe">Synthetic retail source, transformation, BI,</text>
+<text xml:space="preserve" text-anchor="start" x="1788.14" y="-197" font-family="Arial" font-size="15.00" fill="#bfdbfe">orchestration, lake, and catalog tools</text>
+</g>
+<!-- learner&#45;&gt;browser -->
+<g id="edge1" class="edge">
+<title>learner&#45;&gt;browser</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M319.95,-277.92C385.82,-295.71 462.32,-316.36 529.2,-334.42"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="528.15,-336.86 536.07,-336.28 529.52,-331.79 528.15,-336.86"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="397.43,-323.49 397.43,-356.29 421.43,-356.29 421.43,-323.49 397.43,-323.49"/>
+<text xml:space="preserve" text-anchor="start" x="405.53" y="-336.69" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">0</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="424.43,-323.49 424.43,-356.29 461.57,-356.29 461.57,-323.49 424.43,-323.49"/>
+<text xml:space="preserve" text-anchor="start" x="427.43" y="-334.29" font-family="Arial" font-size="14.00" fill="#c9c9c9">Load</text>
+</g>
+<!-- learner&#45;&gt;operator -->
+<g id="edge9" class="edge">
+<title>learner&#45;&gt;operator</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M329.74,-189.44C396.61,-171.38 473.11,-150.72 539,-132.93"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="329.42,-186.81 322.87,-191.29 330.79,-191.87 329.42,-186.81"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="383.04,-178.49 383.04,-211.29 407.04,-211.29 407.04,-178.49 383.04,-178.49"/>
+<text xml:space="preserve" text-anchor="start" x="391.15" y="-191.69" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">8</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="410.04,-178.49 410.04,-211.29 475.96,-211.29 475.96,-178.49 410.04,-178.49"/>
+<text xml:space="preserve" text-anchor="start" x="413.04" y="-189.29" font-family="Arial" font-size="14.00" fill="#c9c9c9">Complete</text>
+</g>
+<!-- browser&#45;&gt;learning -->
+<g id="edge2" class="edge">
+<title>browser&#45;&gt;learning</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M858.68,-337.72C936.24,-317.05 1029.63,-292.17 1108.57,-271.13"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="1109.12,-273.7 1115.69,-269.24 1107.77,-268.63 1109.12,-273.7"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="957.41,-324.32 957.41,-357.12 981.41,-357.12 981.41,-324.32 957.41,-324.32"/>
+<text xml:space="preserve" text-anchor="start" x="965.52" y="-337.52" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">1</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="984.41,-324.32 984.41,-357.12 1019.98,-357.12 1019.98,-324.32 984.41,-324.32"/>
+<text xml:space="preserve" text-anchor="start" x="987.41" y="-335.12" font-family="Arial" font-size="14.00" fill="#c9c9c9">Start</text>
+</g>
+<!-- operator&#45;&gt;learning -->
+<g id="edge5" class="edge">
+<title>operator&#45;&gt;learning</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M858.68,-127.34C936.24,-145.59 1029.63,-167.57 1108.57,-186.14"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="1107.76,-188.65 1115.67,-187.81 1108.97,-183.54 1107.76,-188.65"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="942.62,-177.18 942.62,-209.98 966.62,-209.98 966.62,-177.18 942.62,-177.18"/>
+<text xml:space="preserve" text-anchor="start" x="950.73" y="-190.38" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">4</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="969.62,-177.18 969.62,-209.98 1034.77,-209.98 1034.77,-177.18 969.62,-177.18"/>
+<text xml:space="preserve" text-anchor="start" x="972.62" y="-187.98" font-family="Arial" font-size="14.00" fill="#c9c9c9">Diagnose</text>
+</g>
+<!-- operator&#45;&gt;learning -->
+<g id="edge8" class="edge">
+<title>operator&#45;&gt;learning</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M869.11,-60.54C929.95,-55.89 998.35,-57.67 1058.4,-76.2 1099.18,-88.79 1139.16,-111.84 1173.59,-136.14"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="868.91,-57.92 861.65,-61.16 869.34,-63.15 868.91,-57.92"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="922,-79.2 922,-112 946,-112 946,-79.2 922,-79.2"/>
+<text xml:space="preserve" text-anchor="start" x="930.1" y="-92.4" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">7</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="949,-79.2 949,-112 1055.4,-112 1055.4,-79.2 949,-79.2"/>
+<text xml:space="preserve" text-anchor="start" x="952" y="-90" font-family="Arial" font-size="14.00" fill="#c9c9c9">Retain evidence</text>
+</g>
+<!-- learning&#45;&gt;retail -->
+<g id="edge3" class="edge">
+<title>learning&#45;&gt;retail</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M1425.39,-315.97C1449.39,-327.12 1474.6,-336.77 1499.53,-343 1581.78,-363.55 1608.04,-363.59 1690.28,-343 1711.95,-337.57 1733.83,-329.55 1754.93,-320.2"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="1755.75,-322.71 1761.49,-317.22 1753.58,-317.93 1755.75,-322.71"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1565.56,-361.43 1565.56,-394.23 1589.56,-394.23 1589.56,-361.43 1565.56,-361.43"/>
+<text xml:space="preserve" text-anchor="start" x="1573.67" y="-374.63" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">2</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1592.56,-361.43 1592.56,-394.23 1624.24,-394.23 1624.24,-361.43 1592.56,-361.43"/>
+<text xml:space="preserve" text-anchor="start" x="1595.56" y="-372.23" font-family="Arial" font-size="14.00" fill="#c9c9c9">Run</text>
+</g>
+<!-- learning&#45;&gt;retail -->
+<g id="edge4" class="edge">
+<title>learning&#45;&gt;retail</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M1449.61,-226C1543.18,-226 1658.66,-226 1750.46,-226"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="1449.7,-223.38 1442.2,-226 1449.7,-228.63 1449.7,-223.38"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1502.53,-229 1502.53,-261.8 1526.53,-261.8 1526.53,-229 1502.53,-229"/>
+<text xml:space="preserve" text-anchor="start" x="1510.64" y="-242.2" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">3</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1529.53,-229 1529.53,-261.8 1687.28,-261.8 1687.28,-229 1529.53,-229"/>
+<text xml:space="preserve" text-anchor="start" x="1532.53" y="-239.8" font-family="Arial" font-size="14.00" fill="#c9c9c9">Record controlled failure</text>
+</g>
+<!-- learning&#45;&gt;retail -->
+<g id="edge6" class="edge">
+<title>learning&#45;&gt;retail</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M1439.43,-172.36C1459.47,-167.36 1479.84,-163.09 1499.53,-160.2 1583.41,-147.9 1606.4,-147.87 1690.28,-160.2 1706.78,-162.63 1723.76,-166.03 1740.62,-170.02"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="1739.68,-172.49 1747.59,-171.72 1740.92,-167.39 1739.68,-172.49"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1560.12,-163.2 1560.12,-196 1584.12,-196 1584.12,-163.2 1560.12,-163.2"/>
+<text xml:space="preserve" text-anchor="start" x="1568.22" y="-176.4" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">5</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1587.12,-163.2 1587.12,-196 1629.69,-196 1629.69,-163.2 1587.12,-163.2"/>
+<text xml:space="preserve" text-anchor="start" x="1590.12" y="-174" font-family="Arial" font-size="14.00" fill="#c9c9c9">Reset</text>
+</g>
+<!-- learning&#45;&gt;retail -->
+<g id="edge7" class="edge">
+<title>learning&#45;&gt;retail</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M1402.12,-130.56C1432.36,-111.91 1465.81,-95.08 1499.53,-85.2 1580.88,-61.36 1608.94,-61.31 1690.28,-85.2 1727.25,-96.06 1763.89,-115.3 1796.31,-136.14"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="1400.77,-128.31 1395.82,-134.52 1403.57,-132.75 1400.77,-128.31"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1560.51,-88.2 1560.51,-121 1584.51,-121 1584.51,-88.2 1560.51,-88.2"/>
+<text xml:space="preserve" text-anchor="start" x="1568.62" y="-101.4" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">6</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1587.51,-88.2 1587.51,-121 1629.3,-121 1629.3,-88.2 1587.51,-88.2"/>
+<text xml:space="preserve" text-anchor="start" x="1590.51" y="-99" font-family="Arial" font-size="14.00" fill="#c9c9c9">Verify</text>
+</g>
+</g>
+</svg>

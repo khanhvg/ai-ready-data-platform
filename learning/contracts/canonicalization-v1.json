@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "canonicalization-profile-v1",
+  "profileId": "rfc8785-jcs-v1",
+  "rawEncoding": "utf-8-ijson",
+  "unicodeNormalization": "none",
+  "digestAlgorithm": "sha-256",
+  "allowedRawDrift": [
+    "/run/runId",
+    "/run/startedAt",
+    "/run/finishedAt",
+    "/run/durationMs",
+    "/run/workspaceLocator"
+  ],
+  "integrityClaim": "local-corruption-detection-not-publisher-authenticity"
+}

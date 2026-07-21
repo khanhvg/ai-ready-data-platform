@@ -1,0 +1,111 @@
+<!-- Pages: 1 -->
+<svg width="901pt" height="1841pt"
+ viewBox="0.00 0.00 901.00 1841.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-labelledby="title desc"><title id="title">Local learning platform containers</title><desc id="desc">container view for developer-learner: actual-local-processes</desc>
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(15.05 1825.85)">
+<!-- learner -->
+<g id="node1" class="node">
+<title>learner</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="786.05,-1810.8 466.01,-1810.8 466.01,-1630.8 786.05,-1630.8 786.05,-1810.8"/>
+<text xml:space="preserve" text-anchor="start" x="591.56" y="-1723.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Learner</text>
+<text xml:space="preserve" text-anchor="start" x="499.7" y="-1700.8" font-family="Arial" font-size="15.00" fill="#bfdbfe">Learns through guided local exercises</text>
+</g>
+<!-- browser -->
+<g id="node2" class="node">
+<title>browser</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="786.05,-1488 466.01,-1488 466.01,-1308 786.05,-1308 786.05,-1488"/>
+<text xml:space="preserve" text-anchor="start" x="589.35" y="-1401" font-family="Arial" font-size="20.00" fill="#eff6ff">Browser</text>
+<text xml:space="preserve" text-anchor="start" x="551.82" y="-1378" font-family="Arial" font-size="15.00" fill="#bfdbfe">Local learner interface</text>
+</g>
+<!-- portal -->
+<g id="node3" class="node">
+<title>portal</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="786.05,-1165.2 466.01,-1165.2 466.01,-985.2 786.05,-985.2 786.05,-1165.2"/>
+<text xml:space="preserve" text-anchor="start" x="520.42" y="-1088" font-family="Arial" font-size="20.00" fill="#eff6ff">Portal modular monolith</text>
+<text xml:space="preserve" text-anchor="start" x="579.78" y="-1067" font-family="Arial" font-size="13.00" fill="#bfdbfe">Web application</text>
+<text xml:space="preserve" text-anchor="start" x="520.14" y="-1045.4" font-family="Arial" font-size="15.00" fill="#bfdbfe">Presents journeys and progress</text>
+</g>
+<!-- runner -->
+<g id="node4" class="node">
+<title>runner</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="787.39,-842.4 464.66,-842.4 464.66,-662.4 787.39,-662.4 787.39,-842.4"/>
+<text xml:space="preserve" text-anchor="start" x="559.32" y="-774.2" font-family="Arial" font-size="20.00" fill="#eff6ff">Isolated runner</text>
+<text xml:space="preserve" text-anchor="start" x="581.22" y="-753.2" font-family="Arial" font-size="13.00" fill="#bfdbfe">Python process</text>
+<text xml:space="preserve" text-anchor="start" x="484.72" y="-731.6" font-family="Arial" font-size="15.00" fill="#bfdbfe">Executes allow&#45;listed commands in private</text>
+<text xml:space="preserve" text-anchor="start" x="586.43" y="-713.6" font-family="Arial" font-size="15.00" fill="#bfdbfe">workspaces</text>
+</g>
+<!-- progress -->
+<g id="node5" class="node">
+<title>progress</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="338.05,-519.6 0,-519.6 0,-339.6 338.05,-339.6 338.05,-519.6"/>
+<text xml:space="preserve" text-anchor="start" x="20.06" y="-442.4" font-family="Arial" font-size="20.00" fill="#eff6ff">Progress and evidence repository</text>
+<text xml:space="preserve" text-anchor="start" x="140.12" y="-421.4" font-family="Arial" font-size="13.00" fill="#bfdbfe">Local files</text>
+<text xml:space="preserve" text-anchor="start" x="36.87" y="-399.8" font-family="Arial" font-size="15.00" fill="#bfdbfe">Stores progress and integrity envelopes</text>
+</g>
+<!-- adapters -->
+<g id="node6" class="node">
+<title>adapters</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="804.08,-519.6 447.98,-519.6 447.98,-339.6 804.08,-339.6 804.08,-519.6"/>
+<text xml:space="preserve" text-anchor="start" x="563.21" y="-451.4" font-family="Arial" font-size="20.00" fill="#eff6ff">Data adapters</text>
+<text xml:space="preserve" text-anchor="start" x="605.79" y="-430.4" font-family="Arial" font-size="13.00" fill="#bfdbfe">Python</text>
+<text xml:space="preserve" text-anchor="start" x="468.03" y="-408.8" font-family="Arial" font-size="15.00" fill="#bfdbfe">Connects reviewed learning commands to retail</text>
+<text xml:space="preserve" text-anchor="start" x="610.18" y="-390.8" font-family="Arial" font-size="15.00" fill="#bfdbfe">tools</text>
+</g>
+<!-- retail -->
+<g id="node7" class="node">
+<title>retail</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="786.05,-180 466.01,-180 466.01,0 786.05,0 786.05,-180"/>
+<text xml:space="preserve" text-anchor="start" x="539.32" y="-102" font-family="Arial" font-size="20.00" fill="#eff6ff">Retail data platform</text>
+<text xml:space="preserve" text-anchor="start" x="486.8" y="-79" font-family="Arial" font-size="15.00" fill="#bfdbfe">Synthetic retail source, transformation, BI,</text>
+<text xml:space="preserve" text-anchor="start" x="503.87" y="-61" font-family="Arial" font-size="15.00" fill="#bfdbfe">orchestration, lake, and catalog tools</text>
+</g>
+<!-- learner&#45;&gt;browser -->
+<g id="edge1" class="edge">
+<title>learner&#45;&gt;browser</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M626.03,-1630.87C626.03,-1589.67 626.03,-1540.56 626.03,-1498.17"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="628.65,-1498.36 626.03,-1490.86 623.4,-1498.36 628.65,-1498.36"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="626.03,-1548 626.03,-1570.8 663.92,-1570.8 663.92,-1548 626.03,-1548"/>
+<text xml:space="preserve" text-anchor="start" x="629.03" y="-1553.8" font-family="Arial" font-size="14.00" fill="#c9c9c9">Uses</text>
+</g>
+<!-- browser&#45;&gt;portal -->
+<g id="edge2" class="edge">
+<title>browser&#45;&gt;portal</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M626.03,-1308.07C626.03,-1266.87 626.03,-1217.76 626.03,-1175.37"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="628.65,-1175.56 626.03,-1168.06 623.4,-1175.56 628.65,-1175.56"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="626.03,-1225.2 626.03,-1248 795.47,-1248 795.47,-1225.2 626.03,-1225.2"/>
+<text xml:space="preserve" text-anchor="start" x="629.03" y="-1231" font-family="Arial" font-size="14.00" fill="#c9c9c9">Loads journeys and status</text>
+</g>
+<!-- portal&#45;&gt;runner -->
+<g id="edge3" class="edge">
+<title>portal&#45;&gt;runner</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M626.03,-985.27C626.03,-944.07 626.03,-894.96 626.03,-852.57"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="628.65,-852.76 626.03,-845.26 623.4,-852.76 628.65,-852.76"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="626.03,-902.4 626.03,-925.2 807.89,-925.2 807.89,-902.4 626.03,-902.4"/>
+<text xml:space="preserve" text-anchor="start" x="629.03" y="-908.2" font-family="Arial" font-size="14.00" fill="#c9c9c9">Requests an allow&#45;listed run</text>
+</g>
+<!-- runner&#45;&gt;progress -->
+<g id="edge4" class="edge">
+<title>runner&#45;&gt;progress</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M499.33,-662.47C438.53,-619.79 365.65,-568.62 303.83,-525.23"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="305.69,-523.33 298.05,-521.17 302.68,-527.63 305.69,-523.33"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="411.23,-579.6 411.23,-602.4 565.84,-602.4 565.84,-579.6 411.23,-579.6"/>
+<text xml:space="preserve" text-anchor="start" x="414.23" y="-585.4" font-family="Arial" font-size="14.00" fill="#c9c9c9">Writes verified evidence</text>
+</g>
+<!-- runner&#45;&gt;adapters -->
+<g id="edge5" class="edge">
+<title>runner&#45;&gt;adapters</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M626.03,-662.47C626.03,-621.27 626.03,-572.16 626.03,-529.77"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="628.65,-529.96 626.03,-522.46 623.4,-529.96 628.65,-529.96"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="626.03,-579.6 626.03,-602.4 870.92,-602.4 870.92,-579.6 626.03,-579.6"/>
+<text xml:space="preserve" text-anchor="start" x="629.03" y="-585.4" font-family="Arial" font-size="14.00" fill="#c9c9c9">Dispatches registered data commands</text>
+</g>
+<!-- adapters&#45;&gt;retail -->
+<g id="edge6" class="edge">
+<title>adapters&#45;&gt;retail</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M626.03,-339.9C626.03,-293.94 626.03,-237.67 626.03,-190.27"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="628.65,-190.51 626.03,-183.01 623.4,-190.51 628.65,-190.51"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="626.03,-240 626.03,-279.6 839,-279.6 839,-240 626.03,-240"/>
+<text xml:space="preserve" text-anchor="start" x="629.03" y="-262.6" font-family="Arial" font-size="14.00" fill="#c9c9c9">Invokes Rill, Airflow, Iceberg, and</text>
+<text xml:space="preserve" text-anchor="start" x="629.03" y="-245.8" font-family="Arial" font-size="14.00" fill="#c9c9c9">OpenMetadata adapters</text>
+</g>
+</g>
+</svg>

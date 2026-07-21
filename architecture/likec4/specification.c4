@@ -1,0 +1,10 @@
+specification {
+  element person
+  element softwareSystem
+  element container
+  element component
+  relationship uses
+  deploymentNode environment
+  deploymentNode host
+  deploymentNode privateStorage
+}

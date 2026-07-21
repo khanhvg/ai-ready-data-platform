@@ -1,0 +1,24 @@
+ID: C4-L1
+Title: Learning platform system context and evidence boundary
+Type: system-context
+Audience: learner-security-maintainer
+Concern: trust-and-ownership
+Scope: learning-platform
+Owner: I5-01
+Legend: C4 elements and labelled unidirectional relations
+
+Elements:
+- browser | softwareSystem | Browser | Local learner interface | parent=none
+- identity | softwareSystem | Hosted identity (future) | External future context; not a local runtime dependency | parent=none
+- learner | person | Learner | Learns through guided local exercises | parent=none
+- learning | softwareSystem | Learning platform | Guided learning, controlled execution, and verifiable evidence | parent=none
+- operator | person | Instructor and operator | Reviews progress, failures, and evidence | parent=none
+- retail | softwareSystem | Retail data platform | Synthetic retail source, transformation, BI, orchestration, lake, and catalog tools | parent=none
+
+Relations:
+- Loads journeys and status: browser -> learning | Local HTTP
+- Uses: learner -> browser | HTTPS or local loopback
+- Invokes Rill, Airflow, Iceberg, and OpenMetadata adapters: learning -> retail | Reviewed CLI interfaces
+- Reviews results and controlled failures: operator -> learning | Read-only contract
+
+Limitations: descriptive architecture only; future context is not implemented or a runtime dependency.

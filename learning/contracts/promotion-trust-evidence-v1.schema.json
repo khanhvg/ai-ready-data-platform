@@ -1,0 +1,9 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:ai-ready-data-platform:promotion-trust-evidence-v1",
+  "type":"object",
+  "required":["schemaVersion","contractId","fixtureId","fixtureKind","dataClassification","profile","seed","inputWindow","sources","assertions","decision","limitations","integrity"],
+  "properties":{
+    "schemaVersion":{"const":"promotion-trust-evidence-v1"},"contractId":{"const":"promotion-trust-v1"},"fixtureId":{"const":"promotion-trust-small-42-v1"},"fixtureKind":{"const":"tracked-real"},"dataClassification":{"const":"sanitized-synthetic-aggregate"},"profile":{"const":"small"},"seed":{"const":42},"inputWindow":{"type":"object"},"sources":{"type":"array","minItems":4,"maxItems":4},"assertions":{"type":"array","minItems":8,"maxItems":8},"decision":{"type":"object"},"limitations":{"type":"array","minItems":2},"integrity":{"type":"object"}
+  },"additionalProperties":false
+}

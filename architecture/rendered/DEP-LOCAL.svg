@@ -1,0 +1,111 @@
+<!-- Pages: 1 -->
+<svg width="1002pt" height="1691pt"
+ viewBox="0.00 0.00 1002.00 1691.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-labelledby="title desc"><title id="title">Local deployment and 16 GiB operating constraint</title><desc id="desc">deployment view for learner-operator: 16-gib-runtime-and-trust</desc>
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(15.05 1676.45)">
+<g id="clust1" class="cluster">
+<title>cluster_browser_host</title>
+<polygon fill="#194b9e" stroke="#1b3d88" points="44,-1388.2 44,-1653.4 428,-1653.4 428,-1388.2 44,-1388.2"/>
+<text xml:space="preserve" text-anchor="start" x="52" y="-1640.5" font-family="Arial" font-weight="bold" font-size="11.00" fill="#bfdbfe" fill-opacity="0.701961">LEARNER BROWSER HOST</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_developer_host</title>
+<polygon fill="#1a468d" stroke="#1c3979" points="8,-8 8,-1324.4 964,-1324.4 964,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="start" x="16" y="-1311.5" font-family="Arial" font-weight="bold" font-size="11.00" fill="#bfdbfe" fill-opacity="0.701961">DEVELOPER WORKSTATION</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_workspace_evidence</title>
+<polygon fill="#194b9e" stroke="#1b3d88" points="512,-375.6 512,-640.8 914,-640.8 914,-375.6 512,-375.6"/>
+<text xml:space="preserve" text-anchor="start" x="520" y="-627.9" font-family="Arial" font-weight="bold" font-size="11.00" fill="#bfdbfe" fill-opacity="0.701961">PRIVATE WORKSPACE AND EVIDENCE STORAGE</text>
+</g>
+<!-- browser_instance -->
+<g id="node1" class="node">
+<title>browser_instance</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="396.02,-1600.2 75.98,-1600.2 75.98,-1420.2 396.02,-1420.2 396.02,-1600.2"/>
+<text xml:space="preserve" text-anchor="start" x="199.33" y="-1513.2" font-family="Arial" font-size="20.00" fill="#eff6ff">Browser</text>
+<text xml:space="preserve" text-anchor="start" x="161.79" y="-1490.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Local learner interface</text>
+</g>
+<!-- portal_instance -->
+<g id="node2" class="node">
+<title>portal_instance</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="396.02,-1253.2 75.98,-1253.2 75.98,-1073.2 396.02,-1073.2 396.02,-1253.2"/>
+<text xml:space="preserve" text-anchor="start" x="130.39" y="-1176" font-family="Arial" font-size="20.00" fill="#eff6ff">Portal modular monolith</text>
+<text xml:space="preserve" text-anchor="start" x="189.75" y="-1155" font-family="Arial" font-size="13.00" fill="#bfdbfe">Web application</text>
+<text xml:space="preserve" text-anchor="start" x="130.11" y="-1133.4" font-family="Arial" font-size="15.00" fill="#bfdbfe">Presents journeys and progress</text>
+</g>
+<!-- runner_instance -->
+<g id="node3" class="node">
+<title>runner_instance</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="397.37,-920.4 74.63,-920.4 74.63,-740.4 397.37,-740.4 397.37,-920.4"/>
+<text xml:space="preserve" text-anchor="start" x="169.29" y="-852.2" font-family="Arial" font-size="20.00" fill="#eff6ff">Isolated runner</text>
+<text xml:space="preserve" text-anchor="start" x="191.2" y="-831.2" font-family="Arial" font-size="13.00" fill="#bfdbfe">Python process</text>
+<text xml:space="preserve" text-anchor="start" x="94.69" y="-809.6" font-family="Arial" font-size="15.00" fill="#bfdbfe">Executes allow&#45;listed commands in private</text>
+<text xml:space="preserve" text-anchor="start" x="196.4" y="-791.6" font-family="Arial" font-size="15.00" fill="#bfdbfe">workspaces</text>
+</g>
+<!-- adapters_instance -->
+<g id="node4" class="node">
+<title>adapters_instance</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="414.05,-587.6 57.95,-587.6 57.95,-407.6 414.05,-407.6 414.05,-587.6"/>
+<text xml:space="preserve" text-anchor="start" x="173.18" y="-519.4" font-family="Arial" font-size="20.00" fill="#eff6ff">Data adapters</text>
+<text xml:space="preserve" text-anchor="start" x="215.76" y="-498.4" font-family="Arial" font-size="13.00" fill="#bfdbfe">Python</text>
+<text xml:space="preserve" text-anchor="start" x="78.01" y="-476.8" font-family="Arial" font-size="15.00" fill="#bfdbfe">Connects reviewed learning commands to retail</text>
+<text xml:space="preserve" text-anchor="start" x="220.16" y="-458.8" font-family="Arial" font-size="15.00" fill="#bfdbfe">tools</text>
+</g>
+<!-- retail_instance -->
+<g id="node5" class="node">
+<title>retail_instance</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="396.02,-238 75.98,-238 75.98,-58 396.02,-58 396.02,-238"/>
+<text xml:space="preserve" text-anchor="start" x="149.29" y="-160" font-family="Arial" font-size="20.00" fill="#eff6ff">Retail data platform</text>
+<text xml:space="preserve" text-anchor="start" x="96.77" y="-137" font-family="Arial" font-size="15.00" fill="#bfdbfe">Synthetic retail source, transformation, BI,</text>
+<text xml:space="preserve" text-anchor="start" x="113.84" y="-119" font-family="Arial" font-size="15.00" fill="#bfdbfe">orchestration, lake, and catalog tools</text>
+</g>
+<!-- progress_instance -->
+<g id="node6" class="node">
+<title>progress_instance</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="882.03,-587.6 543.97,-587.6 543.97,-407.6 882.03,-407.6 882.03,-587.6"/>
+<text xml:space="preserve" text-anchor="start" x="564.03" y="-510.4" font-family="Arial" font-size="20.00" fill="#eff6ff">Progress and evidence repository</text>
+<text xml:space="preserve" text-anchor="start" x="684.1" y="-489.4" font-family="Arial" font-size="13.00" fill="#bfdbfe">Local files</text>
+<text xml:space="preserve" text-anchor="start" x="580.84" y="-467.8" font-family="Arial" font-size="15.00" fill="#bfdbfe">Stores progress and integrity envelopes</text>
+</g>
+<!-- browser_instance&#45;&gt;portal_instance -->
+<g id="edge5" class="edge">
+<title>browser_instance&#45;&gt;portal_instance</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M236,-1420.35C236,-1372.36 236,-1312.96 236,-1263.45"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="238.63,-1263.57 236,-1256.07 233.38,-1263.57 238.63,-1263.57"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="236,-1332.4 236,-1355.2 405.44,-1355.2 405.44,-1332.4 236,-1332.4"/>
+<text xml:space="preserve" text-anchor="start" x="239" y="-1338.2" font-family="Arial" font-size="14.00" fill="#c9c9c9">Loads journeys and status</text>
+</g>
+<!-- portal_instance&#45;&gt;runner_instance -->
+<g id="edge1" class="edge">
+<title>portal_instance&#45;&gt;runner_instance</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M236,-1073.55C236,-1029.52 236,-976.16 236,-930.75"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="238.63,-930.82 236,-923.32 233.38,-930.82 238.63,-930.82"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="236,-985.4 236,-1008.2 417.87,-1008.2 417.87,-985.4 236,-985.4"/>
+<text xml:space="preserve" text-anchor="start" x="239" y="-991.2" font-family="Arial" font-size="14.00" fill="#c9c9c9">Requests an allow&#45;listed run</text>
+</g>
+<!-- runner_instance&#45;&gt;adapters_instance -->
+<g id="edge2" class="edge">
+<title>runner_instance&#45;&gt;adapters_instance</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M236,-740.75C236,-696.72 236,-643.36 236,-597.95"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="238.63,-598.02 236,-590.52 233.38,-598.02 238.63,-598.02"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="236,-652.6 236,-675.4 480.9,-675.4 480.9,-652.6 236,-652.6"/>
+<text xml:space="preserve" text-anchor="start" x="239" y="-658.4" font-family="Arial" font-size="14.00" fill="#c9c9c9">Dispatches registered data commands</text>
+</g>
+<!-- runner_instance&#45;&gt;progress_instance -->
+<g id="edge3" class="edge">
+<title>runner_instance&#45;&gt;progress_instance</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M397.07,-747.57C436.03,-725.7 476.84,-700.98 513,-675.4 547.18,-651.22 582.15,-622.09 613.08,-594.51"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="614.78,-596.52 618.61,-589.56 611.27,-592.61 614.78,-596.52"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="542.14,-652.6 542.14,-675.4 696.75,-675.4 696.75,-652.6 542.14,-652.6"/>
+<text xml:space="preserve" text-anchor="start" x="545.14" y="-658.4" font-family="Arial" font-size="14.00" fill="#c9c9c9">Writes verified evidence</text>
+</g>
+<!-- adapters_instance&#45;&gt;retail_instance -->
+<g id="edge4" class="edge">
+<title>adapters_instance&#45;&gt;retail_instance</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M236,-407.99C236,-359.15 236,-298.4 236,-248.01"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="238.63,-248.28 236,-240.78 233.38,-248.28 238.63,-248.28"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="236,-303 236,-342.6 448.98,-342.6 448.98,-303 236,-303"/>
+<text xml:space="preserve" text-anchor="start" x="239" y="-325.6" font-family="Arial" font-size="14.00" fill="#c9c9c9">Invokes Rill, Airflow, Iceberg, and</text>
+<text xml:space="preserve" text-anchor="start" x="239" y="-308.8" font-family="Arial" font-size="14.00" fill="#c9c9c9">OpenMetadata adapters</text>
+</g>
+</g>
+</svg>
