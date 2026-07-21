@@ -280,35 +280,32 @@ test('V3-07 authority requires exact fresh-live head for feature branch and deta
   }
 });
 
-test('V3-07 authority lookup timeout is bounded and fails closed deterministically', () => {
+test('V3-07 authority lookup timeout is bounded and fails closed deterministically', async () => {
   const temporaryRoot = mkdtempSync(resolve(tmpdir(), 'vite-v3-authority-timeout-'));
   const clone = resolve(temporaryRoot, 'review');
   const fakeBin = resolve(temporaryRoot, 'bin');
   const fakeGit = resolve(fakeBin, 'git');
+  const hungLookup = resolve(temporaryRoot, 'hung-lookup.mjs');
   const realGit = spawnSync('which', ['git'], { encoding: 'utf8' }).stdout.trim();
+  let temporaryPath;
   try {
+    writeFileSync(hungLookup, 'while (true) {}\n');
+    const loaded = await loadInstrumentedRunner(source => source
+      .replace("spawnSync('git', ['ls-remote', '--exit-code', 'origin', `refs/heads/${contract.branch}`]", `spawnSync(process.execPath, [${JSON.stringify(hungLookup)}]`)
+      .replace('timeout: contract.authorityLookupMs,', 'timeout: 100,'));
+    temporaryPath = loaded.temporaryPath;
+    const started = Date.now();
+    const timedOut = loaded.module.preflight(contract.implementationInputSha);
+    const durationMs = Date.now() - started;
+    assert.ok(durationMs < 1000, `authority timeout result exceeded deterministic bound: ${durationMs}ms`);
+    assert.equal(timedOut.result, 'fail');
+    assert.ok(timedOut.failures.includes('authority-lookup-timeout'));
+
     const cloned = spawnSync(realGit, ['clone', '--quiet', '--no-hardlinks', ROOT, clone], { encoding: 'utf8' });
     assert.equal(cloned.status, 0, cloned.stderr);
-    const contractPath = resolve(clone, 'spikes/web/harness/simple-vite-v3.json');
-    const fixtureContract = JSON.parse(readFileSync(contractPath, 'utf8'));
-    fixtureContract.authorityLookupMs = 100;
-    writeFileSync(contractPath, `${JSON.stringify(fixtureContract, null, 2)}\n`);
     mkdirSync(fakeBin);
-    writeFileSync(fakeGit, `#!/bin/sh\nif [ "$1" = "ls-remote" ]; then\n  case "$FAKE_GIT_LS_REMOTE_MODE" in\n    timeout) while :; do :; done ;;\n    error) exit 42 ;;\n    malformed) printf 'not-a-sha\\trefs/heads/feature/issue-5-02-web-spike\\n'; exit 0 ;;\n  esac\nfi\nexec ${JSON.stringify(realGit)} "$@"\n`);
+    writeFileSync(fakeGit, `#!/bin/sh\nif [ "$1" = "ls-remote" ]; then\n  case "$FAKE_GIT_LS_REMOTE_MODE" in\n    error) exit 42 ;;\n    malformed) printf 'not-a-sha\\trefs/heads/feature/issue-5-02-web-spike\\n'; exit 0 ;;\n  esac\nfi\nexec ${JSON.stringify(realGit)} "$@"\n`);
     chmodSync(fakeGit, 0o700);
-    const started = Date.now();
-    const result = spawnSync(process.execPath, ['spikes/web/harness/scripts/simple-vite-v3.mjs', 'preflight', '--implementation-input', contract.implementationInputSha], {
-      cwd: clone,
-      encoding: 'utf8',
-      env: { ...process.env, PATH: `${fakeBin}:${process.env.PATH}`, FAKE_GIT_LS_REMOTE_MODE: 'timeout' },
-      timeout: 1200,
-    });
-    const durationMs = Date.now() - started;
-    assert.equal(result.error?.code, undefined, `authority lookup escaped its own ceiling: ${result.error?.code}`);
-    assert.ok(durationMs < 1000, `authority timeout result exceeded deterministic bound: ${durationMs}ms`);
-    const output = JSON.parse(result.stdout);
-    assert.notEqual(result.status, 0);
-    assert.ok(output.failures.includes('authority-lookup-timeout'));
     for (const [mode, failure] of [['error', 'authority-lookup-error'], ['malformed', 'fresh-live-ambiguous-or-invalid']]) {
       const failed = spawnSync(process.execPath, ['spikes/web/harness/scripts/simple-vite-v3.mjs', 'preflight', '--implementation-input', contract.implementationInputSha], {
         cwd: clone,
@@ -319,6 +316,7 @@ test('V3-07 authority lookup timeout is bounded and fails closed deterministical
       assert.ok(JSON.parse(failed.stdout).failures.includes(failure), `${mode} lookup must report ${failure}`);
     }
   } finally {
+    if (temporaryPath) rmSync(temporaryPath, { force: true });
     rmSync(temporaryRoot, { recursive: true, force: true });
   }
 });
