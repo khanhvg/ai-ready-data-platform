@@ -3,7 +3,7 @@
 from __future__ import annotations
 import argparse, json, os, pathlib, platform, secrets, shutil, subprocess, sys, tempfile, time
 sys.path.insert(0,str(pathlib.Path(__file__).resolve().parent))
-import release_contract, run_bundle, runtime, source_state, workspace as workspace_core
+import runtime, source_state, workspace as workspace_core
 
 ROOT=pathlib.Path(__file__).resolve().parents[2]
 RUN_DEADLINE_SECONDS=300; PAIR_DEADLINE_SECONDS=600
@@ -12,6 +12,7 @@ def plan_run_for_test(seed:str)->dict[str,str]: return {name:f"{seed}-{name}" fo
 def compare_projections(first:bytes,second:bytes)->None:
     if first!=second: raise GoldenError("GOLDEN_PROJECTION_MISMATCH")
 def rehearse_rollback_for_test()->bool:
+    import release_contract
     files=("Makefile","mk/issue-5/i5-01.mk","contracts/data/curated-release-manifest.schema.json","requirements/golden-py312-macos-arm64.in","requirements/golden-py312-macos-arm64.lock","requirements/golden-py312-macos-arm64.metadata.json","requirements/golden-lock-tools.in","requirements/golden-lock-tools.lock")
     directories=("learning/contracts","architecture/likec4","architecture/rendered","scripts/golden")
     required=tuple(ROOT/path for path in files)+tuple(ROOT/path for path in directories)
@@ -44,6 +45,7 @@ def rehearse_rollback_for_test()->bool:
         finally: owner.close()
     return True
 def compare_run_evidence(current:pathlib.Path,tested_tree_sha:str)->dict[str,str]:
+    import run_bundle
     current_bundle=run_bundle.verify(current,tested_tree_sha)
     parent=current.parent
     peers=[]
@@ -75,6 +77,9 @@ def main()->int:
         evidence_owner=workspace_core.allocate_family(("evidence","golden"),"golden-run",run_id)
         workspace=workspace_owner.path; evidence=evidence_owner.path
         venv,env=runtime.bootstrap(workspace,deadline)
+        site_packages=venv/"lib"/"python3.12"/"site-packages"
+        if not site_packages.is_dir(): raise GoldenError("GOLDEN_RUNTIME_INVALID")
+        sys.path.insert(0,str(site_packages))
         tested=source[0]
         worker_env={**env,"VIRTUAL_ENV":str(venv)}
         result=runtime.run([str(venv/"bin/python"),str(ROOT/"scripts/golden/golden_worker.py"),"--run-root",str(workspace),"--evidence-root",str(evidence),"--tested-tree-sha",tested,"--budget",str(max(1,deadline-time.monotonic()))],cwd=ROOT,env=worker_env,deadline=deadline,limit=16*1024*1024)

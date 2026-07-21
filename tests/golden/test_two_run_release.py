@@ -11,6 +11,7 @@ class TwoRunReleaseTests(unittest.TestCase):
     def test_run_identity_and_deadline_contract(self) -> None:
         module=self._load(); a=module.plan_run_for_test("a"); b=module.plan_run_for_test("b")
         self.assertTrue(set(a.values()).isdisjoint(set(b.values()))); self.assertEqual(300,module.RUN_DEADLINE_SECONDS); self.assertEqual(600,module.PAIR_DEADLINE_SECONDS)
+        self.assertNotIn("release_contract",module.__dict__); self.assertNotIn("run_bundle",module.__dict__)
     def test_projection_and_rollback_contract(self) -> None:
         module=self._load()
         with self.assertRaisesRegex(module.GoldenError,"GOLDEN_PROJECTION_MISMATCH"): module.compare_projections(b"a",b"b")
@@ -21,7 +22,8 @@ class TwoRunReleaseTests(unittest.TestCase):
             first=self._bundle(module,parent,workspaces,"1"*32,1000,2000); second=self._bundle(module,parent,workspaces,"2"*32,2100,3000)
             self.assertEqual("equal",module.compare_run_evidence(second,"0"*40)["status"])
             (first/"result.json").write_text("{}\n")
-            with self.assertRaisesRegex(ValueError,"RUN_BUNDLE_COMPLETION_MISMATCH"): module.run_bundle.verify(first,"0"*40)
+            run_bundle=importlib.import_module("run_bundle")
+            with self.assertRaisesRegex(ValueError,"RUN_BUNDLE_COMPLETION_MISMATCH"): run_bundle.verify(first,"0"*40)
     def test_overlapping_or_symlinked_runs_cannot_establish_equality(self) -> None:
         module=self._load()
         with tempfile.TemporaryDirectory() as temp:
@@ -30,7 +32,8 @@ class TwoRunReleaseTests(unittest.TestCase):
             peer=self._bundle(module,parent,workspaces,"3"*32,1000,2500); current=self._bundle(module,parent,workspaces,"4"*32,2000,3000)
             with self.assertRaisesRegex(module.GoldenError,"GOLDEN_RUNS_NOT_SEQUENTIAL"): module.compare_run_evidence(current,"0"*40)
             link=parent/("5"*32); link.symlink_to(peer)
-            with self.assertRaisesRegex(ValueError,"RUN_BUNDLE_DIRECTORY_UNSAFE"): module.run_bundle.verify(link,"0"*40)
+            run_bundle=importlib.import_module("run_bundle")
+            with self.assertRaisesRegex(ValueError,"RUN_BUNDLE_DIRECTORY_UNSAFE"): run_bundle.verify(link,"0"*40)
 
     def _bundle(self,module,parent:pathlib.Path,workspaces:pathlib.Path,run_id:str,start:int,finish:int)->pathlib.Path:
         evidence=parent/run_id; workspace=workspaces/run_id
@@ -50,7 +53,8 @@ class TwoRunReleaseTests(unittest.TestCase):
         metadata={"schemaVersion":"golden-run-metadata-v1","runId":run_id,"testedTreeSha":tested,"startedMonotonicNs":start*1_000_000,"finishedMonotonicNs":finish*1_000_000,"durationMs":finish-start}
         values={"raw.json":raw_bytes,"projection.json":projection_bytes,"envelope.json":envelope_bytes,"result.json":json.dumps(result,sort_keys=True,separators=(",",":")).encode()+b"\n","run-metadata.json":json.dumps(metadata,sort_keys=True,separators=(",",":")).encode()+b"\n"}
         for name,payload_bytes in values.items(): (evidence/name).write_bytes(payload_bytes); os.chmod(evidence/name,0o600)
-        completion={"schemaVersion":"golden-run-completion-v1","runId":run_id,"artifacts":[{"locator":name,"sha256":hashlib.sha256(values[name]).hexdigest()} for name in module.run_bundle.CORE_FILES]}
+        core_files=importlib.import_module("run_bundle").CORE_FILES
+        completion={"schemaVersion":"golden-run-completion-v1","runId":run_id,"artifacts":[{"locator":name,"sha256":hashlib.sha256(values[name]).hexdigest()} for name in core_files]}
         (evidence/"completion.json").write_text(json.dumps(completion,sort_keys=True,separators=(",",":"))+"\n"); os.chmod(evidence/"completion.json",0o600)
         return evidence
 if __name__=="__main__": unittest.main()
