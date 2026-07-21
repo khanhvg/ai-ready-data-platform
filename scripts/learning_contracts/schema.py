@@ -1,9 +1,14 @@
-"""Strict reader and Draft 2020-12 validation scaffold."""
+"""Descriptor-safe reader and closed Draft 2020-12 validation."""
 
 from __future__ import annotations
 
 import pathlib
+import os
+import stat
 from typing import Any
+
+import jsonschema
+import yaml
 
 
 class LearningContractError(ValueError):
@@ -14,11 +19,101 @@ class LearningContractError(ValueError):
         self.code = code
 
 
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
+
+
+class _UniqueYamlLoader(yaml.SafeLoader):
+    pass
+
+
+def _construct_mapping(loader: _UniqueYamlLoader, node: yaml.MappingNode, deep: bool = False) -> dict[Any, Any]:
+    result: dict[Any, Any] = {}
+    for key_node, value_node in node.value:
+        key = loader.construct_object(key_node, deep=deep)
+        if key in result:
+            raise LearningContractError("YAML_DUPLICATE_NAME")
+        result[key] = loader.construct_object(value_node, deep=deep)
+    return result
+
+
+_UniqueYamlLoader.add_constructor(
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+    _construct_mapping,
+)
+
+
+def read_regular_bytes(path: pathlib.Path) -> bytes:
+    try:
+        before = path.lstat()
+    except OSError as exc:
+        raise LearningContractError("DOCUMENT_UNREADABLE") from exc
+    if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
+        raise LearningContractError("DOCUMENT_SPECIAL_FILE")
+    flags = os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(path, flags)
+    except OSError as exc:
+        raise LearningContractError("DOCUMENT_SPECIAL_FILE") from exc
+    try:
+        after = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(after.st_mode)
+            or after.st_nlink != 1
+            or (before.st_dev, before.st_ino) != (after.st_dev, after.st_ino)
+            or after.st_size > MAX_DOCUMENT_BYTES
+        ):
+            raise LearningContractError("DOCUMENT_SPECIAL_FILE")
+        raw = os.read(descriptor, MAX_DOCUMENT_BYTES + 1)
+        if len(raw) > MAX_DOCUMENT_BYTES:
+            raise LearningContractError("DOCUMENT_TOO_LARGE")
+        return raw
+    finally:
+        os.close(descriptor)
+
+
 def read_document(path: pathlib.Path, *, family: str | None = None) -> Any:
-    del path, family
-    raise LearningContractError("LEARNING_READER_NOT_IMPLEMENTED")
+    from .canonical import parse_json
+
+    raw = read_regular_bytes(path)
+    if path.suffix == ".json":
+        value = parse_json(raw)
+    elif path.suffix in {".yaml", ".yml"}:
+        if raw.startswith(b"\xef\xbb\xbf"):
+            raise LearningContractError("YAML_BOM_REFUSED")
+        try:
+            text = raw.decode("utf-8", "strict")
+            documents = list(yaml.load_all(text, Loader=_UniqueYamlLoader))
+        except LearningContractError:
+            raise
+        except (UnicodeDecodeError, yaml.YAMLError) as exc:
+            raise LearningContractError("YAML_INVALID") from exc
+        if len(documents) != 1 or documents[0] is None:
+            raise LearningContractError("YAML_DOCUMENT_COUNT")
+        value = documents[0]
+    else:
+        raise LearningContractError("DOCUMENT_EXTENSION_UNSUPPORTED")
+    if family is not None:
+        validate_document(value, family=family)
+    return value
 
 
 def validate_document(value: Any, *, family: str) -> None:
-    del value, family
-    raise LearningContractError("LEARNING_VALIDATOR_NOT_IMPLEMENTED")
+    schemas = {
+        "lesson": ROOT / "learning/contracts/lesson-v1.schema.json",
+        "lab": ROOT / "learning/contracts/lab-v1.schema.json",
+        "progress": ROOT / "learning/contracts/progress-v1.schema.json",
+    }
+    path = schemas.get(family)
+    if path is None:
+        raise LearningContractError("SCHEMA_FAMILY_UNKNOWN")
+    from .canonical import parse_json
+
+    schema_value = parse_json(read_regular_bytes(path))
+    try:
+        jsonschema.Draft202012Validator.check_schema(schema_value)
+        jsonschema.Draft202012Validator(schema_value).validate(value)
+    except jsonschema.exceptions.SchemaError as exc:
+        raise LearningContractError("SCHEMA_DOCUMENT_INVALID") from exc
+    except jsonschema.exceptions.ValidationError as exc:
+        raise LearningContractError("SCHEMA_INVALID") from exc
