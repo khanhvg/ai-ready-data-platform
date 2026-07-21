@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import test from 'node:test';
@@ -38,6 +38,8 @@ test('V3-07 harness contract closes authority, seven groups, commands, and write
   assert.deepEqual(contract.commands.install, ['npm', '--prefix', 'spikes/web/candidates/vite', 'ci', '--ignore-scripts', '--no-audit', '--no-fund']);
   assert.equal(contract.allowedPrefixes.length, 1);
   assert.equal(contract.allowedPrefixes[0], 'spikes/web/evidence/retained/simple-vite-v3/');
+  assert.equal(contract.authorityLookupMs, 60000);
+  for (const unsupported of ['authority', 'verb', 'red', 'gate']) assert.equal(contract.ceilingsMs[unsupported], undefined, `${unsupported} outer ceiling must not be declared without enforcement`);
   assert.deepEqual(validateChangedPaths(['spikes/web/candidates/next/src/page.jsx', '.github/workflows/v3.yml', 'contracts/data/retail-golden-v1.json']), ['spikes/web/candidates/next/src/page.jsx', '.github/workflows/v3.yml', 'contracts/data/retail-golden-v1.json']);
 });
 
@@ -252,10 +254,61 @@ test('V3-07 authority requires exact fresh-live head for feature branch and deta
     assert.ok(dirty.output.failures.includes('dirty-tracked-state'));
     assert.equal(run(['restore', 'spikes/web/candidates/vite/src/main.jsx']).status, 0);
 
+    const retainedSentinel = resolve(clone, 'spikes/web/evidence/retained/simple-vite-v3/reviewer-untracked-authority-probe.txt');
+    const otherSentinel = resolve(clone, 'reviewer-untracked-authority-probe.txt');
+    writeFileSync(retainedSentinel, 'reviewer-owned retained-prefix sentinel\n', { flag: 'wx' });
+    const retainedDirty = preflight();
+    const retainedPreserved = existsSync(retainedSentinel);
+    rmSync(retainedSentinel, { force: true });
+    writeFileSync(otherSentinel, 'reviewer-owned other sentinel\n', { flag: 'wx' });
+    const otherDirty = preflight();
+    const otherPreserved = existsSync(otherSentinel);
+    rmSync(otherSentinel, { force: true });
+    assert.notEqual(retainedDirty.rc, 0);
+    assert.ok(retainedDirty.output.failures.includes('dirty-untracked-state'));
+    assert.equal(retainedPreserved, true, 'preflight must not delete the retained-prefix sentinel');
+    assert.notEqual(otherDirty.rc, 0);
+    assert.ok(otherDirty.output.failures.includes('dirty-untracked-state'));
+    assert.equal(otherPreserved, true, 'preflight must not delete the other sentinel');
+
     assert.equal(run(['remote', 'set-url', 'origin', resolve(temporaryRoot, 'missing-origin')]).status, 0);
     const unavailable = preflight();
     assert.notEqual(unavailable.rc, 0);
     assert.ok(unavailable.output.failures.includes('fresh-live-unavailable'));
+  } finally {
+    rmSync(temporaryRoot, { recursive: true, force: true });
+  }
+});
+
+test('V3-07 authority lookup timeout is bounded and fails closed deterministically', () => {
+  const temporaryRoot = mkdtempSync(resolve(tmpdir(), 'vite-v3-authority-timeout-'));
+  const clone = resolve(temporaryRoot, 'review');
+  const fakeBin = resolve(temporaryRoot, 'bin');
+  const fakeGit = resolve(fakeBin, 'git');
+  const realGit = spawnSync('which', ['git'], { encoding: 'utf8' }).stdout.trim();
+  try {
+    const cloned = spawnSync(realGit, ['clone', '--quiet', '--no-hardlinks', ROOT, clone], { encoding: 'utf8' });
+    assert.equal(cloned.status, 0, cloned.stderr);
+    const contractPath = resolve(clone, 'spikes/web/harness/simple-vite-v3.json');
+    const fixtureContract = JSON.parse(readFileSync(contractPath, 'utf8'));
+    fixtureContract.authorityLookupMs = 100;
+    writeFileSync(contractPath, `${JSON.stringify(fixtureContract, null, 2)}\n`);
+    mkdirSync(fakeBin);
+    writeFileSync(fakeGit, `#!/bin/sh\nif [ "$1" = "ls-remote" ]; then sleep 5; exit 0; fi\nexec ${JSON.stringify(realGit)} "$@"\n`);
+    chmodSync(fakeGit, 0o700);
+    const started = Date.now();
+    const result = spawnSync(process.execPath, ['spikes/web/harness/scripts/simple-vite-v3.mjs', 'preflight', '--implementation-input', contract.implementationInputSha], {
+      cwd: clone,
+      encoding: 'utf8',
+      env: { ...process.env, PATH: `${fakeBin}:${process.env.PATH}` },
+      timeout: 1200,
+    });
+    const durationMs = Date.now() - started;
+    assert.equal(result.error?.code, undefined, `authority lookup escaped its own ceiling: ${result.error?.code}`);
+    assert.ok(durationMs < 1000, `authority timeout result exceeded deterministic bound: ${durationMs}ms`);
+    const output = JSON.parse(result.stdout);
+    assert.notEqual(result.status, 0);
+    assert.ok(output.failures.includes('authority-lookup-timeout'));
   } finally {
     rmSync(temporaryRoot, { recursive: true, force: true });
   }
