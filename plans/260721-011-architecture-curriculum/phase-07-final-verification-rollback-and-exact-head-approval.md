@@ -74,7 +74,9 @@ tested head and stage outside the evidence producer.
 11. Re-run affected/full gates at any changed head.
 12. Obtain repository-authorized human pre-merge approval naming the exact final 40-hex head.
 13. Publish a handoff that authorizes no PR/merge/cloud action by itself. A separate git workflow
-    may act only if explicitly requested and all state is still current.
+    may act only if explicitly requested and all state is still current. Record user-facing
+    docs/release-note impact; any `README.md`, `docs/**`, or release-metadata edit remains a
+    separate owner-authorized serialized change.
 
 ## Tests Before
 
@@ -106,6 +108,7 @@ commands fail; no native GUI/manual broad automation substitute.
 - [ ] Candidate diff equals the exact authorized union; worktree clean; local/tracking/live equal.
 - [ ] Fresh independent implementation review passes at exact head.
 - [ ] Repository-authorized human pre-merge approval names that exact 40-hex head.
+- [ ] Docs/release impact is classified without expanding the exact Stage A/B union.
 - [ ] No PR, merge, cloud/AWS/Terraform, destructive migration, or other worktree action occurred
   within this plan phase.
 

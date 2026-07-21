@@ -65,7 +65,9 @@ synthesize an `architecture-lab-e2e` pass.
 9. Require independent implementation review and human exact-head pre-merge approval before any
    future Stage A merge. This phase cannot generate either approval itself.
 10. Publish a bounded handoff stating: static candidate only; portal/lab/reset/completion/fresh
-    learner evidence not delivered; Stage B still blocked on passing merged #10.
+    learner evidence not delivered; Stage B still blocked on passing merged #10. Classify
+    user-facing docs/release-note impact and route any required `README.md`, `docs/**`, or release
+    metadata change to a separate owner-authorized serialized handoff.
 
 ## Tests Before
 
@@ -95,6 +97,7 @@ Exact Stage A amendment-authorized command list plus static checks. The immutabl
 - [ ] Protected six and dependency/portal/root/cloud deny-list remain unchanged.
 - [ ] Cleanup and rollback preserve prior evidence and unrelated state.
 - [ ] Stage A handoff explicitly denies portal/executable/completion claims.
+- [ ] Docs/release impact is recorded without adding external-owner paths to Stage A authority.
 - [ ] Stage B remains blocked until a separate exact amendment/revalidation/readiness.
 
 ## Risk Assessment

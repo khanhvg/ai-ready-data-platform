@@ -40,6 +40,7 @@
 | I11-EVID-01 | Emit exact-command/tool/input/output/tested-tree/dependency/contract/fixture/artifact/redaction/rollback evidence plus one closed immutable run index covering every required result and artifact hash | A/B | Released schema + digest/index completeness, duplicate/orphan/tamper validation |
 | I11-ROLL-01 | Roll back only Issue #11-owned candidate/workspace state; preserve prior evidence, protected six, dependencies, and unrelated data | A/B | Rehearsal and pre/post hashes |
 | I11-OPS-01 | Teach operations/resilience/security/cost/governance consequences without live cloud claims | A | Trace/content policy tests |
+| I11-DOC-01 | Classify user-facing documentation and release-note impact at each staged handoff; keep `README.md`, `docs/**`, and release metadata outside Issue #11 cook authority and route required changes through a separate owner-authorized serialized handoff | A/B | Handoff impact record plus exact changed-path denial |
 | I11-PREMERGE-01 | Require fresh independent implementation review and repository-authorized human exact-head pre-merge approval | A/B | External approval attestation |
 | I11-SCOPE-01 | No root Makefile, docs-code-standards, release manifest, portal/shared contract, cloud/AWS/Terraform, other worktree write | Plan/A/B | Exact changed-path deny-list |
 
@@ -84,10 +85,10 @@ implementation behavior changes. It may not use fake data or a test that passes 
 | 1 | I11-AUTH-01..03, I11-SCOPE-01 | Exact amendment/revalidation/readiness or blocked gate | Released #8 for A; #10 for B |
 | 2 | I11-CUR-01..03, I11-TRACE-01, I11-PAT-02, I11-VIEW-01, I11-SEC-01 | RED bundle + protected pre-hash | Stage A authority |
 | 3 | I11-TPL-01, I11-SYS-01, I11-PAT-01, I11-VIEW-02..03, I11-MAP-01, I11-API-01..02, I11-OPS-01 | Static/schema/render/trace results | Phase 2 RED |
-| 4 | I11-EVID-01, I11-ROLL-01, I11-PREMERGE-01 | Stage A evidence/rollback; no runtime claims | Phases 2-3 |
+| 4 | I11-EVID-01, I11-ROLL-01, I11-DOC-01, I11-PREMERGE-01 | Stage A evidence/rollback/docs-impact handoff; no runtime claims | Phases 2-3 |
 | 5 | I11-AUTH-01..03, I11-LAB-01 | Exact #10 renderer/journey amendment | Passing merged #10 + Stage A |
 | 6 | I11-LAB-01..02, I11-CUR-02..03, I11-SEC-01 | Full E2E failure/reset/verify/evidence | Stage B authority |
-| 7 | All | Full command/evidence/rollback/approval bundle | Phases 1-6 |
+| 7 | All | Full command/evidence/rollback/docs-impact/approval bundle | Phases 1-6 |
 
 ## Risk Register
 
