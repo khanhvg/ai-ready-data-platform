@@ -1,6 +1,6 @@
 ---
 title: "Issue #13 Resource and Measurement Model"
-status: planned-unvalidated
+status: planned-validated
 targetHost: "16 GiB Mac"
 created: "2026-07-22"
 ---
@@ -36,13 +36,17 @@ group_cpus   <= group_or_pair_cpu_ceiling
 group_memory <= physical_memory - 4 GiB
 group_cpus   <= logical_cpus - 2
 host_available_memory_at_preflight >= group_memory + 4 GiB
-engine_allocated_memory >= group_memory + declared_engine_overhead
+engine_allocated_memory >= group_memory
+engine_allocated_memory <= physical_memory - 4 GiB
 engine_allocated_cpus >= group_cpus
+engine_allocated_cpus <= logical_cpus - 2
 ```
 
 Missing or unparseable host/engine allocation is a typed denial. Stage B additionally requires
-the engine allocation to leave the host reserve in the observed normalized snapshot. No swap,
-compression, or overcommit is counted as reserved physical memory.
+the engine allocation to leave the host reserve in the observed normalized snapshot. Engine VM
+overhead is reported as a separate observed layer; an unobservable overhead/allocation blocks the
+run and is never converted into an invented static allowance. No swap, compression, or overcommit
+is counted as reserved physical memory.
 
 ## Actual Group Mapping and Initial Stage A Ceilings
 
@@ -68,17 +72,17 @@ Persistent disk ceilings are admission-enforced byte-growth hard stops; tmpfs li
 hard limits. If the admitted engine cannot enforce/observe a required disk bound, the profile is
 blocked rather than treated as measured.
 
-| Service | Memory | CPU | PID cap | Writable disk ceiling | Log cap | Hard ready/exit deadline |
-|---|---:|---:|---:|---:|---:|---:|
-| `airflow` | 4 GiB | 4.00 | 512 | `airflow-home` 2 GiB; admitted workspace aggregate max 3 GiB | 3 x 10 MiB | 240 s |
-| `minio` | 1 GiB | 0.75 | 128 | `minio-data` 3 GiB | 3 x 10 MiB | 90 s |
-| `minio-init` | 256 MiB | 0.25 | 64 | 64 MiB tmpfs/writable layer | 3 x 10 MiB | 90 s exit |
-| `lakekeeper-db` | 512 MiB | 0.50 | 128 | `lakekeeper-db-data` 512 MiB | 3 x 10 MiB | 90 s |
-| `lakekeeper-migrate` | 512 MiB | 0.25 | 64 | 64 MiB tmpfs/writable layer | 3 x 10 MiB | 120 s exit |
-| `lakekeeper` | 1 GiB | 0.75 | 256 | 128 MiB tmpfs/writable layer | 3 x 10 MiB | 150 s |
-| `openmetadata-db` | 1 GiB | 0.75 | 256 | `openmetadata-db-data` 1 GiB | 3 x 10 MiB | 120 s |
-| `openmetadata-search` | 1 GiB | 1.25 | 512 | `openmetadata-es-data` 2 GiB | 3 x 10 MiB | 210 s |
-| `openmetadata-server` | 2 GiB | 1.50 | 512 | 256 MiB tmpfs/writable layer | 3 x 10 MiB | 300 s |
+| Service | Memory | CPU | PID cap | Writable disk ceiling | Log cap | Hard start/ready/exit deadline | Hard stop deadline |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `airflow` | 4 GiB | 4.00 | 512 | `airflow-home` 2 GiB; admitted workspace aggregate max 3 GiB | 3 x 10 MiB | 240 s | 60 s |
+| `minio` | 1 GiB | 0.75 | 128 | `minio-data` 3 GiB | 3 x 10 MiB | 90 s | 30 s |
+| `minio-init` | 256 MiB | 0.25 | 64 | 64 MiB tmpfs/writable layer | 3 x 10 MiB | 90 s exit | 15 s |
+| `lakekeeper-db` | 512 MiB | 0.50 | 128 | `lakekeeper-db-data` 512 MiB | 3 x 10 MiB | 90 s | 30 s |
+| `lakekeeper-migrate` | 512 MiB | 0.25 | 64 | 64 MiB tmpfs/writable layer | 3 x 10 MiB | 120 s exit | 30 s |
+| `lakekeeper` | 1 GiB | 0.75 | 256 | 128 MiB tmpfs/writable layer | 3 x 10 MiB | 150 s | 30 s |
+| `openmetadata-db` | 1 GiB | 0.75 | 256 | `openmetadata-db-data` 1 GiB | 3 x 10 MiB | 120 s | 60 s |
+| `openmetadata-search` | 1 GiB | 1.25 | 512 | `openmetadata-es-data` 2 GiB | 3 x 10 MiB | 210 s | 90 s |
+| `openmetadata-server` | 2 GiB | 1.50 | 512 | 256 MiB tmpfs/writable layer | 3 x 10 MiB | 300 s | 60 s |
 
 Additional required bounds:
 
@@ -87,6 +91,9 @@ Additional required bounds:
   map to a named run-owned volume or size-bounded tmpfs.
 - No unbounded build/pull/start/workload/health/measure/teardown subprocess. Parent timeout always
   includes a bounded termination grace and records escalation.
+- Static admission requires each service's exact start/ready/exit and stop deadline in both policy
+  and rendered Compose. The total single-group teardown ceiling is 300 s; the exact guarded-pair
+  ceiling is 420 s. A per-service or parent timeout is a failed repetition, never a warning.
 - Logs use local/json rotation with `max-size=10m`, `max-file=3`; evidence retains bounded command
   logs separately with redaction and byte caps.
 - Volume and temp ceilings are declared per service and as an aggregate; growth beyond a ceiling
@@ -170,6 +177,17 @@ Capture per repetition:
 Do not add container memory to Docker VM/process RSS and present it as one total. Report layers
 separately: service/cgroup sum, engine VM/process footprint, and host available-memory delta.
 Static configured aggregates remain the admission oracle.
+
+## Sampling and Evidence Size Bounds
+
+- Default sampling interval is 1 s with at most 3,600 samples and 32 MiB of raw sample bytes per
+  repetition. Reaching either cap stops the repetition and records a bound failure.
+- Each retained command stdout/stderr stream is capped at 10 MiB after redaction; each derived
+  summary/index/normalization document is capped at 1 MiB.
+- The complete retained Issue #13 evidence bundle is capped at 512 MiB. Indexing refuses an
+  oversized, sparse, hardlinked or out-of-root artifact; truncation cannot become pass evidence.
+- Released evidence authority may require a lower cap. Raising any cap requires an exact owner
+  amendment and plan revalidation; an absent or incompatible authority remains blocked.
 
 ## Result Rules
 

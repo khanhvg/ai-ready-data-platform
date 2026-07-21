@@ -1,6 +1,6 @@
 ---
 title: "Issue #13 S3 Threat Model"
-status: planned-unvalidated
+status: planned-validated
 security: S3
 created: "2026-07-22"
 ---
@@ -59,7 +59,7 @@ Runner boundaries remain owned by the released runner contract and are consumed 
 | TM-05 | Missing/forged resource limit enables host exhaustion | Schema requires memory, CPU, PID, disk, log, deadline and port/volume owner per service; reject null/zero/duplicate/overflow/unit ambiguity | Limit mutation matrix; static aggregate summary |
 | TM-06 | PID/fork/thread/resource exhaustion | `pids_limit`, CPU/memory caps, concurrency lock, bounded subprocess tree and termination grace; Java/thread needs stay inside declared cap | PID omission/mutation tests; live limit/result |
 | TM-07 | Disk/log exhaustion | Read-only roots where compatible; only declared volumes/tmpfs; tmpfs sizes; byte-growth ceiling and kill; Docker log rotation; output byte caps | Disk/log mutations; growth/teardown evidence |
-| TM-08 | Readiness hang or restart loop | Health/one-shot hard deadlines, `restart: "no"` for acceptance, restart/OOM count zero, bounded build/pull/workload/teardown | Missing-timeout RED; timeout/restart live negative |
+| TM-08 | Readiness hang, stop hang or restart loop | Per-service start/ready/exit and stop deadlines, parent teardown deadline, `restart: "no"` for acceptance, restart/OOM count zero, bounded build/pull/workload | Missing-timeout RED; timeout/restart live negative |
 | TM-09 | Port hijack/public exposure | Bind only `127.0.0.1`; declare owner; reject wildcard, duplicate, occupied, unexpected and dependency-added ports | Port collision/public-bind RED; socket ownership snapshot |
 | TM-10 | Volume/project collision or adoption | Exact project/run labels and private owner manifest; existing foreign object causes denial; never relabel/adopt/delete it | Volume/project collision RED; foreign sentinel survives |
 | TM-11 | Host mount, socket, privilege, capability or network escape | No Docker socket to web/portal; no privileged/host PID/host network/devices; drop capabilities and set no-new-privileges; read-only code/base; explicit private networks; exact required writable paths only | Static Compose security mutations and rendered inventory |
@@ -97,7 +97,7 @@ Static `compose-security-check` rejects:
 - `privileged`, host PID/IPC/network, devices, Docker socket/API, wildcard binds, external networks
   or volumes, unowned writable mounts, RW repository/base code, added capabilities, missing
   `cap_drop`/`no-new-privileges`, or unapproved user/root execution;
-- missing immutable digest policy, limits, log rotation, health/exit deadline, owner labels, or
+- missing immutable digest policy, limits, log rotation, start/ready/exit/stop deadlines, owner labels, or
   expected dependency closure;
 - shell-form command/entrypoint or interpolation in a security-sensitive field unless the actual
   immutable image contract requires and tests a fixed non-user string;
@@ -118,6 +118,8 @@ Evidence root is `.artifacts/evidence/local-profiles/<run-id>/`. Requirements:
 - raw samples immutable after completion; summary derived from retained raw; both hashed;
 - index covers byte length and SHA-256 for every retained artifact except its own non-recursive
   integrity envelope; released completion authority defines the exact commit point;
+- sample count/raw bytes, command streams, derived documents and the total bundle obey the exact
+  caps in `resource-model.md`; overflow is a failed/incomplete run, not truncated pass evidence;
 - reject stale tested tree, dependency/image/config/tool mismatch, missing artifact, duplicate
   locator/hash, malformed order, future timestamp, replayed run ID, or completion before teardown;
 - retained evidence is never mounted writable into web/portal containers.

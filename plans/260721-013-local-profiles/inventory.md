@@ -24,6 +24,10 @@ created: "2026-07-22"
 Remote plan branches for Issues #10 and #12 are not dependency completion. They supply no merge,
 release, image, lab, or admission authority. No other worktree was read or changed.
 
+These rows are immutable planner-baseline observations at `24be3b3`, not claims about the later
+validation checkout. Independent validation starts from planner output `a23a0b77ac06dd6635f3b6a250432783cb9e2e04`;
+the now-existing Issue #13 plan branch is expected and grants no implementation authority.
+
 ## Authority Ledger at Planning Input
 
 Every `EMPTY` value is a hard implementation stop, not a placeholder to fill by guesswork.
@@ -107,13 +111,13 @@ configuration, not admitted immutable image authority.
 |---|---|---|---:|---|---|---|
 | `airflow` | orchestration | local build, `retail-airflow:local` | 4 GiB | `*:8080` | repo root RW; `airflow-home` | HTTP health; none |
 | `minio` | lake | `minio/minio:RELEASE.2025-09-07T16-13-09Z` | 1 GiB | `*:9000`, `*:9001` | `minio-data` | `mc ready`; none |
-| `minio-init` | lake | same MinIO tag | 256 MiB | none | none | one-shot; waits for healthy `minio` |
+| `minio-init` | lake | `minio/minio:RELEASE.2025-09-07T16-13-09Z` | 256 MiB | none | none | one-shot; waits for healthy `minio` |
 | `lakekeeper-db` | lake | `postgres:16-alpine` | 512 MiB | none | `lakekeeper-db-data` | `pg_isready`; none |
 | `lakekeeper-migrate` | lake | `quay.io/lakekeeper/catalog:v0.13.1` | 512 MiB | none | none | one-shot; waits for healthy DB |
-| `lakekeeper` | lake | same Lakekeeper tag | 1 GiB | `*:8181` | none | binary health; DB+migration closure |
+| `lakekeeper` | lake | `quay.io/lakekeeper/catalog:v0.13.1` | 1 GiB | `*:8181` | none | binary health; DB+migration closure |
 | `openmetadata-db` | governance | `mysql:8.3` | 1 GiB | none | `openmetadata-db-data` | `mysqladmin ping`; none |
-| `openmetadata-search` | governance | Elasticsearch `8.11.4` | 1 GiB | none | `openmetadata-es-data` | cluster HTTP health; none |
-| `openmetadata-server` | governance | OpenMetadata `1.6.5` | 2 GiB | `*:8585` | none | version endpoint; DB+search closure |
+| `openmetadata-search` | governance | `docker.elastic.co/elasticsearch/elasticsearch:8.11.4` | 1 GiB | none | `openmetadata-es-data` | cluster HTTP health; none |
+| `openmetadata-server` | governance | `docker.getcollate.io/openmetadata/server:1.6.5` | 2 GiB | `*:8585` | none | version endpoint; DB+search closure |
 
 Named top-level volumes are `airflow-home`, `minio-data`, `lakekeeper-db-data`,
 `openmetadata-db-data`, and `openmetadata-es-data`. Compose project scoping applies to named
@@ -182,11 +186,13 @@ SHA-256 values at the immutable input:
 | `fitness-result-v1` schema | `a104ad6330bcfc22bda0fb661fef96f067c09153da7dc2f306103e5f93a4ab6d` |
 | Schema version registry | `8e18588f63b5d99c0b60a229758575e8badf0f055bfcb4f89908f9fa2684a57e` |
 | Curated release schema | `dcad3a4c04f44e207a26f985702db6926d4c85545d85ef5481faf036dded4e33` |
-| All tracked input files except the new Issue #13 plan directory | `037abba55f9417c7627e12e2f4fb6f0374916001558ea10059aa4ec3c8296a16` |
+| All 307 tracked input files except the new Issue #13 plan directory | `bf5ac7969dc039d19051cff5c3d8bad84102887451eb9409082b8ecaa65ae5b4` |
 
-The aggregate is the SHA-256 of sorted `SHA-256  repo-relative-path` lines. It is a planning
-scope guard, not a future implementation baseline: Phase 1 must recompute hashes at the exact
-dependency-amended implementation input. During this planner run, any diff outside
+The aggregate is the SHA-256 of newline-terminated, bytewise-sorted
+`SHA-256<two spaces>repo-relative-path` lines for `git ls-tree -r --name-only` at the shipped
+baseline. It reproduces from both baseline blobs and the unchanged validation checkout. It is a
+planning scope guard, not a future implementation baseline: Phase 1 must recompute hashes at the
+exact dependency-amended implementation input. During planning or validation, any diff outside
 `plans/260721-013-local-profiles/**` is a hard failure.
 
 ## Future Writable Allowlist

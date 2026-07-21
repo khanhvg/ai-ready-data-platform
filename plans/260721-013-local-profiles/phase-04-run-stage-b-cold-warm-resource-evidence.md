@@ -31,6 +31,8 @@ the exact guarded pair. Raw measurements corroborate static admission; they neve
 - Functional: use only real released group workloads; no noop/sleep/generated fallback.
 - Non-functional: repetitions sequential, input/config/image/allocation stable, raw samples retained,
   image pull/build time separate and acceptance uses no-pull exact images.
+- Non-functional: sampling count/bytes, command streams, derived documents and the total retained
+  bundle stay within the deterministic caps in the resource model.
 - Non-functional: engine unavailable/mismatch is typed blocked; Docker-free core stays independent.
 
 ## Architecture
@@ -85,7 +87,8 @@ same-head repetitions and teardown evidence.
    digests. Block on missing/unreliable accounting.
 3. Verify SBOM/signature/provenance policy for every exact image, pre-pull/build only under the
    admitted preparation step, then require no-pull acceptance invocations.
-4. Implement bounded process/container/host/volume/log/readiness sampling and private raw writes.
+4. Implement bounded process/container/host/volume/log/readiness sampling, exact byte/sample caps
+   and private raw writes.
 5. Implement run ownership and idempotent teardown used after every repetition/failure.
 6. For `orchestration`, run cold, warm-1 and warm-2 sequentially with its exact released workload.
 7. Repeat for `lake` and `governance` only if their exact workloads/authorities exist.

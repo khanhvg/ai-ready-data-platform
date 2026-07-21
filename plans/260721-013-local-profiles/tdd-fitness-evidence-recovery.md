@@ -1,6 +1,6 @@
 ---
 title: "Issue #13 TDD, Fitness, Evidence, Migration, and Recovery"
-status: planned-unvalidated
+status: planned-validated
 created: "2026-07-22"
 ---
 
@@ -60,6 +60,7 @@ limits. Tests for current gaps are RED new-behavior tests.
 | `LP-SEC-HOST-019` | Docker socket, privileged/host namespace/device/capability/RW base/public bind | Current Airflow root is RW and ports public | Static S3 denial; no web/portal engine exposure |
 | `LP-SEC-PATH-020` | traversal, symlink, hardlink, FIFO/device/socket, wrong owner/mode | No I5-08 private path boundary | Reject with no read/write/delete outside root |
 | `LP-EVIDENCE-INTEGRITY-021` | tamper, truncation, duplicate locator/hash/run ID, stale tree/config/image, replay | No I5-08 bundle exists | Verifier rejects before completion/read |
+| `LP-BUDGET-OVER-AGGREGATE-022` | any single/pair closure exceeds its memory/CPU ceiling or host/engine reserve | Current Compose has memory-only limits and no canonical aggregate gate | Typed over-budget denial before Compose argv/process |
 
 ### RED Evidence
 
@@ -81,6 +82,7 @@ Static GREEN requires:
 - exact schema validation and canonical request representation;
 - actual Compose service/dependency closure equal to the exact allowlist;
 - per-service and aggregate memory/CPU/PID/disk/log/deadline/ownership rules;
+- exact per-service start/ready/exit and stop ceilings plus bounded single/pair parent teardown;
 - loopback/host-mount/socket/privilege/capability/network/image-policy checks;
 - all-three and unauthorized combinations denied before the production Compose runner is called;
 - exact guarded-pair plan contains no orchestration service;
@@ -222,6 +224,8 @@ At the exact final head:
 4. Protected golden/shared-contract/migration/command/evidence checks named by amendment.
 5. Static diff/hash allowlist and secret/private-path/placeholder scan.
 6. Actual foreign sentinel recovery proof and final clean worktree.
+7. Human approval naming the exact final head and completed evidence index hash; any later commit
+   invalidates approval and requires re-review.
 
 Missing dependency command/tool/image/engine produces fail or typed block under released authority;
 it is never changed to `not-run-optional` merely to complete Issue #13.

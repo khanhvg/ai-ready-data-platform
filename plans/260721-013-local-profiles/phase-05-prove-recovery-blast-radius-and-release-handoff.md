@@ -36,6 +36,8 @@ does not edit the release manifest, create a PR or merge.
   release manifest, code standards and unrelated Compose/docs stay protected.
 - Non-functional: docs state measured facts/blocks with exact date/head/normalization; no synthetic,
   portability, cost, cloud or production claim.
+- Non-functional: human review/approval must name the exact final clean head and completed evidence
+  index hash; any subsequent commit invalidates it.
 
 ## Architecture
 
@@ -103,9 +105,11 @@ even when static commands/core pass.
 8. Update only root README/demo runbook/.env example where final behavior requires it. Record exact
    supported commands, core independence, loopback endpoints, allowed combinations, resource
    bounds, engine-blocked behavior, evidence location and ownership-safe teardown.
-9. Complete evidence only after rollback/protected/residue checks; retain it for I5-13.
-10. Obtain required independent security/review/human approvals in their separate workflows before
-    any future PR/merge. This phase itself creates neither.
+9. Enforce the evidence byte caps, then complete evidence only after rollback/protected/residue
+   checks; retain it for I5-13.
+10. Obtain required independent security/review/human approvals against the exact final head and
+    completed evidence index hash in their separate workflows before any future PR/merge. This
+    phase itself creates neither; a later commit requires renewed review/approval.
 
 ## Success Criteria
 
@@ -119,6 +123,7 @@ even when static commands/core pass.
   claim.
 - [ ] Evidence bundle is complete, hash-indexed, strict-locator, private/redacted and recoverable.
 - [ ] Rollback is bounded, non-destructive and verified.
+- [ ] Human approval names the exact final clean head and completed evidence index hash.
 
 ## Risk Assessment
 

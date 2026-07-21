@@ -13,6 +13,8 @@ createdBy: "ck:plan"
 source: skill
 planningMode: "fresh-plan-only-tdd"
 inputSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
+validationInputSha: "a23a0b77ac06dd6635f3b6a250432783cb9e2e04"
+validationStatus: "independent-pass-with-fixes"
 dependencyState: "implementation-blocked"
 stageADependency: "issue-10-passing-merged-and-issue-12-released-labs"
 stageBDependency: "stage-a-exact-head-and-admitted-engine-images"
@@ -25,8 +27,9 @@ stageBDependency: "stage-a-exact-head-and-admitted-engine-images"
 Plan only. Preserve the shipped Docker-free retail core and admit current heavy Compose groups
 through a fail-closed static contract before any container starts. Static configured limits are
 the primary oracle; one cold plus two warm runs per admitted scenario provide corroborating
-resource evidence. No implementation, container start, cloud action, PR, merge, validation, or
-readiness audit is authorized by this artifact.
+resource evidence. No implementation, container start, cloud action, PR, merge or readiness audit
+is authorized by this artifact. Independent plan validation is complete and grants no
+implementation or dependency authority.
 
 Planning may proceed at the immutable input. Implementation cannot: the exact passing merged
 Issue #10 journey and released/admitted Issue #12 labs do not exist. Stage A starts only after an
@@ -45,7 +48,8 @@ requires the exact Stage A head and an admitted local engine, platform-resolved 
 
 ## Dependencies
 
-- Current planning input: `24be3b34c6b0fcdbd07c5800dcab349054e34713`.
+- Shipped planner baseline: `24be3b34c6b0fcdbd07c5800dcab349054e34713`.
+- Independent validation input: `a23a0b77ac06dd6635f3b6a250432783cb9e2e04`.
 - Stage A: exact passing merged Issue #10 plus exact released/admitted Issue #12 labs; future
   portal/runner image digests, lab allowlist, command authority, completion/evidence authority,
   and implementation input SHA must be recorded, never inferred.
@@ -75,5 +79,36 @@ requires the exact Stage A head and an admitted local engine, platform-resolved 
 
 ## Plan Status
 
-Plan creation is complete but deliberately unvalidated. Next authorized phase is fresh independent
-plan validation. Dependency absence blocks implementation, not plan validation.
+Independently validated with objective fixes. Dependency absence still blocks implementation.
+The next authorized phase is a fresh dependency-aware readiness audit at the exact validation
+output head; it cannot manufacture or waive any empty Stage A/B authority.
+
+## Validation Log
+
+### Independent Validation — 2026-07-22
+
+- Validation input: `a23a0b77ac06dd6635f3b6a250432783cb9e2e04`; shipped baseline:
+  `24be3b34c6b0fcdbd07c5800dcab349054e34713`.
+- User questions asked: 0. The validation directive supplied the aggregate thresholds, stage
+  boundaries, TDD/security/evidence decisions and authority-empty requirements.
+- Result: `PASS_WITH_FIXES`; report: [independent validation report](./reports/independent-validation-report.md).
+
+### Verification Results
+
+- Tier: Full; Fact Checker, Flow Tracer, Scope Auditor and Contract Verifier applied.
+- Claims checked: 92.
+- Before correction: Verified 85 | Failed 7 | Unverified 0.
+- After correction: Verified 92 | Failed 0 | Unverified 0.
+- Corrections: reproducible protected aggregate hash and exact image locators; explicit service
+  stop/parent teardown ceilings; complete host/engine reserve formulas; practical evidence caps;
+  stable over-budget behavior ID/traceability; exact-head human approval binding.
+
+### Whole-Plan Consistency Sweep
+
+- Files reread: `plan.md`, all five `phase-*.md` files, `inventory.md`,
+  `requirements-and-traceability.md`, `resource-model.md`, `threat-model.md`, and
+  `tdd-fitness-evidence-recovery.md`.
+- Decision deltas checked: 7 defect classes.
+- Reconciled stale references: all affected requirements, phases, TDD, resource, threat, inventory
+  and validation-status references.
+- Unresolved contradictions: 0.

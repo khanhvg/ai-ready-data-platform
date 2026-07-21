@@ -113,7 +113,8 @@ Stage B. It cannot be reported as final default pass.
    aliases/merge surprises, unknown fields, unsafe tags and non-canonical units.
 3. Implement strict request grammar and recursive Compose dependency closure from the exact static
    render; compare both directions against the config.
-4. Implement single/pair/all-three and host-relative budget math with overflow-safe byte/CPU units.
+4. Implement single/pair/all-three, engine-allocation and host-reserve budget math with
+   overflow-safe byte/CPU units.
 5. Implement S3 checks for interpolation/env, ports, volumes, mounts, socket, privilege, caps,
    networks, paths, images, log/PID/disk/deadlines and owner labels.
 6. Add current per-service limits and loopback/private/RO hardening to Compose; preserve commands,
@@ -130,7 +131,7 @@ Stage B. It cannot be reported as final default pass.
 
 - [ ] Every supported start path runs exact static admission before its Compose invocation.
 - [ ] Actual service closure and config allowlist are equal; hidden dependencies cannot start.
-- [ ] All current services have required memory/CPU/PID/disk/log/deadline/ownership/security fields.
+- [ ] All current services have required memory/CPU/PID/disk/log/start/stop/ownership/security fields.
 - [ ] Single/pair host budgets pass; all-three and all unauthorized pairs deny deterministically.
 - [ ] Ports are loopback/owned; no portal/web Docker socket, privilege or broad RW base mount exists.
 - [ ] Phase 2 static RED tests are GREEN without weakening assertions.

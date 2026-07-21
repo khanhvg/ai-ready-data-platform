@@ -24,11 +24,11 @@ Compose runner boundary and without foreign side effects.
 
 ## Requirements
 
-- Functional: implement all RED IDs `LP-ADM-INVALID-001` through
-  `LP-EVIDENCE-INTEGRITY-021` applicable to static behavior.
+- Functional: implement every stable RED ID listed in the TDD contract, including
+  `LP-BUDGET-OVER-AGGREGATE-022`, where applicable to static behavior.
 - Functional: cover invalid/missing/duplicate/unknown/all-three/unauthorized pairs, limit
-  omissions, dependency expansion, collisions, logs/PIDs, health/exit timeouts, guarded pair,
-  evidence shape, engine unavailable and foreign teardown sentinel.
+  omissions, dependency expansion, collisions, logs/PIDs, start/health/exit/stop timeouts,
+  guarded pair, evidence shape, engine unavailable and foreign teardown sentinel.
 - Non-functional: no unconditional failure, expected-code echo, production-subject replacement,
   container start, image pull, cloud action or synthetic performance acceptance.
 
@@ -68,7 +68,7 @@ Not in this phase. Phase 3 turns the same RED assertions GREEN without weakening
 
 | Priority | Set | Scenarios |
 |---|---|---|
-| Critical | Request/combination | invalid, missing, duplicate, unknown, every pair, all-three, over-budget |
+| Critical | Request/combination | invalid, missing, duplicate, unknown, every pair, all-three, `LP-BUDGET-OVER-AGGREGATE-022` |
 | Critical | Closure/security | hidden dependency, public port, external/foreign volume, socket, privilege, cap, network, RW base |
 | Critical | Resource | missing/zero/overflow/unit mutation for memory/CPU/PID/disk/log/deadline/owner |
 | Critical | Supply/evidence | tag-only/wrong platform/missing SBOM-signature; schema/tamper/replay/path attacks |
@@ -86,7 +86,8 @@ that authority exists.
 1. Build a canonical valid input from the exact Phase 1 service/config/authority inventory.
 2. Write request grammar and combination cases, including all-three independent of numeric budget.
 3. Write transitive dependency expansion and undeclared service/profile/port/volume/network cases.
-4. Mutate each per-service/aggregate resource and deadline field independently.
+4. Mutate each per-service/aggregate resource and start/stop deadline independently; cross every
+   single/pair aggregate and host/engine reserve through the over-budget boundary.
 5. Write loopback, collision, mount/socket/privilege/capability/network/interpolation/path cases.
 6. Write image digest/platform/SBOM/signature/provenance authority cases without pulling images.
 7. Write evidence locator/hash/completion/tamper/replay/N-1-reader contract cases against released
