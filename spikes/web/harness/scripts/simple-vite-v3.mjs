@@ -363,6 +363,23 @@ function latest(kind) {
   return { ...pointer, directory };
 }
 
+function contemporaneousRed() {
+  const pointer = resolve(RUNTIME, 'latest-red.json');
+  if (existsSync(pointer)) return latest('red');
+  if (!existsSync(resolve(ROOT, contract.retentionIndex))) throw new Error('contemporaneous RED evidence is unavailable');
+  const retainedIndex = JSON.parse(readFileSync(resolve(ROOT, contract.retentionIndex), 'utf8'));
+  const manifestPath = resolve(ROOT, retainedIndex.manifest?.path || '');
+  const retainedRoot = dirname(manifestPath);
+  const directory = resolve(retainedRoot, 'tdd/red');
+  const resultPath = resolve(directory, 'result.json');
+  if (!manifestPath.startsWith(resolve(ROOT, contract.retainedPrefix)) || !existsSync(resultPath)) throw new Error('retained RED locator is invalid');
+  const manifestHash = sha256(readFileSync(manifestPath));
+  if (manifestHash !== retainedIndex.manifest.sha256) throw new Error('retained RED manifest hash mismatch');
+  const redResult = JSON.parse(readFileSync(resultPath, 'utf8'));
+  if (redResult.result !== 'pass' || redResult.sourceSha !== 'd644c4fbb0e88bd4d77567a705b835a9c0eb79a0') throw new Error('retained RED identity mismatch');
+  return { runId: redResult.runId, directory, retained: true };
+}
+
 export function scanRun() {
   const green = latest('gate');
   const browserEvidence = materializeBrowserEvidence(green.directory);
@@ -478,7 +495,7 @@ function verifyHashIndex(destination, index) {
 }
 
 export function retainRun() {
-  const red = latest('red');
+  const red = contemporaneousRed();
   const green = latest('gate');
   const redResult = JSON.parse(readFileSync(resolve(red.directory, 'result.json'), 'utf8'));
   const greenResult = JSON.parse(readFileSync(resolve(green.directory, 'result.json'), 'utf8'));
