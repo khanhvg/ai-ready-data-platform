@@ -21,8 +21,12 @@ class TwoRunReleaseTests(unittest.TestCase):
             parent.mkdir(mode=0o700,parents=True); workspaces.mkdir(mode=0o700,parents=True)
             first=self._bundle(module,parent,workspaces,"1"*32,1000,2000); second=self._bundle(module,parent,workspaces,"2"*32,2100,3000)
             self.assertEqual("equal",module.compare_run_evidence(second,"0"*40)["status"])
+            run_bundle=importlib.import_module("run_bundle"); issue7_fixture=importlib.import_module("issue7_fixture")
+            first_bundle=run_bundle.verify(first,"0"*40); second_bundle=run_bundle.verify(second,"0"*40)
+            attestation=issue7_fixture.portable_attestation_document(first_bundle,second_bundle,"0"*40)
+            issue7_fixture.verify_portable_attestation(attestation,"0"*40)
+            self.assertEqual({"1"*32,"2"*32},{row["runId"] for row in attestation["runs"]})
             (first/"result.json").write_text("{}\n")
-            run_bundle=importlib.import_module("run_bundle")
             with self.assertRaisesRegex(ValueError,"RUN_BUNDLE_COMPLETION_MISMATCH"): run_bundle.verify(first,"0"*40)
     def test_overlapping_or_symlinked_runs_cannot_establish_equality(self) -> None:
         module=self._load()

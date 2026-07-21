@@ -60,11 +60,27 @@
     },
     {
       "family": "promotion-trust-fixture-manifest",
-      "currentVersion": "promotion-trust-fixture-manifest-v1",
+      "currentVersion": "promotion-trust-fixture-manifest-v2",
       "rollbackVersion": "promotion-trust-fixture-manifest-v1",
-      "readerId": "promotion-trust-fixture-manifest-reader-v1",
-      "readableVersions": [{"version": "promotion-trust-fixture-manifest-v1", "schemaPath": "learning/contracts/promotion-trust-fixture-manifest-v1.schema.json", "schemaSha256": "82dc60e640b3f6d301bd739490b2928d88275926e26fb87e4457b7ff01a616bc"}],
-      "migrations": [{"from": "promotion-trust-fixture-manifest-v1", "to": "promotion-trust-fixture-manifest-v1", "kind": "identity"}]
+      "readerId": "promotion-trust-fixture-manifest-reader-v2",
+      "readableVersions": [
+        {"version": "promotion-trust-fixture-manifest-v1", "schemaPath": "learning/contracts/promotion-trust-fixture-manifest-v1.schema.json", "schemaSha256": "82dc60e640b3f6d301bd739490b2928d88275926e26fb87e4457b7ff01a616bc"},
+        {"version": "promotion-trust-fixture-manifest-v2", "schemaPath": "learning/contracts/promotion-trust-fixture-manifest-v2.schema.json", "schemaSha256": "221957acf9d09d74070b3ec8d34a7d2d730c7de1e9f8e25e3a81b2f04d8ae3bf"}
+      ],
+      "migrations": [
+        {"from": "promotion-trust-fixture-manifest-v1", "to": "promotion-trust-fixture-manifest-v1", "kind": "identity"},
+        {"from": "promotion-trust-fixture-manifest-v2", "to": "promotion-trust-fixture-manifest-v2", "kind": "identity"},
+        {"from": "promotion-trust-fixture-manifest-v1", "to": "promotion-trust-fixture-manifest-v2", "kind": "republish-from-strict-owner-bound-runs"},
+        {"from": "promotion-trust-fixture-manifest-v2", "to": "promotion-trust-fixture-manifest-v1", "kind": "reader-rollback-only-no-lossy-conversion"}
+      ]
+    },
+    {
+      "family": "promotion-trust-portable-run-attestation",
+      "currentVersion": "promotion-trust-portable-run-attestation-v1",
+      "rollbackVersion": "promotion-trust-portable-run-attestation-v1",
+      "readerId": "promotion-trust-portable-run-attestation-reader-v1",
+      "readableVersions": [{"version": "promotion-trust-portable-run-attestation-v1", "schemaPath": "learning/contracts/promotion-trust-portable-run-attestation-v1.schema.json", "schemaSha256": "5cff300e93e806084fe9357c05b21174f75e755a0c0dab8d30c128a40ef594ef"}],
+      "migrations": [{"from": "promotion-trust-portable-run-attestation-v1", "to": "promotion-trust-portable-run-attestation-v1", "kind": "identity"}]
     }
   ]
 }

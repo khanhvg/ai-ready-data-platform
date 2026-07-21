@@ -30,6 +30,10 @@ class VersionMigrationTests(unittest.TestCase):
         for family in families:
             readable={row["version"]:row for row in family["readableVersions"]}; self.assertIn(family["currentVersion"],readable)
             entry=readable[family["currentVersion"]]; self.assertEqual(entry["schemaSha256"],hashlib.sha256((ROOT/entry["schemaPath"]).read_bytes()).hexdigest())
+        fixture_family=next(row for row in families if row["family"]=="promotion-trust-fixture-manifest")
+        self.assertEqual("promotion-trust-fixture-manifest-v2",fixture_family["currentVersion"])
+        self.assertEqual("promotion-trust-fixture-manifest-v1",fixture_family["rollbackVersion"])
+        self.assertEqual({"promotion-trust-fixture-manifest-v1","promotion-trust-fixture-manifest-v2"},{row["version"] for row in fixture_family["readableVersions"]})
 
 
 if __name__ == "__main__": unittest.main()
