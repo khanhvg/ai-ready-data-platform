@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := i5-02-authority-check
 
-AUTHORIZED_GOALS := i5-02-authority-check i5-02-protected-hash-check i5-02-toolchain-check i5-02-changed-path-check i5-02-security-check i5-02-credential-check i5-02-non-copy-check web-common-test learn-preview learn-preview-status learn-preview-reset-check learn-preview-down web-barrier-b-check web-astro-install web-astro-build web-astro-test web-astro-evidence web-next-install web-next-build web-next-test web-next-evidence web-vite-install web-vite-build web-vite-test web-vite-evidence web-real-fixture-rerun web-browser-evidence web-manual-a11y-check web-spike-scorecard-check web-retention-check web-winner-reproduce web-local-rollback-check
+AUTHORIZED_GOALS := i5-02-authority-check i5-02-protected-hash-check i5-02-toolchain-check i5-02-changed-path-check i5-02-security-check i5-02-credential-check i5-02-non-copy-check web-common-test learn-preview learn-preview-status learn-preview-reset-check learn-preview-down web-barrier-b-check web-astro-install web-astro-build web-astro-test web-astro-evidence web-next-install web-next-build web-next-test web-next-evidence web-vite-install web-vite-build web-vite-test web-vite-evidence web-real-fixture-rerun web-browser-evidence web-manual-a11y-check web-spike-scorecard-check web-retention-check web-winner-reproduce web-local-rollback-check web-vite-v3-preflight web-vite-v3-harness-test web-vite-v3-red web-vite-v3-gate web-vite-v3-scan web-vite-v3-retain web-vite-v3-rollback
 UNKNOWN_GOALS := $(filter-out $(AUTHORIZED_GOALS),$(MAKECMDGOALS))
 ifneq ($(strip $(UNKNOWN_GOALS)),)
 $(error unauthorized target(s): $(UNKNOWN_GOALS))
@@ -16,6 +16,7 @@ export PREVIEW_PORT
 export I5_01_MERGE_SHA
 AUTHORITY = node spikes/web/harness/scripts/continuation-check.mjs --implementation-input "$$IMPLEMENTATION_INPUT_SHA"
 PREVIEW_CONTROL = node spikes/web/harness/scripts/preview-control.mjs
+VITE_V3 = node spikes/web/harness/scripts/simple-vite-v3.mjs
 
 .PHONY: $(AUTHORIZED_GOALS)
 
@@ -54,6 +55,27 @@ web-winner-reproduce:
 	@echo "no-winner: retained neutral preview only" >&2; exit 1
 web-local-rollback-check:
 	test ! -e apps/learning-portal && test ! -e apps/lab-runner
+
+web-vite-v3-preflight:
+	$(VITE_V3) preflight --implementation-input "$$IMPLEMENTATION_INPUT_SHA"
+
+web-vite-v3-harness-test:
+	node --test spikes/web/harness/tests/simple-vite-v3.test.mjs
+
+web-vite-v3-red:
+	$(VITE_V3) red --implementation-input "$$IMPLEMENTATION_INPUT_SHA"
+
+web-vite-v3-gate:
+	$(VITE_V3) gate --implementation-input "$$IMPLEMENTATION_INPUT_SHA"
+
+web-vite-v3-scan:
+	$(VITE_V3) scan --implementation-input "$$IMPLEMENTATION_INPUT_SHA"
+
+web-vite-v3-retain:
+	$(VITE_V3) retain --implementation-input "$$IMPLEMENTATION_INPUT_SHA"
+
+web-vite-v3-rollback:
+	$(VITE_V3) rollback --implementation-input "$$IMPLEMENTATION_INPUT_SHA"
 
 i5-02-authority-check:
 	$(AUTHORITY) --check authority
