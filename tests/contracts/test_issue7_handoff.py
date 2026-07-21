@@ -1,5 +1,5 @@
 from __future__ import annotations
-import copy, hashlib, importlib.util, pathlib, subprocess, sys, unittest
+import copy, hashlib, importlib.util, pathlib, subprocess, sys, tempfile, unittest
 from unittest import mock
 import rfc8785
 ROOT=pathlib.Path(__file__).resolve().parents[2]
@@ -39,6 +39,37 @@ class Issue7HandoffTests(unittest.TestCase):
         with self.assertRaisesRegex(module.FixtureError,"PORTABLE_ATTESTATION_INTEGRITY_MISMATCH"): module.verify_portable_attestation(tampered,tested)
         missing=copy.deepcopy(value); del missing["runs"]
         with self.assertRaisesRegex(module.FixtureError,"PORTABLE_ATTESTATION_SCHEMA_INVALID"): module.verify_portable_attestation(missing,tested)
+
+    def test_portable_documents_reject_duplicate_noncanonical_and_nonfinite_json(self) -> None:
+        module=self._load()
+        with tempfile.TemporaryDirectory() as temp:
+            path=pathlib.Path(temp)/"document.json"
+            path.write_bytes(b'{"a":1}\n')
+            self.assertEqual(({"a":1},b'{"a":1}\n'),module.read_canonical_document(path))
+            for payload,error in (
+                (b'{"a":1,"a":1}\n',"FIXTURE_JSON_DUPLICATE_NAME"),
+                (b'{"a":NaN}\n',"FIXTURE_JSON_NONFINITE"),
+                (b'{ "a": 1 }\n',"FIXTURE_JSON_NOT_CANONICAL"),
+            ):
+                path.write_bytes(payload)
+                with self.subTest(error=error),self.assertRaisesRegex(module.FixtureError,error): module.read_canonical_document(path)
+
+    def test_manifest_artifacts_are_exact_before_dereference(self) -> None:
+        module,value,tested=self._portable_attestation()
+        evidence=__import__("json").loads((ROOT/"tests/fixtures/learning/promotion-trust/evidence-v1.json").read_text())
+        manifest=module.manifest_document(evidence,tested,value)
+        module.validate_manifest_artifacts(manifest)
+        changed=copy.deepcopy(manifest); changed["artifacts"][0]["locator"]="../../private"
+        with self.assertRaisesRegex(module.FixtureError,"FIXTURE_MANIFEST_ARTIFACT_SET_INVALID"): module.validate_manifest_artifacts(changed)
+
+    def test_portable_attestation_rejects_extra_downgrade_and_nonfinite_values(self) -> None:
+        module,value,tested=self._portable_attestation()
+        extra=copy.deepcopy(value); extra["unexpected"]=True; extra["integrity"]["payloadSha256"]=module.portable_attestation_payload_sha256(extra)
+        downgraded=copy.deepcopy(value); downgraded["schemaVersion"]="promotion-trust-portable-run-attestation-v0"; downgraded["integrity"]["payloadSha256"]=module.portable_attestation_payload_sha256(downgraded)
+        for changed in (extra,downgraded):
+            with self.assertRaisesRegex(module.FixtureError,"PORTABLE_ATTESTATION_SCHEMA_INVALID"): module.verify_portable_attestation(changed,tested)
+        nonfinite=copy.deepcopy(value); nonfinite["runs"][0]["durationMs"]=float("nan")
+        with self.assertRaisesRegex(module.FixtureError,"PORTABLE_ATTESTATION_CANONICALIZATION_INVALID"): module.portable_attestation_payload_sha256(nonfinite)
 
     def test_portable_attestation_rejects_run_order_hash_and_timing_drift(self) -> None:
         module,value,tested=self._portable_attestation()

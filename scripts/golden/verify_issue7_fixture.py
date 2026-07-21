@@ -10,23 +10,24 @@ EXPECTED=(("mart_promotion_effectiveness",7),("mart_fulfillment_performance",25)
 
 def verify_tracked_handoff()->tuple[dict,dict,tuple[str,str]]:
     source=source_state.identity(); root=ROOT/"tests/fixtures/learning/promotion-trust"; evidence_path=root/"evidence-v1.json"; manifest_path=root/"manifest.json"
-    evidence=json.loads(evidence_path.read_text()); manifest=json.loads(manifest_path.read_text())
+    evidence,payload=issue7_fixture.read_canonical_document(evidence_path); manifest,manifest_payload=issue7_fixture.read_canonical_document(manifest_path)
     evidence_schema=json.loads((ROOT/"learning/contracts/promotion-trust-evidence-v1.schema.json").read_text()); jsonschema.Draft202012Validator(evidence_schema).validate(evidence)
     schema_reader.validate("promotion-trust-fixture-manifest",manifest); schema_reader.validate("promotion-trust-portable-run-attestation",manifest["portableRunAttestation"])
     issue7_fixture.validate_nonrecursive(evidence); issue7_fixture.validate_nonrecursive(manifest); issue7_fixture.verify_fixture(evidence)
     if tuple((row["sourceId"],len(row["records"])) for row in evidence["sources"])!=EXPECTED or sum(len(row["records"]) for row in evidence["sources"])!=89: raise SystemExit("FIXTURE_ROW_SET_MISMATCH")
     for source_entry in evidence["sources"]:
         if hashlib.sha256(rfc8785.dumps(source_entry["records"])).hexdigest()!=source_entry["normalizedRecordsSha256"]: raise SystemExit("FIXTURE_RECORD_HASH_MISMATCH")
-    payload=evidence_path.read_bytes()
     if manifest["evidence"]!={"byteLength":len(payload),"sha256":hashlib.sha256(payload).hexdigest()}: raise SystemExit("FIXTURE_MANIFEST_EVIDENCE_MISMATCH")
+    issue7_fixture.validate_manifest_artifacts(manifest)
     for artifact in manifest["artifacts"]:
         path=ROOT/artifact["locator"]
-        if path.stat().st_size!=artifact["byteLength"] or hashlib.sha256(path.read_bytes()).hexdigest()!=artifact["sha256"]: raise SystemExit("FIXTURE_MANIFEST_ARTIFACT_MISMATCH")
+        artifact_payload=issue7_fixture.read_bounded_regular(path)
+        if len(artifact_payload)!=artifact["byteLength"] or hashlib.sha256(artifact_payload).hexdigest()!=artifact["sha256"]: raise SystemExit("FIXTURE_MANIFEST_ARTIFACT_MISMATCH")
     tested=manifest["testedTreeSha"]
     subprocess.run(["git","cat-file","-e",f"{tested}^{{commit}}"],cwd=ROOT,check=True); subprocess.run(["git","merge-base","--is-ancestor",tested,source[0]],cwd=ROOT,check=True)
     issue7_fixture.verify_portable_attestation(manifest["portableRunAttestation"],tested)
     if manifest!=issue7_fixture.manifest_document(evidence,tested,manifest["portableRunAttestation"]): raise SystemExit("FIXTURE_RECOMPUTATION_MISMATCH")
-    text=payload.decode()+manifest_path.read_text()
+    text=payload.decode()+manifest_payload.decode()
     if re.search(r"/(?:Users|home)/|https?://[^/@\s]+:[^/@\s]+@|attestationCommitSha|mergeOrTagSha|frameworkScore|\bADR\b",text,re.I): raise SystemExit("FIXTURE_SENSITIVE_OR_RECURSIVE")
     source_state.assert_unchanged(source); return evidence,manifest,source
 
