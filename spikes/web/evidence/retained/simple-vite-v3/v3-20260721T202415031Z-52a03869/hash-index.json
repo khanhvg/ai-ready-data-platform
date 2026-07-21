@@ -4,7 +4,7 @@
     {
       "path": "correction.json",
       "bytes": 1358,
-      "sha256": "9d755291be425e78cd5c69de19c42fc942f7db9a5d6d92d77f3c17e9ce4881fb"
+      "sha256": "a9b7539109a17f0cb5dec080d6721fa28b20ec833ceb0893e360230879ef19aa"
     },
     {
       "path": "green/browser-results/.last-run.json",
@@ -84,7 +84,7 @@
     {
       "path": "manifest.json",
       "bytes": 15686,
-      "sha256": "c9e3d222f399a21232deddf9a68a4d2a90af4ef1b49013c14cfb2cdb552ae2cd"
+      "sha256": "0c3b693388f5892dd7bfe538d32a2ead4908d89bef6bc3424282ab823bf1dd10"
     },
     {
       "path": "security/built-output-scan.json",
