@@ -770,6 +770,10 @@
           "code": "WORKSPACE_REVISION_CONFLICT"
         },
         {
+          "status": 412,
+          "code": "PROGRESS_VERSION_CONFLICT"
+        },
+        {
           "status": 422,
           "code": "VERIFIER_INPUT_INVALID"
         }

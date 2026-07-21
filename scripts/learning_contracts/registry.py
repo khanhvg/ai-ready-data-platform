@@ -37,12 +37,38 @@ def migrate_document(value: dict[str, Any], target_version: str) -> dict[str, An
     return migrated
 
 
-def migrate_persisted_document(path: pathlib.Path, target_version: str) -> dict[str, Any]:
+def migrate_persisted_document(
+    path: pathlib.Path,
+    target_version: str,
+    *,
+    registry_path: pathlib.Path | None = None,
+) -> dict[str, Any]:
     """Read the persisted document through the strict reader, then run its registered transform."""
     from .schema import read_document
     value = read_document(path)
     if not isinstance(value, dict):
         raise LearningContractError("MIGRATION_SOURCE_INVALID")
+    if registry_path is not None:
+        registry = read_document(registry_path, family="version-registry")
+        validate_registry(registry)
+        source = value.get("schemaVersion")
+        registered = {
+            (item.get("from"), item.get("to"))
+            for family in registry.get("ownedFamilies", [])
+            for item in family.get("migrations", [])
+        } | {
+            (item.get("from"), item.get("to"))
+            for extension in registry.get("familyExtensions", [])
+            for item in extension.get("migrations", [])
+        }
+        # The private compatibility vector is an explicitly admitted, lossless
+        # back-reader edge; it does not register a public schema family.
+        registered.update({
+            ("private-migration-v0", "private-migration-v1"),
+            ("private-migration-v1", "private-migration-v0"),
+        })
+        if (source, target_version) not in registered:
+            raise LearningContractError("MIGRATION_EDGE_UNREGISTERED")
     return migrate_document(value, target_version)
 
 
@@ -51,6 +77,21 @@ def validate_migration(value: dict[str, Any], target_version: str) -> None:
 
 
 def validate_registry(value: dict[str, Any]) -> None:
+    if set(value) == {"schemaVersion", "baseRegistry", "ownedFamilies", "familyExtensions"}:
+        families = value.get("ownedFamilies")
+        extensions = value.get("familyExtensions")
+        if not isinstance(families, list) or not isinstance(extensions, list):
+            raise LearningContractError("REGISTRY_SCHEMA_INVALID")
+        names = [item.get("family") for item in families] + [item.get("family") for item in extensions]
+        if len(names) != len(set(names)):
+            raise LearningContractError("REGISTRY_FAMILY_COLLISION")
+        edges = [
+            edge
+            for item in [*families, *extensions]
+            for edge in item.get("migrations", [])
+        ]
+        _validate_registry_edges(edges)
+        return
     if set(value) != {"schemaVersion", "baseRegistry", "families", "migrations"}:
         raise LearningContractError("REGISTRY_SCHEMA_INVALID")
     families = value.get("families")
@@ -59,6 +100,10 @@ def validate_registry(value: dict[str, Any]) -> None:
     edges = value.get("migrations")
     if not isinstance(edges, list):
         raise LearningContractError("REGISTRY_SCHEMA_INVALID")
+    _validate_registry_edges(edges)
+
+
+def _validate_registry_edges(edges: list[dict[str, Any]]) -> None:
     graph: dict[str, list[str]] = {}
     for item in edges:
         if item.get("kind") not in {"identity", "lossless"}:

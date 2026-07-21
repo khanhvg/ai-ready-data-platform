@@ -49,6 +49,11 @@ WIRE_REQUEST_SCHEMAS = {
     "queryDataProduct": ("QueryDataProductRequest", {"schemaVersion", "workspaceId", "queryId", "parameters", "expectedWorkspaceRevision"}),
 }
 
+OPENAPI_RESPONSE_ALIASES = {
+    "LearningEvidence": "Evidence",
+    "HealthStatus": "Health",
+}
+
 _IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 _CORRELATION = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -190,6 +195,13 @@ def validate_openapi_document(value: dict[str, Any], matrix: dict[str, Any]) -> 
         expected_statuses = {str(row["response"]["status"]), *(str(item["status"]) for item in row["problems"])}
         if set(responses) != expected_statuses:
             raise LearningContractError("OPENAPI_RESPONSE_DRIFT")
+        expected_response = OPENAPI_RESPONSE_ALIASES.get(row["response"]["schema"], row["response"]["schema"])
+        success_response = responses[str(row["response"]["status"])]
+        if success_response != {"$ref": f"#/components/responses/{expected_response}"}:
+            raise LearningContractError("OPENAPI_RESPONSE_CONTRACT_DRIFT")
+        for problem in row["problems"]:
+            if responses[str(problem["status"])] != {"$ref": "#/components/responses/Problem"}:
+                raise LearningContractError("OPENAPI_PROBLEM_CONTRACT_DRIFT")
         expected_parameters = set(row["request"]["parameters"]) | (set(row["request"]["headers"]) - {"Authorization", "Content-Type"})
         declared_parameters: set[str] = set()
         for item in operation.get("parameters", []):
@@ -273,6 +285,34 @@ def validate_request(operation_id: str, request: dict[str, Any]) -> tuple[dict[s
         for name in ("expectedWorkspaceRevision", "expectedProgressRevision"):
             if name in body and (not isinstance(body[name], int) or isinstance(body[name], bool) or body[name] < 0):
                 raise LearningContractError("REQUEST_INVALID")
+        if operation_id == "createWorkspace":
+            if (
+                re.fullmatch(r"^[0-9]+\.[0-9]+\.[0-9]+$", body["labVersion"]) is None
+                or _SHA256.fullmatch(body["contractSetSha256"]) is None
+                or not isinstance(body["parameters"], dict)
+                or len(body["parameters"]) > 32
+            ):
+                raise LearningContractError("LAB_PARAMETER_INVALID")
+        elif operation_id == "startWorkspaceOperation":
+            if (
+                _IDENTIFIER.fullmatch(body["commandId"]) is None
+                or not isinstance(body["arguments"], list)
+                or len(body["arguments"]) > 32
+                or any(not isinstance(item, str) or len(item) > 256 for item in body["arguments"])
+            ):
+                raise LearningContractError("COMMAND_ID_OR_ARGUMENT_INVALID")
+        elif operation_id == "resetWorkspace" and body["preserveEvidence"] is not True:
+            raise LearningContractError("REQUEST_INVALID")
+        elif operation_id == "verifyWorkspace" and _IDENTIFIER.fullmatch(body["verifierId"]) is None:
+            raise LearningContractError("VERIFIER_INPUT_INVALID")
+        elif operation_id == "queryDataProduct":
+            if (
+                _IDENTIFIER.fullmatch(body["workspaceId"]) is None
+                or _IDENTIFIER.fullmatch(body["queryId"]) is None
+                or not isinstance(body["parameters"], dict)
+                or len(body["parameters"]) > 32
+            ):
+                raise LearningContractError("QUERY_ID_OR_PARAMETER_INVALID")
     elif request.get("body") not in (None, {}):
         raise LearningContractError("REQUEST_INVALID")
     return headers, body
@@ -341,29 +381,106 @@ class LearningPlatform:
         self.tools = {
             "contract-validator": {"schemaVersion": "tool-v1", "toolId": "contract-validator", "status": "ready", "required": True, "deepLink": None, "remediationId": None}
         }
+        self.matrix = read_document(ROOT / "learning/contracts/operation-matrix-v1.json", family="operation-matrix")
+        self.openapi = read_document(ROOT / "contracts/openapi/learning-platform-v1.yaml")
 
     def dispatch(self, request: dict[str, Any]) -> dict[str, Any]:
         method, path = request.get("method"), request.get("path")
         if not isinstance(path, str) or (path.startswith("/v") and not path.startswith("/v1/")):
-            raise LearningContractError("API_VERSION_UNSUPPORTED")
+            return self._problem(None, request, "API_VERSION_UNSUPPORTED")
         matches = [row for row in EXPECTED_OPERATIONS if row[1] == method and _path_matches(row[2], path)]
         if len(matches) != 1:
-            raise LearningContractError("OPERATION_UNKNOWN")
+            return self._problem(None, request, "OPERATION_UNKNOWN")
         operation_id, _, template, success = matches[0]
-        headers, body = validate_request(operation_id, request)
-        params = self._path_parameters(template, path)
-        query = request.get("query", {})
-        if not isinstance(query, dict) or set(query) - {"cursor", "limit"}:
-            raise LearningContractError("PAGE_ARGUMENT_INVALID")
-        if "limit" in query and (not isinstance(query["limit"], int) or not 1 <= query["limit"] <= 100):
-            raise LearningContractError("PAGE_ARGUMENT_INVALID")
-        actor = headers.get("Authorization", "public").removeprefix("Bearer ")
-        result = self._execute(operation_id, actor, params, body, headers, query)
+        try:
+            headers, body = validate_request(operation_id, request)
+            params = self._path_parameters(template, path)
+            query = request.get("query", {})
+            if not isinstance(query, dict) or set(query) - {"cursor", "limit"}:
+                raise LearningContractError("PAGE_ARGUMENT_INVALID")
+            if "limit" in query and (not isinstance(query["limit"], int) or not 1 <= query["limit"] <= 100):
+                raise LearningContractError("PAGE_ARGUMENT_INVALID")
+            actor = headers.get("Authorization", "public").removeprefix("Bearer ")
+            result = self._execute(operation_id, actor, params, body, headers, query)
+        except LearningContractError as exc:
+            return self._problem(operation_id, request, exc.code)
         public_result = copy.deepcopy(result)
         if isinstance(public_result, dict):
             public_result.pop("actorId", None)
             public_result.pop("quarantined", None)
+        try:
+            self._validate_success(operation_id, public_result)
+        except LearningContractError:
+            return self._problem(operation_id, request, "INTERNAL_CONTRACT_ERROR")
         return {"status": success, "headers": {"X-Correlation-ID": headers.get("X-Correlation-ID", "health"), "X-Learning-Contract-Version": "learning-platform-v1"}, "body": public_result}
+
+    def _validate_success(self, operation_id: str, body: dict[str, Any]) -> None:
+        from .schema import validate_document
+        row = next(item for item in self.matrix["operations"] if item["operationId"] == operation_id)
+        family = row["response"]["schema"]
+        try:
+            if family == "Lesson":
+                validate_document(body, family="lesson")
+                return
+            if family == "Progress":
+                validate_document(body, family="progress")
+                return
+            if family == "LearningEvidence":
+                validate_document(body, family="learning-evidence")
+                return
+            if family in {"LessonPage", "ProgressPage"}:
+                expected = "lesson" if family == "LessonPage" else "progress"
+                if set(body) != {"schemaVersion", "items", "nextCursor"} or not isinstance(body["items"], list):
+                    raise LearningContractError("RESPONSE_SCHEMA_INVALID")
+                for item in body["items"]:
+                    validate_document(item, family=expected)
+                return
+            if family == "ToolPage":
+                if set(body) != {"schemaVersion", "items", "nextCursor"} or not isinstance(body["items"], list):
+                    raise LearningContractError("RESPONSE_SCHEMA_INVALID")
+                tool_schema = self.openapi["components"]["schemas"]["Tool"]
+                for item in body["items"]:
+                    jsonschema.Draft202012Validator(tool_schema).validate(item)
+                return
+            alias = OPENAPI_RESPONSE_ALIASES.get(family, family)
+            candidate = self.openapi["components"]["schemas"].get(alias)
+            if not isinstance(candidate, dict):
+                raise LearningContractError("RESPONSE_SCHEMA_INVALID")
+            jsonschema.Draft202012Validator(candidate).validate(body)
+        except (KeyError, jsonschema.ValidationError) as exc:
+            raise LearningContractError("RESPONSE_SCHEMA_INVALID") from exc
+
+    def _problem(self, operation_id: str | None, request: dict[str, Any], code: str) -> dict[str, Any]:
+        statuses: dict[str, int] = {}
+        if operation_id is not None:
+            row = next(item for item in self.matrix["operations"] if item["operationId"] == operation_id)
+            statuses = {item["code"]: item["status"] for item in row["problems"]}
+        fallback = {
+            "API_VERSION_UNSUPPORTED": 400, "OPERATION_UNKNOWN": 404,
+            "PROGRESS_VERSION_CONFLICT": 412,
+        }
+        status = statuses.get(code, fallback.get(code, 500))
+        correlation = request.get("headers", {}).get("X-Correlation-ID", "request-invalid")
+        if not isinstance(correlation, str) or _CORRELATION.fullmatch(correlation) is None:
+            correlation = "request-invalid"
+        body = {
+            "type": f"urn:learning-problem:{code.lower().replace('_', '-')}",
+            "title": code.replace("_", " ").title(),
+            "status": status,
+            "code": code,
+            "detail": f"The request was rejected with {code}.",
+            "correlationId": correlation,
+            "retryable": status >= 500,
+            "remediationId": None,
+            "contractVersion": "learning-platform-v1",
+        }
+        from .schema import validate_document
+        validate_document(body, family="problem-details")
+        return {
+            "status": status,
+            "headers": {"X-Correlation-ID": correlation, "X-Learning-Contract-Version": "learning-platform-v1"},
+            "body": body,
+        }
 
     @staticmethod
     def _path_parameters(template: str, actual: str) -> dict[str, str]:
@@ -434,6 +551,11 @@ class LearningPlatform:
                 command_ids = {item["id"] for item in self.labs[workspace["labId"]]["commands"]}
                 if operation_id == "startWorkspaceOperation" and body["commandId"] not in command_ids: raise LearningContractError("COMMAND_ID_OR_ARGUMENT_INVALID")
                 if operation_id == "verifyWorkspace" and body["verifierId"] != self.labs[workspace["labId"]]["verify"]["verifierId"]: raise LearningContractError("VERIFIER_INPUT_INVALID")
+                progress = None
+                if operation_id == "verifyWorkspace":
+                    progress = self._progress(actor, self.labs[workspace["labId"]]["lessonId"])
+                    if body["expectedProgressRevision"] != progress["revision"]:
+                        raise LearningContractError("PROGRESS_VERSION_CONFLICT")
                 op_id = f"operation-{len(self.operations) + 1}"
                 kind = {"startWorkspaceOperation": "command", "resetWorkspace": "reset", "verifyWorkspace": "verify"}[operation_id]
                 workspace["revision"] += 1
@@ -449,10 +571,32 @@ class LearningPlatform:
                     evidence["integrity"]["payloadSha256"] = hashlib.sha256(canonical_bytes({key: child for key, child in evidence.items() if key != "integrity"})).hexdigest()
                     self.evidence[evidence_id] = evidence
                     self.evidence_owners[evidence_id] = actor
-                    progress = self._progress(actor, self.labs[workspace["labId"]]["lessonId"])
-                    if body["expectedProgressRevision"] != progress["revision"]: raise LearningContractError("PROGRESS_VERSION_CONFLICT")
-                    progress.update({"state": "verified", "revision": progress["revision"] + 1})
-                    progress["events"].append({"eventId": f"event-{progress['revision']}", "kind": "verify", "revision": progress["revision"]})
+                    assert progress is not None
+                    verified_revision = progress["revision"] + 1
+                    progress.update({"state": "verified", "revision": verified_revision})
+                    progress["events"].append({"eventId": f"event-{verified_revision}", "kind": "verify", "revision": verified_revision})
+                    from .completion import complete
+                    authority_state = {
+                        "state": "verified", "revision": verified_revision,
+                        "effects": [], "idempotency": {},
+                    }
+                    completed = complete(authority_state, {
+                        "expectedRevision": verified_revision,
+                        "idempotencyKey": f"complete-{op_id}",
+                        "evidenceId": evidence_id,
+                    })
+                    progress.update({
+                        "state": completed["state"], "revision": completed["revision"],
+                        "completion": {
+                            "authority": "learning-progress-authority-v1",
+                            "evidenceId": evidence_id,
+                            "revision": completed["revision"],
+                        },
+                    })
+                    progress["events"].append({
+                        "eventId": f"event-{completed['revision']}",
+                        "kind": "complete", "revision": completed["revision"],
+                    })
                 workspace["activeOperationId"] = None
                 return {"schemaVersion": "operation-accepted-v1", "operationId": op_id, "status": "accepted", "requestSha256": digest, "workspaceRevision": workspace["revision"], "pollAfterMs": 100, "links": {"operation": f"/v1/operations/{op_id}"}}
             return self._mutation(actor, operation_id, headers, body, mutate)

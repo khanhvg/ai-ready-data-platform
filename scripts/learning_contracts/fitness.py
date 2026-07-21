@@ -6,7 +6,7 @@ import pathlib
 import hashlib
 from typing import Any
 
-from .canonical import canonical_bytes
+from .canonical import canonical_bytes, parse_json
 from .references import resolve_reference
 from .schema import LearningContractError, validate_document
 
@@ -24,6 +24,13 @@ def verify_fitness(
         if exc.code == "SCHEMA_INVALID":
             raise LearningContractError("FITNESS_SCHEMA_INVALID") from exc
         raise
+    parameters = value["requested"]["parameters"]
+    if parameters != sorted(parameters, key=lambda item: item["name"]) or len({item["name"] for item in parameters}) != len(parameters):
+        raise LearningContractError("FITNESS_PARAMETER_ORDER_INVALID")
+    for field in ("contractHashes", "fixtureHashes", "schemaHashes"):
+        rows = value[field]
+        if rows != sorted(rows, key=lambda item: (item["name"], item["sha256"])) or len({item["name"] for item in rows}) != len(rows):
+            raise LearningContractError("FITNESS_PROVENANCE_ORDER_INVALID")
     if activation is not None:
         if activation.get("schemaVersion") != "command-owner-activation-v1" or value["owner"] != activation.get("owner"):
             raise LearningContractError("FITNESS_ACTIVATION_MISMATCH")
@@ -69,20 +76,47 @@ def evaluate_promotion(grains: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def evaluate_promotion_document(value: dict[str, Any] | pathlib.Path) -> dict[str, Any]:
+def evaluate_promotion_document(
+    value: dict[str, Any] | pathlib.Path,
+    *,
+    root: pathlib.Path | None = None,
+) -> dict[str, Any]:
     """Evaluate the released promotion fixture/manifest document, never a caller-supplied grain verdict."""
     from .schema import read_document
-    document = read_document(value) if isinstance(value, pathlib.Path) else value
+    document = read_document(value, family="promotion-manifest") if isinstance(value, pathlib.Path) else value
     if not isinstance(document, dict):
         raise LearningContractError("PROMOTION_DOCUMENT_INVALID")
+    if root is not None:
+        for name in ("lesson", "lab", "evidenceSchema", "dataContract", "fixture"):
+            reference = document.get(name)
+            if not isinstance(reference, dict) or set(reference) != {"path", "sha256"}:
+                raise LearningContractError("PROMOTION_DOCUMENT_INVALID")
+            raw = resolve_reference(root, reference["path"], reference["sha256"])
+            if name == "lesson":
+                read_document(root / reference["path"], family="lesson")
+            elif name == "lab":
+                read_document(root / reference["path"], family="lab")
+            elif reference["path"].endswith(".json") and not isinstance(parse_json(raw), dict):
+                raise LearningContractError("PROMOTION_DOCUMENT_INVALID")
     grains = document.get("grains")
     if grains is None and isinstance(document.get("sources"), list):
         grains = []
         for source in document["sources"]:
-            if not isinstance(source, str) or ":" not in source:
+            if not isinstance(source, dict) or set(source) != {"grain", "keys", "document"}:
                 raise LearningContractError("PROMOTION_DOCUMENT_INVALID")
-            grain, keys = source.split(":", 1)
-            grains.append({"grain": grain, "keys": keys.split(",")})
+            reference = source["document"]
+            if root is not None:
+                source_document = parse_json(resolve_reference(root, reference["path"], reference["sha256"]))
+                required_mart = {
+                    "promotion": "mart_promotion_effectiveness",
+                    "fulfillment": "mart_fulfillment_performance",
+                    "returns": "mart_returns_analysis",
+                    "dq": "mart_data_quality",
+                }.get(source["grain"])
+                marts = source_document.get("marts", []) if isinstance(source_document, dict) else []
+                if required_mart is None or required_mart not in {item.get("martId") for item in marts if isinstance(item, dict)}:
+                    raise LearningContractError("PROMOTION_DOCUMENT_INVALID")
+            grains.append({"grain": source["grain"], "keys": source["keys"]})
     result = evaluate_promotion(grains)
     declared = document.get("decision")
     if declared is not None and declared != result["decision"]:

@@ -128,7 +128,7 @@
       "readerId": "promotion-trust-learning-manifest-reader-v1",
       "schema": {
         "path": "learning/contracts/promotion-trust-learning-manifest-v1.schema.json",
-        "sha256": "d0db5915a7aa8c68844a9bd418b312d7f4ab308de4610b1cc69591d53b6c8050"
+        "sha256": "6b04b9acdc6097c43ede39f22d048b1b3095b96563e568ec6e2bc52527bd0255"
       },
       "migrations": [
         {
@@ -205,7 +205,7 @@
           "version": "fitness-result-v2",
           "schema": {
             "path": "learning/contracts/fitness-result-v2.schema.json",
-            "sha256": "11bc32e9800e9694aede72f0d80b0cadd3fa8efbca7918cdb5c945b8fd6b2970"
+            "sha256": "d53f9b7b68b9f313bf0b9259fe5042bfb8cdbca0001570c18cd937de4971d6c6"
           },
           "readerId": "fitness-result-reader-v2"
         }

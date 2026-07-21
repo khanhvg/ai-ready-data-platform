@@ -184,7 +184,10 @@ def validate_invalid_fixture(path: pathlib.Path, target: str) -> None:
         validate_activation_semantics(activation)
     elif family == "completion":
         from .completion import complete, validate_completion_contract, validate_completion_semantics
-        validate_completion_contract(read_document(ROOT / "learning/contracts/completion-reconciliation-v1.json"))
+        validate_completion_contract(read_document(
+            ROOT / "learning/contracts/completion-reconciliation-v1.json",
+            family="completion-reconciliation",
+        ))
         complete({"state": "verified", "revision": 1, "effects": [], "idempotency": {}}, {"expectedRevision": 1, "idempotencyKey": "fixture-context", "evidenceId": "evidence-context"})
         validate_completion_semantics(mutation)
     elif family == "evidence":
@@ -226,16 +229,28 @@ def validate_invalid_fixture(path: pathlib.Path, target: str) -> None:
     elif family == "promotion":
         from .fitness import evaluate_promotion_document, validate_promotion_semantics
         manifest = read_document(ROOT / "learning/manifests/promotion-trust-v1.json", family="promotion-manifest")
-        resolve_reference(ROOT, manifest["fixture"], manifest["fixtureSha256"])
-        evaluate_promotion_document(manifest)
+        resolve_reference(ROOT, manifest["fixture"]["path"], manifest["fixture"]["sha256"])
+        evaluate_promotion_document(manifest, root=ROOT)
         validate_promotion_semantics(mutation, expected_fixture_sha256=PROMOTION_FIXTURE_SHA256)
     elif family == "reference":
         from .references import validate_contract_reference
         manifest = read_document(ROOT / "learning/manifests/promotion-trust-v1.json", family="promotion-manifest")
-        resolve_reference(ROOT, manifest["fixture"], manifest["fixtureSha256"])
+        resolve_reference(ROOT, manifest["fixture"]["path"], manifest["fixture"]["sha256"])
         validate_contract_reference(mutation, root=ROOT)
     elif family == "state":
         from .state import execute_operation, validate_state_semantics
+        progress = {
+            "schemaVersion": "progress-v1", "progressId": "progress-fixture",
+            "actor": {"subjectId": "fixture-actor", "authContextSha256": "0" * 64},
+            "lessonId": lesson["id"], "lessonVersion": lesson["version"],
+            "labId": lab["id"], "labVersion": lab["version"],
+            "contractSetSha256": "0" * 64, "revision": 0, "state": "not-started",
+            "events": [], "completion": None,
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            persisted = pathlib.Path(temporary) / "progress.json"
+            persisted.write_bytes(canonical_bytes(progress) + b"\n")
+            read_document(persisted, family="progress")
         execute_operation({"state": "not-started", "revision": 0, "effects": []}, {"action": "start", "expectedRevision": 0, "prerequisitesSatisfied": True})
         validate_state_semantics(mutation)
     raise LearningContractError("FIXTURE_UNEXPECTEDLY_VALID")
@@ -291,7 +306,9 @@ def validate_valid_corpus() -> None:
     for schema_name, instance_path in pairs:
         _validate_schema_instance(ROOT / "learning/contracts" / schema_name, instance_path)
     promotion = read_document(ROOT / "learning/manifests/promotion-trust-v1.json")
-    resolve_reference(ROOT, promotion["fixture"], promotion["fixtureSha256"])
+    resolve_reference(ROOT, promotion["fixture"]["path"], promotion["fixture"]["sha256"])
+    if promotion["fixture"]["sha256"] != promotion["fixtureSha256"]:
+        raise LearningContractError("PROMOTION_FIXTURE_HASH_MISMATCH")
     expected_contract_set_schema = hashlib.sha256(
         (ROOT / "learning/contracts/learning-contract-set-v1.schema.json").read_bytes()
     ).hexdigest()
@@ -373,7 +390,10 @@ def _fitness_provenance() -> dict[str, Any]:
         for path in sorted((ROOT / "learning/contracts").glob("*.schema.json"))
     ]
     fixture_hashes = [
-        {"name": path.stem, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+        {
+            "name": path.relative_to(FIXTURE_ROOT).as_posix().replace("/", "."),
+            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        }
         for path in sorted(FIXTURE_ROOT.rglob("*")) if path.is_file()
     ]
     return {

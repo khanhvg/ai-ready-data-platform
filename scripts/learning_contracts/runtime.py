@@ -95,23 +95,69 @@ def _admission_markers(root: pathlib.Path) -> list[pathlib.Path]:
 
 def select_admitted_runtime(root: pathlib.Path, expected: dict[str, str]) -> pathlib.Path:
     """Return the sole hash-bound interpreter below *root*, or fail closed."""
-    markers = _admission_markers(root)
-    if len(markers) != 1:
-        raise LearningContractError("RUNTIME_ADMISSION_COUNT")
-    marker_path = markers[0]
+    nofollow = getattr(os, "O_NOFOLLOW", 0)
     try:
-        marker_info = marker_path.lstat()
-        if not stat.S_ISREG(marker_info.st_mode) or marker_info.st_nlink != 1 or marker_info.st_size > MAX_DOCUMENT_BYTES:
-            raise LearningContractError("RUNTIME_ADMISSION_MISMATCH")
-        marker = _parse_json(marker_path.read_bytes())
-    except (OSError, LearningContractError) as exc:
-        raise LearningContractError("RUNTIME_ADMISSION_MISMATCH") from exc
+        before = os.stat(root, follow_symlinks=False)
+        root_fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NONBLOCK | nofollow)
+    except OSError as exc:
+        raise LearningContractError("RUNTIME_ROOT_INVALID") from exc
+    candidate_name: str | None = None
+    marker: object = None
+    try:
+        after = os.fstat(root_fd)
+        if not stat.S_ISDIR(before.st_mode) or not _same_file(before, after):
+            raise LearningContractError("RUNTIME_ROOT_INVALID")
+        for name in sorted(os.listdir(root_fd)):
+            if pathlib.PurePath(name).parts != (name,):
+                continue
+            try:
+                candidate_fd = os.open(
+                    name, os.O_RDONLY | os.O_DIRECTORY | os.O_NONBLOCK | nofollow,
+                    dir_fd=root_fd,
+                )
+            except OSError:
+                continue
+            try:
+                try:
+                    marker_before = os.stat(RUNTIME_MARKER, dir_fd=candidate_fd, follow_symlinks=False)
+                    marker_fd = os.open(
+                        RUNTIME_MARKER, os.O_RDONLY | os.O_NONBLOCK | nofollow,
+                        dir_fd=candidate_fd,
+                    )
+                except FileNotFoundError:
+                    continue
+                except OSError as exc:
+                    raise LearningContractError("RUNTIME_ADMISSION_MISMATCH") from exc
+                try:
+                    marker_after = os.fstat(marker_fd)
+                    if (
+                        not stat.S_ISREG(marker_before.st_mode)
+                        or marker_before.st_nlink != 1
+                        or marker_after.st_size > MAX_DOCUMENT_BYTES
+                        or not _same_file(marker_before, marker_after)
+                    ):
+                        raise LearningContractError("RUNTIME_ADMISSION_MISMATCH")
+                    raw = os.read(marker_fd, MAX_DOCUMENT_BYTES + 1)
+                    if len(raw) > MAX_DOCUMENT_BYTES:
+                        raise LearningContractError("RUNTIME_ADMISSION_MISMATCH")
+                    if candidate_name is not None:
+                        raise LearningContractError("RUNTIME_ADMISSION_COUNT")
+                    candidate_name = name
+                    marker = _parse_json(raw)
+                finally:
+                    os.close(marker_fd)
+            finally:
+                os.close(candidate_fd)
+    finally:
+        os.close(root_fd)
+    if candidate_name is None:
+        raise LearningContractError("RUNTIME_ADMISSION_COUNT")
     required = {
         "schemaVersion", "interpreterSha256", "toolSha256", "lockSha256", "planSha256", "inputSha",
     }
     if not isinstance(marker, dict) or set(marker) != required or marker != expected:
         raise LearningContractError("RUNTIME_ADMISSION_MISMATCH")
-    interpreter = marker_path.parent / RUNTIME_INTERPRETER
+    interpreter = root / candidate_name / RUNTIME_INTERPRETER
     try:
         resolved = interpreter.resolve(strict=True)
         info = resolved.stat()
@@ -170,29 +216,41 @@ def _same_file(before: os.stat_result, after: os.stat_result) -> bool:
     )
 
 
-def _process_group_snapshot(process_group: int) -> dict[int, int]:
+def _process_snapshot() -> dict[int, tuple[int, int, int]]:
     result = subprocess.run(
-        ["ps", "-axo", "pid=,pgid=,rss=,state="],
+        ["ps", "-axo", "pid=,ppid=,pgid=,rss=,state="],
         check=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
         text=True,
     )
-    members: dict[int, int] = {}
+    members: dict[int, tuple[int, int, int]] = {}
     for line in result.stdout.splitlines():
         fields = line.split()
-        if len(fields) == 4 and int(fields[1]) == process_group and not fields[3].startswith("Z"):
-            members[int(fields[0])] = int(fields[2]) * 1024
+        if len(fields) == 5 and not fields[4].startswith("Z"):
+            members[int(fields[0])] = (int(fields[1]), int(fields[2]), int(fields[3]) * 1024)
     return members
 
 
-def _process_group_rss(process_group: int) -> int:
-    return sum(_process_group_snapshot(process_group).values())
+def _owned_snapshot(root_pid: int, retained: set[int]) -> dict[int, int]:
+    """Retain the complete observed lineage, including descendants that call setsid()."""
+    snapshot = _process_snapshot()
+    retained.add(root_pid)
+    retained.update(pid for pid, (_parent, group, _rss) in snapshot.items() if group == root_pid)
+    changed = True
+    while changed:
+        changed = False
+        for pid, (parent, _group, _rss) in snapshot.items():
+            if parent in retained and pid not in retained:
+                retained.add(pid)
+                changed = True
+    return {pid: snapshot[pid][2] for pid in retained if pid in snapshot}
 
 
-def _terminate_group(process: subprocess.Popen[bytes]) -> None:
+def _terminate_owned(process: subprocess.Popen[bytes], retained: set[int]) -> None:
     def signal_members(signum: signal.Signals) -> None:
-        for pid in sorted(_process_group_snapshot(process.pid), reverse=True):
+        members = _owned_snapshot(process.pid, retained)
+        for pid in sorted(members, reverse=True):
             try:
                 os.kill(pid, signum)
             except ProcessLookupError:
@@ -200,9 +258,9 @@ def _terminate_group(process: subprocess.Popen[bytes]) -> None:
 
     signal_members(signal.SIGTERM)
     deadline = time.monotonic() + 0.5
-    while _process_group_snapshot(process.pid) and time.monotonic() < deadline:
+    while _owned_snapshot(process.pid, retained) and time.monotonic() < deadline:
         time.sleep(0.01)
-    if _process_group_snapshot(process.pid):
+    if _owned_snapshot(process.pid, retained):
         signal_members(signal.SIGKILL)
     try:
         process.wait(timeout=2)
@@ -211,7 +269,7 @@ def _terminate_group(process: subprocess.Popen[bytes]) -> None:
     cleanup_deadline = time.monotonic() + 2
     while time.monotonic() < cleanup_deadline:
         try:
-            members = _process_group_snapshot(process.pid)
+            members = _owned_snapshot(process.pid, retained)
         except subprocess.SubprocessError as exc:
             raise LearningContractError("PROCESS_CLEANUP_FAILED") from exc
         if not members:
@@ -250,6 +308,7 @@ def run_bounded(
         )
         deadline = time.monotonic() + timeout
         failure: str | None = None
+        owned = {process.pid}
         while process.poll() is None:
             if time.monotonic() >= deadline:
                 failure = "PROCESS_TIMEOUT"
@@ -257,15 +316,15 @@ def run_bounded(
             if os.fstat(stdout_file.fileno()).st_size + os.fstat(stderr_file.fileno()).st_size > output_limit:
                 failure = "PROCESS_OUTPUT_LIMIT"
                 break
-            if _process_group_rss(process.pid) > max_rss_bytes:
+            if sum(_owned_snapshot(process.pid, owned).values()) > max_rss_bytes:
                 failure = "PROCESS_RSS_LIMIT"
                 break
             time.sleep(0.01)
         if failure is not None:
-            _terminate_group(process)
+            _terminate_owned(process, owned)
             raise LearningContractError(failure)
-        if _process_group_snapshot(process.pid):
-            _terminate_group(process)
+        if _owned_snapshot(process.pid, owned):
+            _terminate_owned(process, owned)
             raise LearningContractError("PROCESS_CLEANUP_FAILED")
         stdout_file.seek(0)
         stderr_file.seek(0)
@@ -407,6 +466,9 @@ def cleanup_owned(path: pathlib.Path, marker: dict[str, object], *, owned_root: 
                 raise LearningContractError("CLEANUP_MANIFEST_OPEN")
 
             removable: list[tuple[str, int, os.stat_result]] = []
+            quarantine_name: str | None = None
+            namespace_isolated = False
+            namespace_conflict = False
             try:
                 for name, disposition in declared.items():
                     if disposition != "mutable" or name not in actual:
@@ -449,13 +511,59 @@ def cleanup_owned(path: pathlib.Path, marker: dict[str, object], *, owned_root: 
                         raise LearningContractError("CLEANUP_ENTRY_UNSAFE") from exc
                     if not _same_file(current, held):
                         raise LearningContractError("CLEANUP_ENTRY_UNSAFE")
+                # Quarantine the verified directory behind a held root descriptor,
+                # then reserve its public name with an empty decoy. A concurrent
+                # writer can only alter the decoy; it can never redirect deletion
+                # inside the descriptor-held owned directory.
+                quarantine_name = f".{path.name}.cleanup-{marker['nonce'][:16]}"
+                try:
+                    os.stat(quarantine_name, dir_fd=root_fd, follow_symlinks=False)
+                except FileNotFoundError:
+                    pass
+                else:
+                    raise LearningContractError("CLEANUP_OWNERSHIP_MISMATCH")
+                try:
+                    os.rename(
+                        path.name, quarantine_name,
+                        src_dir_fd=root_fd, dst_dir_fd=root_fd,
+                    )
+                    os.mkdir(path.name, 0o700, dir_fd=root_fd)
+                    namespace_isolated = True
+                except OSError as exc:
+                    raise LearningContractError("CLEANUP_ENTRY_UNSAFE") from exc
+                if not _same_file(os.fstat(directory_fd), directory_after):
+                    raise LearningContractError("CLEANUP_OWNERSHIP_MISMATCH")
                 for name, _, _ in removable:
-                    os.unlink(name, dir_fd=directory_fd)
+                    try:
+                        os.unlink(name, dir_fd=directory_fd)
+                    except OSError as exc:
+                        raise LearningContractError("CLEANUP_ENTRY_UNSAFE") from exc
                 os.fsync(directory_fd)
             finally:
                 for _, descriptor, _ in removable:
                     os.close(descriptor)
                 os.close(marker_fd)
+                if namespace_isolated and quarantine_name is not None:
+                    try:
+                        decoy_fd = os.open(
+                            path.name,
+                            os.O_RDONLY | os.O_DIRECTORY | os.O_NONBLOCK | nofollow,
+                            dir_fd=root_fd,
+                        )
+                        try:
+                            namespace_conflict = bool(os.listdir(decoy_fd))
+                        finally:
+                            os.close(decoy_fd)
+                        if not namespace_conflict:
+                            os.rmdir(path.name, dir_fd=root_fd)
+                            os.rename(
+                                quarantine_name, path.name,
+                                src_dir_fd=root_fd, dst_dir_fd=root_fd,
+                            )
+                    except OSError as exc:
+                        raise LearningContractError("CLEANUP_ENTRY_UNSAFE") from exc
+                    if namespace_conflict:
+                        raise LearningContractError("CLEANUP_ENTRY_UNSAFE")
         finally:
             os.close(directory_fd)
     finally:

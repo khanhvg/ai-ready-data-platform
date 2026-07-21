@@ -3,7 +3,7 @@
   "setId": "issue-8-stage-a-v1",
   "registry": {
     "path": "learning/contracts/learning-contract-version-registry-v1.json",
-    "sha256": "2052af42957415180e9e18db199b247d74b741ef66553365b41b5171644861dc"
+    "sha256": "a34c907e8870e89a182a180250a284f1a3c2ab3b6f1c4217c087cbc57775f9cb"
   },
   "contracts": [
     {
@@ -25,7 +25,7 @@
       "family": "learning-platform-api",
       "version": "learning-platform-v1",
       "schemaSha256": "208fa1686caf9685483ba889e38974fb696c1d0015721bd639ad6d27fe6439bd",
-      "contentSha256": "88fa4a8a369602438af54574940e430e5188b72dd8734a68a50e74949f27cc40"
+      "contentSha256": "2e51c6a7f11e2afb90eb270f67ebafaf24b6d2f164f70b07989e616c84f1200c"
     },
     {
       "path": "learning/contracts/command-owner-activation-i5-03-v1.json",
@@ -59,8 +59,8 @@
       "path": "learning/contracts/fitness-result-v2.schema.json",
       "family": "fitness-result",
       "version": "fitness-result-v2",
-      "schemaSha256": "11bc32e9800e9694aede72f0d80b0cadd3fa8efbca7918cdb5c945b8fd6b2970",
-      "contentSha256": "11bc32e9800e9694aede72f0d80b0cadd3fa8efbca7918cdb5c945b8fd6b2970"
+      "schemaSha256": "d53f9b7b68b9f313bf0b9259fe5042bfb8cdbca0001570c18cd937de4971d6c6",
+      "contentSha256": "d53f9b7b68b9f313bf0b9259fe5042bfb8cdbca0001570c18cd937de4971d6c6"
     },
     {
       "path": "learning/contracts/lab-v1.schema.json",
@@ -81,7 +81,7 @@
       "family": "learning-contract-version-registry",
       "version": "learning-contract-version-registry-v1",
       "schemaSha256": "d8c1881982e39e727a95f7491e6efeb288335bbef4a80d76efa891c3a8009ab8",
-      "contentSha256": "2052af42957415180e9e18db199b247d74b741ef66553365b41b5171644861dc"
+      "contentSha256": "a34c907e8870e89a182a180250a284f1a3c2ab3b6f1c4217c087cbc57775f9cb"
     },
     {
       "path": "learning/contracts/learning-contract-version-registry-v1.schema.json",
@@ -109,7 +109,7 @@
       "family": "operation-matrix",
       "version": "operation-matrix-v1",
       "schemaSha256": "98d77f883da45c47c6e277956ad31614003410ff43fea585fcdb432c4a12a128",
-      "contentSha256": "c31dfa36932086ab08969e2dbe3ed3dc13a4b5eb4635d0a876a8bfbb352061ae"
+      "contentSha256": "89f61eeddce306f55ef6f87abc3f8ac60fccdb6d79a5f5bb9fc60cd0ec7720b7"
     },
     {
       "path": "learning/contracts/operation-matrix-v1.schema.json",
@@ -129,8 +129,8 @@
       "path": "learning/contracts/promotion-trust-learning-manifest-v1.schema.json",
       "family": "promotion-trust-learning-manifest",
       "version": "promotion-trust-learning-manifest-v1",
-      "schemaSha256": "d0db5915a7aa8c68844a9bd418b312d7f4ab308de4610b1cc69591d53b6c8050",
-      "contentSha256": "d0db5915a7aa8c68844a9bd418b312d7f4ab308de4610b1cc69591d53b6c8050"
+      "schemaSha256": "6b04b9acdc6097c43ede39f22d048b1b3095b96563e568ec6e2bc52527bd0255",
+      "contentSha256": "6b04b9acdc6097c43ede39f22d048b1b3095b96563e568ec6e2bc52527bd0255"
     },
     {
       "path": "learning/labs/promotion-trust/lab-v1.json",
@@ -150,8 +150,8 @@
       "path": "learning/manifests/promotion-trust-v1.json",
       "family": "promotion-trust-learning-manifest",
       "version": "promotion-trust-learning-manifest-v1",
-      "schemaSha256": "d0db5915a7aa8c68844a9bd418b312d7f4ab308de4610b1cc69591d53b6c8050",
-      "contentSha256": "2dadc3c2ee13232aeac8103222b6ccd18c7a8f5e682ab30a8f12b915e3c0f3ec"
+      "schemaSha256": "6b04b9acdc6097c43ede39f22d048b1b3095b96563e568ec6e2bc52527bd0255",
+      "contentSha256": "553b97ed5dc44b77564ae50b1a2211205cbd1a759f3578e5e4dfcefef99044ac"
     }
   ]
 }
