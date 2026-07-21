@@ -80,6 +80,28 @@ test('V3-07 S3 scanner rejects credentials, private paths, PII, injection, and r
   assert.deepEqual(scanText('sanitized aggregate; insufficient-evidence; no-common-grain'), []);
 });
 
+test('V3-07 scanner context keeps authored injection detection while built output excludes only that rule', async () => {
+  const dist = mkdtempSync(resolve(tmpdir(), 'vite-v3-built-context-'));
+  const runtime = resolve(dist, 'runtime.js');
+  try {
+    writeFileSync(resolve(dist, 'index.html'), '<!doctype html>\n');
+    assert.deepEqual(scanText('element.innerHTML=value'), ['unsafeInjection']);
+    writeFileSync(runtime, 'function reactRuntime(node,value){node.innerHTML=value}\n');
+    await withBuiltOutputScanner(() => {
+      const clean = inspectBuiltOutput(dist);
+      assert.equal(clean.result, 'pass', 'React-runtime-shaped built output must not trip the authored-source heuristic');
+      assert.deepEqual(clean.ruleIds, ['privateKey', 'credential', 'absolutePrivatePath', 'email', 'phone', 'governmentIdentifier', 'remoteImport', 'sourceMap']);
+
+      writeFileSync(runtime, 'function reactRuntime(node,value){node.innerHTML=value};const token="abcdefghijk";/* /Users/private/work/repo learner@example.com */import("https://example.com/a.js");//# sourceMappingURL=runtime.js.map\n');
+      const unsafe = inspectBuiltOutput(dist);
+      assert.equal(unsafe.result, 'fail', 'built output must retain every non-injection content rule');
+      assert.deepEqual(unsafe.findings.map(({ finding }) => finding), ['absolutePrivatePath', 'credential', 'email', 'remoteImport', 'sourceMap']);
+    });
+  } finally {
+    rmSync(dist, { recursive: true, force: true });
+  }
+});
+
 test('V3-07 built-output scan fails closed when the required root is missing', async () => {
   const temporaryRoot = mkdtempSync(resolve(tmpdir(), 'vite-v3-built-missing-'));
   const missing = resolve(temporaryRoot, 'dist');
