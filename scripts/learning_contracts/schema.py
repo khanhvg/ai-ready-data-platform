@@ -10,14 +10,7 @@ from typing import Any
 import jsonschema
 import yaml
 
-
-class LearningContractError(ValueError):
-    """A fail-closed learning-contract refusal with a stable code."""
-
-    def __init__(self, code: str):
-        super().__init__(code)
-        self.code = code
-
+from . import LearningContractError
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 MAX_DOCUMENT_BYTES = 2 * 1024 * 1024

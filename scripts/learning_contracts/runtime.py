@@ -18,8 +18,9 @@ import tempfile
 import time
 from collections.abc import Sequence
 
-from .references import resolve_reference
-from .schema import LearningContractError, MAX_DOCUMENT_BYTES
+from . import LearningContractError
+
+MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -282,9 +283,12 @@ def run_bounded(
 
 
 def validate_evidence_locator(root: pathlib.Path, locator: str, sha256: str) -> bytes:
+    from .references import resolve_reference
+    from .schema import LearningContractError as ContractError
+
     try:
         return resolve_reference(root, locator, sha256)
-    except LearningContractError as exc:
+    except ContractError as exc:
         if exc.code in {"REFERENCE_SPECIAL_FILE", "REFERENCE_UNREADABLE"}:
             raise LearningContractError("LOCATOR_SPECIAL_FILE") from exc
         if exc.code == "REFERENCE_PATH_INVALID":

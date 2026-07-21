@@ -32,7 +32,7 @@
       "family": "command-owner-activation",
       "version": "command-owner-activation-v1",
       "schemaSha256": "8fe337b7646fddc2dff4d1fc30e4a9120d0edec3f7eb293e8ead0e5d82f7a1f0",
-      "contentSha256": "43f1281d7bf54f7290a882ae0be9aba54f85c88d945a8e8edc2621c847fb55c9"
+      "contentSha256": "d20c5db284c4528106a0943a1970e665c6dbcc33dfc3dd05f2a9b01570ae8941"
     },
     {
       "path": "learning/contracts/command-owner-activation-v1.schema.json",

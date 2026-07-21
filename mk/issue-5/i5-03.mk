@@ -1,4 +1,4 @@
-LEARNING_RUNTIME_ROOT ?= /tmp/issue8-red-runtime/admitted
+LEARNING_RUNTIME_ROOT ?= .artifacts/workspaces/golden
 LEARNING_RUNTIME_CANDIDATE ?=
 LEARNING_RUNTIME_INTERPRETER_SHA256 ?=
 unexport LESSON EVIDENCE
