@@ -107,6 +107,33 @@ test('V3-07 runner contains bounded commands and never imports comparison, nativ
   assert.doesNotMatch(source, /score-anchors|Firefox|webkit|VoiceOver|CuaDriver|terraform|historicalTimer/i);
 });
 
+test('V3-07 fast bounded command exits promptly without referenced harness timers', () => {
+  const directory = resolve(ROOT, '.artifacts/runtime/i5-02/focused-fast-exit');
+  const sourcePath = resolve(ROOT, 'spikes/web/harness/scripts/simple-vite-v3.mjs');
+  const temporaryPath = resolve(dirname(sourcePath), `.simple-vite-v3-exit-test-${process.pid}-${Date.now()}.mjs`);
+  rmSync(directory, { recursive: true, force: true });
+  mkdirSync(directory, { recursive: true });
+  writeFileSync(temporaryPath, `${readFileSync(sourcePath, 'utf8')}\nexport { runBounded };\n`);
+  try {
+    const program = [
+      `import { runBounded } from ${JSON.stringify(new URL(`file://${temporaryPath}`).href)};`,
+      `const result = await runBounded('fast-success', [process.execPath, '-e', ''], 5000, ${JSON.stringify(directory)});`,
+      "const referencedHarnessTimers = process.getActiveResourcesInfo().filter(type => type === 'Timeout').length;",
+      'process.stdout.write(JSON.stringify({ rc: result.rc, referencedHarnessTimers }));',
+    ].join('\n');
+    const started = Date.now();
+    const result = spawnSync(process.execPath, ['--input-type=module', '-e', program], { encoding: 'utf8', timeout: 1200 });
+    const durationMs = Date.now() - started;
+    assert.equal(result.error?.code, undefined, `fast-success subprocess did not exit promptly: ${result.error?.code}`);
+    assert.equal(result.status, 0, result.stderr);
+    assert.ok(durationMs < 1200, `fast-success subprocess exit exceeded deadline: ${durationMs}ms`);
+    assert.deepEqual(JSON.parse(result.stdout), { rc: 0, referencedHarnessTimers: 0 });
+  } finally {
+    rmSync(temporaryPath, { force: true });
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test('V3-07 bounded command escalates TERM to KILL for its owned group and leaves no descendant', async () => {
   const directory = resolve(ROOT, '.artifacts/runtime/i5-02/focused-process-group');
   const pidPath = resolve(directory, 'fixture-pids.json');
@@ -172,9 +199,10 @@ test('V3-07 host READY timeout rejects boundedly and cleans its owned process gr
   }
 });
 
-test('V3-07 authority accepts detached exact-live head and rejects detached mismatch or another branch', () => {
+test('V3-07 authority requires exact fresh-live head for feature branch and detached modes', () => {
   const temporaryRoot = mkdtempSync(resolve(tmpdir(), 'vite-v3-authority-'));
   const clone = resolve(temporaryRoot, 'review');
+  const remote = resolve(temporaryRoot, 'remote.git');
   const run = args => spawnSync('git', args, { cwd: clone, encoding: 'utf8' });
   const preflight = () => {
     const result = spawnSync(process.execPath, ['spikes/web/harness/scripts/simple-vite-v3.mjs', 'preflight', '--implementation-input', contract.implementationInputSha], { cwd: clone, encoding: 'utf8' });
@@ -183,6 +211,23 @@ test('V3-07 authority accepts detached exact-live head and rejects detached mism
   try {
     const cloned = spawnSync('git', ['clone', '--quiet', '--no-hardlinks', ROOT, clone], { encoding: 'utf8' });
     assert.equal(cloned.status, 0, cloned.stderr);
+    assert.equal(run(['checkout', '--quiet', '-B', contract.branch, `origin/${contract.branch}`]).status, 0);
+    const exactFeature = preflight();
+    assert.equal(exactFeature.rc, 0, exactFeature.stderr || JSON.stringify(exactFeature.output));
+    assert.equal(exactFeature.output.authorityMode, 'feature-branch');
+    assert.equal(exactFeature.output.head, exactFeature.output.freshLiveHead);
+
+    const remoteClone = spawnSync('git', ['clone', '--quiet', '--bare', '--no-hardlinks', ROOT, remote], { encoding: 'utf8' });
+    assert.equal(remoteClone.status, 0, remoteClone.stderr);
+    const staleHead = run(['rev-parse', 'HEAD^']).stdout.trim();
+    const staleRef = spawnSync('git', [`--git-dir=${remote}`, 'update-ref', `refs/heads/${contract.branch}`, staleHead], { encoding: 'utf8' });
+    assert.equal(staleRef.status, 0, staleRef.stderr);
+    assert.equal(run(['remote', 'set-url', 'origin', remote]).status, 0);
+    const divergentFeature = preflight();
+    assert.notEqual(divergentFeature.rc, 0);
+    assert.ok(divergentFeature.output.failures.includes('feature-head-mismatch'));
+
+    assert.equal(run(['remote', 'set-url', 'origin', ROOT]).status, 0);
     assert.equal(run(['checkout', '--quiet', '--detach', `origin/${contract.branch}`]).status, 0);
     const exact = preflight();
     assert.equal(exact.rc, 0, exact.stderr || JSON.stringify(exact.output));
