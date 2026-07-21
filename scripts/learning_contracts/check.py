@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from . import canonical, completion, evidence, openapi, references, registry, runtime, schema, state
+from . import canonical, completion, evidence, guidance, openapi, references, registry, runtime, schema, state
 
 @dataclass(frozen=True)
 class Outcome:
@@ -39,4 +39,8 @@ def evaluate(domain: str, value: Any) -> Outcome:
         return Outcome(schema.operation_code(value))
     if domain == "openapi":
         return Outcome(openapi.code(value))
+    if domain == "guidance":
+        return Outcome(guidance.code(value))
+    if domain == "promotion":
+        return Outcome(guidance.promotion_code(value))
     return Outcome("BEHAVIOR_NOT_IMPLEMENTED")
