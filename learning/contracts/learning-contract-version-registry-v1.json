@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "learning-contract-version-registry-v1",
+  "baseRegistry": {
+    "path": "learning/contracts/schema-version-registry.json",
+    "sha256": "8e18588f63b5d99c0b60a229758575e8badf0f055bfcb4f89908f9fa2684a57e"
+  },
+  "ownedFamilies": [
+    "lesson-v1",
+    "lab-v1",
+    "progress-v1",
+    "learning-evidence-v1",
+    "completion-reconciliation-v1",
+    "operation-matrix-v1",
+    "promotion-trust-learning-manifest-v1",
+    "learning-contract-version-registry-v1",
+    "command-owner-activation-v1",
+    "learning-contract-set-v1"
+  ],
+  "familyExtensions": [
+    {
+      "family": "fitness-result",
+      "baseReaderId": "fitness-result-reader-v1",
+      "addedReadableVersions": [
+        "v2"
+      ],
+      "migrations": [
+        {
+          "from": "v2",
+          "to": "v2",
+          "kind": "identity"
+        }
+      ]
+    }
+  ]
+}

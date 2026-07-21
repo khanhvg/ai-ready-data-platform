@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/learning-evidence-v1.schema.json",
+  "title": "learning-evidence-v1.schema.json",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "evidenceId",
+    "lesson",
+    "lab",
+    "actor",
+    "workspaceId",
+    "runId",
+    "operationId",
+    "inputGitSha",
+    "officialGoldenMainSha",
+    "dependencyMergeShas",
+    "contractHashes",
+    "fixtureHashes",
+    "verifier",
+    "environment",
+    "parameters",
+    "transitions",
+    "commands",
+    "assertions",
+    "artifacts",
+    "timing",
+    "redactionClass",
+    "retentionClass",
+    "rollback",
+    "integrity"
+  ],
+  "properties": {
+    "schemaVersion": {},
+    "evidenceId": {},
+    "lesson": {},
+    "lab": {},
+    "actor": {},
+    "workspaceId": {},
+    "runId": {},
+    "operationId": {},
+    "inputGitSha": {},
+    "officialGoldenMainSha": {},
+    "dependencyMergeShas": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "contractHashes": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "fixtureHashes": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "verifier": {},
+    "environment": {},
+    "parameters": {},
+    "transitions": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "commands": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "assertions": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "artifacts": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "timing": {},
+    "redactionClass": {},
+    "retentionClass": {},
+    "rollback": {},
+    "integrity": {}
+  },
+  "unevaluatedProperties": false
+}

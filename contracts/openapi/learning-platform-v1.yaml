@@ -1,0 +1,451 @@
+openapi: 3.2.0
+info:
+  title: Learning Platform API
+  version: learning-platform-v1
+paths:
+  /v1/lessons:
+    get:
+      operationId: listLessons
+      x-taxonomy: Experience
+      x-process-role: lesson-catalog-read
+      x-authority: local-session/catalog-read/not-applicable
+      x-enforcement-status: downstream-required
+      x-idempotency: read-only
+      x-request-contract: no-body
+      x-success-contract: 200 LessonPage
+      x-error-contracts:
+        - "400 CORRELATION_ID_INVALID"
+        - "401 AUTHENTICATION_REQUIRED"
+        - "403 AUTHORIZATION_DENIED"
+        - "500 INTERNAL_CONTRACT_ERROR"
+        - "400 PAGE_ARGUMENT_INVALID"
+      responses:
+        "200":
+          description: bounded response or polling status
+          headers:
+            X-Learning-Contract-Version:
+              schema:
+                type: string
+            X-Correlation-ID:
+              schema:
+                type: string
+  /v1/lessons/{lessonId}:
+    get:
+      operationId: getLesson
+      x-taxonomy: Experience
+      x-process-role: lesson-catalog-read
+      x-authority: local-session/catalog-read/not-applicable
+      x-enforcement-status: downstream-required
+      x-idempotency: read-only
+      x-request-contract: no-body
+      x-success-contract: 200 Lesson
+      x-error-contracts:
+        - "400 CORRELATION_ID_INVALID"
+        - "401 AUTHENTICATION_REQUIRED"
+        - "403 AUTHORIZATION_DENIED"
+        - "500 INTERNAL_CONTRACT_ERROR"
+        - "404 LESSON_NOT_FOUND"
+      responses:
+        "200":
+          description: bounded response or polling status
+          headers:
+            X-Learning-Contract-Version:
+              schema:
+                type: string
+            X-Correlation-ID:
+              schema:
+                type: string
+  /v1/progress:
+    get:
+      operationId: getProgress
+      x-taxonomy: Experience
+      x-process-role: progress-authority-read
+      x-authority: local-session/catalog-read/not-applicable
+      x-enforcement-status: downstream-required
+      x-idempotency: read-only
+      x-request-contract: no-body
+      x-success-contract: 200 ProgressPage
+      x-error-contracts:
+        - "400 CORRELATION_ID_INVALID"
+        - "401 AUTHENTICATION_REQUIRED"
+        - "403 AUTHORIZATION_DENIED"
+        - "500 INTERNAL_CONTRACT_ERROR"
+        - "400 PAGE_ARGUMENT_INVALID"
+      responses:
+        "200":
+          description: bounded response or polling status
+          headers:
+            X-Learning-Contract-Version:
+              schema:
+                type: string
+            X-Correlation-ID:
+              schema:
+                type: string
+  /v1/progress/{lessonId}:
+    get:
+      operationId: getLessonProgress
+      x-taxonomy: Experience
+      x-process-role: progress-authority-read
+      x-authority: local-session/catalog-read/not-applicable
+      x-enforcement-status: downstream-required
+      x-idempotency: read-only
+      x-request-contract: no-body
+      x-success-contract: 200 Progress
+      x-error-contracts:
+        - "400 CORRELATION_ID_INVALID"
+        - "401 AUTHENTICATION_REQUIRED"
+        - "403 AUTHORIZATION_DENIED"
+        - "500 INTERNAL_CONTRACT_ERROR"
+        - "404 PROGRESS_NOT_FOUND"
+      responses:
+        "200":
+          description: bounded response or polling status
+          headers:
+            X-Learning-Contract-Version:
+              schema:
+                type: string
+            X-Correlation-ID:
+              schema:
+                type: string
+  /v1/labs/{labId}/workspaces:
+    post:
+      operationId: createWorkspace
+      x-taxonomy: Process
+      x-process-role: workspace-operation-admission
+      x-authority: local-session/actor-owned/required
+      x-enforcement-status: downstream-required
+      x-idempotency: required
+      x-request-contract: closed-versioned-body
+      x-success-contract: 201 Workspace
+      x-error-contracts:
+        - "400 CORRELATION_ID_INVALID"
+        - "401 AUTHENTICATION_REQUIRED"
+        - "403 AUTHORIZATION_DENIED"
+        - "500 INTERNAL_CONTRACT_ERROR"
+        - "400 REQUEST_INVALID"
+        - "403 ORIGIN_OR_CSRF_INVALID"
+        - "409 IDEMPOTENCY_KEY_REUSE"
+        - "415 MEDIA_TYPE_UNSUPPORTED"
+        - "422 CONTRACT_VERSION_UNSUPPORTED"
+        - "404 LAB_NOT_FOUND"
+        - "409 WORKSPACE_ALREADY_EXISTS"
+        - "412 PREREQUISITE_FAILED"
+        - "422 LAB_PARAMETER_INVALID"
+      responses:
+        "200":
+          description: bounded response or polling status
+          headers:
+            X-Learning-Contract-Version:
+              schema:
+                type: string
+            X-Correlation-ID:
+              schema:
+                type: string
+  /v1/workspaces/{workspaceId}:
+    get:
+      operationId: getWorkspace
+      x-taxonomy: System
+      x-process-role: workspace-operation-read
+      x-authority: local-session/actor-owned/not-applicable
+      x-enforcement-status: downstream-required
+      x-idempotency: read-only
+      x-request-contract: no-body
+      x-success-contract: 200 Workspace
+      x-error-contracts:
+        - "400 CORRELATION_ID_INVALID"
+        - "401 AUTHENTICATION_REQUIRED"
+        - "403 AUTHORIZATION_DENIED"
+        - "500 INTERNAL_CONTRACT_ERROR"
+        - "404 WORKSPACE_NOT_FOUND"
+      responses:
+        "200":
+          description: bounded response or polling status
+          headers:
+            X-Learning-Contract-Version:
+              schema:
+                type: string
+            X-Correlation-ID:
+              schema:
+                type: string
+  /v1/workspaces/{workspaceId}/operations:
+    post:
+      operationId: startWorkspaceOperation
+      x-taxonomy: Process
+      x-process-role: workspace-operation-admission
+      x-authority: local-session/actor-owned/required
+      x-enforcement-status: downstream-required
+      x-idempotency: required
+      x-request-contract: closed-versioned-body
+      x-success-contract: 202 OperationAccepted
+      x-error-contracts:
+        - "400 CORRELATION_ID_INVALID"
+        - "401 AUTHENTICATION_REQUIRED"
+        - "403 AUTHORIZATION_DENIED"
+        - "500 INTERNAL_CONTRACT_ERROR"
+        - "400 REQUEST_INVALID"
+        - "403 ORIGIN_OR_CSRF_INVALID"
+        - "409 IDEMPOTENCY_KEY_REUSE"
+        - "415 MEDIA_TYPE_UNSUPPORTED"
+        - "422 CONTRACT_VERSION_UNSUPPORTED"
+        - "404 WORKSPACE_NOT_FOUND"
+        - "409 WORKSPACE_OPERATION_CONFLICT"
+        - "412 WORKSPACE_REVISION_CONFLICT"
+        - "422 COMMAND_ID_OR_ARGUMENT_INVALID"
+      responses:
+        "200":
+          description: bounded response or polling status
+          headers:
+            X-Learning-Contract-Version:
+              schema:
+                type: string
+            X-Correlation-ID:
+              schema:
+                type: string
+  /v1/operations/{operationId}:
+    get:
+      operationId: getOperation
+      x-taxonomy: System
+      x-process-role: workspace-operation-read
+      x-authority: local-session/actor-owned/not-applicable
+      x-enforcement-status: downstream-required
+      x-idempotency: read-only-polling
+      x-request-contract: no-body
+      x-success-contract: 200 Operation
+      x-error-contracts:
+        - "400 CORRELATION_ID_INVALID"
+        - "401 AUTHENTICATION_REQUIRED"
+        - "403 AUTHORIZATION_DENIED"
+        - "500 INTERNAL_CONTRACT_ERROR"
+        - "404 OPERATION_NOT_FOUND"
+      responses:
+        "200":
+          description: bounded response or polling status
+          headers:
+            X-Learning-Contract-Version:
+              schema:
+                type: string
+            X-Correlation-ID:
+              schema:
+                type: string
+  /v1/workspaces/{workspaceId}/reset:
+    post:
+      operationId: resetWorkspace
+      x-taxonomy: Process
+      x-process-role: workspace-operation-admission
+      x-authority: local-session/actor-owned/required
+      x-enforcement-status: downstream-required
+      x-idempotency: required
+      x-request-contract: closed-versioned-body
+      x-success-contract: 202 OperationAccepted
+      x-error-contracts:
+        - "400 CORRELATION_ID_INVALID"
+        - "401 AUTHENTICATION_REQUIRED"
+        - "403 AUTHORIZATION_DENIED"
+        - "500 INTERNAL_CONTRACT_ERROR"
+        - "400 REQUEST_INVALID"
+        - "403 ORIGIN_OR_CSRF_INVALID"
+        - "409 IDEMPOTENCY_KEY_REUSE"
+        - "415 MEDIA_TYPE_UNSUPPORTED"
+        - "422 CONTRACT_VERSION_UNSUPPORTED"
+        - "404 WORKSPACE_NOT_FOUND"
+        - "409 WORKSPACE_OPERATION_CONFLICT"
+        - "412 WORKSPACE_REVISION_CONFLICT"
+      responses:
+        "200":
+          description: bounded response or polling status
+          headers:
+            X-Learning-Contract-Version:
+              schema:
+                type: string
+            X-Correlation-ID:
+              schema:
+                type: string
+  /v1/workspaces/{workspaceId}/verify:
+    post:
+      operationId: verifyWorkspace
+      x-taxonomy: Process
+      x-process-role: verification-admission-progress-authority
+      x-authority: local-session/actor-owned/required
+      x-enforcement-status: downstream-required
+      x-idempotency: required
+      x-request-contract: closed-versioned-body
+      x-success-contract: 202 OperationAccepted
+      x-error-contracts:
+        - "400 CORRELATION_ID_INVALID"
+        - "401 AUTHENTICATION_REQUIRED"
+        - "403 AUTHORIZATION_DENIED"
+        - "500 INTERNAL_CONTRACT_ERROR"
+        - "400 REQUEST_INVALID"
+        - "403 ORIGIN_OR_CSRF_INVALID"
+        - "409 IDEMPOTENCY_KEY_REUSE"
+        - "415 MEDIA_TYPE_UNSUPPORTED"
+        - "422 CONTRACT_VERSION_UNSUPPORTED"
+        - "404 WORKSPACE_NOT_FOUND"
+        - "409 WORKSPACE_OPERATION_CONFLICT"
+        - "412 WORKSPACE_REVISION_CONFLICT"
+        - "422 VERIFIER_INPUT_INVALID"
+      responses:
+        "200":
+          description: bounded response or polling status
+          headers:
+            X-Learning-Contract-Version:
+              schema:
+                type: string
+            X-Correlation-ID:
+              schema:
+                type: string
+  /v1/evidence/{evidenceId}:
+    get:
+      operationId: getEvidence
+      x-taxonomy: Technical
+      x-process-role: evidence-index-blob-reader
+      x-authority: local-session/actor-owned/not-applicable
+      x-enforcement-status: downstream-required
+      x-idempotency: read-only
+      x-request-contract: no-body
+      x-success-contract: 200 LearningEvidence
+      x-error-contracts:
+        - "400 CORRELATION_ID_INVALID"
+        - "401 AUTHENTICATION_REQUIRED"
+        - "403 AUTHORIZATION_DENIED"
+        - "500 INTERNAL_CONTRACT_ERROR"
+        - "404 EVIDENCE_NOT_FOUND"
+        - "409 EVIDENCE_QUARANTINED"
+      responses:
+        "200":
+          description: bounded response or polling status
+          headers:
+            X-Learning-Contract-Version:
+              schema:
+                type: string
+            X-Correlation-ID:
+              schema:
+                type: string
+  /v1/tools:
+    get:
+      operationId: listTools
+      x-taxonomy: Experience
+      x-process-role: tool-catalog-read
+      x-authority: local-session/catalog-read/not-applicable
+      x-enforcement-status: downstream-required
+      x-idempotency: read-only
+      x-request-contract: no-body
+      x-success-contract: 200 ToolPage
+      x-error-contracts:
+        - "400 CORRELATION_ID_INVALID"
+        - "401 AUTHENTICATION_REQUIRED"
+        - "403 AUTHORIZATION_DENIED"
+        - "500 INTERNAL_CONTRACT_ERROR"
+      responses:
+        "200":
+          description: bounded response or polling status
+          headers:
+            X-Learning-Contract-Version:
+              schema:
+                type: string
+            X-Correlation-ID:
+              schema:
+                type: string
+  /v1/tools/{toolId}:
+    get:
+      operationId: getTool
+      x-taxonomy: Experience
+      x-process-role: tool-catalog-read
+      x-authority: local-session/catalog-read/not-applicable
+      x-enforcement-status: downstream-required
+      x-idempotency: read-only
+      x-request-contract: no-body
+      x-success-contract: 200 Tool
+      x-error-contracts:
+        - "400 CORRELATION_ID_INVALID"
+        - "401 AUTHENTICATION_REQUIRED"
+        - "403 AUTHORIZATION_DENIED"
+        - "500 INTERNAL_CONTRACT_ERROR"
+        - "404 TOOL_NOT_FOUND"
+      responses:
+        "200":
+          description: bounded response or polling status
+          headers:
+            X-Learning-Contract-Version:
+              schema:
+                type: string
+            X-Correlation-ID:
+              schema:
+                type: string
+  /v1/data-products/{productId}/queries:
+    post:
+      operationId: queryDataProduct
+      x-taxonomy: Backend
+      x-process-role: registered-query-admission
+      x-authority: local-session/actor-owned/required
+      x-enforcement-status: downstream-required
+      x-idempotency: required
+      x-request-contract: closed-versioned-body
+      x-success-contract: 202 OperationAccepted
+      x-error-contracts:
+        - "400 CORRELATION_ID_INVALID"
+        - "401 AUTHENTICATION_REQUIRED"
+        - "403 AUTHORIZATION_DENIED"
+        - "500 INTERNAL_CONTRACT_ERROR"
+        - "400 REQUEST_INVALID"
+        - "403 ORIGIN_OR_CSRF_INVALID"
+        - "409 IDEMPOTENCY_KEY_REUSE"
+        - "415 MEDIA_TYPE_UNSUPPORTED"
+        - "422 CONTRACT_VERSION_UNSUPPORTED"
+        - "404 DATA_PRODUCT_NOT_FOUND"
+        - "409 QUERY_OPERATION_CONFLICT"
+        - "422 QUERY_ID_OR_PARAMETER_INVALID"
+      responses:
+        "200":
+          description: bounded response or polling status
+          headers:
+            X-Learning-Contract-Version:
+              schema:
+                type: string
+            X-Correlation-ID:
+              schema:
+                type: string
+  /health/live:
+    get:
+      operationId: getLiveness
+      x-taxonomy: Technical
+      x-process-role: http-process-health
+      x-authority: public-loopback/public-health/not-applicable
+      x-enforcement-status: downstream-required
+      x-idempotency: read-only
+      x-request-contract: no-body
+      x-success-contract: 200 HealthStatus
+      x-error-contracts:
+        - "500 HEALTH_INTERNAL_FAILURE"
+      responses:
+        "200":
+          description: bounded response or polling status
+          headers:
+            X-Learning-Contract-Version:
+              schema:
+                type: string
+            X-Correlation-ID:
+              schema:
+                type: string
+  /health/ready:
+    get:
+      operationId: getReadiness
+      x-taxonomy: Technical
+      x-process-role: dependency-readiness-aggregate
+      x-authority: public-loopback/public-health/not-applicable
+      x-enforcement-status: downstream-required
+      x-idempotency: read-only
+      x-request-contract: no-body
+      x-success-contract: 200 HealthStatus
+      x-error-contracts:
+        - "503 DEPENDENCY_NOT_READY"
+      responses:
+        "200":
+          description: bounded response or polling status
+          headers:
+            X-Learning-Contract-Version:
+              schema:
+                type: string
+            X-Correlation-ID:
+              schema:
+                type: string

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/command-owner-activation-v1.schema.json",
+  "title": "command-owner-activation-v1.schema.json",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "baseRegistryPath",
+    "baseRegistrySha256",
+    "owner",
+    "fragment",
+    "commands"
+  ],
+  "properties": {
+    "schemaVersion": {},
+    "baseRegistryPath": {},
+    "baseRegistrySha256": {},
+    "owner": {},
+    "fragment": {},
+    "commands": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    }
+  },
+  "unevaluatedProperties": false
+}

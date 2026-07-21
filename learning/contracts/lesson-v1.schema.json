@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/lesson-v1.schema.json",
+  "title": "lesson-v1.schema.json",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "id",
+    "version",
+    "title",
+    "summary",
+    "level",
+    "competencies",
+    "outcome",
+    "stakeholder",
+    "prerequisites",
+    "prerequisiteChecks",
+    "fr",
+    "nfr",
+    "asr",
+    "architectureViews",
+    "decision",
+    "patterns",
+    "narrativeSteps",
+    "lab",
+    "evidence",
+    "reflection",
+    "accessibility",
+    "remediation",
+    "hints"
+  ],
+  "properties": {
+    "schemaVersion": {},
+    "id": {},
+    "version": {},
+    "title": {},
+    "summary": {},
+    "level": {},
+    "competencies": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "outcome": {},
+    "stakeholder": {},
+    "prerequisites": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "prerequisiteChecks": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "fr": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "nfr": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "asr": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "architectureViews": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "decision": {},
+    "patterns": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "narrativeSteps": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "lab": {},
+    "evidence": {},
+    "reflection": {},
+    "accessibility": {},
+    "remediation": {
+      "type": [
+        "string",
+        "object",
+        "null"
+      ]
+    },
+    "hints": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    }
+  },
+  "unevaluatedProperties": false
+}

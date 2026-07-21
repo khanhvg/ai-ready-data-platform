@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/promotion-trust-learning-manifest-v1.schema.json",
+  "title": "promotion-trust-learning-manifest-v1.schema.json",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "manifestId",
+    "lesson",
+    "lab",
+    "evidenceSchema",
+    "dataContract",
+    "fixture",
+    "sources",
+    "decision",
+    "limitations",
+    "contractSetSha256"
+  ],
+  "properties": {
+    "schemaVersion": {},
+    "manifestId": {},
+    "lesson": {},
+    "lab": {},
+    "evidenceSchema": {},
+    "dataContract": {},
+    "fixture": {},
+    "sources": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "decision": {},
+    "limitations": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "contractSetSha256": {}
+  },
+  "unevaluatedProperties": false
+}

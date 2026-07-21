@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/lab-v1.schema.json",
+  "title": "lab-v1.schema.json",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "id",
+    "version",
+    "lessonId",
+    "risk",
+    "profile",
+    "inputs",
+    "workspace",
+    "commands",
+    "starter",
+    "controlledFailure",
+    "stateMachine",
+    "reset",
+    "verify",
+    "solution",
+    "evidence",
+    "accessibility",
+    "remediation"
+  ],
+  "properties": {
+    "schemaVersion": {},
+    "id": {},
+    "version": {},
+    "lessonId": {},
+    "risk": {},
+    "profile": {},
+    "inputs": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "workspace": {},
+    "commands": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "starter": {},
+    "controlledFailure": {},
+    "stateMachine": {},
+    "reset": {},
+    "verify": {},
+    "solution": {},
+    "evidence": {},
+    "accessibility": {},
+    "remediation": {
+      "type": [
+        "string",
+        "object",
+        "null"
+      ]
+    }
+  },
+  "unevaluatedProperties": false
+}

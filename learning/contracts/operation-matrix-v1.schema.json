@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/operation-matrix-v1.schema.json",
+  "title": "operation-matrix-v1.schema.json",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "apiVersion",
+    "channels",
+    "operations"
+  ],
+  "properties": {
+    "schemaVersion": {},
+    "apiVersion": {},
+    "channels": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "operations": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    }
+  },
+  "unevaluatedProperties": false
+}

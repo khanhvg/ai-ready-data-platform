@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/openapi/problem-details-v1",
+  "type": "object",
+  "required": [
+    "type",
+    "title",
+    "status",
+    "code",
+    "detail",
+    "correlationId",
+    "retryable",
+    "remediationId",
+    "contractVersion"
+  ],
+  "properties": {
+    "type": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "title": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "code": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "detail": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "correlationId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "remediationId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "contractVersion": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "type": "integer"
+    },
+    "retryable": {
+      "type": "boolean"
+    }
+  },
+  "unevaluatedProperties": false
+}

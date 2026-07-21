@@ -1,0 +1,485 @@
+{
+  "schemaVersion": "operation-matrix-v1",
+  "apiVersion": "learning-platform-v1",
+  "channels": [],
+  "operations": [
+    {
+      "operationId": "listLessons",
+      "method": "GET",
+      "path": "/v1/lessons",
+      "taxonomy": "Experience",
+      "processRole": "lesson-catalog-read",
+      "authorization": {
+        "authentication": "local-session",
+        "authorization": "catalog-read",
+        "csrf": "not-applicable",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "evidence": {
+        "required": true,
+        "rule": "bounded-contract-result"
+      },
+      "request": "no-body",
+      "success": "200 LessonPage",
+      "errors": [
+        "400 CORRELATION_ID_INVALID",
+        "401 AUTHENTICATION_REQUIRED",
+        "403 AUTHORIZATION_DENIED",
+        "500 INTERNAL_CONTRACT_ERROR",
+        "400 PAGE_ARGUMENT_INVALID"
+      ],
+      "version": "learning-platform-v1"
+    },
+    {
+      "operationId": "getLesson",
+      "method": "GET",
+      "path": "/v1/lessons/{lessonId}",
+      "taxonomy": "Experience",
+      "processRole": "lesson-catalog-read",
+      "authorization": {
+        "authentication": "local-session",
+        "authorization": "catalog-read",
+        "csrf": "not-applicable",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "evidence": {
+        "required": true,
+        "rule": "bounded-contract-result"
+      },
+      "request": "no-body",
+      "success": "200 Lesson",
+      "errors": [
+        "400 CORRELATION_ID_INVALID",
+        "401 AUTHENTICATION_REQUIRED",
+        "403 AUTHORIZATION_DENIED",
+        "500 INTERNAL_CONTRACT_ERROR",
+        "404 LESSON_NOT_FOUND"
+      ],
+      "version": "learning-platform-v1"
+    },
+    {
+      "operationId": "getProgress",
+      "method": "GET",
+      "path": "/v1/progress",
+      "taxonomy": "Experience",
+      "processRole": "progress-authority-read",
+      "authorization": {
+        "authentication": "local-session",
+        "authorization": "catalog-read",
+        "csrf": "not-applicable",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "evidence": {
+        "required": true,
+        "rule": "bounded-contract-result"
+      },
+      "request": "no-body",
+      "success": "200 ProgressPage",
+      "errors": [
+        "400 CORRELATION_ID_INVALID",
+        "401 AUTHENTICATION_REQUIRED",
+        "403 AUTHORIZATION_DENIED",
+        "500 INTERNAL_CONTRACT_ERROR",
+        "400 PAGE_ARGUMENT_INVALID"
+      ],
+      "version": "learning-platform-v1"
+    },
+    {
+      "operationId": "getLessonProgress",
+      "method": "GET",
+      "path": "/v1/progress/{lessonId}",
+      "taxonomy": "Experience",
+      "processRole": "progress-authority-read",
+      "authorization": {
+        "authentication": "local-session",
+        "authorization": "catalog-read",
+        "csrf": "not-applicable",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "evidence": {
+        "required": true,
+        "rule": "bounded-contract-result"
+      },
+      "request": "no-body",
+      "success": "200 Progress",
+      "errors": [
+        "400 CORRELATION_ID_INVALID",
+        "401 AUTHENTICATION_REQUIRED",
+        "403 AUTHORIZATION_DENIED",
+        "500 INTERNAL_CONTRACT_ERROR",
+        "404 PROGRESS_NOT_FOUND"
+      ],
+      "version": "learning-platform-v1"
+    },
+    {
+      "operationId": "createWorkspace",
+      "method": "POST",
+      "path": "/v1/labs/{labId}/workspaces",
+      "taxonomy": "Process",
+      "processRole": "workspace-operation-admission",
+      "authorization": {
+        "authentication": "local-session",
+        "authorization": "actor-owned",
+        "csrf": "required",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "required",
+      "evidence": {
+        "required": true,
+        "rule": "bounded-contract-result"
+      },
+      "request": "closed-versioned-body",
+      "success": "201 Workspace",
+      "errors": [
+        "400 CORRELATION_ID_INVALID",
+        "401 AUTHENTICATION_REQUIRED",
+        "403 AUTHORIZATION_DENIED",
+        "500 INTERNAL_CONTRACT_ERROR",
+        "400 REQUEST_INVALID",
+        "403 ORIGIN_OR_CSRF_INVALID",
+        "409 IDEMPOTENCY_KEY_REUSE",
+        "415 MEDIA_TYPE_UNSUPPORTED",
+        "422 CONTRACT_VERSION_UNSUPPORTED",
+        "404 LAB_NOT_FOUND",
+        "409 WORKSPACE_ALREADY_EXISTS",
+        "412 PREREQUISITE_FAILED",
+        "422 LAB_PARAMETER_INVALID"
+      ],
+      "version": "learning-platform-v1"
+    },
+    {
+      "operationId": "getWorkspace",
+      "method": "GET",
+      "path": "/v1/workspaces/{workspaceId}",
+      "taxonomy": "System",
+      "processRole": "workspace-operation-read",
+      "authorization": {
+        "authentication": "local-session",
+        "authorization": "actor-owned",
+        "csrf": "not-applicable",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "evidence": {
+        "required": true,
+        "rule": "bounded-contract-result"
+      },
+      "request": "no-body",
+      "success": "200 Workspace",
+      "errors": [
+        "400 CORRELATION_ID_INVALID",
+        "401 AUTHENTICATION_REQUIRED",
+        "403 AUTHORIZATION_DENIED",
+        "500 INTERNAL_CONTRACT_ERROR",
+        "404 WORKSPACE_NOT_FOUND"
+      ],
+      "version": "learning-platform-v1"
+    },
+    {
+      "operationId": "startWorkspaceOperation",
+      "method": "POST",
+      "path": "/v1/workspaces/{workspaceId}/operations",
+      "taxonomy": "Process",
+      "processRole": "workspace-operation-admission",
+      "authorization": {
+        "authentication": "local-session",
+        "authorization": "actor-owned",
+        "csrf": "required",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "required",
+      "evidence": {
+        "required": true,
+        "rule": "bounded-contract-result"
+      },
+      "request": "closed-versioned-body",
+      "success": "202 OperationAccepted",
+      "errors": [
+        "400 CORRELATION_ID_INVALID",
+        "401 AUTHENTICATION_REQUIRED",
+        "403 AUTHORIZATION_DENIED",
+        "500 INTERNAL_CONTRACT_ERROR",
+        "400 REQUEST_INVALID",
+        "403 ORIGIN_OR_CSRF_INVALID",
+        "409 IDEMPOTENCY_KEY_REUSE",
+        "415 MEDIA_TYPE_UNSUPPORTED",
+        "422 CONTRACT_VERSION_UNSUPPORTED",
+        "404 WORKSPACE_NOT_FOUND",
+        "409 WORKSPACE_OPERATION_CONFLICT",
+        "412 WORKSPACE_REVISION_CONFLICT",
+        "422 COMMAND_ID_OR_ARGUMENT_INVALID"
+      ],
+      "version": "learning-platform-v1"
+    },
+    {
+      "operationId": "getOperation",
+      "method": "GET",
+      "path": "/v1/operations/{operationId}",
+      "taxonomy": "System",
+      "processRole": "workspace-operation-read",
+      "authorization": {
+        "authentication": "local-session",
+        "authorization": "actor-owned",
+        "csrf": "not-applicable",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only-polling",
+      "evidence": {
+        "required": true,
+        "rule": "bounded-contract-result"
+      },
+      "request": "no-body",
+      "success": "200 Operation",
+      "errors": [
+        "400 CORRELATION_ID_INVALID",
+        "401 AUTHENTICATION_REQUIRED",
+        "403 AUTHORIZATION_DENIED",
+        "500 INTERNAL_CONTRACT_ERROR",
+        "404 OPERATION_NOT_FOUND"
+      ],
+      "version": "learning-platform-v1"
+    },
+    {
+      "operationId": "resetWorkspace",
+      "method": "POST",
+      "path": "/v1/workspaces/{workspaceId}/reset",
+      "taxonomy": "Process",
+      "processRole": "workspace-operation-admission",
+      "authorization": {
+        "authentication": "local-session",
+        "authorization": "actor-owned",
+        "csrf": "required",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "required",
+      "evidence": {
+        "required": true,
+        "rule": "bounded-contract-result"
+      },
+      "request": "closed-versioned-body",
+      "success": "202 OperationAccepted",
+      "errors": [
+        "400 CORRELATION_ID_INVALID",
+        "401 AUTHENTICATION_REQUIRED",
+        "403 AUTHORIZATION_DENIED",
+        "500 INTERNAL_CONTRACT_ERROR",
+        "400 REQUEST_INVALID",
+        "403 ORIGIN_OR_CSRF_INVALID",
+        "409 IDEMPOTENCY_KEY_REUSE",
+        "415 MEDIA_TYPE_UNSUPPORTED",
+        "422 CONTRACT_VERSION_UNSUPPORTED",
+        "404 WORKSPACE_NOT_FOUND",
+        "409 WORKSPACE_OPERATION_CONFLICT",
+        "412 WORKSPACE_REVISION_CONFLICT"
+      ],
+      "version": "learning-platform-v1"
+    },
+    {
+      "operationId": "verifyWorkspace",
+      "method": "POST",
+      "path": "/v1/workspaces/{workspaceId}/verify",
+      "taxonomy": "Process",
+      "processRole": "verification-admission-progress-authority",
+      "authorization": {
+        "authentication": "local-session",
+        "authorization": "actor-owned",
+        "csrf": "required",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "required",
+      "evidence": {
+        "required": true,
+        "rule": "bounded-contract-result"
+      },
+      "request": "closed-versioned-body",
+      "success": "202 OperationAccepted",
+      "errors": [
+        "400 CORRELATION_ID_INVALID",
+        "401 AUTHENTICATION_REQUIRED",
+        "403 AUTHORIZATION_DENIED",
+        "500 INTERNAL_CONTRACT_ERROR",
+        "400 REQUEST_INVALID",
+        "403 ORIGIN_OR_CSRF_INVALID",
+        "409 IDEMPOTENCY_KEY_REUSE",
+        "415 MEDIA_TYPE_UNSUPPORTED",
+        "422 CONTRACT_VERSION_UNSUPPORTED",
+        "404 WORKSPACE_NOT_FOUND",
+        "409 WORKSPACE_OPERATION_CONFLICT",
+        "412 WORKSPACE_REVISION_CONFLICT",
+        "422 VERIFIER_INPUT_INVALID"
+      ],
+      "version": "learning-platform-v1"
+    },
+    {
+      "operationId": "getEvidence",
+      "method": "GET",
+      "path": "/v1/evidence/{evidenceId}",
+      "taxonomy": "Technical",
+      "processRole": "evidence-index-blob-reader",
+      "authorization": {
+        "authentication": "local-session",
+        "authorization": "actor-owned",
+        "csrf": "not-applicable",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "evidence": {
+        "required": true,
+        "rule": "bounded-contract-result"
+      },
+      "request": "no-body",
+      "success": "200 LearningEvidence",
+      "errors": [
+        "400 CORRELATION_ID_INVALID",
+        "401 AUTHENTICATION_REQUIRED",
+        "403 AUTHORIZATION_DENIED",
+        "500 INTERNAL_CONTRACT_ERROR",
+        "404 EVIDENCE_NOT_FOUND",
+        "409 EVIDENCE_QUARANTINED"
+      ],
+      "version": "learning-platform-v1"
+    },
+    {
+      "operationId": "listTools",
+      "method": "GET",
+      "path": "/v1/tools",
+      "taxonomy": "Experience",
+      "processRole": "tool-catalog-read",
+      "authorization": {
+        "authentication": "local-session",
+        "authorization": "catalog-read",
+        "csrf": "not-applicable",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "evidence": {
+        "required": true,
+        "rule": "bounded-contract-result"
+      },
+      "request": "no-body",
+      "success": "200 ToolPage",
+      "errors": [
+        "400 CORRELATION_ID_INVALID",
+        "401 AUTHENTICATION_REQUIRED",
+        "403 AUTHORIZATION_DENIED",
+        "500 INTERNAL_CONTRACT_ERROR"
+      ],
+      "version": "learning-platform-v1"
+    },
+    {
+      "operationId": "getTool",
+      "method": "GET",
+      "path": "/v1/tools/{toolId}",
+      "taxonomy": "Experience",
+      "processRole": "tool-catalog-read",
+      "authorization": {
+        "authentication": "local-session",
+        "authorization": "catalog-read",
+        "csrf": "not-applicable",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "evidence": {
+        "required": true,
+        "rule": "bounded-contract-result"
+      },
+      "request": "no-body",
+      "success": "200 Tool",
+      "errors": [
+        "400 CORRELATION_ID_INVALID",
+        "401 AUTHENTICATION_REQUIRED",
+        "403 AUTHORIZATION_DENIED",
+        "500 INTERNAL_CONTRACT_ERROR",
+        "404 TOOL_NOT_FOUND"
+      ],
+      "version": "learning-platform-v1"
+    },
+    {
+      "operationId": "queryDataProduct",
+      "method": "POST",
+      "path": "/v1/data-products/{productId}/queries",
+      "taxonomy": "Backend",
+      "processRole": "registered-query-admission",
+      "authorization": {
+        "authentication": "local-session",
+        "authorization": "actor-owned",
+        "csrf": "required",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "required",
+      "evidence": {
+        "required": true,
+        "rule": "bounded-contract-result"
+      },
+      "request": "closed-versioned-body",
+      "success": "202 OperationAccepted",
+      "errors": [
+        "400 CORRELATION_ID_INVALID",
+        "401 AUTHENTICATION_REQUIRED",
+        "403 AUTHORIZATION_DENIED",
+        "500 INTERNAL_CONTRACT_ERROR",
+        "400 REQUEST_INVALID",
+        "403 ORIGIN_OR_CSRF_INVALID",
+        "409 IDEMPOTENCY_KEY_REUSE",
+        "415 MEDIA_TYPE_UNSUPPORTED",
+        "422 CONTRACT_VERSION_UNSUPPORTED",
+        "404 DATA_PRODUCT_NOT_FOUND",
+        "409 QUERY_OPERATION_CONFLICT",
+        "422 QUERY_ID_OR_PARAMETER_INVALID"
+      ],
+      "version": "learning-platform-v1"
+    },
+    {
+      "operationId": "getLiveness",
+      "method": "GET",
+      "path": "/health/live",
+      "taxonomy": "Technical",
+      "processRole": "http-process-health",
+      "authorization": {
+        "authentication": "public-loopback",
+        "authorization": "public-health",
+        "csrf": "not-applicable",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "evidence": {
+        "required": false,
+        "rule": "bounded-contract-result"
+      },
+      "request": "no-body",
+      "success": "200 HealthStatus",
+      "errors": [
+        "500 HEALTH_INTERNAL_FAILURE"
+      ],
+      "version": "learning-platform-v1"
+    },
+    {
+      "operationId": "getReadiness",
+      "method": "GET",
+      "path": "/health/ready",
+      "taxonomy": "Technical",
+      "processRole": "dependency-readiness-aggregate",
+      "authorization": {
+        "authentication": "public-loopback",
+        "authorization": "public-health",
+        "csrf": "not-applicable",
+        "enforcementStatus": "downstream-required"
+      },
+      "idempotency": "read-only",
+      "evidence": {
+        "required": false,
+        "rule": "bounded-contract-result"
+      },
+      "request": "no-body",
+      "success": "200 HealthStatus",
+      "errors": [
+        "503 DEPENDENCY_NOT_READY"
+      ],
+      "version": "learning-platform-v1"
+    }
+  ]
+}

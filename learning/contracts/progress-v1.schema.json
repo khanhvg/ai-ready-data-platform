@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/progress-v1.schema.json",
+  "title": "progress-v1.schema.json",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "progressId",
+    "actor",
+    "lessonId",
+    "lessonVersion",
+    "labId",
+    "labVersion",
+    "contractSetSha256",
+    "revision",
+    "state",
+    "events",
+    "completion"
+  ],
+  "properties": {
+    "schemaVersion": {},
+    "progressId": {},
+    "actor": {},
+    "lessonId": {},
+    "lessonVersion": {},
+    "labId": {},
+    "labVersion": {},
+    "contractSetSha256": {},
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "state": {},
+    "events": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "completion": {
+      "type": [
+        "string",
+        "object",
+        "null"
+      ]
+    }
+  },
+  "unevaluatedProperties": false
+}

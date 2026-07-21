@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "promotion-trust-learning-manifest-v1",
+  "manifestId": "promotion-trust-v1",
+  "lesson": "learning/lessons/promotion-trust/lesson-v1.json",
+  "lab": "learning/labs/promotion-trust/lab-v1.json",
+  "evidenceSchema": "learning/contracts/learning-evidence-v1.schema.json",
+  "dataContract": "contracts/data/retail-golden-v1.json",
+  "fixture": "tests/fixtures/learning/promotion-trust/manifest.json",
+  "sources": [
+    "promotion:promo_name,channel",
+    "fulfillment:carrier,region",
+    "returns:reason,category,region",
+    "dq:scenario"
+  ],
+  "decision": "insufficient-evidence/no-common-grain",
+  "limitations": [
+    "no campaign/order/time common grain",
+    "no cross-grain causal attribution"
+  ],
+  "contractSetSha256": "0000000000000000000000000000000000000000000000000000000000000000"
+}

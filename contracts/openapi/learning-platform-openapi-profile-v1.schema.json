@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/openapi/learning-platform-profile-v1",
+  "title": "Learning platform OpenAPI 3.2 closed project profile",
+  "type": "object",
+  "required": [
+    "openapi",
+    "info",
+    "paths"
+  ],
+  "properties": {
+    "openapi": {
+      "const": "3.2.0"
+    },
+    "info": {
+      "type": "object",
+      "required": [
+        "title",
+        "version"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "version": {
+          "const": "learning-platform-v1"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "paths": {
+      "type": "object"
+    }
+  },
+  "unevaluatedProperties": false
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/learning-contract-set-v1.schema.json",
+  "title": "learning-contract-set-v1.schema.json",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "setId",
+    "registry",
+    "contracts"
+  ],
+  "properties": {
+    "schemaVersion": {},
+    "setId": {},
+    "registry": {},
+    "contracts": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    }
+  },
+  "unevaluatedProperties": false
+}

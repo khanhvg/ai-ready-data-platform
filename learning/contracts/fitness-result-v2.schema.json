@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.local/learning/fitness-result-v2.schema.json",
+  "title": "fitness-result-v2.schema.json",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "commandId",
+    "owner",
+    "requested",
+    "status",
+    "failureCode",
+    "remediation",
+    "inputSha",
+    "testedTreeSha",
+    "dependencyMergeShas",
+    "contractHashes",
+    "fixtureHashes",
+    "schemaHashes",
+    "toolchain",
+    "lockSha256",
+    "invocation",
+    "startedAt",
+    "finishedAt",
+    "durationMs",
+    "rawLocator",
+    "projectionLocator",
+    "envelopeLocator",
+    "projectionSha256",
+    "artifacts",
+    "redactionClass",
+    "retentionClass",
+    "rollback",
+    "canonicalization",
+    "payloadSha256"
+  ],
+  "properties": {
+    "schemaVersion": {},
+    "commandId": {},
+    "owner": {},
+    "requested": {},
+    "status": {},
+    "failureCode": {
+      "type": [
+        "string",
+        "object",
+        "null"
+      ]
+    },
+    "remediation": {
+      "type": [
+        "string",
+        "object",
+        "null"
+      ]
+    },
+    "inputSha": {},
+    "testedTreeSha": {},
+    "dependencyMergeShas": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "contractHashes": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "fixtureHashes": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "schemaHashes": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "toolchain": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "lockSha256": {},
+    "invocation": {},
+    "startedAt": {},
+    "finishedAt": {},
+    "durationMs": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rawLocator": {
+      "type": [
+        "string",
+        "object",
+        "null"
+      ]
+    },
+    "projectionLocator": {
+      "type": [
+        "string",
+        "object",
+        "null"
+      ]
+    },
+    "envelopeLocator": {
+      "type": [
+        "string",
+        "object",
+        "null"
+      ]
+    },
+    "projectionSha256": {},
+    "artifacts": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {}
+    },
+    "redactionClass": {},
+    "retentionClass": {},
+    "rollback": {},
+    "canonicalization": {},
+    "payloadSha256": {}
+  },
+  "unevaluatedProperties": false
+}

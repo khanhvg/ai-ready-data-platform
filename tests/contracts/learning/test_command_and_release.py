@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from scripts.learning_contracts.check import release_documents
+from scripts.learning_contracts.check import public_surface, release_documents
 from tests.contracts.learning import assert_invalid, fixture
 
 
@@ -31,3 +31,8 @@ class CommandReleaseBehaviorTest(unittest.TestCase):
         self.assertEqual(len(matrix.get("operations", [])), 16)
         self.assertEqual(matrix.get("channels"), [])
         self.assertFalse(any("vite" in path.lower() or "asyncapi" in path.lower() for path in documents))
+
+    def test_public_surface_and_independent_vectors(self) -> None:
+        targets, vectors = public_surface()
+        self.assertEqual(targets, ("learning-contracts-check", "lesson-check", "api-contracts-check", "evidence-verify"), f"I8-PUBLIC-SURFACE expected=4 actual={len(targets)}")
+        self.assertEqual(len(vectors), 4, f"I8-VALID-VECTORS expected=4 actual={len(vectors)}")
