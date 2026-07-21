@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "completion-reconciliation-v1",
+  "authorityId": "learning-progress-authority-v1",
+  "authorityVersion": "v1",
+  "reconciliation": [
+    "already-attached",
+    "attachable-orphan",
+    "invalid-or-conflicting-orphan"
+  ]
+}

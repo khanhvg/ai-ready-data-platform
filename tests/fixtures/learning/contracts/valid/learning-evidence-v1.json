@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "learning-evidence-v1",
+  "evidenceId": "vector-evidence-v1",
+  "dependencyMergeShas": [
+    "24be3b34c6b0fcdbd07c5800dcab349054e34713"
+  ],
+  "redactionClass": "sanitized",
+  "retentionClass": "immutable",
+  "payloadSha256": "vector-only"
+}

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "promotion-trust-learning-manifest-v1",
+  "grains": [
+    "promotion",
+    "fulfillment",
+    "returns",
+    "dq"
+  ],
+  "decision": "insufficient-evidence/no-common-grain",
+  "limitations": [
+    "no-common-grain"
+  ],
+  "fixtureSha256": "0a1dcd4023648f52009bfd4dc5d529c00ce66f42cd0e725732b972b0b78df341"
+}

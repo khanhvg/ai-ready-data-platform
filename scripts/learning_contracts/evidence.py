@@ -2,8 +2,11 @@
 from __future__ import annotations
 
 import hashlib
+import json
+import os
 import pathlib
 import re
+import stat
 from typing import Any
 
 from scripts.golden.canonical import dumps
@@ -54,3 +57,41 @@ def code(value: dict[str, Any]) -> str:
     if FORBIDDEN_FIELDS.intersection(value):
         return "CONTRACT_INJECTION_FIELD_FORBIDDEN"
     return "OK"
+
+
+def read_descriptor_bound(root: pathlib.Path, locator: str, limit: int = 2 * 1024 * 1024) -> bytes:
+    if not valid_locator(locator):
+        raise ValueError("EVIDENCE_LOCATOR_INVALID")
+    before = root.lstat()
+    if not stat.S_ISDIR(before.st_mode) or stat.S_ISLNK(before.st_mode):
+        raise ValueError("EVIDENCE_ROOT_INVALID")
+    current = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        for component in pathlib.PurePosixPath(locator).parts[:-1]:
+            following = os.open(component, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=current)
+            os.close(current); current = following
+        fd = os.open(pathlib.PurePosixPath(locator).parts[-1], os.O_RDONLY | os.O_NOFOLLOW, dir_fd=current)
+        try:
+            info = os.fstat(fd)
+            if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_size > limit:
+                raise ValueError("EVIDENCE_LOCATOR_INVALID")
+            data = os.read(fd, limit + 1)
+            if len(data) > limit:
+                raise ValueError("EVIDENCE_SIZE_LIMIT")
+            return data
+        finally:
+            os.close(fd)
+    except OSError as exc:
+        raise ValueError("EVIDENCE_LOCATOR_INVALID") from exc
+    finally:
+        os.close(current)
+
+
+def verify_result_bytes(raw: bytes) -> dict[str, Any]:
+    value = json.loads(raw)
+    claimed = value.pop("payloadSha256", None)
+    actual = hashlib.sha256(dumps(value)).hexdigest()
+    if claimed != actual:
+        raise ValueError("EVIDENCE_PAYLOAD_HASH_MISMATCH")
+    value["payloadSha256"] = claimed
+    return value
