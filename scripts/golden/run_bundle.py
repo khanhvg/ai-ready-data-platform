@@ -35,6 +35,8 @@ class VerifiedBundle:
     metadata: dict[str, Any]
     projection_bytes: bytes
     normalized_raw_bytes: bytes
+    core_sha256: dict[str, str]
+    completion_sha256: str
 
 
 def _sha(payload: bytes) -> str:
@@ -182,4 +184,5 @@ def verify(path: pathlib.Path, expected_tested_tree_sha: str | None = None) -> V
         raise BundleError("RUN_BUNDLE_RESULT_GRAPH_MISMATCH")
     if (result.get("rawLocator"), result.get("projectionLocator"), result.get("envelopeLocator")) != ("raw.json", "projection.json", "envelope.json"):
         raise BundleError("RUN_BUNDLE_RESULT_LOCATOR_MISMATCH")
-    return VerifiedBundle(path, run_id, tested, raw, projection, result, metadata, payloads["projection.json"], normalized_raw(raw))
+    core_sha256 = {name: _sha(payloads[name]) for name in CORE_FILES}
+    return VerifiedBundle(path, run_id, tested, raw, projection, result, metadata, payloads["projection.json"], normalized_raw(raw), core_sha256, _sha(payloads["completion.json"]))

@@ -8,6 +8,7 @@ ROOT=pathlib.Path(__file__).resolve().parents[2]
 RAW_INVALID={"duplicate-name.json":b'{"a":1,"a":2}\n',"nan.json":b'{"n":NaN}\n',"positive-infinity.json":b'{"n":Infinity}\n',"negative-infinity.json":b'{"n":-Infinity}\n',"lone-surrogate.json":b'{"s":"\\uDEAD"}\n',"negative-zero-decimal.json":b'{"value":"-0.00"}\n'}
 def main()->int:
     source=source_state.identity(); evidence_parent=ROOT/".artifacts/evidence/golden"
+    if not evidence_parent.is_dir() or evidence_parent.is_symlink(): raise SystemExit("FIXTURE_TWO_EQUAL_C1_RUNS_REQUIRED")
     candidates=[]
     for path in evidence_parent.iterdir():
         if path.is_symlink() or not (path/"comparison.json").is_file(): continue
@@ -22,10 +23,11 @@ def main()->int:
         except (OSError,ValueError,json.JSONDecodeError): continue
     if not candidates: raise SystemExit("FIXTURE_TWO_EQUAL_C1_RUNS_REQUIRED")
     run,current,peer=max(candidates,key=lambda item:item[1].metadata["finishedMonotonicNs"]); projection=current.projection
-    fixture,manifest=issue7_fixture.fixture_documents(projection,source[0],(peer.run_id,current.run_id))
+    portable_attestation=issue7_fixture.portable_attestation_document(peer,current,source[0])
+    fixture,manifest=issue7_fixture.fixture_documents(projection,source[0],portable_attestation)
     target=ROOT/"tests/fixtures/learning/promotion-trust"
-    if target.exists(): raise SystemExit("FIXTURE_DESTINATION_PREEXISTS")
-    invalid=target/"invalid/canonicalization"; invalid.mkdir(mode=0o700,parents=True)
+    if target.is_symlink() or (target.exists() and not target.is_dir()): raise SystemExit("FIXTURE_DESTINATION_UNSAFE")
+    invalid=target/"invalid/canonicalization"; invalid.mkdir(mode=0o700,parents=True,exist_ok=True)
     evidence_bytes=(json.dumps(fixture,ensure_ascii=False,sort_keys=True,separators=(",",":"))+"\n").encode(); manifest_bytes=(json.dumps(manifest,ensure_ascii=False,sort_keys=True,separators=(",",":"))+"\n").encode()
     (target/"evidence-v1.json").write_bytes(evidence_bytes); (target/"manifest.json").write_bytes(manifest_bytes)
     for name,payload in RAW_INVALID.items(): (invalid/name).write_bytes(payload)
