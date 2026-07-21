@@ -23,16 +23,19 @@ issue6IntegrationSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
 currentAcceptanceRevision: "i5-02-simple-vite-v3"
 currentAcceptanceAmendment: "simple-vite-acceptance-amendment-v3.md"
 acceptanceReplanInputSha: "358c305e5988a44ad4261b748aac3ea454c73dad"
-acceptanceReplanStatus: "planner-only-not-validated"
+acceptanceReplanStatus: "validated-pass-with-fixes"
+independentValidationInputSha: "d79ce5638e4a47c5c0963bba1a546448bc0c0ea6"
+independentValidationReport: "validation/simple-vite-independent-validation-report-v3.md"
 ownerDecision: "https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5036142177"
-nextPhase: "fresh-simple-plan-validation"
+nextPhase: "fresh-simple-readiness-audit"
 barriers:
   historicalV1V2: retained-read-only-non-binding
   issue6Fixture: closed-executable-pass
-  v3PlanValidation: pending-fresh-independent-validation
-  v3Implementation: blocked-on-fresh-validation-authority
+  v3PlanValidation: pass-with-fixes-not-readiness
+  v3ReadinessAudit: pending-fresh-simple-readiness-audit
+  v3Implementation: blocked-on-fresh-readiness-authority
   adrAcceptance: blocked-on-seven-tests-s3-red-and-reviews
-  merge: blocked-on-final-exact-head-reviews-ci-and-human-approval
+  merge: blocked-on-final-exact-head-reviews-configured-checks-and-human-approval
 ---
 
 # Issue #7: Web Stack with Representative Promotion-Trust Lesson
@@ -44,7 +47,11 @@ The sole binding revision is
 local/tracking/fresh-live input `358c305e5988a44ad4261b748aac3ea454c73dad` after the
 [owner selected Vite + React](https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5036142177).
 The selection is owner-directed and unscored. This planner output is
-`PLANNER_ONLY_NOT_VALIDATED`; only a fresh independent validator may advance it.
+validated `PASS_WITH_FIXES` from exact input
+`d79ce5638e4a47c5c0963bba1a546448bc0c0ea6`; see the
+[independent validation report](./validation/simple-vite-independent-validation-report-v3.md).
+This is not implementation readiness. Only a fresh simple readiness audit of the exact published
+validation head may advance it.
 
 The v3 amendment supersedes every prior v2 readiness/cook/comparison requirement as current
 blocking authority. Prior plans, validation/audit files, candidates, scorecards, screenshots,
@@ -60,7 +67,7 @@ promotion-trust fixture. Make only the smallest tests-first fixes needed to prov
 1. frozen-lock install and production build;
 2. focused Node contract/unit behavior;
 3. one Chromium smoke journey through controlled failure, four grains, exact conclusion, reset,
-   and reflection;
+   and reflection using the stable v3 selector/assertion registry;
 4. the same smoke at desktop and one narrow viewport with visible focus and no overflow;
 5. one axe scan with zero Critical/Serious;
 6. real JavaScript-disabled/static comprehension; and
@@ -111,16 +118,18 @@ and cleaned without signalling foreign processes or modifying browser/OS profile
   sample is produced.
 - The Node and Chromium suites prove the four exact named grains, controlled failure,
   `insufficient-evidence` / `no-common-grain`, reset, and reflection.
-- Desktop `1280×800` plus narrow `360×800` share one Chromium suite, one worker, zero retries,
-  visible/unobscured focus, and no horizontal overflow.
-- One desktop axe scan has zero Critical/Serious; one real no-JS context proves static
-  comprehension.
+- Exactly two Chrome-channel Chromium projects—desktop `1280×800` and narrow `360×800`—share one
+  tagged journey, one worker, zero retries, deterministic visible/unobscured focus, and document,
+  body, and named-element overflow assertions.
+- Desktop invokes frozen `@axe-core/playwright@4.12.1` exactly once and blocks only on
+  Critical/Serious. Its separate real `javaScriptEnabled: false` context uses the existing browser
+  DOM/locator API to prove static comprehension; there is no third project or invented parser.
 - Exact Issue #6 identities, zero High/Critical npm advisories, S3 scans, evidence
   manifest/hash/index, owned cleanup, and rollback pass.
 - ADR-005 may become Accepted/Vite only after the minimal gate, S3, RED provenance, and prerequisite
   reviews pass; the final ADR head then receives two fresh external exact-head reviews.
-- PR merge requires checks and a repository-authorized human approval of the exact final head;
-  pristine post-merge verification must pass.
+- PR merge requires any repository-configured checks and a repository-authorized human approval of
+  the exact final head; v3 creates no CI context. Pristine post-merge verification must pass.
 - No full WCAG, screen-reader, production-UAT, or production-conformance claim is made.
 
 ## Retired blocking scope
@@ -151,20 +160,21 @@ handoff identity remains binding; comparison, score, and the old ADR transition 
 - [Security S3 disposition — historical baseline, narrowed by v3](./security-s3-disposition.md)
 - [Historical automation-first amendment v2](./automation-first-acceptance-amendment-v2.md)
 - [Historical v2 validation report](./validation/automation-first-independent-validation-report-v2.md)
+- [Current simple Vite validation report](./validation/simple-vite-independent-validation-report-v3.md)
 - [Historical readiness/audit package](./audit/readiness-audit-report.md)
 - [Preserved discovery package](./discovery/planner-handoff.md)
 
 All unlisted legacy companion files remain historical only. They cannot reintroduce a retired v3
 blocker.
 
-## Planner boundary and handoff
+## Validation boundary and handoff
 
-This fresh replanner performed only authority/repository inspection, plan authoring, static plan
-checks, publication, and the requested workflow label/comment update. It did not validate, audit,
-implement, install, build, run a candidate/browser, mutate the OS, score, create a PR, merge, or
-touch Issue #8+.
+This fresh independent validator performed only authority/repository inspection, planning-artifact
+fixes, static strict-plan/link/path/stale-clause/placeholder checks, publication, and the requested
+workflow label/comment update. It did not readiness-audit, red-team, implement, install, build, run
+a candidate/browser, mutate the OS, score, create a PR, merge, or touch Issue #8+.
 
-After this plan commit is pushed and local/tracking/fresh-live equality is re-proved, Issue #7 gets
-the exact comment `PLANNER_ONLY_NOT_VALIDATED` with the repo-relative plan path and transitions
-exactly `triaged` → `ready for plan validation`. The only next phase is
-`fresh-simple-plan-validation`.
+After the validation publication is pushed and local/tracking/fresh-live equality is re-proved,
+Issue #7 gets the exact comment `INDEPENDENT_VALIDATION_PASS_NOT_READINESS` with the repo-relative
+report path and transitions exactly `ready for plan validation` → `ready for plan audit`. The only
+next phase is `fresh-simple-readiness-audit`.
