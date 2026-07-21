@@ -103,6 +103,8 @@ def validate_document(value: Any, *, family: str) -> None:
         "lesson": ROOT / "learning/contracts/lesson-v1.schema.json",
         "lab": ROOT / "learning/contracts/lab-v1.schema.json",
         "progress": ROOT / "learning/contracts/progress-v1.schema.json",
+        "learning-evidence": ROOT / "learning/contracts/learning-evidence-v1.schema.json",
+        "fitness-result": ROOT / "learning/contracts/fitness-result-v2.schema.json",
     }
     path = schemas.get(family)
     if path is None:
