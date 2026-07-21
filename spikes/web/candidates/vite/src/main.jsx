@@ -8,7 +8,7 @@ function Probe() {
 
   return (
     <div className="probe-controls">
-      <div className="controls" aria-label="Điều khiển khảo sát">
+      <div className="controls" role="group" aria-label="Điều khiển khảo sát">
         <button
           type="button"
           data-testid="run-bounded-probe"

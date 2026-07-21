@@ -11,6 +11,8 @@ const CANDIDATE = resolve(ROOT, 'spikes/web/candidates/vite');
 const RUNTIME = resolve(ROOT, contract.runtimePrefix);
 const EVIDENCE_CLOSURE_RED_SHA = '23ad065ed49aa5bba718252a6755511182e55a23';
 const EXPECTED_CSP = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'";
+const PROCESS_TERM_GRACE_MS = 250;
+const PROCESS_FINAL_WAIT_MS = 250;
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const relativePath = path => relative(ROOT, path).split(sep).join('/');
 const git = args => {
@@ -96,6 +98,13 @@ export function validateEvidenceManifest(manifest) {
       || owned.port !== contract.port || owned.cleanup !== 'pass'
       || owned.rollbackSimulation !== 'pass') failures.push('owned-resource-summary');
   if (closedRun && manifest?.evidenceClosureRedSha !== EVIDENCE_CLOSURE_RED_SHA) failures.push('evidence-closure-red-sha');
+  if (closedRun && !['feature-branch', 'detached-exact-live'].includes(manifest?.authorityMode)) failures.push('authority-mode');
+  if (closedRun && (!/^[0-9a-f]{40}$/.test(manifest?.freshLiveHead || '')
+      || manifest?.targetedReviewFixRed?.result !== 'pass'
+      || manifest?.targetedReviewFixRed?.sourceSha !== 'f45aa016605c250aa26c977f2320acf75b565ecb'
+      || !(manifest?.targetedReviewFixRed?.rc > 0)
+      || manifest?.targetedReviewFixRed?.assertionIds?.length !== 4
+      || manifest?.targetedReviewFixRed?.log !== 'tdd/review-fix-red/focused-tests.tap')) failures.push('targeted-review-fix-red');
   return failures;
 }
 
@@ -113,8 +122,22 @@ function statusPaths() {
 
 export function preflight(implementationInput) {
   const failures = [];
+  const branch = git(['branch', '--show-current']);
+  const head = git(['rev-parse', '--verify', 'HEAD']);
+  const live = spawnSync('git', ['ls-remote', '--exit-code', 'origin', `refs/heads/${contract.branch}`], { cwd: ROOT, encoding: 'utf8' });
+  const liveLines = live.status === 0 ? live.stdout.trim().split('\n').filter(Boolean) : [];
+  const liveParts = liveLines.length === 1 ? liveLines[0].trim().split(/\s+/) : [];
+  const liveHead = liveParts.length === 2 && liveParts[1] === `refs/heads/${contract.branch}` ? liveParts[0] : '';
+  let authorityMode = 'invalid';
   if (implementationInput !== contract.implementationInputSha) failures.push('implementation-input-mismatch');
-  if (git(['branch', '--show-current']) !== contract.branch) failures.push('branch-mismatch');
+  if (!/^[0-9a-f]{40}$/.test(head)) failures.push('invalid-head-identity');
+  if (live.status !== 0 || liveLines.length === 0) failures.push('fresh-live-unavailable');
+  else if (liveLines.length !== 1 || !/^[0-9a-f]{40}$/.test(liveHead)) failures.push('fresh-live-ambiguous-or-invalid');
+  if (branch === contract.branch) authorityMode = 'feature-branch';
+  else if (branch) failures.push('branch-mismatch');
+  else if (/^[0-9a-f]{40}$/.test(head) && /^[0-9a-f]{40}$/.test(liveHead) && head === liveHead) authorityMode = 'detached-exact-live';
+  else failures.push('detached-head-mismatch');
+  if (git(['status', '--porcelain=v1', '--untracked-files=no'])) failures.push('dirty-tracked-state');
   for (const ancestor of [contract.implementationInputSha, contract.issue6IntegrationSha]) {
     if (spawnSync('git', ['merge-base', '--is-ancestor', ancestor, 'HEAD'], { cwd: ROOT }).status !== 0) failures.push(`missing-ancestor:${ancestor}`);
   }
@@ -131,7 +154,7 @@ export function preflight(implementationInput) {
   const unauthorized = validateChangedPaths(statusPaths());
   if (unauthorized.length) failures.push(`unauthorized-paths:${unauthorized.join(',')}`);
   if (existsSync(resolve(ROOT, 'apps/learning-portal')) || existsSync(resolve(ROOT, 'apps/lab-runner'))) failures.push('forbidden-portal-or-runner');
-  return { result: failures.length ? 'fail' : 'pass', failures, changedPaths: statusPaths() };
+  return { result: failures.length ? 'fail' : 'pass', failures, authorityMode, head, freshLiveHead: liveHead || null, changedPaths: statusPaths() };
 }
 
 function sanitize(text) {
@@ -145,66 +168,126 @@ function copySanitized(source, destination) {
   writeFileSync(destination, sanitize(readFileSync(source, 'utf8')));
 }
 
-async function runBounded(name, command, ceilingMs, directory) {
-  const [program, ...args] = command;
-  const startedAt = new Date().toISOString();
-  const started = process.hrtime.bigint();
-  return await new Promise(resolveResult => {
-    const child = spawn(program, args, { cwd: ROOT, env: { ...process.env, BASE_URL: 'http://127.0.0.1:4175' }, stdio: ['ignore', 'pipe', 'pipe'] });
-    let stdout = '', stderr = '', timedOut = false;
-    child.stdout.on('data', chunk => { stdout += chunk; });
-    child.stderr.on('data', chunk => { stderr += chunk; });
-    const timer = setTimeout(() => { timedOut = true; child.kill('SIGTERM'); }, ceilingMs);
-    child.on('close', (code, signal) => {
-      clearTimeout(timer);
-      const result = { name, command, startedAt, durationMs: Number(process.hrtime.bigint() - started) / 1e6, rc: code ?? 1, signal, timedOut, stdout: sanitize(stdout), stderr: sanitize(stderr) };
-      writeFileSync(resolve(directory, `${name}.json`), `${JSON.stringify(result, null, 2)}\n`);
-      writeFileSync(resolve(directory, `${name}.log`), `${result.stdout}${result.stderr}`);
-      resolveResult(result);
-    });
-  });
-}
-
 function processFingerprint(pid) {
   const result = spawnSync('ps', ['-p', String(pid), '-o', 'pgid=', '-o', 'lstart=', '-o', 'command='], { encoding: 'utf8' });
   return result.status === 0 ? result.stdout.trim().replace(/\s+/g, ' ') : '';
 }
 
+function processGroup(pid) {
+  const result = spawnSync('ps', ['-p', String(pid), '-o', 'pgid='], { encoding: 'utf8' });
+  const pgid = result.status === 0 ? Number(result.stdout.trim()) : NaN;
+  return Number.isInteger(pgid) ? pgid : null;
+}
+
+function groupExists(processGroupId) {
+  try { process.kill(-processGroupId, 0); return true; } catch (error) { return error.code === 'EPERM'; }
+}
+
+const delay = milliseconds => new Promise(resolveDelay => setTimeout(resolveDelay, milliseconds));
+
+async function waitForGroupExit(owned, ceilingMs) {
+  const deadline = Date.now() + ceilingMs;
+  while (groupExists(owned.processGroup) && Date.now() < deadline) await delay(20);
+  return !groupExists(owned.processGroup);
+}
+
+function spawnOwned(command, options = {}) {
+  const [program, ...args] = command;
+  const child = spawn(program, args, { cwd: ROOT, detached: true, ...options });
+  const pid = child.pid;
+  const pgid = processGroup(pid);
+  const fingerprint = processFingerprint(pid);
+  const currentGroup = processGroup(process.pid);
+  if (!Number.isInteger(pid) || pid <= 1 || pgid !== pid || pgid === currentGroup || !fingerprint) {
+    if (Number.isInteger(pid) && pid > 1) child.kill('SIGKILL');
+    throw new Error('spawned child did not establish a verified owned process group');
+  }
+  let closed = false;
+  const closePromise = new Promise(resolveClose => {
+    child.once('error', error => resolveClose({ code: null, signal: null, error }));
+    child.once('close', (code, signal) => { closed = true; resolveClose({ code, signal, error: null }); });
+  });
+  return { child, pid, processGroup: pgid, fingerprint, currentGroup, closePromise, isClosed: () => closed };
+}
+
+function signalOwnedGroup(owned, signal) {
+  if (!owned || owned.processGroup !== owned.pid || owned.pid <= 1 || owned.processGroup === owned.currentGroup) throw new Error('invalid owned process group; refusing to signal');
+  const current = processFingerprint(owned.pid);
+  if (current && current !== owned.fingerprint) throw new Error('owned process fingerprint changed; refusing to signal');
+  try { process.kill(-owned.processGroup, signal); return true; } catch (error) {
+    if (error.code === 'ESRCH') return false;
+    throw error;
+  }
+}
+
+async function terminateOwnedGroup(owned) {
+  const termination = { termSent: false, killSent: false, groupExited: true, finalWaitExpired: false };
+  if (!owned || !groupExists(owned.processGroup)) return termination;
+  termination.termSent = signalOwnedGroup(owned, 'SIGTERM');
+  termination.groupExited = await waitForGroupExit(owned, PROCESS_TERM_GRACE_MS);
+  if (!termination.groupExited) {
+    termination.killSent = signalOwnedGroup(owned, 'SIGKILL');
+    termination.groupExited = await waitForGroupExit(owned, PROCESS_FINAL_WAIT_MS);
+  }
+  termination.finalWaitExpired = !termination.groupExited;
+  await Promise.race([owned.closePromise, delay(PROCESS_FINAL_WAIT_MS)]);
+  return termination;
+}
+
+async function runBounded(name, command, ceilingMs, directory) {
+  const startedAt = new Date().toISOString();
+  const started = process.hrtime.bigint();
+  const owned = spawnOwned(command, { env: { ...process.env, BASE_URL: 'http://127.0.0.1:4175' }, stdio: ['ignore', 'pipe', 'pipe'] });
+  let stdout = '', stderr = '';
+  owned.child.stdout.on('data', chunk => { stdout += chunk; });
+  owned.child.stderr.on('data', chunk => { stderr += chunk; });
+  const outcome = await Promise.race([
+    owned.closePromise.then(value => ({ kind: 'close', ...value })),
+    delay(ceilingMs).then(() => ({ kind: 'timeout' })),
+  ]);
+  const timedOut = outcome.kind === 'timeout';
+  let termination = { termSent: false, killSent: false, groupExited: true, finalWaitExpired: false };
+  if (timedOut || outcome.error || groupExists(owned.processGroup)) termination = await terminateOwnedGroup(owned);
+  const closed = outcome.kind === 'close' ? outcome : await Promise.race([owned.closePromise, delay(PROCESS_FINAL_WAIT_MS).then(() => ({ code: null, signal: null, error: new Error('bounded final child wait expired') }))]);
+  const result = { name, command, startedAt, durationMs: Number(process.hrtime.bigint() - started) / 1e6, rc: closed.code ?? 1, signal: closed.signal, timedOut, termination, stdout: sanitize(stdout), stderr: sanitize(`${stderr}${closed.error ? `${stderr ? '\n' : ''}${closed.error.message}` : ''}`) };
+  writeFileSync(resolve(directory, `${name}.json`), `${JSON.stringify(result, null, 2)}\n`);
+  writeFileSync(resolve(directory, `${name}.log`), `${result.stdout}${result.stderr}`);
+  return result;
+}
+
 async function startHost(runId, directory) {
   const hostPath = resolve(ROOT, 'spikes/web/harness/scripts/candidate-static-host.mjs');
   const command = [process.execPath, hostPath, resolve(CANDIDATE, 'dist'), String(contract.port)];
-  const child = spawn(command[0], command.slice(1), { cwd: ROOT, detached: true, stdio: ['ignore', 'pipe', 'pipe'] });
+  const owned = spawnOwned(command, { stdio: ['ignore', 'pipe', 'pipe'] });
+  const { child } = owned;
   let output = '';
-  const ready = await new Promise((resolveReady, reject) => {
-    const timer = setTimeout(() => reject(new Error('V3 host READY timeout')), contract.ceilingsMs.hostReady);
-    const consume = chunk => {
-      output += chunk;
-      if (output.includes('READY http://127.0.0.1:4175')) { clearTimeout(timer); resolveReady(true); }
-    };
-    child.stdout.on('data', consume);
-    child.stderr.on('data', consume);
-    child.on('exit', code => { clearTimeout(timer); reject(new Error(`V3 host exited before READY: ${code} ${sanitize(output)}`)); });
-  });
-  if (!ready) throw new Error('host not ready');
-  const fingerprint = processFingerprint(child.pid);
-  const ledger = { pid: child.pid, processGroup: child.pid, fingerprint: sanitize(fingerprint), cwd: '.', command: command.map(sanitize), root: 'spikes/web/candidates/vite/dist', port: contract.port, runId, childHandle: true };
-  const liveLedger = { ...ledger, fingerprint };
+  try {
+    const ready = await new Promise((resolveReady, reject) => {
+      const timer = setTimeout(() => reject(new Error('V3 host READY timeout')), contract.ceilingsMs.hostReady);
+      const consume = chunk => {
+        output += chunk;
+        if (output.includes('READY http://127.0.0.1:4175')) { clearTimeout(timer); resolveReady(true); }
+      };
+      child.stdout.on('data', consume);
+      child.stderr.on('data', consume);
+      child.on('exit', code => { clearTimeout(timer); reject(new Error(`V3 host exited before READY: ${code} ${sanitize(output)}`)); });
+    });
+    if (!ready) throw new Error('host not ready');
+  } catch (error) {
+    const termination = await terminateOwnedGroup(owned);
+    writeFileSync(resolve(directory, 'host-start-error.json'), `${JSON.stringify({ error: sanitize(error.message), output: sanitize(output), termination }, null, 2)}\n`);
+    throw error;
+  }
+  const ledger = { pid: owned.pid, processGroup: owned.processGroup, fingerprint: sanitize(owned.fingerprint), cwd: '.', command: command.map(sanitize), root: 'spikes/web/candidates/vite/dist', port: contract.port, runId, childHandle: true };
+  const liveLedger = { ...ledger, fingerprint: owned.fingerprint };
   writeFileSync(resolve(directory, 'owned-resources.json'), `${JSON.stringify(ledger, null, 2)}\n`);
-  return { child, ledger: liveLedger };
+  return { ...owned, ledger: liveLedger };
 }
 
 async function stopHost(owned) {
   if (!owned) return;
-  const current = processFingerprint(owned.ledger.pid);
-  if (!current || current !== owned.ledger.fingerprint) throw new Error('owned host fingerprint changed; refusing to signal');
-  process.kill(-owned.ledger.processGroup, 'SIGTERM');
-  await new Promise(resolveWait => {
-    const timeout = setTimeout(() => {
-      if (processFingerprint(owned.ledger.pid) === owned.ledger.fingerprint) process.kill(-owned.ledger.processGroup, 'SIGKILL');
-      resolveWait();
-    }, 5_000);
-    owned.child.once('exit', () => { clearTimeout(timeout); resolveWait(); });
-  });
+  const termination = await terminateOwnedGroup(owned);
+  if (!termination.groupExited) throw new Error('owned host process group survived bounded cleanup');
 }
 
 function makeRunDirectory(kind, runId) {
@@ -380,6 +463,16 @@ function contemporaneousRed() {
   return { runId: redResult.runId, directory, retained: true };
 }
 
+function targetedReviewFixRed() {
+  const directory = resolve(RUNTIME, 'targeted-review-fix-red');
+  const resultPath = resolve(directory, 'result.json');
+  const logPath = resolve(directory, 'focused-tests.tap');
+  if (!existsSync(resultPath) || !existsSync(logPath)) throw new Error('targeted review-fix RED evidence is unavailable');
+  const result = JSON.parse(readFileSync(resultPath, 'utf8'));
+  if (result.result !== 'pass' || result.rc === 0 || result.sourceSha !== 'f45aa016605c250aa26c977f2320acf75b565ecb' || result.assertionIds?.length !== 4) throw new Error('targeted review-fix RED evidence is invalid');
+  return { directory, result };
+}
+
 export function scanRun() {
   const green = latest('gate');
   const browserEvidence = materializeBrowserEvidence(green.directory);
@@ -496,6 +589,7 @@ function verifyHashIndex(destination, index) {
 
 export function retainRun() {
   const red = contemporaneousRed();
+  const reviewFixRed = targetedReviewFixRed();
   const green = latest('gate');
   const redResult = JSON.parse(readFileSync(resolve(red.directory, 'result.json'), 'utf8'));
   const greenResult = JSON.parse(readFileSync(resolve(green.directory, 'result.json'), 'utf8'));
@@ -505,10 +599,12 @@ export function retainRun() {
   const destination = resolve(ROOT, contract.retainedPrefix, green.runId);
   if (existsSync(destination)) throw new Error('immutable run destination already exists');
   mkdirSync(resolve(destination, 'tdd/red'), { recursive: true });
+  mkdirSync(resolve(destination, 'tdd/review-fix-red'), { recursive: true });
   mkdirSync(resolve(destination, 'green'), { recursive: true });
   mkdirSync(resolve(destination, 'security'), { recursive: true });
   mkdirSync(resolve(destination, 'lifecycle'), { recursive: true });
   for (const name of ['unit.log', 'playwright.log', 'result.json']) if (existsSync(resolve(red.directory, name))) copySanitized(resolve(red.directory, name), resolve(destination, 'tdd/red', name));
+  for (const name of ['focused-tests.tap', 'result.json']) copySanitized(resolve(reviewFixRed.directory, name), resolve(destination, 'tdd/review-fix-red', name));
   for (const name of ['install.log', 'build.log', 'unit.log', 'harness.log', 'playwright.log', 'result.json', 'response-index.html']) if (existsSync(resolve(green.directory, name))) copySanitized(resolve(green.directory, name), resolve(destination, 'green', name));
   if (existsSync(resolve(green.directory, 'browser-results'))) cpSync(resolve(green.directory, 'browser-results'), resolve(destination, 'green/browser-results'), { recursive: true });
   for (const [key, target] of browserEvidence.required) {
@@ -575,7 +671,7 @@ export function retainRun() {
   };
   const scanSummary = { result: scans.result, findings: scans.findings.length, checks: scans.checkInventory?.length ?? 0, checkInventory: scans.checkInventory?.map(({ id, result }) => ({ id, result })) ?? [], finalRetained: 'pass' };
   const ownedResourceSummary = { result: validateOwnership(ledger, { runId: green.runId }).length === 0 && rollback.result === 'pass' ? 'pass' : 'fail', serverCount: 1, port: ledger.port, cleanup: cleanup.result, rollbackSimulation: rollback.result };
-  const manifest = { schemaVersion: 'i5-02-simple-vite-v3-evidence-v1', acceptanceRevision: contract.acceptanceRevision, runId: green.runId, implementationInputSha: contract.implementationInputSha, testedSourceSha: greenResult.sourceSha, testedTreeSha: greenResult.testedTreeSha, branch: contract.branch, issue6IntegrationSha: contract.issue6IntegrationSha, fixtureIdentities: contract.fixtureIdentities, lockSha256: contract.lockSha256, tools: greenResult.tools, commands: greenResult.commands, browserInventory: browser, groups, redProvenance: { result: 'pass', testOnlySha: redResult.sourceSha, testedTreeSha: redResult.testedTreeSha }, evidenceClosureRedSha: EVIDENCE_CLOSURE_RED_SHA, testNameInventory, artifactLocators, axeSummary, noJsFacts, scanSummary, ownedResourceSummary, audit: audit.metadata?.vulnerabilities, redaction: { result: 'pass', findings: [] }, cleanupRollback: rollback, limitations: ['Chromium and axe automation are not a full WCAG or screen-reader conformance claim.', 'Production accessibility and manual UAT remain deferred.'] };
+  const manifest = { schemaVersion: 'i5-02-simple-vite-v3-evidence-v1', acceptanceRevision: contract.acceptanceRevision, runId: green.runId, implementationInputSha: contract.implementationInputSha, testedSourceSha: greenResult.sourceSha, testedTreeSha: greenResult.testedTreeSha, branch: contract.branch, authorityMode: greenResult.authority.authorityMode, freshLiveHead: greenResult.authority.freshLiveHead, issue6IntegrationSha: contract.issue6IntegrationSha, fixtureIdentities: contract.fixtureIdentities, lockSha256: contract.lockSha256, tools: greenResult.tools, commands: greenResult.commands, browserInventory: browser, groups, redProvenance: { result: 'pass', testOnlySha: redResult.sourceSha, testedTreeSha: redResult.testedTreeSha }, targetedReviewFixRed: { result: reviewFixRed.result.result, sourceSha: reviewFixRed.result.sourceSha, rc: reviewFixRed.result.rc, assertionIds: reviewFixRed.result.assertionIds, log: 'tdd/review-fix-red/focused-tests.tap' }, evidenceClosureRedSha: EVIDENCE_CLOSURE_RED_SHA, testNameInventory, artifactLocators, axeSummary, noJsFacts, scanSummary, ownedResourceSummary, audit: audit.metadata?.vulnerabilities, redaction: { result: 'pass', findings: [] }, cleanupRollback: rollback, limitations: ['Chromium and axe automation are not a full WCAG or screen-reader conformance claim.', 'Production accessibility and manual UAT remain deferred.'] };
   if (validateEvidenceManifest(manifest).length) throw new Error('generated manifest is invalid');
   writeFileSync(resolve(destination, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
   const finalScan = finalRetainedScan(destination);
