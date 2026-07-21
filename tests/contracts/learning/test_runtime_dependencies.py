@@ -94,8 +94,8 @@ class S3CommandResourceCleanupTests(unittest.TestCase):
             marker = self.marker(owned, [{"path": "mutable.tmp", "disposition": "mutable"}, {"path": "evidence.json", "disposition": "preserve"}])
             self.write_marker(owned, marker)
             wrong = dict(marker, nonce="b" * 64)
-            self.assert_code("CLEANUP_OWNERSHIP_MISMATCH", runtime.cleanup_owned, owned, wrong)
-            runtime.cleanup_owned(owned, marker)
+            self.assert_code("CLEANUP_OWNERSHIP_MISMATCH", runtime.cleanup_owned, owned, wrong, owned_root=owned.parent)
+            runtime.cleanup_owned(owned, marker, owned_root=owned.parent)
             self.assertFalse((owned / "mutable.tmp").exists())
             self.assertEqual(b"evidence", (owned / "evidence.json").read_bytes())
             (owned / "first.tmp").write_bytes(b"first")
@@ -108,7 +108,7 @@ class S3CommandResourceCleanupTests(unittest.TestCase):
                 {"path": "unsafe", "disposition": "mutable"},
             ])
             self.write_marker(owned, marker)
-            self.assert_code("CLEANUP_ENTRY_UNSAFE", runtime.cleanup_owned, owned, marker)
+            self.assert_code("CLEANUP_ENTRY_UNSAFE", runtime.cleanup_owned, owned, marker, owned_root=owned.parent)
             self.assertEqual(b"first", (owned / "first.tmp").read_bytes())
 
     def test_i8_v3_rollback_foreign_preservation_024(self) -> None:
@@ -120,12 +120,12 @@ class S3CommandResourceCleanupTests(unittest.TestCase):
             marker = self.marker(owned, [{"path": "mutable.tmp", "disposition": "mutable"}])
             self.write_marker(owned, marker)
             (owned / "foreign.sentinel").write_bytes(b"foreign")
-            self.assert_code("CLEANUP_MANIFEST_OPEN", runtime.cleanup_owned, owned, marker)
+            self.assert_code("CLEANUP_MANIFEST_OPEN", runtime.cleanup_owned, owned, marker, owned_root=owned.parent)
             self.assertEqual(b"mutable", (owned / "mutable.tmp").read_bytes())
             self.assertEqual(b"foreign", (owned / "foreign.sentinel").read_bytes())
             (owned / "foreign.sentinel").unlink()
-            runtime.cleanup_owned(owned, marker)
-            runtime.cleanup_owned(owned, marker)
+            runtime.cleanup_owned(owned, marker, owned_root=owned.parent)
+            runtime.cleanup_owned(owned, marker, owned_root=owned.parent)
             self.assertFalse((owned / "mutable.tmp").exists())
 
 

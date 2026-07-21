@@ -15,7 +15,10 @@ def complete(state: dict[str, Any], request: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(key, str) or not key:
         raise LearningContractError("IDEMPOTENCY_KEY_REQUIRED")
     request_hash = hashlib.sha256(canonical_bytes(request)).hexdigest()
-    retained = state.setdefault("idempotency", {}).get(key)
+    idempotency = state.get("idempotency", {})
+    if not isinstance(idempotency, dict):
+        raise LearningContractError("IDEMPOTENCY_STATE_INVALID")
+    retained = idempotency.get(key)
     if retained is not None:
         if retained["requestSha256"] != request_hash:
             raise LearningContractError("IDEMPOTENCY_KEY_REUSE")
@@ -32,5 +35,5 @@ def complete(state: dict[str, Any], request: dict[str, Any]) -> dict[str, Any]:
     state["state"] = "completed"
     state["revision"] = result["revision"]
     state.setdefault("effects", []).append({"kind": "completion", "evidenceId": request["evidenceId"]})
-    state["idempotency"][key] = {"requestSha256": request_hash, "result": copy.deepcopy(result)}
+    state.setdefault("idempotency", {})[key] = {"requestSha256": request_hash, "result": copy.deepcopy(result)}
     return result

@@ -19,15 +19,31 @@ EXPECTED_OPERATIONS = {
     ("getWorkspace", "GET", "/v1/workspaces/{workspaceId}", 200),
     ("startWorkspaceOperation", "POST", "/v1/workspaces/{workspaceId}/operations", 202),
     ("getOperation", "GET", "/v1/operations/{operationId}", 200),
-    ("resetWorkspace", "POST", "/v1/workspaces/{workspaceId}/reset", 200),
-    ("verifyWorkspace", "POST", "/v1/workspaces/{workspaceId}/verify", 200),
+    ("resetWorkspace", "POST", "/v1/workspaces/{workspaceId}/reset", 202),
+    ("verifyWorkspace", "POST", "/v1/workspaces/{workspaceId}/verify", 202),
     ("getEvidence", "GET", "/v1/evidence/{evidenceId}", 200),
     ("listTools", "GET", "/v1/tools", 200),
     ("getTool", "GET", "/v1/tools/{toolId}", 200),
-    ("queryDataProduct", "POST", "/v1/data-products/{productId}/queries", 200),
+    ("queryDataProduct", "POST", "/v1/data-products/{productId}/queries", 202),
     ("getLiveness", "GET", "/health/live", 200),
     ("getReadiness", "GET", "/health/ready", 200),
 }
+
+REQUEST_SCHEMAS = {
+    "createWorkspace": "CreateWorkspaceRequest",
+    "startWorkspaceOperation": "StartWorkspaceOperationRequest",
+    "resetWorkspace": "ResetWorkspaceRequest",
+    "verifyWorkspace": "VerifyWorkspaceRequest",
+    "queryDataProduct": "QueryDataProductRequest",
+}
+
+REQUIRED_RESPONSES = {
+    operation_id: ({str(status), "500"} if path.startswith("/health/") else {str(status), "400", "401", "403", "500"})
+    for operation_id, _, path, status in EXPECTED_OPERATIONS
+}
+REQUIRED_RESPONSES["getReadiness"].add("503")
+for operation_id in REQUEST_SCHEMAS:
+    REQUIRED_RESPONSES[operation_id].update({"409", "415", "422"})
 
 
 def dispatch(request: dict[str, Any]) -> dict[str, Any]:
@@ -103,11 +119,21 @@ def validate_openapi_document(value: dict[str, Any], matrix: dict[str, Any]) -> 
         operation = paths.get(path, {}).get(method.lower())
         if not isinstance(operation, dict) or operation.get("operationId") != operation_id:
             raise LearningContractError("OPENAPI_OPERATION_DRIFT")
-        if method == "POST" and not isinstance(operation.get("requestBody"), dict):
-            raise LearningContractError("OPENAPI_REQUEST_BODY_MISSING")
+        if method == "POST":
+            try:
+                request_ref = operation["requestBody"]["content"]["application/json"]["schema"]["$ref"]
+            except (KeyError, TypeError):
+                raise LearningContractError("OPENAPI_REQUEST_BODY_MISSING") from None
+            if request_ref != f"#/components/schemas/{REQUEST_SCHEMAS[operation_id]}":
+                raise LearningContractError("OPENAPI_REQUEST_CONTRACT_DRIFT")
         responses = operation.get("responses", {})
-        if str(status) not in responses or not {"400", "401"}.issubset(responses):
+        if set(responses) != REQUIRED_RESPONSES[operation_id]:
             raise LearningContractError("OPENAPI_RESPONSE_DRIFT")
+        if path.startswith("/health/"):
+            if operation.get("security") != []:
+                raise LearningContractError("OPENAPI_SECURITY_INVALID")
+        elif operation.get("security") != [{"bearerAuth": []}]:
+            raise LearningContractError("OPENAPI_SECURITY_INVALID")
         observed.add((operation_id, method, path, status))
     if observed != EXPECTED_OPERATIONS:
         raise LearningContractError("OPENAPI_OPERATION_DRIFT")
@@ -136,6 +162,6 @@ def validate_shipped_openapi() -> None:
         jsonschema.Draft202012Validator.check_schema(profile)
         jsonschema.Draft202012Validator.check_schema(problem)
         jsonschema.Draft202012Validator(profile).validate(document)
-    except jsonschema.exceptions.JsonSchemaException as exc:
+    except (jsonschema.exceptions.SchemaError, jsonschema.exceptions.ValidationError) as exc:
         raise LearningContractError("OPENAPI_SCHEMA_INVALID") from exc
     validate_openapi_document(document, matrix)

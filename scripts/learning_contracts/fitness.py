@@ -11,13 +11,40 @@ from .references import resolve_reference
 from .schema import LearningContractError, validate_document
 
 
-def verify_fitness(value: dict[str, Any], *, root: pathlib.Path) -> None:
+def verify_fitness(
+    value: dict[str, Any],
+    *,
+    root: pathlib.Path,
+    activation: dict[str, Any] | None = None,
+    expected_provenance: dict[str, Any] | None = None,
+) -> None:
     try:
         validate_document(value, family="fitness-result")
     except LearningContractError as exc:
         if exc.code == "SCHEMA_INVALID":
             raise LearningContractError("FITNESS_SCHEMA_INVALID") from exc
         raise
+    if activation is not None:
+        if activation.get("schemaVersion") != "command-owner-activation-v1" or value["owner"] != activation.get("owner"):
+            raise LearningContractError("FITNESS_ACTIVATION_MISMATCH")
+        matching = [
+            row for row in activation.get("commands", [])
+            if isinstance(row, dict) and row.get("commandId") == value["commandId"]
+        ]
+        if len(matching) != 1 or matching[0].get("availability") != "implemented" or matching[0].get("evidenceVersion") != "fitness-result-v2":
+            raise LearningContractError("FITNESS_ACTIVATION_MISMATCH")
+    if expected_provenance is not None:
+        for key in (
+            "inputSha", "testedTreeSha", "dependencyMergeShas", "contractHashes",
+            "fixtureHashes", "schemaHashes", "lockSha256",
+        ):
+            expected = expected_provenance.get(key)
+            actual = value.get(key)
+            if key.endswith("Hashes") and isinstance(expected, list) and isinstance(actual, list):
+                expected = sorted(expected, key=lambda item: (item["name"], item["sha256"]))
+                actual = sorted(actual, key=lambda item: (item["name"], item["sha256"]))
+            if actual != expected:
+                raise LearningContractError("FITNESS_PROVENANCE_MISMATCH")
     payload = {key: child for key, child in value.items() if key != "payloadSha256"}
     if hashlib.sha256(canonical_bytes(payload)).hexdigest() != value["payloadSha256"]:
         raise LearningContractError("FITNESS_PAYLOAD_TAMPER")

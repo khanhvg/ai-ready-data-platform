@@ -71,7 +71,7 @@
       "readerId": "learning-evidence-reader-v1",
       "schema": {
         "path": "learning/contracts/learning-evidence-v1.schema.json",
-        "sha256": "bd03918a79b4b579d59d1fbc6bdf5e1ceaea9b42af939dcd4d93ac0b99d5e263"
+        "sha256": "52a68529b72ecb7f24c59ebe52e16e4ee5f21660164b1d20570827b18be3fe47"
       },
       "migrations": [
         {
@@ -128,7 +128,7 @@
       "readerId": "promotion-trust-learning-manifest-reader-v1",
       "schema": {
         "path": "learning/contracts/promotion-trust-learning-manifest-v1.schema.json",
-        "sha256": "09937b134fe75813e846f09c800522c98ab3b010757ccaba1889745d7fa79dd6"
+        "sha256": "d0db5915a7aa8c68844a9bd418b312d7f4ab308de4610b1cc69591d53b6c8050"
       },
       "migrations": [
         {
@@ -205,7 +205,7 @@
           "version": "fitness-result-v2",
           "schema": {
             "path": "learning/contracts/fitness-result-v2.schema.json",
-            "sha256": "ae5c655b0b3f399f2f3e547a98b22d4f5b60d84af1f23f5de175ce49d2780e27"
+            "sha256": "11bc32e9800e9694aede72f0d80b0cadd3fa8efbca7918cdb5c945b8fd6b2970"
           },
           "readerId": "fitness-result-reader-v2"
         }

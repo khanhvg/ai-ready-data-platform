@@ -20,7 +20,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/Success"
+            "$ref": "#/components/responses/LessonPage"
           },
           "400": {
             "$ref": "#/components/responses/Problem"
@@ -29,6 +29,9 @@
             "$ref": "#/components/responses/Problem"
           },
           "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
             "$ref": "#/components/responses/Problem"
           }
         }
@@ -58,7 +61,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/Success"
+            "$ref": "#/components/responses/Lesson"
           },
           "400": {
             "$ref": "#/components/responses/Problem"
@@ -67,6 +70,9 @@
             "$ref": "#/components/responses/Problem"
           },
           "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
             "$ref": "#/components/responses/Problem"
           }
         }
@@ -87,7 +93,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/Success"
+            "$ref": "#/components/responses/ProgressPage"
           },
           "400": {
             "$ref": "#/components/responses/Problem"
@@ -96,6 +102,9 @@
             "$ref": "#/components/responses/Problem"
           },
           "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
             "$ref": "#/components/responses/Problem"
           }
         }
@@ -125,7 +134,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/Success"
+            "$ref": "#/components/responses/Progress"
           },
           "400": {
             "$ref": "#/components/responses/Problem"
@@ -134,6 +143,9 @@
             "$ref": "#/components/responses/Problem"
           },
           "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
             "$ref": "#/components/responses/Problem"
           }
         }
@@ -163,7 +175,7 @@
         ],
         "responses": {
           "201": {
-            "$ref": "#/components/responses/Success"
+            "$ref": "#/components/responses/Workspace"
           },
           "400": {
             "$ref": "#/components/responses/Problem"
@@ -173,6 +185,18 @@
           },
           "403": {
             "$ref": "#/components/responses/Problem"
+          },
+          "409": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "415": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "422": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
+            "$ref": "#/components/responses/Problem"
           }
         },
         "requestBody": {
@@ -180,7 +204,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionedRequest"
+                "$ref": "#/components/schemas/CreateWorkspaceRequest"
               }
             }
           }
@@ -211,7 +235,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/Success"
+            "$ref": "#/components/responses/Workspace"
           },
           "400": {
             "$ref": "#/components/responses/Problem"
@@ -220,6 +244,9 @@
             "$ref": "#/components/responses/Problem"
           },
           "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
             "$ref": "#/components/responses/Problem"
           }
         }
@@ -249,7 +276,7 @@
         ],
         "responses": {
           "202": {
-            "$ref": "#/components/responses/Success"
+            "$ref": "#/components/responses/OperationAccepted"
           },
           "400": {
             "$ref": "#/components/responses/Problem"
@@ -259,6 +286,18 @@
           },
           "403": {
             "$ref": "#/components/responses/Problem"
+          },
+          "409": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "415": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "422": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
+            "$ref": "#/components/responses/Problem"
           }
         },
         "requestBody": {
@@ -266,7 +305,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionedRequest"
+                "$ref": "#/components/schemas/StartWorkspaceOperationRequest"
               }
             }
           }
@@ -297,7 +336,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/Success"
+            "$ref": "#/components/responses/Operation"
           },
           "400": {
             "$ref": "#/components/responses/Problem"
@@ -306,6 +345,9 @@
             "$ref": "#/components/responses/Problem"
           },
           "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
             "$ref": "#/components/responses/Problem"
           }
         }
@@ -334,8 +376,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "$ref": "#/components/responses/Success"
+          "202": {
+            "$ref": "#/components/responses/OperationAccepted"
           },
           "400": {
             "$ref": "#/components/responses/Problem"
@@ -345,6 +387,18 @@
           },
           "403": {
             "$ref": "#/components/responses/Problem"
+          },
+          "409": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "415": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "422": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
+            "$ref": "#/components/responses/Problem"
           }
         },
         "requestBody": {
@@ -352,7 +406,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionedRequest"
+                "$ref": "#/components/schemas/ResetWorkspaceRequest"
               }
             }
           }
@@ -382,8 +436,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "$ref": "#/components/responses/Success"
+          "202": {
+            "$ref": "#/components/responses/OperationAccepted"
           },
           "400": {
             "$ref": "#/components/responses/Problem"
@@ -393,6 +447,18 @@
           },
           "403": {
             "$ref": "#/components/responses/Problem"
+          },
+          "409": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "415": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "422": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
+            "$ref": "#/components/responses/Problem"
           }
         },
         "requestBody": {
@@ -400,7 +466,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionedRequest"
+                "$ref": "#/components/schemas/VerifyWorkspaceRequest"
               }
             }
           }
@@ -431,7 +497,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/Success"
+            "$ref": "#/components/responses/Evidence"
           },
           "400": {
             "$ref": "#/components/responses/Problem"
@@ -440,6 +506,9 @@
             "$ref": "#/components/responses/Problem"
           },
           "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
             "$ref": "#/components/responses/Problem"
           }
         }
@@ -460,7 +529,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/Success"
+            "$ref": "#/components/responses/ToolPage"
           },
           "400": {
             "$ref": "#/components/responses/Problem"
@@ -469,6 +538,9 @@
             "$ref": "#/components/responses/Problem"
           },
           "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
             "$ref": "#/components/responses/Problem"
           }
         }
@@ -498,7 +570,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/Success"
+            "$ref": "#/components/responses/Tool"
           },
           "400": {
             "$ref": "#/components/responses/Problem"
@@ -507,6 +579,9 @@
             "$ref": "#/components/responses/Problem"
           },
           "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
             "$ref": "#/components/responses/Problem"
           }
         }
@@ -535,8 +610,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "$ref": "#/components/responses/Success"
+          "202": {
+            "$ref": "#/components/responses/OperationAccepted"
           },
           "400": {
             "$ref": "#/components/responses/Problem"
@@ -546,6 +621,18 @@
           },
           "403": {
             "$ref": "#/components/responses/Problem"
+          },
+          "409": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "415": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "422": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
+            "$ref": "#/components/responses/Problem"
           }
         },
         "requestBody": {
@@ -553,7 +640,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VersionedRequest"
+                "$ref": "#/components/schemas/QueryDataProductRequest"
               }
             }
           }
@@ -571,15 +658,9 @@
         "security": [],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/Success"
+            "$ref": "#/components/responses/Health"
           },
-          "400": {
-            "$ref": "#/components/responses/Problem"
-          },
-          "401": {
-            "$ref": "#/components/responses/Problem"
-          },
-          "403": {
+          "500": {
             "$ref": "#/components/responses/Problem"
           }
         }
@@ -596,15 +677,12 @@
         "security": [],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/Success"
+            "$ref": "#/components/responses/Health"
           },
-          "400": {
+          "500": {
             "$ref": "#/components/responses/Problem"
           },
-          "401": {
-            "$ref": "#/components/responses/Problem"
-          },
-          "403": {
+          "503": {
             "$ref": "#/components/responses/Problem"
           }
         }
@@ -630,12 +708,17 @@
       }
     },
     "schemas": {
-      "VersionedRequest": {
+      "Problem": {
+        "$ref": "./learning-platform-problem-details-v1.schema.json"
+      },
+      "CreateWorkspaceRequest": {
         "type": "object",
         "additionalProperties": false,
         "required": [
           "schemaVersion",
-          "requestId"
+          "requestId",
+          "expectedRevision",
+          "parameters"
         ],
         "properties": {
           "schemaVersion": {
@@ -644,53 +727,412 @@
           "requestId": {
             "type": "string",
             "format": "uuid"
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "parameters": {
+            "type": "array",
+            "maxItems": 32,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
           }
         }
       },
-      "Problem": {
-        "$ref": "./learning-platform-problem-details-v1.schema.json"
+      "StartWorkspaceOperationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "expectedRevision",
+          "commandId",
+          "arguments"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "learning-platform-v1"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "commandId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "arguments": {
+            "type": "array",
+            "maxItems": 32,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        }
+      },
+      "ResetWorkspaceRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "expectedRevision"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "learning-platform-v1"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "VerifyWorkspaceRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "expectedRevision",
+          "evidenceId"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "learning-platform-v1"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "evidenceId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          }
+        }
+      },
+      "QueryDataProductRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "queryId",
+          "metrics",
+          "dimensions"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "learning-platform-v1"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "queryId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "metrics": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 32,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+            }
+          },
+          "dimensions": {
+            "type": "array",
+            "maxItems": 32,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+            }
+          }
+        }
+      },
+      "Lesson": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "lessonId",
+          "title"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "learning-platform-v1"
+          },
+          "lessonId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        }
+      },
+      "Progress": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "lessonId",
+          "state",
+          "revision"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "learning-platform-v1"
+          },
+          "lessonId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "state": {
+            "enum": [
+              "not-started",
+              "in-progress",
+              "verified",
+              "completed"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "Workspace": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "workspaceId",
+          "state",
+          "revision"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "learning-platform-v1"
+          },
+          "workspaceId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "state": {
+            "enum": [
+              "provisioning",
+              "ready",
+              "running",
+              "verified",
+              "failed"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "Operation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "operationId",
+          "state"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "learning-platform-v1"
+          },
+          "operationId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "state": {
+            "enum": [
+              "accepted",
+              "running",
+              "succeeded",
+              "failed"
+            ]
+          }
+        }
+      },
+      "OperationAccepted": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "operationId",
+          "state"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "learning-platform-v1"
+          },
+          "operationId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "state": {
+            "const": "accepted"
+          }
+        }
+      },
+      "Evidence": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "evidenceId",
+          "status"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "learning-platform-v1"
+          },
+          "evidenceId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "status": {
+            "enum": [
+              "pass",
+              "fail"
+            ]
+          }
+        }
+      },
+      "Tool": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "toolId",
+          "title"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "learning-platform-v1"
+          },
+          "toolId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        }
+      },
+      "Health": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "status"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "learning-platform-v1"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "degraded"
+            ]
+          }
+        }
+      },
+      "LessonPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "items"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "learning-platform-v1"
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 256,
+            "items": {
+              "$ref": "#/components/schemas/Lesson"
+            }
+          }
+        }
+      },
+      "ProgressPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "items"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "learning-platform-v1"
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 256,
+            "items": {
+              "$ref": "#/components/schemas/Progress"
+            }
+          }
+        }
+      },
+      "ToolPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "items"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "learning-platform-v1"
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 256,
+            "items": {
+              "$ref": "#/components/schemas/Tool"
+            }
+          }
+        }
       }
     },
     "responses": {
-      "Success": {
-        "description": "Versioned success response",
-        "headers": {
-          "X-Learning-Contract-Version": {
-            "required": true,
-            "schema": {
-              "type": "string",
-              "const": "learning-platform-v1"
-            }
-          },
-          "X-Correlation-ID": {
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        },
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "schemaVersion",
-                "result"
-              ],
-              "properties": {
-                "schemaVersion": {
-                  "const": "learning-platform-v1"
-                },
-                "result": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        }
-      },
       "Problem": {
         "description": "RFC 9457 problem response",
         "headers": {
@@ -713,6 +1155,292 @@
           "application/problem+json": {
             "schema": {
               "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "LessonPage": {
+        "description": "LessonPage response",
+        "headers": {
+          "X-Learning-Contract-Version": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "learning-platform-v1"
+            }
+          },
+          "X-Correlation-ID": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/LessonPage"
+            }
+          }
+        }
+      },
+      "Lesson": {
+        "description": "Lesson response",
+        "headers": {
+          "X-Learning-Contract-Version": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "learning-platform-v1"
+            }
+          },
+          "X-Correlation-ID": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Lesson"
+            }
+          }
+        }
+      },
+      "ProgressPage": {
+        "description": "ProgressPage response",
+        "headers": {
+          "X-Learning-Contract-Version": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "learning-platform-v1"
+            }
+          },
+          "X-Correlation-ID": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProgressPage"
+            }
+          }
+        }
+      },
+      "Progress": {
+        "description": "Progress response",
+        "headers": {
+          "X-Learning-Contract-Version": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "learning-platform-v1"
+            }
+          },
+          "X-Correlation-ID": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Progress"
+            }
+          }
+        }
+      },
+      "Workspace": {
+        "description": "Workspace response",
+        "headers": {
+          "X-Learning-Contract-Version": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "learning-platform-v1"
+            }
+          },
+          "X-Correlation-ID": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Workspace"
+            }
+          }
+        }
+      },
+      "OperationAccepted": {
+        "description": "OperationAccepted response",
+        "headers": {
+          "X-Learning-Contract-Version": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "learning-platform-v1"
+            }
+          },
+          "X-Correlation-ID": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/OperationAccepted"
+            }
+          }
+        }
+      },
+      "Operation": {
+        "description": "Operation response",
+        "headers": {
+          "X-Learning-Contract-Version": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "learning-platform-v1"
+            }
+          },
+          "X-Correlation-ID": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Operation"
+            }
+          }
+        }
+      },
+      "Evidence": {
+        "description": "Evidence response",
+        "headers": {
+          "X-Learning-Contract-Version": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "learning-platform-v1"
+            }
+          },
+          "X-Correlation-ID": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "ToolPage": {
+        "description": "ToolPage response",
+        "headers": {
+          "X-Learning-Contract-Version": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "learning-platform-v1"
+            }
+          },
+          "X-Correlation-ID": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ToolPage"
+            }
+          }
+        }
+      },
+      "Tool": {
+        "description": "Tool response",
+        "headers": {
+          "X-Learning-Contract-Version": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "learning-platform-v1"
+            }
+          },
+          "X-Correlation-ID": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Tool"
+            }
+          }
+        }
+      },
+      "Health": {
+        "description": "Health response",
+        "headers": {
+          "X-Learning-Contract-Version": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "learning-platform-v1"
+            }
+          },
+          "X-Correlation-ID": {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Health"
             }
           }
         }

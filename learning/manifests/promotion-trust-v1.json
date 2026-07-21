@@ -6,6 +6,7 @@
   "evidenceSchema": "learning/contracts/learning-evidence-v1.schema.json",
   "dataContract": "contracts/data/retail-golden-v1.json",
   "fixture": "tests/fixtures/learning/promotion-trust/manifest.json",
+  "fixtureSha256": "0a1dcd4023648f52009bfd4dc5d529c00ce66f42cd0e725732b972b0b78df341",
   "sources": [
     "promotion:promo_name,channel",
     "fulfillment:carrier,region",
@@ -17,5 +18,5 @@
     "no campaign/order/time common grain",
     "no cross-grain causal attribution"
   ],
-  "contractSetSha256": "916f7f66381c3cb44d2f28941501596b69692f4468df244cd22516b51177a843"
+  "contractSetSha256": "cccfb62f00304d103d1824372cf8e4b28f808c2390638ba6750c475e2f26c90b"
 }

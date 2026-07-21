@@ -11,6 +11,7 @@
     "evidenceSchema",
     "dataContract",
     "fixture",
+    "fixtureSha256",
     "sources",
     "decision",
     "limitations",
@@ -49,6 +50,10 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 512
+    },
+    "fixtureSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
     },
     "sources": {
       "type": "array",

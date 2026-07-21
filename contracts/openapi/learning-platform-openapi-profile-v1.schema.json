@@ -137,8 +137,8 @@
         },
         "responses": {
           "type": "object",
-          "minProperties": 4,
-          "maxProperties": 4,
+          "minProperties": 2,
+          "maxProperties": 8,
           "patternProperties": {
             "^[1-5][0-9][0-9]$": {
               "$ref": "#/$defs/reference"

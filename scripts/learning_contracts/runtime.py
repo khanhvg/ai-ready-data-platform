@@ -142,7 +142,13 @@ def validate_evidence_locator(root: pathlib.Path, locator: str, sha256: str) -> 
         raise
 
 
-def cleanup_owned(path: pathlib.Path, marker: dict[str, object]) -> None:
+def cleanup_owned(path: pathlib.Path, marker: dict[str, object], *, owned_root: pathlib.Path) -> None:
+    try:
+        root_info = owned_root.lstat()
+    except OSError as exc:
+        raise LearningContractError("CLEANUP_ROOT_INVALID") from exc
+    if not stat.S_ISDIR(root_info.st_mode) or stat.S_ISLNK(root_info.st_mode) or path.parent != owned_root:
+        raise LearningContractError("CLEANUP_ROOT_INVALID")
     try:
         directory_before = path.lstat()
     except OSError as exc:
@@ -192,6 +198,8 @@ def cleanup_owned(path: pathlib.Path, marker: dict[str, object]) -> None:
         directory_after = os.fstat(directory_fd)
         if (directory_before.st_dev, directory_before.st_ino) != (directory_after.st_dev, directory_after.st_ino):
             raise LearningContractError("CLEANUP_OWNERSHIP_MISMATCH")
+        removable: list[str] = []
+        descriptors: list[int] = []
         for name, disposition in declared.items():
             if disposition != "mutable" or name not in actual:
                 continue
@@ -199,12 +207,15 @@ def cleanup_owned(path: pathlib.Path, marker: dict[str, object]) -> None:
             if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
                 raise LearningContractError("CLEANUP_ENTRY_UNSAFE")
             descriptor = os.open(name, os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_NOFOLLOW", 0), dir_fd=directory_fd)
-            try:
-                after = os.fstat(descriptor)
-                if (before.st_dev, before.st_ino) != (after.st_dev, after.st_ino):
-                    raise LearningContractError("CLEANUP_ENTRY_UNSAFE")
-            finally:
+            after = os.fstat(descriptor)
+            if (before.st_dev, before.st_ino) != (after.st_dev, after.st_ino):
                 os.close(descriptor)
+                raise LearningContractError("CLEANUP_ENTRY_UNSAFE")
+            descriptors.append(descriptor)
+            removable.append(name)
+        for descriptor in descriptors:
+            os.close(descriptor)
+        for name in removable:
             os.unlink(name, dir_fd=directory_fd)
         os.fsync(directory_fd)
     finally:

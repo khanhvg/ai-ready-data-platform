@@ -131,30 +131,8 @@ class StateCompletionApiTests(unittest.TestCase):
 
     def test_i8_v3_openapi_wiring_012(self) -> None:
         """I8-V3-OPENAPI-WIRING-012."""
-        document = {
-            "openapi": "3.2.0",
-            "security": [{"bearerAuth": []}],
-            "paths": {
-                path: {
-                    method.lower(): {
-                        "operationId": operation_id,
-                        **({"requestBody": {"required": True}} if method == "POST" else {}),
-                        "responses": {
-                            str(status): {"description": "success"},
-                            "400": {"$ref": "#/components/responses/Problem"},
-                            "401": {"$ref": "#/components/responses/Problem"},
-                        },
-                    }
-                }
-                for operation_id, method, path, status in OPERATIONS
-            },
-            "components": {
-                "securitySchemes": {"bearerAuth": {"type": "http", "scheme": "bearer"}},
-                "responses": {"Problem": {"description": "problem"}},
-            },
-        }
-        self.assertIsNone(openapi.validate_openapi_document(document, matrix()))
         shipped = schema.read_document(schema.ROOT / "contracts/openapi/learning-platform-v1.yaml")
+        self.assertIsNone(openapi.validate_openapi_document(shipped, matrix()))
         for operation_id, method, path, status in OPERATIONS:
             operation = shipped["paths"][path][method.lower()]
             self.assertIn("500", operation["responses"])

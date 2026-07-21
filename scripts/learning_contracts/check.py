@@ -9,7 +9,9 @@ import hashlib
 import json
 import os
 import pathlib
+import platform
 import re
+import resource
 import subprocess
 import sys
 import time
@@ -20,6 +22,7 @@ import jsonschema
 
 from .canonical import canonical_bytes, parse_json
 from .schema import LearningContractError, read_document, validate_document
+from .references import resolve_reference
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -271,7 +274,7 @@ def _validate_schema_instance(schema_path: pathlib.Path, instance_path: pathlib.
     try:
         jsonschema.Draft202012Validator.check_schema(schema_value)
         jsonschema.Draft202012Validator(schema_value).validate(instance)
-    except jsonschema.exceptions.JsonSchemaException as exc:
+    except (jsonschema.exceptions.SchemaError, jsonschema.exceptions.ValidationError) as exc:
         raise LearningContractError(f"SHIPPED_SCHEMA_INVALID:{schema_path.name}") from exc
 
 
@@ -283,9 +286,17 @@ def validate_valid_corpus() -> None:
         ("operation-matrix-v1.schema.json", FIXTURE_ROOT / "valid/operation-matrix-v1.json"),
         ("learning-evidence-v1.schema.json", FIXTURE_ROOT / "valid/learning-evidence-v1.json"),
         ("promotion-trust-learning-manifest-v1.schema.json", FIXTURE_ROOT / "valid/promotion-trust-v1.json"),
+        ("promotion-trust-learning-manifest-v1.schema.json", ROOT / "learning/manifests/promotion-trust-v1.json"),
     ]
     for schema_name, instance_path in pairs:
         _validate_schema_instance(ROOT / "learning/contracts" / schema_name, instance_path)
+    promotion = read_document(ROOT / "learning/manifests/promotion-trust-v1.json")
+    resolve_reference(ROOT, promotion["fixture"], promotion["fixtureSha256"])
+    expected_contract_set_schema = hashlib.sha256(
+        (ROOT / "learning/contracts/learning-contract-set-v1.schema.json").read_bytes()
+    ).hexdigest()
+    if promotion["contractSetSha256"] != expected_contract_set_schema:
+        raise LearningContractError("PROMOTION_CONTRACT_SET_HASH_MISMATCH")
     private = read_document(FIXTURE_ROOT / "valid/private-migration-v0.json")
     from .registry import migrate_document
     if migrate_document(migrate_document(private, "private-migration-v1"), "private-migration-v0") != private:
@@ -312,6 +323,27 @@ def _verify_release_hashes() -> None:
     fragment = activation["fragment"]
     if hashlib.sha256((ROOT / fragment["path"]).read_bytes()).hexdigest() != fragment["sha256"]:
         raise LearningContractError("COMMAND_FRAGMENT_HASH_MISMATCH")
+    base_commands = {
+        row["command"]: row
+        for row in read_document(ROOT / activation["baseRegistryPath"])["commands"]
+        if row.get("owner") == activation["owner"]
+    }
+    activated_commands = {row["commandId"]: row for row in activation["commands"]}
+    if set(base_commands) != set(activated_commands):
+        raise LearningContractError("COMMAND_ACTIVATION_SET_MISMATCH")
+    for command_id, activated in activated_commands.items():
+        retained = base_commands[command_id]
+        if (
+            retained["fragment"] != fragment["path"]
+            or retained["security"] != "S3"
+            or retained["availability"] != "future-owner"
+            or activated != {
+                "commandId": command_id,
+                "availability": "implemented",
+                "evidenceVersion": "fitness-result-v2",
+            }
+        ):
+            raise LearningContractError("COMMAND_ACTIVATION_ROW_MISMATCH")
     contract_set = read_document(ROOT / "learning/contracts/learning-contract-set-v1.json")
     paths = [item["path"] for item in contract_set["contracts"]]
     if paths != sorted(paths) or len(paths) != len(set(paths)):
@@ -335,50 +367,78 @@ def _git_value(*arguments: str) -> str:
     return subprocess.check_output(["git", *arguments], cwd=ROOT, text=True).strip()
 
 
-def _emit_fitness(command_id: str, subject_type: str, subject_id: str, started: float) -> pathlib.Path:
+def _fitness_provenance() -> dict[str, Any]:
+    contract_hashes = [
+        {"name": path.name.replace(".schema.json", "").replace(".json", ""), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+        for path in sorted((ROOT / "learning/contracts").glob("*.schema.json"))
+    ]
+    fixture_hashes = [
+        {"name": path.stem, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+        for path in sorted(FIXTURE_ROOT.rglob("*")) if path.is_file()
+    ]
+    return {
+        "inputSha": _git_value("rev-parse", "HEAD"),
+        "testedTreeSha": _git_value("rev-parse", "HEAD^{tree}"),
+        "dependencyMergeShas": ["24be3b34c6b0fcdbd07c5800dcab349054e34713"],
+        "contractHashes": contract_hashes,
+        "fixtureHashes": fixture_hashes,
+        "schemaHashes": contract_hashes,
+        "lockSha256": hashlib.sha256((ROOT / "requirements/golden-py312-macos-arm64.lock").read_bytes()).hexdigest(),
+    }
+
+
+def _emit_fitness(
+    command_id: str,
+    subject_type: str,
+    subject_id: str,
+    started: float,
+    *,
+    invalid_rows: list[dict[str, str]] | None = None,
+) -> pathlib.Path:
     from scripts.golden.workspace import allocate_family, atomic_write
     from .fitness import verify_fitness
     workspace = allocate_family(("evidence", "learning-contracts"), command_id)
     try:
         result_raw = b'{"result":"pass"}\n'
         atomic_write(workspace.run_fd, "result.json", result_raw)
-        source_sha = _git_value("rev-parse", "HEAD")
-        tested_tree = _git_value("rev-parse", "HEAD^{tree}")
+        invalid_raw = json.dumps(invalid_rows or [], sort_keys=True, separators=(",", ":")).encode() + b"\n"
+        atomic_write(workspace.run_fd, "invalid-fixture-results.json", invalid_raw)
+        provenance = _fitness_provenance()
         now = datetime.datetime.now(datetime.UTC)
         argv = [sys.executable, "-m", "scripts.learning_contracts.check", command_id]
-        contract_hashes = [
-            {"name": path.name.replace(".schema.json", "").replace(".json", ""), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
-            for path in sorted((ROOT / "learning/contracts").glob("*.schema.json"))
-        ]
-        fixture_hashes = [
-            {"name": path.stem, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
-            for path in sorted((FIXTURE_ROOT / "valid").glob("*"))
-        ]
         value: dict[str, Any] = {
             "schemaVersion": "fitness-result-v2",
             "commandId": command_id,
             "owner": "I5-03",
             "requested": {"subjectType": subject_type, "subjectId": subject_id, "parameters": []},
             "status": "pass", "failureCode": None, "remediation": None,
-            "inputSha": source_sha, "testedTreeSha": tested_tree,
-            "dependencyMergeShas": ["24be3b34c6b0fcdbd07c5800dcab349054e34713"],
-            "contractHashes": contract_hashes,
-            "fixtureHashes": fixture_hashes,
-            "schemaHashes": contract_hashes,
+            "inputSha": provenance["inputSha"], "testedTreeSha": provenance["testedTreeSha"],
+            "dependencyMergeShas": provenance["dependencyMergeShas"],
+            "contractHashes": provenance["contractHashes"],
+            "fixtureHashes": provenance["fixtureHashes"],
+            "schemaHashes": provenance["schemaHashes"],
             "toolchain": [{"name": "python", "version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"}],
-            "lockSha256": hashlib.sha256((ROOT / "requirements/golden-py312-macos-arm64.lock").read_bytes()).hexdigest(),
+            "lockSha256": provenance["lockSha256"],
             "invocation": {"publicArgv": ["make", command_id], "canonicalChildArgv": ["python", "-m", "scripts.learning_contracts.check", command_id], "actualChildArgvSha256": hashlib.sha256(canonical_bytes(argv)).hexdigest(), "cwdRole": "repository-root"},
             "startedAt": datetime.datetime.fromtimestamp(started, datetime.UTC).isoformat().replace("+00:00", "Z"),
             "finishedAt": now.isoformat().replace("+00:00", "Z"),
             "durationMs": max(0, int((time.time() - started) * 1000)),
             "rawLocator": "result.json", "projectionLocator": None, "envelopeLocator": None, "projectionSha256": None,
-            "artifacts": [{"locator": "result.json", "mediaType": "application/json", "size": len(result_raw), "sha256": hashlib.sha256(result_raw).hexdigest()}],
+            "artifacts": [
+                {"locator": "result.json", "mediaType": "application/json", "size": len(result_raw), "sha256": hashlib.sha256(result_raw).hexdigest()},
+                {"locator": "invalid-fixture-results.json", "mediaType": "application/json", "size": len(invalid_raw), "sha256": hashlib.sha256(invalid_raw).hexdigest()},
+            ],
             "redactionClass": "public-contract-evidence", "retentionClass": "review-bundle",
             "rollback": {"supported": True, "preserveEvidence": True},
             "canonicalization": "RFC8785",
         }
         value["payloadSha256"] = hashlib.sha256(canonical_bytes(value)).hexdigest()
-        verify_fitness(value, root=workspace.path)
+        peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        peak_bytes = int(peak if platform.system() == "Darwin" else peak * 1024)
+        if value["durationMs"] > 120000 or peak_bytes > 512 * 1024 * 1024 or len(result_raw) + len(invalid_raw) > 10 * 1024 * 1024:
+            raise LearningContractError("RESOURCE_CEILING_EXCEEDED")
+        activation = read_document(ROOT / "learning/contracts/command-owner-activation-i5-03-v1.json")
+        verify_fitness(value, root=workspace.path, activation=activation, expected_provenance=provenance)
         atomic_write(workspace.run_fd, "fitness-result-v2.json", json.dumps(value, sort_keys=True, separators=(",", ":")).encode() + b"\n")
         return workspace.path / "fitness-result-v2.json"
     finally:
@@ -399,7 +459,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     command = arguments.command or "check"
     if command == "check":
         rows = validate_all_contracts()
-        evidence_path = _emit_fitness("learning-contracts-check", "contract-set", "issue-8-stage-a-v1", started)
+        evidence_path = _emit_fitness("learning-contracts-check", "contract-set", "issue-8-stage-a-v1", started, invalid_rows=rows)
         print(json.dumps({"result": "pass", "invalidFixtures": len(rows), "evidence": evidence_path.relative_to(ROOT).as_posix()}, sort_keys=True))
     elif command == "api":
         from .openapi import validate_shipped_openapi
@@ -421,10 +481,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         value = read_document(path)
         if value.get("schemaVersion") == "fitness-result-v2":
             from .fitness import verify_fitness
-            verify_fitness(value, root=path.parent)
+            activation = read_document(ROOT / "learning/contracts/command-owner-activation-i5-03-v1.json")
+            verify_fitness(value, root=path.parent, activation=activation, expected_provenance=_fitness_provenance())
         elif value.get("schemaVersion") == "learning-evidence-v1":
             from .evidence import verify_evidence
-            verify_evidence(value, root=path.parent, seen_run_ids=set())
+            verify_evidence(
+                value,
+                root=path.parent,
+                authoritative_root=ROOT,
+                replay_root=ROOT / ".artifacts/evidence/learning-replay",
+            )
         else:
             raise LearningContractError("EVIDENCE_VERSION_UNSUPPORTED")
         evidence_path = _emit_fitness("evidence-verify", "evidence", path.name, started)
