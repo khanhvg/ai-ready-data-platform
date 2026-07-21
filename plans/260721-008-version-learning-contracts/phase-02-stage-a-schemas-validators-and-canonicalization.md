@@ -9,6 +9,8 @@ stage: "A"
 
 # Phase 2: Stage A Schemas, Validators, and Canonicalization
 
+<!-- Updated: Validation Session 1 - exact closed validators and additive fitness v2 compatibility. -->
+
 ## Context Links
 
 - [Phase 1 RED and authority](./phase-01-authority-freeze-and-stage-a-tdd-red.md)
@@ -18,9 +20,9 @@ stage: "A"
 ## Overview
 
 Add new, closed Issue #8 schema families and a framework-neutral Python reader/validator using the
-existing manifest-admitted Python 3.12, `jsonschema`, `rfc8785`, and strict Issue #6 canonical
-profile. Existing Issue #6 files remain immutable; new family dispatch composes them read-only and
-rejects any family collision.
+existing manifest-admitted Python 3.12, `jsonschema`, `rfc8785`, `PyYAML`, and strict Issue #6
+canonical profile. Every Issue #6 file remains immutable. An Issue #8-owned registry overlay adds
+`fitness-result-v2` only to the Issue #8 dispatcher and rejects every undeclared family collision.
 
 ## Requirements
 
@@ -30,6 +32,11 @@ rejects any family collision.
   refs, uniqueness, prerequisite DAG and additive migration graph.
 - Functional: strict UTF-8/I-JSON parsing before mapping and RFC 8785 canonical bytes for payload
   integrity; no field dropping, coercion, Unicode normalization, YAML ambiguity or float shortcuts.
+- Functional: ordered first-error validation and exact closed field/semantic sets are normative in
+  traceability; evidence locators are descriptor-bound and unsafe integers fail before JCS.
+- Compatibility: shipped `fitness-result-v1` has `owner: I5-01`; add v2 for `owner: I5-03`, retain
+  v1 schema/hash/evidence and the existing registry-driven reader, and never reinterpret a v1
+  document as v2.
 - Non-functional: no new distribution, lock, runtime, framework, Node package or network fetch.
   Required runtime mismatch fails with typed remediation to establish the existing golden runtime.
 
@@ -40,15 +47,22 @@ canonicalization and evidence hashing on one byte path. MDX/prose remains outsid
 contract and is consumed later by the portal. No YAML-to-JSON conversion becomes a second source of
 canonical truth.
 
-Two registries have disjoint ownership:
+Two Issue #8/Issue #6 registry roles are explicit:
 
-- existing `schema-version-registry.json`: Issue #6 families, read-only;
-- new `learning-contract-version-registry-v1.json`: Issue #8 families only.
+- existing `schema-version-registry.json`: immutable Issue #6 families/current/readers at SHA-256
+  `8e18588f63b5d99c0b60a229758575e8badf0f055bfcb4f89908f9fa2684a57e`, including the fitness
+  v1 entry whose exact hash is pinned by the shipped promotion-trust fixture;
+- new `learning-contract-version-registry-v1.json`: Issue #8-owned families plus one explicit
+  fitness-family extension bound to the base registry SHA-256.
 
-The dispatcher loads both, rejects duplicate family/version/schema IDs, validates each registered
-schema hash and migration edge, and never rewrites either registry at runtime. New v1 families have
-v1 as current/readable/rollback plus identity reading. Reversible private vectors exercise the
-migration engine without publishing a fictional v0.
+The Issue #8 dispatcher loads the immutable base plus the hash-bound overlay, rejects duplicate
+family/version/schema IDs except the one declared extension, validates each registered schema hash
+and identity edge, and never rewrites either document at runtime. New v1 families have v1 as
+current/readable/fallback plus identity reading. For I5-03 only, the extension adds v2 as the emit
+version and v1 as fallback/read-only compatibility; it does not change the base family current or
+claim that the unmodified Issue #6 reader understands v2. Rollback disables I5-03 emission while
+retaining v2 schema/readability/evidence. Reversible private vectors exercise the migration engine
+without publishing a fictional v0.
 
 Canonical learner evidence follows the existing profile `rfc8785-jcs-v1`: canonicalize only the
 defined payload; keep the sibling digest outside the payload; reject recursive self/attestation/
@@ -67,26 +81,32 @@ without changing that module.
 | Create | `learning/contracts/operation-matrix-v1.schema.json` | operation metadata and coverage shape |
 | Create | `learning/contracts/promotion-trust-learning-manifest-v1.schema.json` | first manifest link/hash/grain contract |
 | Create | `learning/contracts/learning-contract-version-registry-v1.schema.json` | scoped family/version/hash/migration registry schema |
-| Create | `learning/contracts/learning-contract-version-registry-v1.json` | v1 current/readable/rollback entries for Issue #8 families |
+| Create | `learning/contracts/learning-contract-version-registry-v1.json` | base-hash-bound owned families plus sole fitness-v2 extension/emit/fallback policy |
+| Create | `learning/contracts/fitness-result-v2.schema.json` | additive closed/bounded I5-03 result with fixed requested/toolchain/artifact shapes, JCS payload hash, `schemaVersion=v2`, `owner=I5-03` |
+| Create | `learning/contracts/command-owner-activation-i5-03-v1.schema.json` | closed activation overlay bound to the immutable command-registry hash |
 | Create | `scripts/learning_contracts/__init__.py` | module boundary |
 | Create | `scripts/learning_contracts/canonical.py` | strict parser/domain payload canonicalizer delegating to existing JCS profile |
 | Create | `scripts/learning_contracts/registry.py` | disjoint registry composition and migration graph |
 | Create | `scripts/learning_contracts/schema.py` | Draft 2020-12 schema loading/hash/closed validation |
 | Create | `scripts/learning_contracts/references.py` | repository-relative ref resolver and semantic graph checks |
-| Modify | Phase 1 schema/ref/migration tests and valid/private fixtures | close RED assertions |
+| Modify | `tests/contracts/learning/test_schema_contracts.py` | close schema/canonical RED without weakening IDs/errors |
+| Modify | `tests/contracts/learning/test_reference_integrity.py` | close ref/graph RED without weakening IDs/errors |
+| Modify | `tests/contracts/learning/test_version_migrations.py` | close registry/v1-v2/private migration RED without weakening IDs/errors |
+| Modify | `tests/contracts/learning/test_runtime_dependencies.py` | close exact lock/import/parser dependency assertions |
 
-No existing file in `learning/contracts/` is modified. If the new schemas cannot reference or
-compose the Issue #6 concepts without changing their bytes, stop and request a new additive shared
-contract version; do not patch I5-01 files.
+No existing file in `learning/contracts/` is modified. The base registry and every shipped fixture
+that pins its hash remain byte-identical. If any Issue #6 byte must change, stop and request
+serialized shared-contract authority; do not patch I5-01 schemas/readers/fixtures.
 
 ## Tests Before
 
 - Re-run Phase 1 schema/ref/migration RED IDs unchanged.
+- Re-run every Phase 1 schema/ref/canonicalization/migration/fitness/dependency RED ID unchanged.
 - Add property/mutation vectors for minimum/maximum IDs, arrays, strings, semver, 40/64-hex, UTC
   timestamps, duplicate semantic IDs, unknown formats and local/remote/traversal `$ref` attempts.
 - Add registry collisions against every current Issue #6 family and `$id`.
-- Add raw-byte parser vectors for duplicate escaped names, invalid UTF-8, BOM, surrogate, NaN,
-  infinities and unsupported numeric values before mapping.
+- Use the already frozen raw-byte vectors for duplicate escaped names, invalid UTF-8, BOM,
+  surrogate, NaN/infinities, unsafe integers and unsupported numeric values before mapping.
 
 ## Refactor
 
@@ -101,6 +121,8 @@ offline validator for the observed contract set.
 - Unknown properties fail; no validator branch silently strips/coerces them.
 - Every schema and registry hash is checked before use.
 - Private migration v0↔v1 round-trips exactly; unregistered/lossy/cyclic/ambiguous paths fail.
+- Fitness v1 still validates through the old reader; v2 validates I5-03; neither version is silently
+  rewritten or dropped on rollback.
 - Existing Issue #6 families dispatch/read exactly as before and all protected hashes remain equal.
 - Stage A boundary test still reports zero Issue #7/framework dependency.
 
@@ -108,7 +130,8 @@ offline validator for the observed contract set.
 
 1. Add schemas in dependency order: registry, lesson/lab, progress/completion, evidence, operation
    matrix, promotion manifest.
-2. Register only new Issue #8 family/version/schema paths and their exact content hashes.
+2. Register new Issue #8 family/version/schema paths and exact hashes; add the one hash-bound
+   fitness v2 extension to the Issue #8 registry and prove the shipped registry is unchanged.
 3. Implement strict parse/canonical payload primitives and cross-reader byte tests.
 4. Implement registry composition with family/version/schema-ID/hash collision rejection.
 5. Implement closed Draft 2020-12 validation and bounded errors.
@@ -120,17 +143,19 @@ offline validator for the observed contract set.
 
 ## Success Criteria
 
-- [ ] All eight schema files and the new scoped registry are closed, hashed and Draft 2020-12 valid.
-- [ ] No family/version/schema ID overlaps Issue #6.
+- [ ] All new schemas and the new scoped registry are closed, hashed and Draft 2020-12 valid.
+- [ ] No family/version/schema ID overlaps Issue #6 except the declared fitness-family extension;
+  that extension adds v2 only and matches the exact immutable base hash/v1 entry.
 - [ ] Strict parse/JCS cross-reader vectors agree and tampered payloads fail.
 - [ ] Ref, uniqueness, cycle and migration negatives fail with stable bounded codes.
 - [ ] No new runtime/dependency/lock/framework byte is introduced.
-- [ ] Existing Issue #6 contracts, registry, fixtures, readers and canonical bytes remain unchanged.
+- [ ] Existing Issue #6 contracts, registry, fixtures, readers and canonical bytes remain unchanged;
+  the Issue #8 extension is base-hash-bound and old v1 reader/fixture tests remain green.
 
 ## Risk Assessment
 
-- Multiple registries can create two “current” pointers. Mitigation: disjoint family ownership and
-  composite uniqueness; one current pointer per family, never overlapping families.
+- Multiple registries can create two global “current” pointers. Mitigation: the base current stays
+  v1; the overlay uses an owner-scoped `emitVersion` for I5-03 and rejects every other overlap.
 - JSON Schema alone cannot enforce semantic uniqueness/acyclicity. Mitigation: required second
   semantic pass with mutation coverage.
 - Reimplementing JCS can drift. Mitigation: domain wrapper over the existing profile/library and
@@ -139,8 +164,10 @@ offline validator for the observed contract set.
 ## Security and Rollback
 
 Reject remote refs, traversal, sensitive fields, schema-hash drift and unregistered migrations
-before dereference. Rollback removes only the new family files/module and returns dispatch to the
-unchanged Issue #6 registry; retained evidence stays immutable.
+before dereference. Before publication, abandonment is limited to uncommitted Issue #8-owned
+changes. After release, rollback reselects the prior owner-scoped emit/fallback policy while
+retaining every released schema, reader and evidence record, including fitness v2; it never down-migrates owner
+identity or restores a registry by deleting its additive history.
 
 ## Next Steps
 
