@@ -7,9 +7,10 @@ The binding current revision is
 `358c305e5988a44ad4261b748aac3ea454c73dad` after the
 [owner selected Vite + React](https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5036142177).
 It passed independent validation with fixes from exact input
-`d79ce5638e4a47c5c0963bba1a546448bc0c0ea6`; a fresh simple readiness audit of the published
-validation head is the only next phase. V3 replaces all prior v2 blocking/readiness/cook/comparison
-scope. The owner selection is unscored, and validation is not implementation readiness.
+`d79ce5638e4a47c5c0963bba1a546448bc0c0ea6` and fresh readiness from exact input
+`aa93dfac5cd4a5f4d351ad045b634bbd42254902`. Only the readiness publication output may become
+`IMPLEMENTATION_INPUT_SHA`; `serialized-simple-tdd-cook` is the next phase. V3 replaces all prior
+v2 blocking/readiness/cook/comparison scope. The owner selection is unscored.
 
 ## V3 Blocking Acceptance Matrix
 
@@ -32,8 +33,11 @@ Contemporaneous RED and S3 evidence are outputs of the seven groups. Two prerequ
 reviews must pass before ADR-005 becomes Accepted/Vite; the ADR head then receives two fresh
 independent exact-head reviews. Any repository-configured PR checks, repository-authorized human
 approval of that same head, and pristine post-merge rerun remain release conditions; v3 creates no
-CI context. Any post-review commit invalidates the final reports, and recovery uses a normal
-reviewed corrective/revert flow. These conditions do not create an eighth test group.
+CI context. If no configured CI workflow or required context exists, record
+`CI_ABSENT_EXTERNAL_GATE`; absence does not block local cook or PR creation and does not authorize
+workflow/config expansion. Human exact-head approval still blocks merge. Any post-review commit
+invalidates the final reports, and recovery uses a normal reviewed corrective/revert flow. These
+conditions do not create an eighth test group.
 
 ## V3 Four-Grain Invariant
 

@@ -1,7 +1,7 @@
 ---
 title: "Issue #7 Simple Vite Acceptance Amendment v3"
 description: "Tests-first plan for the owner-selected Vite candidate using seven minimal acceptance tests and exact-head release governance."
-status: validated-pass-with-fixes
+status: ready-with-gates
 priority: P1
 issue: 7
 branch: "feature/issue-5-02-web-spike"
@@ -11,7 +11,9 @@ inputSha: "358c305e5988a44ad4261b748aac3ea454c73dad"
 plannerOutputSha: "d79ce5638e4a47c5c0963bba1a546448bc0c0ea6"
 validationInputSha: "d79ce5638e4a47c5c0963bba1a546448bc0c0ea6"
 validationReport: "validation/simple-vite-independent-validation-report-v3.md"
-nextPhase: "fresh-simple-readiness-audit"
+readinessAuditInputSha: "aa93dfac5cd4a5f4d351ad045b634bbd42254902"
+readinessAuditReport: "audit/simple-vite-readiness-audit-report-v3.md"
+nextPhase: "serialized-simple-tdd-cook"
 issue6IntegrationSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
 ownerDecision: "https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5036142177"
 historicalTimerRemainingSeconds: "3944.836095708"
@@ -32,10 +34,12 @@ gate below. The selection is an owner decision, not a new comparison or score.
 
 This artifact passed fresh independent validation with fixes from clean local, tracking, and
 fresh-live input `d79ce5638e4a47c5c0963bba1a546448bc0c0ea6` on
-`feature/issue-5-02-web-spike`. This is `INDEPENDENT_VALIDATION_PASS_NOT_READINESS`: it authorizes
-no implementation, install, build, candidate/browser run, score, OS change, ADR transition, PR,
-merge, or Issue #8+ write. The only next phase is a fresh simple readiness audit of the exact
-published validation head.
+`feature/issue-5-02-web-spike`. A fresh simple readiness audit then passed with gates from exact
+clean local/tracking/fresh-live input `aa93dfac5cd4a5f4d351ad045b634bbd42254902`; see the
+[v3 readiness report](./audit/simple-vite-readiness-audit-report-v3.md). Only the 40-hex commit
+containing that report, attested externally in the Issue #7 publication comment, may become
+`IMPLEMENTATION_INPUT_SHA`. The next phase is `serialized-simple-tdd-cook`; no audit action itself
+authorizes a score, OS change, ADR transition, merge, or Issue #8+ write.
 
 ## Authority and precedence
 
@@ -54,9 +58,9 @@ published validation head.
    them.
 6. Parallel downstream planning stays isolated in its existing worktrees. Issue #7 writes only
    the allow-list below and does not touch Issue #8+.
-7. The next `fresh-simple-readiness-audit` is limited to this v3 authority, exact validated head,
-   ownership, and static tool/path preconditions. It cannot restore a v1/v2 comparison, score,
-   timer, native/manual, multi-browser, performance, or portal gate.
+7. The completed `fresh-simple-readiness-audit` was limited to this v3 authority, exact validated
+   head, ownership, and static tool/path preconditions. Its output cannot restore a v1/v2
+   comparison, score, timer, native/manual, multi-browser, performance, or portal gate.
 
 ## Exact Issue #6 fixture identity
 
@@ -380,6 +384,29 @@ one viewport project at a time, no Docker/heavy profile, and no concurrent downs
 build/browser/heavy-profile execution. Isolated planning may continue without writing this
 worktree. V3 does not sample or score resource use.
 
+Operational ceilings are fail-closed safety bounds, not a revived timer, shared budget, score, or
+selection input. `simple-vite-v3.mjs` enforces them with Node's built-in child-process and monotonic
+timer APIs; no untracked `timeout` utility is required. The narrower inner or outer ceiling,
+whichever expires first, wins:
+
+| Command or operation | Ceiling |
+|---|---:|
+| authority/hash/ownership preflight | 60 seconds |
+| frozen `npm ci` | 300 seconds |
+| Vite production build | 180 seconds |
+| Node contract/unit process | 120 seconds |
+| static-host `READY` wait | 15 seconds |
+| complete Playwright process across both serialized projects | 300 seconds |
+| each Playwright test / each assertion wait | 60 seconds / 5 seconds |
+| `npm audit` | 180 seconds |
+| each `scan`, `retain`, or `rollback` verb | 120 seconds |
+| complete `web-vite-v3-red` / `web-vite-v3-gate` / pristine rerun | 900 / 1200 / 1200 seconds |
+
+A timeout is a named non-zero gate failure. Cleanup first closes contexts/browser, then signals
+only the recorded child process group after rechecking its fingerprint; it waits five seconds
+before escalating to that same owned group. It never signals a foreign/reused PID or port. The
+historical `3944.836095708`-second record remains closed and is not read by the v3 runner.
+
 Success: a sanitized retained run exists; rollback restores tracked source/evidence only, leaves
 the tree clean apart from the intentional retained-evidence commit, and changes no denied path.
 
@@ -401,8 +428,11 @@ the tree clean apart from the intentional retained-evidence commit, and changes 
    both.
 5. Push and create the PR only after both final reports pass. Any repository-configured required
    checks, if present, must pass the exact PR head; v3 neither creates `.github/**` nor invents a
-   required status context. A repository-authorized human must explicitly approve that same
-   40-hex head before merge; agent/standing approval cannot satisfy this gate.
+   required status context. If the repository still has no configured CI workflow or required
+   status context, record `CI_ABSENT_EXTERNAL_GATE`; that absence does not block local cook or PR
+   creation and does not authorize workflow/config expansion. A repository-authorized human must
+   explicitly approve that same 40-hex head before merge; agent/standing approval cannot satisfy
+   this gate.
 6. After merge, fetch the exact merge SHA into a new pristine temporary worktree, run the full
    v3 gate with a new run ID, verify the merge contains the reviewed PR head, then remove only that
    temporary worktree/runtime. Failure triggers a normal reviewed corrective/revert flow; never a
@@ -473,12 +503,13 @@ Issue #7 does not pre-stage or integrate portal code.
 
 ## Plan checks and next state
 
-Independent validation ran static checks only: strict plan structure, required-term/phase-count,
-Markdown link/path, stale-clause, unresolved-placeholder, exact changed-plan allow-list,
-credential/private-path diff, and clean local/tracking/fresh-live checks. No implementation or
-readiness action ran.
+Fresh readiness ran only authority, tool/cache/API/path inspection, existing non-candidate contract
+checks, strict plan/link/stale/allow-list/static checks, and these plan/audit wording corrections.
+It did not run a candidate install/build/browser acceptance command or mutate product, tests,
+evidence, ADR, scorecards, historical artifacts, OS state, cloud state, or Issue #8+.
 
-On successful validation publication, comment Issue #7 with
-`INDEPENDENT_VALIDATION_PASS_NOT_READINESS` and this report path, then transition exactly
-`ready for plan validation` → `ready for plan audit`. Next phase:
-`fresh-simple-readiness-audit`.
+On successful readiness publication, comment Issue #7 with
+`READINESS_PASS_NOT_IMPLEMENTATION`, attest the containing 40-hex output as the only valid
+`IMPLEMENTATION_INPUT_SHA`, and transition exactly `ready for plan audit` → `ready to cook`.
+Barrier B is open because the exact Issue #6 authority and four identities pass. Next phase:
+`serialized-simple-tdd-cook`.

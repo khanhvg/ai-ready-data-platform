@@ -1,7 +1,7 @@
 ---
 title: "Issue #7: Web Stack with Representative Promotion-Trust Lesson"
 description: "Owner-selected Vite + React acceptance plan using seven minimal tests, S3/TDD evidence, exact-head reviews, and no new comparison or score."
-status: pending
+status: ready-with-gates
 priority: P1
 issue: 7
 branch: "feature/issue-5-02-web-spike"
@@ -26,14 +26,16 @@ acceptanceReplanInputSha: "358c305e5988a44ad4261b748aac3ea454c73dad"
 acceptanceReplanStatus: "validated-pass-with-fixes"
 independentValidationInputSha: "d79ce5638e4a47c5c0963bba1a546448bc0c0ea6"
 independentValidationReport: "validation/simple-vite-independent-validation-report-v3.md"
+readinessAuditInputSha: "aa93dfac5cd4a5f4d351ad045b634bbd42254902"
+readinessAuditReport: "audit/simple-vite-readiness-audit-report-v3.md"
 ownerDecision: "https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5036142177"
-nextPhase: "fresh-simple-readiness-audit"
+nextPhase: "serialized-simple-tdd-cook"
 barriers:
   historicalV1V2: retained-read-only-non-binding
-  issue6Fixture: closed-executable-pass
-  v3PlanValidation: pass-with-fixes-not-readiness
-  v3ReadinessAudit: pending-fresh-simple-readiness-audit
-  v3Implementation: blocked-on-fresh-readiness-authority
+  issue6Fixture: open-exact-authority-pass
+  v3PlanValidation: pass-with-fixes
+  v3ReadinessAudit: ready-with-gates
+  v3Implementation: open-only-at-audit-publication-output
   adrAcceptance: blocked-on-seven-tests-s3-red-and-reviews
   merge: blocked-on-final-exact-head-reviews-configured-checks-and-human-approval
 ---
@@ -50,8 +52,11 @@ The selection is owner-directed and unscored. This planner output is
 validated `PASS_WITH_FIXES` from exact input
 `d79ce5638e4a47c5c0963bba1a546448bc0c0ea6`; see the
 [independent validation report](./validation/simple-vite-independent-validation-report-v3.md).
-This is not implementation readiness. Only a fresh simple readiness audit of the exact published
-validation head may advance it.
+A fresh simple readiness audit then returned `READY_WITH_GATES` from exact clean input
+`aa93dfac5cd4a5f4d351ad045b634bbd42254902`; see the
+[v3 readiness report](./audit/simple-vite-readiness-audit-report-v3.md). Only its externally
+attested publication output may become `IMPLEMENTATION_INPUT_SHA`. The next phase is the
+serialized simple TDD cook.
 
 The v3 amendment supersedes every prior v2 readiness/cook/comparison requirement as current
 blocking authority. Prior plans, validation/audit files, candidates, scorecards, screenshots,
@@ -91,13 +96,13 @@ The current executable design has four phases, all defined in the amendment:
 
 | Phase | Objective | Gate |
 |---|---|---|
-| 1 | [Exact authority and contemporaneous RED](./simple-vite-acceptance-amendment-v3.md#phase-1--exact-authority-and-contemporaneous-red) | Fresh validation authority; tests-only exact SHA; acceptance-driven RED |
+| 1 | [Exact authority and contemporaneous RED](./simple-vite-acceptance-amendment-v3.md#phase-1--exact-authority-and-contemporaneous-red) | Fresh readiness output; tests-only exact SHA; acceptance-driven RED |
 | 2 | [Minimal Vite GREEN and seven tests](./simple-vite-acceptance-amendment-v3.md#phase-2--minimal-vite-green-and-seven-tests) | Frozen install/build; Node + sole serialized Chromium suite |
 | 3 | [S3 evidence, cleanup, and rollback](./simple-vite-acceptance-amendment-v3.md#phase-3--s3-evidence-cleanup-and-rollback) | Zero High/Critical, scans, retained manifest/hash/index, owned cleanup |
 | 4 | [Reviews, ADR, PR, merge, and pristine proof](./simple-vite-acceptance-amendment-v3.md#phase-4--reviews-adr-pr-merge-and-pristine-proof) | Reviews, Accepted/Vite claim limits, human exact-head approval, pristine rerun |
 
-No phase runs in this planning turn. The historical eight phase files below are retained and are
-not v3 execution authority.
+No implementation phase ran during planning, validation, or readiness. The historical eight phase
+files below are retained and are not v3 execution authority.
 
 ## Scope boundary
 
@@ -129,7 +134,9 @@ and cleaned without signalling foreign processes or modifying browser/OS profile
 - ADR-005 may become Accepted/Vite only after the minimal gate, S3, RED provenance, and prerequisite
   reviews pass; the final ADR head then receives two fresh external exact-head reviews.
 - PR merge requires any repository-configured checks and a repository-authorized human approval of
-  the exact final head; v3 creates no CI context. Pristine post-merge verification must pass.
+  the exact final head; v3 creates no CI context. Current CI absence does not block local cook or
+  PR creation and does not authorize workflow expansion. Pristine post-merge verification must
+  pass.
 - No full WCAG, screen-reader, production-UAT, or production-conformance claim is made.
 
 ## Retired blocking scope
@@ -161,20 +168,22 @@ handoff identity remains binding; comparison, score, and the old ADR transition 
 - [Historical automation-first amendment v2](./automation-first-acceptance-amendment-v2.md)
 - [Historical v2 validation report](./validation/automation-first-independent-validation-report-v2.md)
 - [Current simple Vite validation report](./validation/simple-vite-independent-validation-report-v3.md)
-- [Historical readiness/audit package](./audit/readiness-audit-report.md)
+- [Current simple Vite readiness report](./audit/simple-vite-readiness-audit-report-v3.md)
+- [Historical v1/v2 readiness/audit package](./audit/readiness-audit-report.md)
 - [Preserved discovery package](./discovery/planner-handoff.md)
 
 All unlisted legacy companion files remain historical only. They cannot reintroduce a retired v3
 blocker.
 
-## Validation boundary and handoff
+## Readiness boundary and handoff
 
-This fresh independent validator performed only authority/repository inspection, planning-artifact
-fixes, static strict-plan/link/path/stale-clause/placeholder checks, publication, and the requested
-workflow label/comment update. It did not readiness-audit, red-team, implement, install, build, run
-a candidate/browser, mutate the OS, score, create a PR, merge, or touch Issue #8+.
+The fresh independent readiness audit performed only exact authority/repository/tool/cache/API/path
+inspection, existing non-candidate contract checks, planning wording corrections, and strict
+plan/link/path/stale/allow-list/static checks. It did not red-team, implement, install, build, run a
+candidate/browser acceptance gate, mutate the OS, score, change ADR/evidence, create a PR, merge,
+or touch Issue #8+.
 
-After the validation publication is pushed and local/tracking/fresh-live equality is re-proved,
-Issue #7 gets the exact comment `INDEPENDENT_VALIDATION_PASS_NOT_READINESS` with the repo-relative
-report path and transitions exactly `ready for plan validation` → `ready for plan audit`. The only
-next phase is `fresh-simple-readiness-audit`.
+After readiness publication is pushed and local/tracking/fresh-live equality is re-proved, Issue
+#7 receives `READINESS_PASS_NOT_IMPLEMENTATION` with the exact publication output as the only
+valid `IMPLEMENTATION_INPUT_SHA`, then transitions exactly `ready for plan audit` →
+`ready to cook`. Barrier B is open; the next phase is `serialized-simple-tdd-cook`.
