@@ -15,8 +15,8 @@ def main()->int:
         schema=json.loads((ROOT/"learning/contracts"/schema_name).read_text()); jsonschema.Draft202012Validator(schema).validate(value); issue7_fixture.validate_nonrecursive(value)
     issue7_fixture.verify_fixture(evidence)
     if tuple((row["sourceId"],len(row["records"])) for row in evidence["sources"])!=EXPECTED or sum(len(row["records"]) for row in evidence["sources"])!=89: raise SystemExit("FIXTURE_ROW_SET_MISMATCH")
-    for source in evidence["sources"]:
-        if hashlib.sha256(rfc8785.dumps(source["records"])).hexdigest()!=source["normalizedRecordsSha256"]: raise SystemExit("FIXTURE_RECORD_HASH_MISMATCH")
+    for source_entry in evidence["sources"]:
+        if hashlib.sha256(rfc8785.dumps(source_entry["records"])).hexdigest()!=source_entry["normalizedRecordsSha256"]: raise SystemExit("FIXTURE_RECORD_HASH_MISMATCH")
     payload=evidence_path.read_bytes()
     if manifest["evidence"]!={"byteLength":len(payload),"sha256":hashlib.sha256(payload).hexdigest()}: raise SystemExit("FIXTURE_MANIFEST_EVIDENCE_MISMATCH")
     for artifact in manifest["artifacts"]:

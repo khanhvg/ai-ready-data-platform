@@ -1,5 +1,5 @@
 from __future__ import annotations
-import importlib.util, pathlib, unittest
+import importlib.util, pathlib, subprocess, sys, unittest
 ROOT=pathlib.Path(__file__).resolve().parents[2]
 class Issue7HandoffTests(unittest.TestCase):
     def _load(self):
@@ -15,4 +15,7 @@ class Issue7HandoffTests(unittest.TestCase):
     def test_only_authorized_artifact_paths(self) -> None:
         module=self._load(); module.validate_staged_paths(module.AUTHORIZED_FIXTURE_PATHS)
         with self.assertRaisesRegex(module.FixtureError,"FIXTURE_PATH_UNAUTHORIZED"): module.validate_staged_paths(("tests/fixtures/other.json",))
+    def test_tracked_fixture_passes_clean_third_reader_when_present(self) -> None:
+        fixture=ROOT/"tests/fixtures/learning/promotion-trust/evidence-v1.json"
+        if fixture.is_file(): subprocess.run([sys.executable,str(ROOT/"scripts/golden/verify_issue7_fixture.py")],cwd=ROOT,check=True)
 if __name__=="__main__": unittest.main()
