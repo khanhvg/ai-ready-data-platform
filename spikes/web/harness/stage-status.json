@@ -1,0 +1,12 @@
+{
+  "schema": "i5-02-stage-status-v1",
+  "gate0": "authorized",
+  "gateA": "authorized-after-gate0",
+  "candidates": "deferred",
+  "barrierB": "closed",
+  "gateC": "blocked",
+  "gateD": "blocked",
+  "fullIssue": "incomplete",
+  "issueComplete": false,
+  "decisionGrade": false
+}

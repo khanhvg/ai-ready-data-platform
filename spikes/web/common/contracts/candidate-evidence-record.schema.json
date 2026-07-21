@@ -1,0 +1,22 @@
+{
+  "$id": "urn:i5-02:candidate-evidence-record:v1",
+  "title": "CandidateEvidenceRecord",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["issue", "gate", "candidate", "fixtureKind", "notice", "resultStatus", "candidateDisposition", "numericScore", "decisionGrade", "issueComplete", "opensBarrierB", "implementationInputSha", "testedTreeSha"],
+  "properties": {
+    "issue": { "const": 7 },
+    "gate": { "enum": ["gate-0", "gate-a"] },
+    "candidate": { "enum": ["common", "preview"] },
+    "fixtureKind": { "const": "synthetic-preview" },
+    "notice": { "const": "SYNTHETIC LEARN-PREVIEW — UNSCORED — CANNOT COMPLETE" },
+    "resultStatus": { "enum": ["pass", "fail"] },
+    "candidateDisposition": { "type": "null" },
+    "numericScore": { "type": "null" },
+    "decisionGrade": { "const": false },
+    "issueComplete": { "const": false },
+    "opensBarrierB": { "const": false },
+    "implementationInputSha": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "testedTreeSha": { "type": "string", "pattern": "^[a-f0-9]{40}$" }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "$id": "urn:i5-02:lab-client-view:v1",
+  "title": "LabClientView",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["mode", "networkAuthority", "fixtureKind", "verificationScope", "repositoryMutation"],
+  "properties": {
+    "mode": { "const": "static-preview" },
+    "networkAuthority": { "const": "same-origin-static-assets-only" },
+    "fixtureKind": { "const": "synthetic-preview" },
+    "verificationScope": { "const": "fixture-only" },
+    "repositoryMutation": { "const": false }
+  }
+}

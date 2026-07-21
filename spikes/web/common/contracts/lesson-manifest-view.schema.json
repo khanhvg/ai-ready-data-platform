@@ -1,0 +1,16 @@
+{
+  "$id": "urn:i5-02:lesson-manifest-view:v1",
+  "title": "LessonManifestView",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["lessonId", "fixtureKind", "notice", "acts", "hints", "evidenceCards", "expectedConclusion"],
+  "properties": {
+    "lessonId": { "const": "promotion-trust" },
+    "fixtureKind": { "const": "synthetic-preview" },
+    "notice": { "const": "SYNTHETIC LEARN-PREVIEW — UNSCORED — CANNOT COMPLETE" },
+    "acts": { "type": "array", "minItems": 10, "maxItems": 10, "items": { "type": "string", "minLength": 1 } },
+    "hints": { "type": "array", "prefixItems": [{ "const": "orient" }, { "const": "connect" }, { "const": "explain" }], "items": false },
+    "evidenceCards": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "$ref": "urn:i5-02:mart-evidence-view:v1" } },
+    "expectedConclusion": { "const": "insufficient evidence" }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "$id": "urn:i5-02:journey-state-view:v1",
+  "title": "JourneyStateView",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["attemptId", "fixtureKind", "fixtureDigest", "state", "currentAct", "committedAct", "hintLevel", "fixtureVerifyStatus", "evidenceReviewStatus", "resetAuditCount", "repositoryMutation"],
+  "properties": {
+    "attemptId": { "type": "string", "pattern": "^preview-attempt-[a-z0-9-]+$" },
+    "fixtureKind": { "const": "synthetic-preview" },
+    "fixtureDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "state": { "enum": ["not-started", "exploring", "controlled-failure-shown", "diagnosing", "reset-demonstrated", "fixture-verified", "evidence-reviewed", "reflection-open"] },
+    "currentAct": { "type": "integer", "minimum": 1, "maximum": 10 },
+    "committedAct": { "type": "integer", "minimum": 1, "maximum": 10 },
+    "hintLevel": { "enum": ["orient", "connect", "explain"] },
+    "fixtureVerifyStatus": { "enum": ["not-verified", "verified-synthetic-only"] },
+    "evidenceReviewStatus": { "enum": ["not-reviewed", "reviewed-synthetic-only"] },
+    "resetAuditCount": { "type": "integer", "minimum": 0 },
+    "repositoryMutation": { "const": false }
+  }
+}

