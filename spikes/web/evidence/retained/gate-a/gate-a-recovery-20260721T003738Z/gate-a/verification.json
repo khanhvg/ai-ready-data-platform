@@ -1,0 +1,324 @@
+{
+  "schemaVersion": "gate-a-verification-v1",
+  "schema": "fitness-result-v1",
+  "issue": 7,
+  "gate": "gate-a",
+  "candidate": "preview",
+  "fixtureKind": "synthetic-preview",
+  "notice": "SYNTHETIC LEARN-PREVIEW — UNSCORED — CANNOT COMPLETE",
+  "resultStatus": "pass",
+  "candidateDisposition": null,
+  "numericScore": null,
+  "decisionGrade": false,
+  "issueComplete": false,
+  "opensBarrierB": false,
+  "runId": "gate-a-recovery-20260721T003738Z",
+  "implementationInputSha": "0c73f4712c8ac7902042735ff1da96ef1e5285a3",
+  "testedTreeSha": "2e2d024043070955d2c460b2e58bb9a926384762",
+  "productPathCount": 43,
+  "exactAllowedPathSet": true,
+  "productFiles": [
+    {
+      "path": "mk/issue-5/i5-02.mk",
+      "sha256": "d79a6f4c7f6cbb25dbf6f9cfe7ac886b943ecb2648120252357ff4709ce51f6a"
+    },
+    {
+      "path": "spikes/web/common/contracts/lesson-manifest-view.schema.json",
+      "sha256": "df5bdbdc54078e74e406dc8460b133ca3ea3f536e39be15f1506766eee0f6112"
+    },
+    {
+      "path": "spikes/web/common/contracts/mart-evidence-view.schema.json",
+      "sha256": "d7f35e79772e6a75eae58d370e4fcc9cdb65fd74d100e66e342b06c1a0777ae9"
+    },
+    {
+      "path": "spikes/web/common/contracts/journey-state-view.schema.json",
+      "sha256": "2ef033fd7b30a86b7c0d0795273678807ca36525f49fc9cf77289662b54b3af3"
+    },
+    {
+      "path": "spikes/web/common/contracts/lab-client-view.schema.json",
+      "sha256": "784063a279fcc6aa1dc4a9e5966ca5512813ca02fda4791fa67dec2efd8d1f38"
+    },
+    {
+      "path": "spikes/web/common/contracts/evidence-index-view.schema.json",
+      "sha256": "b737edfa406bdeed4606384d9e902c63589cb69ea0caf900744c1a50a2457145"
+    },
+    {
+      "path": "spikes/web/common/contracts/candidate-evidence-record.schema.json",
+      "sha256": "53e5ca80a7c427e5da5b7dcc2d0b70cf8fa1c68ff4b0dcbac748698c75c5ad5f"
+    },
+    {
+      "path": "spikes/web/common/contracts/failure-codes.json",
+      "sha256": "b214e8ddf218dc90e983d90d2d688dfeca8fabc965cf31d5d8a8cca92d0fddc4"
+    },
+    {
+      "path": "spikes/web/common/fixtures/synthetic-promotion-trust-v1.json",
+      "sha256": "5282cc6698c34e5db130162223d90376dacdd8da61041344ddc86e5b76a6a4ac"
+    },
+    {
+      "path": "spikes/web/common/state/preview-state.mjs",
+      "sha256": "2f2893d5958050d0da577f94dda1a9462150dae115d6633292a1b566418eca0e"
+    },
+    {
+      "path": "spikes/web/common/state/preview-state-vectors.json",
+      "sha256": "5f062b7f33e1ca99e8820fd965725c3303382c0c2299683fe7b2b803281cbf13"
+    },
+    {
+      "path": "spikes/web/common/tests/fixtures/invalid-completed-state.json",
+      "sha256": "ddc637a5cbe3ca8c39bfa04cf2d3a1f129a06e37f507616ee8190ef1f5895769"
+    },
+    {
+      "path": "spikes/web/common/tests/fixtures/invalid-cross-grain-attribution.json",
+      "sha256": "020ec1bbc5889a28023604c814e97771acf1e019f0e4a0a09b4bc8228139e328"
+    },
+    {
+      "path": "spikes/web/common/tests/fixtures/invalid-executable-content.json",
+      "sha256": "557e87189797e344592538a4cce999d0e745cad875c1daa446b256750409d772"
+    },
+    {
+      "path": "spikes/web/common/tests/fixtures/invalid-secret-canary.json",
+      "sha256": "32b0121382d2a449b5c3b5552b636008fb259456d51748ec8be41f2d71e6f059"
+    },
+    {
+      "path": "spikes/web/common/tests/fixtures/invalid-stale-digest.json",
+      "sha256": "7065a156f58ae2b0efc079ccd6003d9c6c7cc190e24f2669a2c2e815bcb7db62"
+    },
+    {
+      "path": "spikes/web/common/tests/fixtures/invalid-unknown-field.json",
+      "sha256": "da9ab7a7adaebf0b7cf9e3a999c68bf866be446b21b73cfb5b285f5aed7586a3"
+    },
+    {
+      "path": "spikes/web/common/tests/contract-schema.test.mjs",
+      "sha256": "139035e3f4cc1a91c84d7df5dfdd7be3ca4353213bfa0c7d15d61de6a951f7ca"
+    },
+    {
+      "path": "spikes/web/common/tests/four-grain.test.mjs",
+      "sha256": "efc05c8f523b40349d4b5b5de04ae23250f6d96a96828714c0d26919dc8c85b1"
+    },
+    {
+      "path": "spikes/web/common/tests/preview-label.test.mjs",
+      "sha256": "9790402eef66cc785c868293fa2d128271d47ecf80398fe77709d0f4ef327d24"
+    },
+    {
+      "path": "spikes/web/common/tests/preview-authority.test.mjs",
+      "sha256": "e563199c2bee00e3cb2f14dd5688beb70efa047d06a9512c70626eab027d34da"
+    },
+    {
+      "path": "spikes/web/common/tests/state-navigation.test.mjs",
+      "sha256": "206421766a97b86871278b6b3c8fb627eed4293cfdbae8ecde46ddaf9e168eb5"
+    },
+    {
+      "path": "spikes/web/common/tests/state-reset.test.mjs",
+      "sha256": "6e22656c47cfa06d26dfb1774507c3b3f8f4e0c601f84f730c6bb828605fb1dc"
+    },
+    {
+      "path": "spikes/web/common/tests/failure-taxonomy.test.mjs",
+      "sha256": "9575c98a9df21a23328781e812d22f87ac212ac84dfeb9cc0c87de1cccd60dd8"
+    },
+    {
+      "path": "spikes/web/common/tests/static-facts.test.mjs",
+      "sha256": "5a1b5167841ddc2b6bf1814353cd5625cca40749e7f50772fb547fbaa271ba5e"
+    },
+    {
+      "path": "spikes/web/common/tests/journey-contract.test.mjs",
+      "sha256": "275369086ab71992a243a02a0f9a30b9bef79839de47fd8343d494d93149b662"
+    },
+    {
+      "path": "spikes/web/common/tests/browser-authority.test.mjs",
+      "sha256": "bb8f1b651b3e01354819ea882b55c4dcf3028b468ed2bc6dd8fca9371d0ae1b4"
+    },
+    {
+      "path": "spikes/web/common/tests/non-copy.test.mjs",
+      "sha256": "4e4ea29baa564d0a058ac3f94183b5319678d09e43dc83fa52ef41b5c762b89a"
+    },
+    {
+      "path": "spikes/web/preview/index.html",
+      "sha256": "629b0da5bef667bc6e7393446504d650bebeb83633369d49e266094355fa7f78"
+    },
+    {
+      "path": "spikes/web/preview/preview.css",
+      "sha256": "b35a6bf09d9f50ebbad86c627548291605e80900588e2d58f61a747621605773"
+    },
+    {
+      "path": "spikes/web/preview/preview.mjs",
+      "sha256": "d0b7eb70734da3fbe5685ac04c6def3bc5e8ec6af2d0fd22a4c01003f9cb5a66"
+    },
+    {
+      "path": "spikes/web/harness/authority.json",
+      "sha256": "c35c4ef5228ef3af9d21f0ad273022723d86b771e44ddf20ec6d78e2326bee0f"
+    },
+    {
+      "path": "spikes/web/harness/toolchain.json",
+      "sha256": "da4ac9ddf640c49018403359a5eed4b97a7e20739da6883e9adac1d6a52fb086"
+    },
+    {
+      "path": "spikes/web/harness/candidate-modes.json",
+      "sha256": "2957c84624ef16d0ebb037ea3fde66d20a0d2dae6d0d049b1e9c4bb7a8ce3181"
+    },
+    {
+      "path": "spikes/web/harness/test-ids.json",
+      "sha256": "b1aec72463e4b7219c574a5e6025f68be5e064adab312e35b1a8fe6f9e60b706"
+    },
+    {
+      "path": "spikes/web/harness/score-anchors.json",
+      "sha256": "56a15b9babf3e354d5df8279929df0c12e61c2e2e58bc90a8364038b424c9a75"
+    },
+    {
+      "path": "spikes/web/harness/stage-status.json",
+      "sha256": "a8cbee86a97bec80c539daf32dea7232593eb9dc0b1531a80d7da7af927fbb03"
+    },
+    {
+      "path": "spikes/web/harness/scripts/authority-check.mjs",
+      "sha256": "522122fba6267520a654e30a7fbe756f78bb70513d51d873c4b0960b692f0a1b"
+    },
+    {
+      "path": "spikes/web/harness/scripts/static-host.mjs",
+      "sha256": "cdd13c4f32806e830736664814634ed7dad6716cb006dbe118afb1a880463290"
+    },
+    {
+      "path": "spikes/web/harness/scripts/preview-control.mjs",
+      "sha256": "42d520a613675c6b4ed4dc8f8b021a40a0e147d2316528f3cd976f5b3fa39a67"
+    },
+    {
+      "path": "spikes/web/harness/tests/authority.test.mjs",
+      "sha256": "f8bbd0e4f311dbb9a69b18484c14e5097180e1c522e49e3b26dbec11bea3dd6b"
+    },
+    {
+      "path": "spikes/web/harness/tests/preview-control.test.mjs",
+      "sha256": "490c7e00a5555f71cd71a56dc3cb4292fa09bfc6e8712b86a9f67d47ba2efdf0"
+    },
+    {
+      "path": "spikes/web/non-copy-inventory.md",
+      "sha256": "c5fe3464d4acf4fdb50ae57c78b36ec0b4219432f7b0d028dfb22ace66b71ebf"
+    }
+  ],
+  "protectedHashes": {
+    "Makefile": "6b75a7a1f8e516e8967d317edb9de35378c02eddd645d2731dcf5cfc9bf52f54",
+    ".gitignore": "aa93e47707e95286126f47b3d70fe7fc6c047b49c861184533e38b3c5a971316",
+    "release-manifest.json": "f9037b5d946d14f7b1b9c020939f1a44961011f2ad933db9f2b69054abbf9539"
+  },
+  "discoveryTree": "ed45ef287be3c0830466ae4a6b60a6bf22b1eb70",
+  "discoveryTreePass": false,
+  "changedPaths": [
+    "mk/issue-5/i5-02.mk",
+    "spikes/web/common/contracts/candidate-evidence-record.schema.json",
+    "spikes/web/common/contracts/evidence-index-view.schema.json",
+    "spikes/web/common/contracts/failure-codes.json",
+    "spikes/web/common/contracts/journey-state-view.schema.json",
+    "spikes/web/common/contracts/lab-client-view.schema.json",
+    "spikes/web/common/contracts/lesson-manifest-view.schema.json",
+    "spikes/web/common/contracts/mart-evidence-view.schema.json",
+    "spikes/web/common/fixtures/synthetic-promotion-trust-v1.json",
+    "spikes/web/common/state/preview-state-vectors.json",
+    "spikes/web/common/state/preview-state.mjs",
+    "spikes/web/common/tests/browser-authority.test.mjs",
+    "spikes/web/common/tests/contract-schema.test.mjs",
+    "spikes/web/common/tests/failure-taxonomy.test.mjs",
+    "spikes/web/common/tests/fixtures/invalid-completed-state.json",
+    "spikes/web/common/tests/fixtures/invalid-cross-grain-attribution.json",
+    "spikes/web/common/tests/fixtures/invalid-executable-content.json",
+    "spikes/web/common/tests/fixtures/invalid-secret-canary.json",
+    "spikes/web/common/tests/fixtures/invalid-stale-digest.json",
+    "spikes/web/common/tests/fixtures/invalid-unknown-field.json",
+    "spikes/web/common/tests/four-grain.test.mjs",
+    "spikes/web/common/tests/journey-contract.test.mjs",
+    "spikes/web/common/tests/non-copy.test.mjs",
+    "spikes/web/common/tests/preview-authority.test.mjs",
+    "spikes/web/common/tests/preview-label.test.mjs",
+    "spikes/web/common/tests/state-navigation.test.mjs",
+    "spikes/web/common/tests/state-reset.test.mjs",
+    "spikes/web/common/tests/static-facts.test.mjs",
+    "spikes/web/harness/authority.json",
+    "spikes/web/harness/candidate-modes.json",
+    "spikes/web/harness/score-anchors.json",
+    "spikes/web/harness/scripts/authority-check.mjs",
+    "spikes/web/harness/scripts/preview-control.mjs",
+    "spikes/web/harness/scripts/static-host.mjs",
+    "spikes/web/harness/stage-status.json",
+    "spikes/web/harness/test-ids.json",
+    "spikes/web/harness/tests/authority.test.mjs",
+    "spikes/web/harness/tests/preview-control.test.mjs",
+    "spikes/web/harness/toolchain.json",
+    "spikes/web/non-copy-inventory.md",
+    "spikes/web/preview/index.html",
+    "spikes/web/preview/preview.css",
+    "spikes/web/preview/preview.mjs"
+  ],
+  "makeTargets": [
+    ".PHONY",
+    "i5-02-authority-check",
+    "i5-02-protected-hash-check",
+    "i5-02-toolchain-check",
+    "i5-02-changed-path-check",
+    "i5-02-security-check",
+    "i5-02-credential-check",
+    "i5-02-non-copy-check",
+    "web-common-test",
+    "learn-preview",
+    "learn-preview-status",
+    "learn-preview-reset-check",
+    "learn-preview-down"
+  ],
+  "exactMakeTargets": false,
+  "stageStatus": {
+    "schema": "i5-02-stage-status-v1",
+    "gate0": "authorized",
+    "gateA": "authorized-after-gate0",
+    "candidates": "deferred",
+    "barrierB": "closed",
+    "gateC": "blocked",
+    "gateD": "blocked",
+    "fullIssue": "incomplete",
+    "issueComplete": false,
+    "decisionGrade": false
+  },
+  "checks": {
+    "authority": "pass",
+    "protected": "pass",
+    "toolchain": "pass",
+    "changedPath": "pass",
+    "security": "pass",
+    "credential": "pass",
+    "nonCopy": "pass",
+    "networkAuthority": "none",
+    "cors": "none",
+    "sourceMaps": "none",
+    "packageOrLock": "none",
+    "deferredPaths": "none",
+    "artifactsStaged": false
+  },
+  "tests": {
+    "gate0": {
+      "passed": 10,
+      "failed": 0
+    },
+    "lifecycle": {
+      "passed": 17,
+      "failed": 0
+    },
+    "common": {
+      "passed": 27,
+      "failed": 0
+    },
+    "total": {
+      "passed": 54,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "commandSpineSha256": "e591549a9a6da30c7693cc78ffe86d0870a3db16aff00995717567a2567c66fb"
+  },
+  "routes": {
+    "cases": 12,
+    "result": "pass",
+    "artifact": "gate-a/route-csp-drill.json"
+  },
+  "browserManualFacets": {
+    "browser": "required-pending",
+    "keyboard": "required-pending",
+    "namedScreenReader": "required-pending",
+    "zoom200Percent": "required-pending",
+    "reducedMotion": "required-pending",
+    "noJsManual": "required-pending"
+  },
+  "allPassed": true
+}
