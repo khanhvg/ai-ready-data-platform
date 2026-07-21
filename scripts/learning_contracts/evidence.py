@@ -8,8 +8,13 @@ from typing import Any
 from .schema import LearningContractError
 
 
-def verify_evidence(value: dict[str, Any], *, root: pathlib.Path) -> None:
-    del value, root
+def verify_evidence(
+    value: dict[str, Any],
+    *,
+    root: pathlib.Path,
+    seen_run_ids: set[str] | None = None,
+) -> None:
+    del value, root, seen_run_ids
     raise LearningContractError("LEARNING_EVIDENCE_NOT_IMPLEMENTED")
 
 
