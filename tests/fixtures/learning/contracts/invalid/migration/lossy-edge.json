@@ -1,0 +1,6 @@
+{
+  "testId": "I8-MIGRATION-LOSS-151",
+  "expectedCode": "MIGRATION_LOSSY_FORBIDDEN",
+  "mutation": "migration/lossy-edge"
+}
+

@@ -1,0 +1,7 @@
+{
+  "testId": "I8-CANON-BOM-108",
+  "expectedCode": "JSON_BOM_FORBIDDEN",
+  "mutation": "canonicalization/bom",
+  "rawHex": "efbbbf7b7d"
+}
+

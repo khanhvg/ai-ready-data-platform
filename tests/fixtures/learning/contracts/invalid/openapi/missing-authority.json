@@ -1,0 +1,6 @@
+{
+  "testId": "I8-OPENAPI-AUTH-161",
+  "expectedCode": "OPERATION_AUTHORITY_MISSING",
+  "mutation": "openapi/missing-authority"
+}
+

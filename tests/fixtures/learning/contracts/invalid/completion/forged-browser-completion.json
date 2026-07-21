@@ -1,0 +1,6 @@
+{
+  "testId": "I8-COMPLETION-FORGE-130",
+  "expectedCode": "COMPLETION_AUTHORITY_REQUIRED",
+  "mutation": "completion/forged-browser-completion"
+}
+

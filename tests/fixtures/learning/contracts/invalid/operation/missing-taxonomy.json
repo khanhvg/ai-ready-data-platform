@@ -1,0 +1,6 @@
+{
+  "testId": "I8-OPERATION-TAXONOMY-155",
+  "expectedCode": "OPERATION_TAXONOMY_INCOMPLETE",
+  "mutation": "operation/missing-taxonomy"
+}
+

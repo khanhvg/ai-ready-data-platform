@@ -1,0 +1,6 @@
+{
+  "testId": "I8-OPENAPI-REF-164",
+  "expectedCode": "OPENAPI_REF_FORBIDDEN",
+  "mutation": "openapi/remote-ref"
+}
+

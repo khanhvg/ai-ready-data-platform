@@ -1,0 +1,6 @@
+{
+  "testId": "I8-REF-HASH-114",
+  "expectedCode": "REF_SCHEMA_HASH_MISMATCH",
+  "mutation": "ref/schema-hash-mismatch"
+}
+

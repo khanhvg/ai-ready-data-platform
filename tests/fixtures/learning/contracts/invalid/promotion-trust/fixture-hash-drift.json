@@ -1,0 +1,6 @@
+{
+  "testId": "I8-PROMO-HASH-172",
+  "expectedCode": "PROMOTION_FIXTURE_HASH_MISMATCH",
+  "mutation": "promotion-trust/fixture-hash-drift"
+}
+

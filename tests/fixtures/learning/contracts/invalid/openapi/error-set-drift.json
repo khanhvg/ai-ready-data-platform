@@ -1,0 +1,6 @@
+{
+  "testId": "I8-OPENAPI-ERROR-175",
+  "expectedCode": "OPENAPI_ERROR_CONTRACT_MISMATCH",
+  "mutation": "openapi/error-set-drift"
+}
+

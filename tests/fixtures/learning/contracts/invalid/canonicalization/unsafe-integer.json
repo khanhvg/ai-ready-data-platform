@@ -1,0 +1,7 @@
+{
+  "testId": "I8-CANON-RANGE-106",
+  "expectedCode": "JSON_INTEGER_UNSAFE",
+  "mutation": "canonicalization/unsafe-integer",
+  "value": 9007199254740992
+}
+

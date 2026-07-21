@@ -1,0 +1,6 @@
+{
+  "testId": "I8-OPENAPI-VERSION-165",
+  "expectedCode": "OPENAPI_VERSION_NEGOTIATION_INCOMPLETE",
+  "mutation": "openapi/missing-version-response"
+}
+

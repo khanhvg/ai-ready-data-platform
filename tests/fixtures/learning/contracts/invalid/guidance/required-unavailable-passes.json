@@ -1,0 +1,6 @@
+{
+  "testId": "I8-PROBE-REQUIRED-176",
+  "expectedCode": "PROBE_REQUIRED_UNAVAILABLE",
+  "mutation": "guidance/required-unavailable-passes"
+}
+

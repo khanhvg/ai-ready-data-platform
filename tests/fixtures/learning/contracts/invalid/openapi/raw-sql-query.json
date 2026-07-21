@@ -1,0 +1,6 @@
+{
+  "testId": "I8-OPENAPI-RAW-163",
+  "expectedCode": "OPENAPI_RAW_QUERY_FORBIDDEN",
+  "mutation": "openapi/raw-sql-query"
+}
+

@@ -1,0 +1,6 @@
+{
+  "testId": "I8-OPENAPI-MATRIX-160",
+  "expectedCode": "OPENAPI_OPERATION_SET_MISMATCH",
+  "mutation": "openapi/orphan-operation"
+}
+

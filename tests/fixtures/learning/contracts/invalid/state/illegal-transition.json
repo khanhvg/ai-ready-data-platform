@@ -1,0 +1,6 @@
+{
+  "testId": "I8-STATE-ILLEGAL-120",
+  "expectedCode": "STATE_TRANSITION_FORBIDDEN",
+  "mutation": "state/illegal-transition"
+}
+

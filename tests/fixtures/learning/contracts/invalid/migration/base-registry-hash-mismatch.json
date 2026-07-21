@@ -1,0 +1,6 @@
+{
+  "testId": "I8-REGISTRY-BASE-115",
+  "expectedCode": "BASE_REGISTRY_HASH_MISMATCH",
+  "mutation": "migration/base-registry-hash-mismatch"
+}
+

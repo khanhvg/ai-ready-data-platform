@@ -1,0 +1,6 @@
+{
+  "testId": "I8-IDEMPOTENCY-DUPLICATE-123",
+  "expectedCode": "IDEMPOTENCY_DUPLICATE_EFFECT",
+  "mutation": "state/duplicate-effect"
+}
+

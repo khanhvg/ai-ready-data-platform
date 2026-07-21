@@ -1,0 +1,6 @@
+{
+  "testId": "I8-PROBE-MUTATION-167",
+  "expectedCode": "PROBE_MUTATION_FORBIDDEN",
+  "mutation": "guidance/mutating-probe"
+}
+

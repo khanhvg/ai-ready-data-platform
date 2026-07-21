@@ -1,0 +1,6 @@
+{
+  "testId": "I8-REF-TRAVERSAL-112",
+  "expectedCode": "REF_TRAVERSAL_FORBIDDEN",
+  "mutation": "ref/path-traversal"
+}
+

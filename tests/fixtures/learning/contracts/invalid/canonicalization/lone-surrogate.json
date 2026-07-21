@@ -1,0 +1,7 @@
+{
+  "testId": "I8-CANON-SURROGATE-105",
+  "expectedCode": "JSON_LONE_SURROGATE",
+  "mutation": "canonicalization/lone-surrogate",
+  "rawJson": "{\"value\":\"\\\\ud800\"}"
+}
+

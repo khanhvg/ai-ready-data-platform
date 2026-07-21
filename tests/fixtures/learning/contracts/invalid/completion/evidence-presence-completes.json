@@ -1,0 +1,6 @@
+{
+  "testId": "I8-COMPLETION-PRESENCE-134",
+  "expectedCode": "COMPLETION_DUAL_TRUTH",
+  "mutation": "completion/evidence-presence-completes"
+}
+

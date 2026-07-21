@@ -1,0 +1,6 @@
+{
+  "testId": "I8-IDEMPOTENCY-CONFLICT-122",
+  "expectedCode": "IDEMPOTENCY_KEY_REUSE",
+  "mutation": "state/idempotency-payload-conflict"
+}
+

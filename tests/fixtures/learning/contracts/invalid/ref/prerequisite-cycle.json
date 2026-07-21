@@ -1,0 +1,6 @@
+{
+  "testId": "I8-REF-CYCLE-111",
+  "expectedCode": "REF_CYCLE",
+  "mutation": "ref/prerequisite-cycle"
+}
+

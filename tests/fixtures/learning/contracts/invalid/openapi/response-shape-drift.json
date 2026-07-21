@@ -1,0 +1,6 @@
+{
+  "testId": "I8-OPENAPI-RESPONSE-174",
+  "expectedCode": "OPENAPI_RESPONSE_CONTRACT_MISMATCH",
+  "mutation": "openapi/response-shape-drift"
+}
+

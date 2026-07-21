@@ -1,0 +1,6 @@
+{
+  "testId": "I8-SCHEMA-TYPE-102",
+  "expectedCode": "SCHEMA_TYPE_MISMATCH",
+  "mutation": "schema/wrong-type"
+}
+

@@ -1,0 +1,6 @@
+{
+  "testId": "I8-INJECTION-146",
+  "expectedCode": "CONTRACT_INJECTION_FIELD_FORBIDDEN",
+  "mutation": "security/injection-field"
+}
+

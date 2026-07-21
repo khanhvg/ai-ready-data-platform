@@ -1,0 +1,6 @@
+{
+  "testId": "I8-MIGRATION-CYCLE-152",
+  "expectedCode": "MIGRATION_CYCLE",
+  "mutation": "migration/cycle"
+}
+

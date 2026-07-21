@@ -1,0 +1,6 @@
+{
+  "testId": "I8-SCHEMA-CLOSED-100",
+  "expectedCode": "SCHEMA_UNKNOWN_PROPERTY",
+  "mutation": "schema/unknown-field"
+}
+

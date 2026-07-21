@@ -1,0 +1,6 @@
+{
+  "schemaVersion": "private-migration-v0",
+  "id": "private-round-trip",
+  "value": "preserve-exactly"
+}
+

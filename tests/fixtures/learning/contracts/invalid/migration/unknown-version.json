@@ -1,0 +1,6 @@
+{
+  "testId": "I8-MIGRATION-UNKNOWN-150",
+  "expectedCode": "SCHEMA_VERSION_UNREADABLE",
+  "mutation": "migration/unknown-version"
+}
+

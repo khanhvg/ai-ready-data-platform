@@ -1,0 +1,6 @@
+{
+  "testId": "I8-PROMO-LIMIT-171",
+  "expectedCode": "PROMOTION_LIMITATION_REQUIRED",
+  "mutation": "promotion-trust/missing-limitation"
+}
+

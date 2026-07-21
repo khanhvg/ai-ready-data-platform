@@ -1,0 +1,6 @@
+{
+  "testId": "I8-HINT-COMPLETION-169",
+  "expectedCode": "HINT_COMPLETION_FORBIDDEN",
+  "mutation": "guidance/hint-completes"
+}
+

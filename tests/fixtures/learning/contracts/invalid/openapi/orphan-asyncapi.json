@@ -1,0 +1,6 @@
+{
+  "testId": "I8-ASYNCAPI-166",
+  "expectedCode": "ASYNCAPI_WITHOUT_CHANNEL",
+  "mutation": "openapi/orphan-asyncapi"
+}
+

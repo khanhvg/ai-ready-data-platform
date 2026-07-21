@@ -1,0 +1,6 @@
+{
+  "testId": "I8-OPERATION-ROLE-156",
+  "expectedCode": "OPERATION_ROLE_NOT_NEUTRAL",
+  "mutation": "operation/physical-module-role"
+}
+

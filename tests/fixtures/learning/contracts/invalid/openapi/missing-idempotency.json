@@ -1,0 +1,6 @@
+{
+  "testId": "I8-OPENAPI-IDEMPOTENCY-162",
+  "expectedCode": "OPERATION_IDEMPOTENCY_MISSING",
+  "mutation": "openapi/missing-idempotency"
+}
+

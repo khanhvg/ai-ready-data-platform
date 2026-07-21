@@ -1,0 +1,6 @@
+{
+  "testId": "I8-HINT-REVEAL-178",
+  "expectedCode": "HINT_REVEAL_FORBIDDEN",
+  "mutation": "guidance/unauthorized-reveal"
+}
+

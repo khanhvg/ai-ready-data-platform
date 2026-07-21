@@ -1,0 +1,6 @@
+{
+  "testId": "I8-SCHEMA-MISSING-101",
+  "expectedCode": "SCHEMA_REQUIRED_PROPERTY",
+  "mutation": "schema/missing-required"
+}
+

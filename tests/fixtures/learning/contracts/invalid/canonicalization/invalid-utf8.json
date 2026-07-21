@@ -1,0 +1,7 @@
+{
+  "testId": "I8-CANON-UTF8-107",
+  "expectedCode": "JSON_UTF8_INVALID",
+  "mutation": "canonicalization/invalid-utf8",
+  "rawHex": "ff"
+}
+

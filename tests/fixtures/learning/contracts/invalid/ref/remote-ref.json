@@ -1,0 +1,6 @@
+{
+  "testId": "I8-REF-REMOTE-113",
+  "expectedCode": "REF_REMOTE_FORBIDDEN",
+  "mutation": "ref/remote-ref"
+}
+

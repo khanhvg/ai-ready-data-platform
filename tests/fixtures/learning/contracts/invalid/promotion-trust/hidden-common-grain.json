@@ -1,0 +1,6 @@
+{
+  "testId": "I8-PROMO-GRAIN-170",
+  "expectedCode": "PROMOTION_COMMON_GRAIN_FORBIDDEN",
+  "mutation": "promotion-trust/hidden-common-grain"
+}
+

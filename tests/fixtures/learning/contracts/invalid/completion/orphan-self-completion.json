@@ -1,0 +1,6 @@
+{
+  "testId": "I8-RECONCILE-ORPHAN-132",
+  "expectedCode": "RECONCILIATION_ORPHAN_CANNOT_COMPLETE",
+  "mutation": "completion/orphan-self-completion"
+}
+

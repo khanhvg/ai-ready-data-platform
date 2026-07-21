@@ -1,0 +1,6 @@
+{
+  "testId": "I8-OPERATION-AUTHZ-157",
+  "expectedCode": "OPERATION_AUTHORIZATION_INCOMPLETE",
+  "mutation": "operation/missing-authorization"
+}
+

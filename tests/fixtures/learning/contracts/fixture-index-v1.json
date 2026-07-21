@@ -1,0 +1,616 @@
+{
+  "schemaVersion": "learning-contract-red-fixture-index-v1",
+  "cases": [
+    {
+      "testId": "I8-AUTH-BASE-001",
+      "paths": [
+        "generated-private"
+      ],
+      "expectedCode": "AUTHORITY_HEAD_MISMATCH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-AUTH-LEASE-002",
+      "paths": [
+        "generated-private"
+      ],
+      "expectedCode": "AUTHORITY_LEASE_REQUIRED",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-AUTH-PROTECTED-003",
+      "paths": [
+        "generated-private"
+      ],
+      "expectedCode": "PROTECTED_PATH_CHANGED",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-I6-FIXTURE-PIN-004",
+      "paths": [
+        "generated-private"
+      ],
+      "expectedCode": "FIXTURE_MANIFEST_ARTIFACT_MISMATCH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-STAGEA-NO-I7-010",
+      "paths": [
+        "generated-private"
+      ],
+      "expectedCode": "STAGE_A_FRAMEWORK_DEPENDENCY",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-SCHEMA-CLOSED-100",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/schema/unknown-field.json"
+      ],
+      "expectedCode": "SCHEMA_UNKNOWN_PROPERTY",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-SCHEMA-MISSING-101",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/schema/missing-required.json"
+      ],
+      "expectedCode": "SCHEMA_REQUIRED_PROPERTY",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-SCHEMA-TYPE-102",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/schema/wrong-type.json"
+      ],
+      "expectedCode": "SCHEMA_TYPE_MISMATCH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-CANON-DUPLICATE-103",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/canonicalization/duplicate-name.json"
+      ],
+      "expectedCode": "JSON_DUPLICATE_NAME",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-CANON-NUMBER-104",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/canonicalization/nan.json",
+        "tests/fixtures/learning/contracts/invalid/canonicalization/positive-infinity.json",
+        "tests/fixtures/learning/contracts/invalid/canonicalization/negative-infinity.json"
+      ],
+      "expectedCode": "JSON_NON_IJSON_NUMBER",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-CANON-SURROGATE-105",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/canonicalization/lone-surrogate.json"
+      ],
+      "expectedCode": "JSON_LONE_SURROGATE",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-CANON-RANGE-106",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/canonicalization/unsafe-integer.json"
+      ],
+      "expectedCode": "JSON_INTEGER_UNSAFE",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-CANON-UTF8-107",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/canonicalization/invalid-utf8.json"
+      ],
+      "expectedCode": "JSON_UTF8_INVALID",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-CANON-BOM-108",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/canonicalization/bom.json"
+      ],
+      "expectedCode": "JSON_BOM_FORBIDDEN",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-CANON-TRAILING-109",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/canonicalization/trailing-document.json"
+      ],
+      "expectedCode": "JSON_TRAILING_CONTENT",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-REF-MISSING-110",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/ref/missing-verifier.json"
+      ],
+      "expectedCode": "REF_TARGET_MISSING",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-REF-CYCLE-111",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/ref/prerequisite-cycle.json"
+      ],
+      "expectedCode": "REF_CYCLE",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-REF-TRAVERSAL-112",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/ref/path-traversal.json"
+      ],
+      "expectedCode": "REF_TRAVERSAL_FORBIDDEN",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-REF-REMOTE-113",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/ref/remote-ref.json"
+      ],
+      "expectedCode": "REF_REMOTE_FORBIDDEN",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-REF-HASH-114",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/ref/schema-hash-mismatch.json"
+      ],
+      "expectedCode": "REF_SCHEMA_HASH_MISMATCH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-REGISTRY-BASE-115",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/migration/base-registry-hash-mismatch.json"
+      ],
+      "expectedCode": "BASE_REGISTRY_HASH_MISMATCH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-STATE-ILLEGAL-120",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/state/illegal-transition.json"
+      ],
+      "expectedCode": "STATE_TRANSITION_FORBIDDEN",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-STATE-STALE-121",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/state/stale-version.json"
+      ],
+      "expectedCode": "PROGRESS_VERSION_CONFLICT",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-IDEMPOTENCY-CONFLICT-122",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/state/idempotency-payload-conflict.json"
+      ],
+      "expectedCode": "IDEMPOTENCY_KEY_REUSE",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-IDEMPOTENCY-DUPLICATE-123",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/state/duplicate-effect.json"
+      ],
+      "expectedCode": "IDEMPOTENCY_DUPLICATE_EFFECT",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-COMPLETION-FORGE-130",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/completion/forged-browser-completion.json"
+      ],
+      "expectedCode": "COMPLETION_AUTHORITY_REQUIRED",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-COMPLETION-DUAL-131",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/completion/operation-result-direct-write.json"
+      ],
+      "expectedCode": "COMPLETION_DUAL_TRUTH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-COMPLETION-PRESENCE-134",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/completion/evidence-presence-completes.json"
+      ],
+      "expectedCode": "COMPLETION_DUAL_TRUTH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-RECONCILE-ORPHAN-132",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/completion/orphan-self-completion.json"
+      ],
+      "expectedCode": "RECONCILIATION_ORPHAN_CANNOT_COMPLETE",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-RECONCILE-TAMPER-133",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/completion/orphan-hash-mismatch.json"
+      ],
+      "expectedCode": "RECONCILIATION_HASH_MISMATCH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-TAMPER-PAYLOAD-140",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/evidence/evidence-payload.json"
+      ],
+      "expectedCode": "EVIDENCE_PAYLOAD_HASH_MISMATCH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-TAMPER-ARTIFACT-141",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/evidence/artifact-hash.json"
+      ],
+      "expectedCode": "EVIDENCE_ARTIFACT_HASH_MISMATCH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-LOCATOR-TRAVERSAL-142",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/evidence/locator-traversal.json"
+      ],
+      "expectedCode": "EVIDENCE_LOCATOR_INVALID",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-LOCATOR-PRIVATE-147",
+      "paths": [
+        "generated-private"
+      ],
+      "expectedCode": "EVIDENCE_LOCATOR_INVALID",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-TAMPER-VERIFIER-148",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/evidence/stale-verifier-hash.json"
+      ],
+      "expectedCode": "EVIDENCE_VERIFIER_HASH_MISMATCH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-EVIDENCE-REPLAY-149",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/evidence/replayed-run-identity.json"
+      ],
+      "expectedCode": "EVIDENCE_REPLAY_CONFLICT",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-EVIDENCE-PROVENANCE-143",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/evidence/missing-dependency-sha.json"
+      ],
+      "expectedCode": "EVIDENCE_PROVENANCE_INCOMPLETE",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-EVIDENCE-RECURSIVE-144",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/evidence/recursive-identity.json"
+      ],
+      "expectedCode": "EVIDENCE_RECURSIVE_IDENTITY",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-SECRET-145",
+      "paths": [
+        "generated-private"
+      ],
+      "expectedCode": "EVIDENCE_SENSITIVE_CONTENT",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-INJECTION-146",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/security/injection-field.json"
+      ],
+      "expectedCode": "CONTRACT_INJECTION_FIELD_FORBIDDEN",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-MIGRATION-UNKNOWN-150",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/migration/unknown-version.json"
+      ],
+      "expectedCode": "SCHEMA_VERSION_UNREADABLE",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-MIGRATION-LOSS-151",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/migration/lossy-edge.json"
+      ],
+      "expectedCode": "MIGRATION_LOSSY_FORBIDDEN",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-MIGRATION-CYCLE-152",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/migration/cycle.json"
+      ],
+      "expectedCode": "MIGRATION_CYCLE",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-MIGRATION-COLLISION-153",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/migration/family-collision.json"
+      ],
+      "expectedCode": "SCHEMA_FAMILY_COLLISION",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPERATION-DUPLICATE-154",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/operation/duplicate-method-path.json"
+      ],
+      "expectedCode": "OPERATION_DUPLICATE",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPERATION-TAXONOMY-155",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/operation/missing-taxonomy.json"
+      ],
+      "expectedCode": "OPERATION_TAXONOMY_INCOMPLETE",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPERATION-ROLE-156",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/operation/physical-module-role.json"
+      ],
+      "expectedCode": "OPERATION_ROLE_NOT_NEUTRAL",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPERATION-AUTHZ-157",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/operation/missing-authorization.json"
+      ],
+      "expectedCode": "OPERATION_AUTHORIZATION_INCOMPLETE",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPERATION-EVIDENCE-158",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/operation/missing-evidence-rule.json"
+      ],
+      "expectedCode": "OPERATION_EVIDENCE_INCOMPLETE",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-MIGRATION-BACKWARD-159",
+      "paths": [
+        "generated-private"
+      ],
+      "expectedCode": "SCHEMA_VERSION_UNREADABLE",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-MATRIX-160",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/openapi/orphan-operation.json"
+      ],
+      "expectedCode": "OPENAPI_OPERATION_SET_MISMATCH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-AUTH-161",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/openapi/missing-authority.json"
+      ],
+      "expectedCode": "OPERATION_AUTHORITY_MISSING",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-IDEMPOTENCY-162",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/openapi/missing-idempotency.json"
+      ],
+      "expectedCode": "OPERATION_IDEMPOTENCY_MISSING",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-RAW-163",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/openapi/raw-sql-query.json"
+      ],
+      "expectedCode": "OPENAPI_RAW_QUERY_FORBIDDEN",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-REF-164",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/openapi/remote-ref.json"
+      ],
+      "expectedCode": "OPENAPI_REF_FORBIDDEN",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-VERSION-165",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/openapi/missing-version-response.json"
+      ],
+      "expectedCode": "OPENAPI_VERSION_NEGOTIATION_INCOMPLETE",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-ASYNCAPI-166",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/openapi/orphan-asyncapi.json"
+      ],
+      "expectedCode": "ASYNCAPI_WITHOUT_CHANNEL",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-PROBE-MUTATION-167",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/guidance/mutating-probe.json"
+      ],
+      "expectedCode": "PROBE_MUTATION_FORBIDDEN",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-HINT-ORDER-168",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/guidance/out-of-order-hint.json"
+      ],
+      "expectedCode": "HINT_ORDER_INVALID",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-HINT-COMPLETION-169",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/guidance/hint-completes.json"
+      ],
+      "expectedCode": "HINT_COMPLETION_FORBIDDEN",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-PROMO-GRAIN-170",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/promotion-trust/hidden-common-grain.json"
+      ],
+      "expectedCode": "PROMOTION_COMMON_GRAIN_FORBIDDEN",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-PROMO-LIMIT-171",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/promotion-trust/missing-limitation.json"
+      ],
+      "expectedCode": "PROMOTION_LIMITATION_REQUIRED",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-PROMO-HASH-172",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/promotion-trust/fixture-hash-drift.json"
+      ],
+      "expectedCode": "PROMOTION_FIXTURE_HASH_MISMATCH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-REQUEST-173",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/openapi/request-shape-drift.json"
+      ],
+      "expectedCode": "OPENAPI_REQUEST_CONTRACT_MISMATCH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-RESPONSE-174",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/openapi/response-shape-drift.json"
+      ],
+      "expectedCode": "OPENAPI_RESPONSE_CONTRACT_MISMATCH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-ERROR-175",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/openapi/error-set-drift.json"
+      ],
+      "expectedCode": "OPENAPI_ERROR_CONTRACT_MISMATCH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-PROBE-REQUIRED-176",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/guidance/required-unavailable-passes.json"
+      ],
+      "expectedCode": "PROBE_REQUIRED_UNAVAILABLE",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-PROBE-OPTIONAL-177",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/guidance/optional-unavailable-passes.json"
+      ],
+      "expectedCode": "PROBE_OPTIONAL_FALSE_PASS",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-HINT-REVEAL-178",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/guidance/unauthorized-reveal.json"
+      ],
+      "expectedCode": "HINT_REVEAL_FORBIDDEN",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-OPENAPI-YAML-179",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/openapi/duplicate-key.yaml"
+      ],
+      "expectedCode": "OPENAPI_YAML_DUPLICATE_KEY",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-FITNESS-OWNER-180",
+      "paths": [
+        "generated-private"
+      ],
+      "expectedCode": "FITNESS_RESULT_OWNER_VERSION_MISMATCH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-DEPS-IMPORT-181",
+      "paths": [
+        "generated-private"
+      ],
+      "expectedCode": "DEPENDENCY_IMPORT_UNADMITTED",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-DEPS-MANIFEST-182",
+      "paths": [
+        "generated-private"
+      ],
+      "expectedCode": "DEPENDENCY_MANIFEST_DRIFT",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-DEPS-ADVISORY-183",
+      "paths": [
+        "generated-private"
+      ],
+      "expectedCode": "DEPENDENCY_ADVISORY_UNRESOLVED",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-COMMAND-ACTIVATION-184",
+      "paths": [
+        "tests/fixtures/learning/contracts/invalid/command/base-command-registry-hash-mismatch.json"
+      ],
+      "expectedCode": "COMMAND_ACTIVATION_BASE_MISMATCH",
+      "redReason": "missing-behavior"
+    },
+    {
+      "testId": "I8-ROLLBACK-SCOPE-190",
+      "paths": [
+        "generated-private"
+      ],
+      "expectedCode": "ROLLBACK_SCOPE_UNOWNED",
+      "redReason": "missing-behavior"
+    }
+  ]
+}
+

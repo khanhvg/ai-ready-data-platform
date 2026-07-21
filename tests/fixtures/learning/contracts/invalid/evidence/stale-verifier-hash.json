@@ -1,0 +1,6 @@
+{
+  "testId": "I8-TAMPER-VERIFIER-148",
+  "expectedCode": "EVIDENCE_VERIFIER_HASH_MISMATCH",
+  "mutation": "evidence/stale-verifier-hash"
+}
+

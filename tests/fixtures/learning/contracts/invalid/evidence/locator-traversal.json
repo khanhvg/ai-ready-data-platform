@@ -1,0 +1,6 @@
+{
+  "testId": "I8-LOCATOR-TRAVERSAL-142",
+  "expectedCode": "EVIDENCE_LOCATOR_INVALID",
+  "mutation": "evidence/locator-traversal"
+}
+
