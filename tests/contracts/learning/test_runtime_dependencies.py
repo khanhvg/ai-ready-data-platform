@@ -5,6 +5,7 @@ import json
 import os
 import pathlib
 import signal
+import socket
 import sys
 import tempfile
 import time
@@ -47,9 +48,20 @@ class S3CommandResourceCleanupTests(unittest.TestCase):
             regular.write_bytes(b"content")
             os.symlink(regular.name, root / "symlink")
             os.link(regular, root / "hardlink")
-            for locator in ("symlink", "hardlink"):
-                with self.subTest(locator=locator):
-                    self.assert_code("LOCATOR_SPECIAL_FILE", runtime.validate_evidence_locator, root, locator, hashlib.sha256(b"content").hexdigest())
+            endpoint = socket.socket(socket.AF_UNIX)
+            try:
+                endpoint.bind(str(root / "socket"))
+                for locator in ("symlink", "hardlink", "socket"):
+                    with self.subTest(locator=locator):
+                        self.assert_code(
+                            "LOCATOR_SPECIAL_FILE",
+                            runtime.validate_evidence_locator,
+                            root,
+                            locator,
+                            hashlib.sha256(b"content").hexdigest(),
+                        )
+            finally:
+                endpoint.close()
 
     def test_i8_v3_public_command_injection_020(self) -> None:
         """I8-V3-PUBLIC-COMMAND-INJECTION-020."""

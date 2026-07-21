@@ -4,6 +4,7 @@ import hashlib
 import os
 import pathlib
 import tempfile
+import threading
 import unittest
 from unittest import mock
 
@@ -69,13 +70,22 @@ class SchemaReaderCanonicalReferenceTests(unittest.TestCase):
             outside = base.parent / f"{base.name}-outside"
             outside.write_bytes(b"outside")
             try:
-                self.assert_code(
-                    "REFERENCE_PATH_INVALID",
-                    references.resolve_reference,
-                    base,
+                for locator in (
                     f"../{outside.name}",
-                    hashlib.sha256(b"outside").hexdigest(),
-                )
+                    "/etc/passwd",
+                    "https://example.test/a",
+                    "s3:bucket/key",
+                    "nested\\payload",
+                    "nested//payload",
+                ):
+                    with self.subTest(locator=locator):
+                        self.assert_code(
+                            "REFERENCE_PATH_INVALID",
+                            references.resolve_reference,
+                            base,
+                            locator,
+                            hashlib.sha256(b"outside").hexdigest(),
+                        )
                 target = base / "regular"
                 target.write_bytes(b"content")
                 os.link(target, base / "hardlink")
@@ -122,33 +132,65 @@ class SchemaReaderCanonicalReferenceTests(unittest.TestCase):
             )
 
     def test_six_high_h5_intermediate_replacement_cannot_redirect_read(self) -> None:
-        """Replacing a checked component before pathname reopen must not redirect bytes."""
+        """A concurrent intermediate replacement must fail closed, never redirect bytes."""
         with tempfile.TemporaryDirectory() as temporary:
             base = pathlib.Path(temporary)
             inside = base / "nested"
             inside.mkdir()
             (inside / "payload.json").write_bytes(b"inside")
+            held_inside = base / "held-inside"
             outside = base / "outside"
             outside.mkdir()
             (outside / "payload.json").write_bytes(b"outside")
-            original_reader = references.read_regular_bytes
-            replaced = False
+            checked = threading.Event()
+            replaced = threading.Event()
+            original_lstat = pathlib.Path.lstat
+            original_stat = os.stat
 
-            def replace_then_read(path: pathlib.Path) -> bytes:
-                nonlocal replaced
-                if not replaced:
-                    replaced = True
-                    inside.rename(base / "held-inside")
+            def replace_component() -> None:
+                if checked.wait(2):
+                    inside.rename(held_inside)
                     os.symlink("outside", inside)
-                return original_reader(path)
+                    replaced.set()
 
-            with mock.patch.object(references, "read_regular_bytes", replace_then_read):
-                raw = references.resolve_reference(
-                    base,
-                    "nested/payload.json",
-                    hashlib.sha256(b"outside").hexdigest(),
-                )
-            self.assertNotEqual(b"outside", raw)
+            def synchronized_lstat(path: pathlib.Path):
+                result = original_lstat(path)
+                if path == inside and not checked.is_set():
+                    checked.set()
+                    self.assertTrue(replaced.wait(2))
+                return result
+
+            def synchronized_stat(path, *args, **kwargs):
+                result = original_stat(path, *args, **kwargs)
+                if path == "nested" and kwargs.get("dir_fd") is not None and not checked.is_set():
+                    checked.set()
+                    self.assertTrue(replaced.wait(2))
+                return result
+
+            racer = threading.Thread(target=replace_component)
+            racer.start()
+            try:
+                with (
+                    mock.patch.object(pathlib.Path, "lstat", synchronized_lstat),
+                    mock.patch.object(os, "stat", synchronized_stat),
+                ):
+                    try:
+                        raw = references.resolve_reference(
+                            base,
+                            "nested/payload.json",
+                            hashlib.sha256(b"outside").hexdigest(),
+                        )
+                    except schema.LearningContractError as exc:
+                        self.assertIn(exc.code, {"REFERENCE_SPECIAL_FILE", "REFERENCE_UNREADABLE"})
+                    else:
+                        self.assertNotEqual(b"outside", raw)
+            finally:
+                racer.join(2)
+                if inside.is_symlink():
+                    inside.unlink()
+                if held_inside.exists():
+                    held_inside.rename(inside)
+            self.assertFalse(racer.is_alive())
 
 
 if __name__ == "__main__":
