@@ -274,7 +274,7 @@ test('V3-07 authority requires exact fresh-live head for feature branch and deta
     assert.equal(run(['remote', 'set-url', 'origin', resolve(temporaryRoot, 'missing-origin')]).status, 0);
     const unavailable = preflight();
     assert.notEqual(unavailable.rc, 0);
-    assert.ok(unavailable.output.failures.includes('fresh-live-unavailable'));
+    assert.ok(unavailable.output.failures.includes('authority-lookup-error'));
   } finally {
     rmSync(temporaryRoot, { recursive: true, force: true });
   }
@@ -294,7 +294,7 @@ test('V3-07 authority lookup timeout is bounded and fails closed deterministical
     fixtureContract.authorityLookupMs = 100;
     writeFileSync(contractPath, `${JSON.stringify(fixtureContract, null, 2)}\n`);
     mkdirSync(fakeBin);
-    writeFileSync(fakeGit, `#!/bin/sh\nif [ "$1" = "ls-remote" ]; then\n  case "$FAKE_GIT_LS_REMOTE_MODE" in\n    timeout) exec sleep 5 ;;\n    error) exit 42 ;;\n    malformed) printf 'not-a-sha\\trefs/heads/feature/issue-5-02-web-spike\\n'; exit 0 ;;\n  esac\nfi\nexec ${JSON.stringify(realGit)} "$@"\n`);
+    writeFileSync(fakeGit, `#!/bin/sh\nif [ "$1" = "ls-remote" ]; then\n  case "$FAKE_GIT_LS_REMOTE_MODE" in\n    timeout) while :; do :; done ;;\n    error) exit 42 ;;\n    malformed) printf 'not-a-sha\\trefs/heads/feature/issue-5-02-web-spike\\n'; exit 0 ;;\n  esac\nfi\nexec ${JSON.stringify(realGit)} "$@"\n`);
     chmodSync(fakeGit, 0o700);
     const started = Date.now();
     const result = spawnSync(process.execPath, ['spikes/web/harness/scripts/simple-vite-v3.mjs', 'preflight', '--implementation-input', contract.implementationInputSha], {
