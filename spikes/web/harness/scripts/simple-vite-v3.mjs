@@ -13,6 +13,7 @@ const EVIDENCE_CLOSURE_RED_SHA = '23ad065ed49aa5bba718252a6755511182e55a23';
 const EXPECTED_CSP = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'";
 const PROCESS_TERM_GRACE_MS = 250;
 const PROCESS_FINAL_WAIT_MS = 250;
+const SECOND_TARGETED_REVIEW_FIX_RED_SHA = '5264e3958a60f26e1663aa0bd940bf5176520896';
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const relativePath = path => relative(ROOT, path).split(sep).join('/');
 const git = args => {
@@ -105,6 +106,12 @@ export function validateEvidenceManifest(manifest) {
       || !(manifest?.targetedReviewFixRed?.rc > 0)
       || manifest?.targetedReviewFixRed?.assertionIds?.length !== 4
       || manifest?.targetedReviewFixRed?.log !== 'tdd/review-fix-red/focused-tests.tap')) failures.push('targeted-review-fix-red');
+  const secondTargetedRed = manifest?.secondTargetedReviewFixRed;
+  if (secondTargetedRed && (secondTargetedRed.result !== 'pass'
+      || secondTargetedRed.sourceSha !== SECOND_TARGETED_REVIEW_FIX_RED_SHA
+      || !(secondTargetedRed.rc > 0)
+      || secondTargetedRed.assertionIds?.length !== 2
+      || secondTargetedRed.log !== 'tdd/second-targeted-review-fix-red/focused-tests.tap')) failures.push('second-targeted-review-fix-red');
   return failures;
 }
 
@@ -133,7 +140,10 @@ export function preflight(implementationInput) {
   if (!/^[0-9a-f]{40}$/.test(head)) failures.push('invalid-head-identity');
   if (live.status !== 0 || liveLines.length === 0) failures.push('fresh-live-unavailable');
   else if (liveLines.length !== 1 || !/^[0-9a-f]{40}$/.test(liveHead)) failures.push('fresh-live-ambiguous-or-invalid');
-  if (branch === contract.branch) authorityMode = 'feature-branch';
+  if (branch === contract.branch) {
+    if (/^[0-9a-f]{40}$/.test(head) && /^[0-9a-f]{40}$/.test(liveHead) && head === liveHead) authorityMode = 'feature-branch';
+    else failures.push('feature-head-mismatch');
+  }
   else if (branch) failures.push('branch-mismatch');
   else if (/^[0-9a-f]{40}$/.test(head) && /^[0-9a-f]{40}$/.test(liveHead) && head === liveHead) authorityMode = 'detached-exact-live';
   else failures.push('detached-head-mismatch');
@@ -185,6 +195,18 @@ function groupExists(processGroupId) {
 
 const delay = milliseconds => new Promise(resolveDelay => setTimeout(resolveDelay, milliseconds));
 
+async function raceWithTimeout(promise, milliseconds, timeoutValue) {
+  let timer;
+  const timeout = new Promise(resolveTimeout => {
+    timer = setTimeout(() => resolveTimeout(timeoutValue), milliseconds);
+  });
+  try {
+    return await Promise.race([promise, timeout]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function waitForGroupExit(owned, ceilingMs) {
   const deadline = Date.now() + ceilingMs;
   while (groupExists(owned.processGroup) && Date.now() < deadline) await delay(20);
@@ -230,7 +252,7 @@ async function terminateOwnedGroup(owned) {
     termination.groupExited = await waitForGroupExit(owned, PROCESS_FINAL_WAIT_MS);
   }
   termination.finalWaitExpired = !termination.groupExited;
-  await Promise.race([owned.closePromise, delay(PROCESS_FINAL_WAIT_MS)]);
+  await raceWithTimeout(owned.closePromise, PROCESS_FINAL_WAIT_MS, null);
   return termination;
 }
 
@@ -241,14 +263,19 @@ async function runBounded(name, command, ceilingMs, directory) {
   let stdout = '', stderr = '';
   owned.child.stdout.on('data', chunk => { stdout += chunk; });
   owned.child.stderr.on('data', chunk => { stderr += chunk; });
-  const outcome = await Promise.race([
+  const outcome = await raceWithTimeout(
     owned.closePromise.then(value => ({ kind: 'close', ...value })),
-    delay(ceilingMs).then(() => ({ kind: 'timeout' })),
-  ]);
+    ceilingMs,
+    { kind: 'timeout' },
+  );
   const timedOut = outcome.kind === 'timeout';
   let termination = { termSent: false, killSent: false, groupExited: true, finalWaitExpired: false };
   if (timedOut || outcome.error || groupExists(owned.processGroup)) termination = await terminateOwnedGroup(owned);
-  const closed = outcome.kind === 'close' ? outcome : await Promise.race([owned.closePromise, delay(PROCESS_FINAL_WAIT_MS).then(() => ({ code: null, signal: null, error: new Error('bounded final child wait expired') }))]);
+  const closed = outcome.kind === 'close' ? outcome : await raceWithTimeout(
+    owned.closePromise,
+    PROCESS_FINAL_WAIT_MS,
+    { code: null, signal: null, error: new Error('bounded final child wait expired') },
+  );
   const result = { name, command, startedAt, durationMs: Number(process.hrtime.bigint() - started) / 1e6, rc: closed.code ?? 1, signal: closed.signal, timedOut, termination, stdout: sanitize(stdout), stderr: sanitize(`${stderr}${closed.error ? `${stderr ? '\n' : ''}${closed.error.message}` : ''}`) };
   writeFileSync(resolve(directory, `${name}.json`), `${JSON.stringify(result, null, 2)}\n`);
   writeFileSync(resolve(directory, `${name}.log`), `${result.stdout}${result.stderr}`);
@@ -263,14 +290,28 @@ async function startHost(runId, directory) {
   let output = '';
   try {
     const ready = await new Promise((resolveReady, reject) => {
-      const timer = setTimeout(() => reject(new Error('V3 host READY timeout')), contract.ceilingsMs.hostReady);
+      let settled = false;
+      const finish = (callback, value) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        child.stdout.off('data', consume);
+        child.stderr.off('data', consume);
+        child.off('exit', exited);
+        child.off('error', failed);
+        callback(value);
+      };
       const consume = chunk => {
         output += chunk;
-        if (output.includes('READY http://127.0.0.1:4175')) { clearTimeout(timer); resolveReady(true); }
+        if (output.includes('READY http://127.0.0.1:4175')) finish(resolveReady, true);
       };
+      const exited = code => finish(reject, new Error(`V3 host exited before READY: ${code} ${sanitize(output)}`));
+      const failed = error => finish(reject, error);
+      const timer = setTimeout(() => finish(reject, new Error('V3 host READY timeout')), contract.ceilingsMs.hostReady);
       child.stdout.on('data', consume);
       child.stderr.on('data', consume);
-      child.on('exit', code => { clearTimeout(timer); reject(new Error(`V3 host exited before READY: ${code} ${sanitize(output)}`)); });
+      child.on('exit', exited);
+      child.on('error', failed);
     });
     if (!ready) throw new Error('host not ready');
   } catch (error) {
@@ -464,12 +505,28 @@ function contemporaneousRed() {
 }
 
 function targetedReviewFixRed() {
-  const directory = resolve(RUNTIME, 'targeted-review-fix-red');
+  let directory = resolve(RUNTIME, 'targeted-review-fix-red');
+  if (!existsSync(resolve(directory, 'result.json')) && existsSync(resolve(ROOT, contract.retentionIndex))) {
+    const retainedIndex = JSON.parse(readFileSync(resolve(ROOT, contract.retentionIndex), 'utf8'));
+    const manifestPath = resolve(ROOT, retainedIndex.manifest?.path || '');
+    if (sha256(readFileSync(manifestPath)) !== retainedIndex.manifest.sha256) throw new Error('targeted review-fix retained manifest hash mismatch');
+    directory = resolve(dirname(manifestPath), 'tdd/review-fix-red');
+  }
   const resultPath = resolve(directory, 'result.json');
   const logPath = resolve(directory, 'focused-tests.tap');
   if (!existsSync(resultPath) || !existsSync(logPath)) throw new Error('targeted review-fix RED evidence is unavailable');
   const result = JSON.parse(readFileSync(resultPath, 'utf8'));
   if (result.result !== 'pass' || result.rc === 0 || result.sourceSha !== 'f45aa016605c250aa26c977f2320acf75b565ecb' || result.assertionIds?.length !== 4) throw new Error('targeted review-fix RED evidence is invalid');
+  return { directory, result };
+}
+
+function secondTargetedReviewFixRed() {
+  const directory = resolve(RUNTIME, 'second-targeted-review-fix-red');
+  const resultPath = resolve(directory, 'result.json');
+  const logPath = resolve(directory, 'focused-tests.tap');
+  if (!existsSync(resultPath) || !existsSync(logPath)) throw new Error('second targeted review-fix RED evidence is unavailable');
+  const result = JSON.parse(readFileSync(resultPath, 'utf8'));
+  if (result.result !== 'pass' || result.rc === 0 || result.sourceSha !== SECOND_TARGETED_REVIEW_FIX_RED_SHA || result.assertionIds?.length !== 2) throw new Error('second targeted review-fix RED evidence is invalid');
   return { directory, result };
 }
 
@@ -590,6 +647,7 @@ function verifyHashIndex(destination, index) {
 export function retainRun() {
   const red = contemporaneousRed();
   const reviewFixRed = targetedReviewFixRed();
+  const secondReviewFixRed = secondTargetedReviewFixRed();
   const green = latest('gate');
   const redResult = JSON.parse(readFileSync(resolve(red.directory, 'result.json'), 'utf8'));
   const greenResult = JSON.parse(readFileSync(resolve(green.directory, 'result.json'), 'utf8'));
@@ -600,11 +658,16 @@ export function retainRun() {
   if (existsSync(destination)) throw new Error('immutable run destination already exists');
   mkdirSync(resolve(destination, 'tdd/red'), { recursive: true });
   mkdirSync(resolve(destination, 'tdd/review-fix-red'), { recursive: true });
+  mkdirSync(resolve(destination, 'tdd/second-targeted-review-fix-red'), { recursive: true });
   mkdirSync(resolve(destination, 'green'), { recursive: true });
   mkdirSync(resolve(destination, 'security'), { recursive: true });
   mkdirSync(resolve(destination, 'lifecycle'), { recursive: true });
   for (const name of ['unit.log', 'playwright.log', 'result.json']) if (existsSync(resolve(red.directory, name))) copySanitized(resolve(red.directory, name), resolve(destination, 'tdd/red', name));
-  for (const name of ['focused-tests.tap', 'result.json']) copySanitized(resolve(reviewFixRed.directory, name), resolve(destination, 'tdd/review-fix-red', name));
+  for (const name of ['focused-tests.tap', 'result.json']) {
+    const content = sanitize(readFileSync(resolve(reviewFixRed.directory, name), 'utf8')).replace(/[ \t]+$/gm, '');
+    writeFileSync(resolve(destination, 'tdd/review-fix-red', name), content);
+  }
+  for (const name of ['focused-tests.tap', 'result.json']) copySanitized(resolve(secondReviewFixRed.directory, name), resolve(destination, 'tdd/second-targeted-review-fix-red', name));
   for (const name of ['install.log', 'build.log', 'unit.log', 'harness.log', 'playwright.log', 'result.json', 'response-index.html']) if (existsSync(resolve(green.directory, name))) copySanitized(resolve(green.directory, name), resolve(destination, 'green', name));
   if (existsSync(resolve(green.directory, 'browser-results'))) cpSync(resolve(green.directory, 'browser-results'), resolve(destination, 'green/browser-results'), { recursive: true });
   for (const [key, target] of browserEvidence.required) {
@@ -671,7 +734,7 @@ export function retainRun() {
   };
   const scanSummary = { result: scans.result, findings: scans.findings.length, checks: scans.checkInventory?.length ?? 0, checkInventory: scans.checkInventory?.map(({ id, result }) => ({ id, result })) ?? [], finalRetained: 'pass' };
   const ownedResourceSummary = { result: validateOwnership(ledger, { runId: green.runId }).length === 0 && rollback.result === 'pass' ? 'pass' : 'fail', serverCount: 1, port: ledger.port, cleanup: cleanup.result, rollbackSimulation: rollback.result };
-  const manifest = { schemaVersion: 'i5-02-simple-vite-v3-evidence-v1', acceptanceRevision: contract.acceptanceRevision, runId: green.runId, implementationInputSha: contract.implementationInputSha, testedSourceSha: greenResult.sourceSha, testedTreeSha: greenResult.testedTreeSha, branch: contract.branch, authorityMode: greenResult.authority.authorityMode, freshLiveHead: greenResult.authority.freshLiveHead, issue6IntegrationSha: contract.issue6IntegrationSha, fixtureIdentities: contract.fixtureIdentities, lockSha256: contract.lockSha256, tools: greenResult.tools, commands: greenResult.commands, browserInventory: browser, groups, redProvenance: { result: 'pass', testOnlySha: redResult.sourceSha, testedTreeSha: redResult.testedTreeSha }, targetedReviewFixRed: { result: reviewFixRed.result.result, sourceSha: reviewFixRed.result.sourceSha, rc: reviewFixRed.result.rc, assertionIds: reviewFixRed.result.assertionIds, log: 'tdd/review-fix-red/focused-tests.tap' }, evidenceClosureRedSha: EVIDENCE_CLOSURE_RED_SHA, testNameInventory, artifactLocators, axeSummary, noJsFacts, scanSummary, ownedResourceSummary, audit: audit.metadata?.vulnerabilities, redaction: { result: 'pass', findings: [] }, cleanupRollback: rollback, limitations: ['Chromium and axe automation are not a full WCAG or screen-reader conformance claim.', 'Production accessibility and manual UAT remain deferred.'] };
+  const manifest = { schemaVersion: 'i5-02-simple-vite-v3-evidence-v1', acceptanceRevision: contract.acceptanceRevision, runId: green.runId, implementationInputSha: contract.implementationInputSha, testedSourceSha: greenResult.sourceSha, testedTreeSha: greenResult.testedTreeSha, branch: contract.branch, authorityMode: greenResult.authority.authorityMode, freshLiveHead: greenResult.authority.freshLiveHead, issue6IntegrationSha: contract.issue6IntegrationSha, fixtureIdentities: contract.fixtureIdentities, lockSha256: contract.lockSha256, tools: greenResult.tools, commands: greenResult.commands, browserInventory: browser, groups, redProvenance: { result: 'pass', testOnlySha: redResult.sourceSha, testedTreeSha: redResult.testedTreeSha }, targetedReviewFixRed: { result: reviewFixRed.result.result, sourceSha: reviewFixRed.result.sourceSha, rc: reviewFixRed.result.rc, assertionIds: reviewFixRed.result.assertionIds, log: 'tdd/review-fix-red/focused-tests.tap' }, secondTargetedReviewFixRed: { result: secondReviewFixRed.result.result, sourceSha: secondReviewFixRed.result.sourceSha, testedTreeSha: secondReviewFixRed.result.testedTreeSha, rc: secondReviewFixRed.result.rc, assertionIds: secondReviewFixRed.result.assertionIds, log: 'tdd/second-targeted-review-fix-red/focused-tests.tap' }, evidenceClosureRedSha: EVIDENCE_CLOSURE_RED_SHA, testNameInventory, artifactLocators, axeSummary, noJsFacts, scanSummary, ownedResourceSummary, audit: audit.metadata?.vulnerabilities, redaction: { result: 'pass', findings: [] }, cleanupRollback: rollback, limitations: ['Chromium and axe automation are not a full WCAG or screen-reader conformance claim.', 'Production accessibility and manual UAT remain deferred.'] };
   if (validateEvidenceManifest(manifest).length) throw new Error('generated manifest is invalid');
   writeFileSync(resolve(destination, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
   const finalScan = finalRetainedScan(destination);
