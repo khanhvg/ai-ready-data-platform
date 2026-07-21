@@ -3,18 +3,63 @@
 ## Current Revision
 
 The binding current revision is
-[`i5-02-acceptance-v2`](./automation-first-acceptance-amendment-v2.md). It is
-validated `PASS_WITH_FIXES` at planner input
-`ae9e2296b971c9134638e66c09302b516f8ad6e6`; a fresh readiness audit of the exact published
-validation output remains required. The baseline rows below remain the immutable discovery/test-ID
-map. V2 supersedes only clauses that made deep VoiceOver desktop-key traversal, an actual macOS
-System Settings Reduce Motion toggle, or native Chrome-menu 200% proof block the Issue #7 decision.
-The three owner-deferred checks remain explicit manual UAT and residual risk before production
-release; they cannot be recorded as an automated pass, cannot add score, and cannot support a full
-WCAG or screen-reader-conformance claim. Every other gate, including automated no-JS browser plus
-independent static-parser comprehension, remains binding.
+[`i5-02-simple-vite-v3`](./simple-vite-acceptance-amendment-v3.md), planned from exact input
+`358c305e5988a44ad4261b748aac3ea454c73dad` after the
+[owner selected Vite + React](https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5036142177).
+It is `PLANNER_ONLY_NOT_VALIDATED`. V3 replaces all prior v2 blocking/readiness/cook/comparison
+scope. The owner selection is unscored.
 
-## Purpose
+## V3 Blocking Acceptance Matrix
+
+| ID | Planned source | Exact assertion | Required evidence | Failure/rollback |
+|---|---|---|---|---|
+| `V3-01` | tracked `spikes/web/candidates/vite/{package.json,package-lock.json}` | Frozen `npm ci --ignore-scripts --no-audit --no-fund`; production build passes; lock SHA-256 remains `96feead881be424d4c0d8d4629d7da0312722a3d7c945d08ed071542ea5d443c` | install/build logs, exit codes, manifest/lock before-after hashes, dist inventory | Stop; remove owned install/build output; no lock repair/upgrade |
+| `V3-02` | `spikes/web/candidates/vite/tests/promotion-trust-contract.test.mjs` | Focused Node suite proves four independent named grains, controlled failure, exact conclusion/reason, no attribution, reset baseline, reflection | TAP and discovered test names bound to exact source SHA | Keep valid RED; fix only allow-listed Vite behavior; rerun full gate |
+| `V3-03` | `spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs` | Sole Chromium journey: entry → controlled failure → four named grains → `insufficient-evidence` / `no-common-grain` → reset → reflection | one Playwright suite JSON result and bounded trace | No retry/alternate browser; stop and rerun with new run ID after fix |
+| `V3-04` | same smoke suite; desktop `1280×800`, narrow `360×800` | Same journey in both projects; visible/unobscured keyboard focus; `scrollWidth <= clientWidth` at checkpoints | focus/overflow assertions; failure-only screenshots | Fix focus/layout only; no broad visual matrix |
+| `V3-05` | desktop project in same suite | Exactly one axe scan; zero `critical`, zero `serious`; retain lower impacts as observations | axe JSON with counts, URL, exact source SHA | Any Critical/Serious blocks; no rule disable/impact relabel |
+| `V3-06` | no-JS project in same suite | Real `javaScriptEnabled: false` production response preserves four grains, each limitation, exact conclusion/reason, linear order, reset limitation, reflection | no-JS response/body fact inventory | Restore static HTML facts; interception/script removal is invalid |
+| `V3-07` | `spikes/web/harness/{simple-vite-v3.json,scripts/simple-vite-v3.mjs,tests/simple-vite-v3.test.mjs}` | Exact Issue #6 SHA/blob identities; zero High/Critical npm audit; credential/private-path/PII/injection/CSP/same-origin/storage/evidence checks; owned server/profile cleanup and rollback | audit/scans/ownership/rollback JSON; retained manifest/hash/index | Stop, quarantine raw evidence, signal no foreign PID, clean owned runtime only |
+| `V3-GOV-01` | external review/PR/merge records plus ADR-005 surfaces | Contemporaneous RED; S3; two prerequisite reviews before Accepted/Vite; two fresh final exact-head reviews; PR checks and human approval at final SHA; pristine merge rerun | exact SHAs, review PASS reports, approval/merge/post-merge report | Any post-review commit invalidates final reports; normal corrective/revert only |
+
+All seven `V3-01..07` rows are conjunctive and non-scoring. `V3-GOV-01` is the release-governance
+gate, not an eighth product test. Missing/skipped/partial evidence is failure.
+
+## V3 Four-Grain Invariant
+
+The Node and Chromium suites must agree on exactly:
+
+```text
+promotion       promo_name × channel
+fulfillment     carrier × region_name
+returns         reason × category_name × region_name
+data quality    scenario
+conclusion      insufficient-evidence
+reason          no-common-grain
+relationships   none
+attribution     none
+```
+
+The source files are the four exact Issue #6 tracked handoff paths at integration
+`24be3b34c6b0fcdbd07c5800dcab349054e34713`; the SHA-256 and Git-blob pairs in the v3 amendment
+must match before any acceptance result is valid.
+
+## V3 Retired Scope and Claim Limit
+
+Firefox/multi-browser work, Next/Astro comparison, score anchors/weights/ties, performance/resource
+sampling, timer deadlines, VoiceOver/native zoom/System Settings, broad screenshot matrices, and
+production-conformance claims are non-blocking historical context. Timer provenance
+`3944.836095708` is preserved but closed/non-binding. V3 claims only the stated Chromium, axe,
+keyboard/overflow, no-JS, fixture, S3, cleanup, and rollback results—not full WCAG, screen-reader,
+or production-UAT conformance.
+
+## Historical V1/V2 Matrix — Non-Binding for V3
+
+Every row below is retained unchanged as discovery and historical test-ID provenance. Its words
+`BLOCKS`, scoring rules, browser matrices, timers, manual/native gates, and portal columns do not
+define v3 acceptance. Only the v3 matrix above is current.
+
+### Historical Purpose
 
 Map every issue #7 discovery Critical/High finding and every shared `WEB-*` assertion to planned
 owned paths, executable tests, retained evidence, rollback, dependency, and the three distinct
@@ -36,7 +81,7 @@ native Chrome-menu 200%, and the macOS System Settings Reduce Motion toggle are
 `deferred-owner-uat`; missing UAT remains a production-release risk and is never converted to an
 automated or source-inspection pass.
 
-## Critical and High Discovery Coverage
+### Historical Critical and High Discovery Coverage
 
 Each row is one canonical implementation control. Alias lists cover the web inventory (`WD-*`),
 prediction (`PR-*`), scenarios (`SC-*`), and planner-handoff aggregates (`PH-*`).
@@ -67,7 +112,7 @@ Coverage inventory (must appear exactly once or in an intentionally cross-cuttin
 - Scenarios: `SC-001..SC-015`.
 - Planner handoff: `PH-C01..PH-C04`, `PH-H01..PH-H10`.
 
-## Shared WEB Test Matrix
+### Historical Shared WEB Test Matrix
 
 Planned test sources are under `spikes/web/common/tests/`; candidate-specific tests may verify
 framework mode/build details but cannot replace these assertions.
@@ -94,7 +139,7 @@ framework mode/build details but cannot replace these assertions.
 | `WEB-E2E-001` | v2 `journey.spec.mjs`: frame→fail→diagnose→reset→verify→evidence→reflection deterministic and non-completing in preview | Cross-browser trace/screenshots + state/evidence digest | Return to static sequence; fix or eliminate | Browser; #6 for decision run | Preview acceptance BLOCKS | BLOCKS | BLOCKS |
 | `WEB-NONCOPY-001` | `non-copy.test.mjs` + reviewer: principles only; no copied prose/assets/layout/style/source | Inventory, file/license/source review, attestation | Remove derivative expression and rebuild | Project reviewer | BLOCKS publication | BLOCKS | BLOCKS |
 
-## Four-Grain Release Invariant
+### Historical Four-Grain Release Invariant
 
 The four-grain rule passes only when all four tests below pass together:
 
@@ -110,7 +155,7 @@ screenshots, verifier result, source/content/evidence forbidden-attribution scan
 reviewer attestation. Any failure invalidates preview acceptance, the candidate must-pass, its
 numeric score, and later portal handoff.
 
-## Evidence and Command Rule
+### Historical Evidence and Command Rule
 
 Every planned command records exact command/versions/tested tree, Gate 0 and fixture/mode/test-ID
 digests, result status, artifacts/hashes/redaction, timer, and rollback result below
