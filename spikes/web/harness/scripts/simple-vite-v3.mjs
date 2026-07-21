@@ -14,6 +14,7 @@ const EXPECTED_CSP = "default-src 'self'; script-src 'self'; style-src 'self'; i
 const PROCESS_TERM_GRACE_MS = 250;
 const PROCESS_FINAL_WAIT_MS = 250;
 const SECOND_TARGETED_REVIEW_FIX_RED_SHA = '5264e3958a60f26e1663aa0bd940bf5176520896';
+const THIRD_TARGETED_REVIEW_FIX_RED_SHA = '2febb813dce2e37b2af79c72e7608787fa210ae8';
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const relativePath = path => relative(ROOT, path).split(sep).join('/');
 const git = args => {
@@ -112,7 +113,17 @@ export function validateEvidenceManifest(manifest) {
       || !(secondTargetedRed.rc > 0)
       || secondTargetedRed.assertionIds?.length !== 2
       || secondTargetedRed.log !== 'tdd/second-targeted-review-fix-red/focused-tests.tap')) failures.push('second-targeted-review-fix-red');
+  const thirdTargetedRed = manifest?.thirdTargetedReviewFixRed;
+  if (thirdTargetedRed && (thirdTargetedRed.result !== 'pass'
+      || thirdTargetedRed.sourceSha !== THIRD_TARGETED_REVIEW_FIX_RED_SHA
+      || !(thirdTargetedRed.rc > 0)
+      || thirdTargetedRed.assertionIds?.length !== 3
+      || thirdTargetedRed.log !== 'tdd/third-targeted-review-fix-red/focused-tests.tap')) failures.push('third-targeted-review-fix-red');
   return failures;
+}
+
+function porcelainStatus() {
+  return git(['status', '--porcelain=v1', '-z', '--untracked-files=all']).split('\0').filter(Boolean);
 }
 
 function statusPaths() {
@@ -129,16 +140,25 @@ function statusPaths() {
 
 export function preflight(implementationInput) {
   const failures = [];
+  const workingStatus = porcelainStatus();
+  const untrackedPaths = workingStatus.filter(entry => entry.startsWith('?? ')).map(entry => entry.slice(3));
   const branch = git(['branch', '--show-current']);
   const head = git(['rev-parse', '--verify', 'HEAD']);
-  const live = spawnSync('git', ['ls-remote', '--exit-code', 'origin', `refs/heads/${contract.branch}`], { cwd: ROOT, encoding: 'utf8' });
+  const live = spawnSync('git', ['ls-remote', '--exit-code', 'origin', `refs/heads/${contract.branch}`], {
+    cwd: ROOT,
+    encoding: 'utf8',
+    timeout: contract.authorityLookupMs,
+    killSignal: 'SIGKILL',
+  });
   const liveLines = live.status === 0 ? live.stdout.trim().split('\n').filter(Boolean) : [];
   const liveParts = liveLines.length === 1 ? liveLines[0].trim().split(/\s+/) : [];
   const liveHead = liveParts.length === 2 && liveParts[1] === `refs/heads/${contract.branch}` ? liveParts[0] : '';
   let authorityMode = 'invalid';
   if (implementationInput !== contract.implementationInputSha) failures.push('implementation-input-mismatch');
   if (!/^[0-9a-f]{40}$/.test(head)) failures.push('invalid-head-identity');
-  if (live.status !== 0 || liveLines.length === 0) failures.push('fresh-live-unavailable');
+  if (live.error?.code === 'ETIMEDOUT') failures.push('authority-lookup-timeout');
+  else if (live.error || live.status !== 0) failures.push('authority-lookup-error');
+  else if (liveLines.length === 0) failures.push('fresh-live-unavailable');
   else if (liveLines.length !== 1 || !/^[0-9a-f]{40}$/.test(liveHead)) failures.push('fresh-live-ambiguous-or-invalid');
   if (branch === contract.branch) {
     if (/^[0-9a-f]{40}$/.test(head) && /^[0-9a-f]{40}$/.test(liveHead) && head === liveHead) authorityMode = 'feature-branch';
@@ -147,7 +167,8 @@ export function preflight(implementationInput) {
   else if (branch) failures.push('branch-mismatch');
   else if (/^[0-9a-f]{40}$/.test(head) && /^[0-9a-f]{40}$/.test(liveHead) && head === liveHead) authorityMode = 'detached-exact-live';
   else failures.push('detached-head-mismatch');
-  if (git(['status', '--porcelain=v1', '--untracked-files=no'])) failures.push('dirty-tracked-state');
+  if (workingStatus.some(entry => !entry.startsWith('?? '))) failures.push('dirty-tracked-state');
+  if (untrackedPaths.length) failures.push('dirty-untracked-state');
   for (const ancestor of [contract.implementationInputSha, contract.issue6IntegrationSha]) {
     if (spawnSync('git', ['merge-base', '--is-ancestor', ancestor, 'HEAD'], { cwd: ROOT }).status !== 0) failures.push(`missing-ancestor:${ancestor}`);
   }
@@ -164,7 +185,7 @@ export function preflight(implementationInput) {
   const unauthorized = validateChangedPaths(statusPaths());
   if (unauthorized.length) failures.push(`unauthorized-paths:${unauthorized.join(',')}`);
   if (existsSync(resolve(ROOT, 'apps/learning-portal')) || existsSync(resolve(ROOT, 'apps/lab-runner'))) failures.push('forbidden-portal-or-runner');
-  return { result: failures.length ? 'fail' : 'pass', failures, authorityMode, head, freshLiveHead: liveHead || null, changedPaths: statusPaths() };
+  return { result: failures.length ? 'fail' : 'pass', failures, authorityMode, head, freshLiveHead: liveHead || null, changedPaths: statusPaths(), untrackedPaths };
 }
 
 function sanitize(text) {
@@ -333,8 +354,11 @@ async function stopHost(owned) {
 
 function makeRunDirectory(kind, runId) {
   const directory = resolve(RUNTIME, runId, kind);
+  if (existsSync(directory)) throw new Error('run nonce collision');
   mkdirSync(directory, { recursive: true });
-  writeFileSync(resolve(RUNTIME, `latest-${kind}.json`), `${JSON.stringify({ runId, directory: relativePath(directory) }, null, 2)}\n`);
+  const owner = { schemaVersion: 'i5-02-simple-vite-v3-run-owner-v1', runId, kind, directory: relativePath(directory) };
+  writeFileSync(resolve(directory, 'run-owner.json'), `${JSON.stringify(owner, null, 2)}\n`, { flag: 'wx' });
+  writeFileSync(resolve(RUNTIME, `latest-${kind}.json`), `${JSON.stringify(owner, null, 2)}\n`);
   return directory;
 }
 
@@ -484,6 +508,11 @@ function latest(kind) {
   const pointer = JSON.parse(readFileSync(resolve(RUNTIME, `latest-${kind}.json`), 'utf8'));
   const directory = resolve(ROOT, pointer.directory);
   if (!directory.startsWith(`${RUNTIME}${sep}`)) throw new Error('unsafe runtime pointer');
+  const owner = JSON.parse(readFileSync(resolve(directory, 'run-owner.json'), 'utf8'));
+  if (pointer.schemaVersion !== 'i5-02-simple-vite-v3-run-owner-v1'
+      || pointer.kind !== kind
+      || !/^v3-\d{8}T\d{9}Z-[0-9a-f]{8}$/.test(pointer.runId || '')
+      || JSON.stringify(pointer) !== JSON.stringify(owner)) throw new Error('runtime pointer is not owned by its run nonce');
   return { ...pointer, directory };
 }
 
@@ -527,6 +556,16 @@ function secondTargetedReviewFixRed() {
   if (!existsSync(resultPath) || !existsSync(logPath)) throw new Error('second targeted review-fix RED evidence is unavailable');
   const result = JSON.parse(readFileSync(resultPath, 'utf8'));
   if (result.result !== 'pass' || result.rc === 0 || result.sourceSha !== SECOND_TARGETED_REVIEW_FIX_RED_SHA || result.assertionIds?.length !== 2) throw new Error('second targeted review-fix RED evidence is invalid');
+  return { directory, result };
+}
+
+function thirdTargetedReviewFixRed() {
+  const directory = resolve(RUNTIME, 'third-targeted-review-fix-red');
+  const resultPath = resolve(directory, 'result.json');
+  const logPath = resolve(directory, 'focused-tests.tap');
+  if (!existsSync(resultPath) || !existsSync(logPath)) throw new Error('third targeted review-fix RED evidence is unavailable');
+  const result = JSON.parse(readFileSync(resultPath, 'utf8'));
+  if (result.result !== 'pass' || result.rc === 0 || result.sourceSha !== THIRD_TARGETED_REVIEW_FIX_RED_SHA || result.assertionIds?.length !== 3) throw new Error('third targeted review-fix RED evidence is invalid');
   return { directory, result };
 }
 
@@ -648,6 +687,7 @@ export function retainRun() {
   const red = contemporaneousRed();
   const reviewFixRed = targetedReviewFixRed();
   const secondReviewFixRed = secondTargetedReviewFixRed();
+  const thirdReviewFixRed = thirdTargetedReviewFixRed();
   const green = latest('gate');
   const redResult = JSON.parse(readFileSync(resolve(red.directory, 'result.json'), 'utf8'));
   const greenResult = JSON.parse(readFileSync(resolve(green.directory, 'result.json'), 'utf8'));
@@ -659,6 +699,7 @@ export function retainRun() {
   mkdirSync(resolve(destination, 'tdd/red'), { recursive: true });
   mkdirSync(resolve(destination, 'tdd/review-fix-red'), { recursive: true });
   mkdirSync(resolve(destination, 'tdd/second-targeted-review-fix-red'), { recursive: true });
+  mkdirSync(resolve(destination, 'tdd/third-targeted-review-fix-red'), { recursive: true });
   mkdirSync(resolve(destination, 'green'), { recursive: true });
   mkdirSync(resolve(destination, 'security'), { recursive: true });
   mkdirSync(resolve(destination, 'lifecycle'), { recursive: true });
@@ -666,6 +707,10 @@ export function retainRun() {
   for (const name of ['focused-tests.tap', 'result.json']) {
     const content = sanitize(readFileSync(resolve(reviewFixRed.directory, name), 'utf8')).replace(/[ \t]+$/gm, '');
     writeFileSync(resolve(destination, 'tdd/review-fix-red', name), content);
+  }
+  for (const name of ['focused-tests.tap', 'result.json']) {
+    const content = sanitize(readFileSync(resolve(thirdReviewFixRed.directory, name), 'utf8')).replace(/[ \t]+$/gm, '');
+    writeFileSync(resolve(destination, 'tdd/third-targeted-review-fix-red', name), content);
   }
   for (const name of ['focused-tests.tap', 'result.json']) {
     const content = sanitize(readFileSync(resolve(secondReviewFixRed.directory, name), 'utf8')).replace(/[ \t]+$/gm, '');
@@ -737,7 +782,7 @@ export function retainRun() {
   };
   const scanSummary = { result: scans.result, findings: scans.findings.length, checks: scans.checkInventory?.length ?? 0, checkInventory: scans.checkInventory?.map(({ id, result }) => ({ id, result })) ?? [], finalRetained: 'pass' };
   const ownedResourceSummary = { result: validateOwnership(ledger, { runId: green.runId }).length === 0 && rollback.result === 'pass' ? 'pass' : 'fail', serverCount: 1, port: ledger.port, cleanup: cleanup.result, rollbackSimulation: rollback.result };
-  const manifest = { schemaVersion: 'i5-02-simple-vite-v3-evidence-v1', acceptanceRevision: contract.acceptanceRevision, runId: green.runId, implementationInputSha: contract.implementationInputSha, testedSourceSha: greenResult.sourceSha, testedTreeSha: greenResult.testedTreeSha, branch: contract.branch, authorityMode: greenResult.authority.authorityMode, freshLiveHead: greenResult.authority.freshLiveHead, issue6IntegrationSha: contract.issue6IntegrationSha, fixtureIdentities: contract.fixtureIdentities, lockSha256: contract.lockSha256, tools: greenResult.tools, commands: greenResult.commands, browserInventory: browser, groups, redProvenance: { result: 'pass', testOnlySha: redResult.sourceSha, testedTreeSha: redResult.testedTreeSha }, targetedReviewFixRed: { result: reviewFixRed.result.result, sourceSha: reviewFixRed.result.sourceSha, rc: reviewFixRed.result.rc, assertionIds: reviewFixRed.result.assertionIds, log: 'tdd/review-fix-red/focused-tests.tap' }, secondTargetedReviewFixRed: { result: secondReviewFixRed.result.result, sourceSha: secondReviewFixRed.result.sourceSha, testedTreeSha: secondReviewFixRed.result.testedTreeSha, rc: secondReviewFixRed.result.rc, assertionIds: secondReviewFixRed.result.assertionIds, log: 'tdd/second-targeted-review-fix-red/focused-tests.tap' }, evidenceClosureRedSha: EVIDENCE_CLOSURE_RED_SHA, testNameInventory, artifactLocators, axeSummary, noJsFacts, scanSummary, ownedResourceSummary, audit: audit.metadata?.vulnerabilities, redaction: { result: 'pass', findings: [] }, cleanupRollback: rollback, limitations: ['Chromium and axe automation are not a full WCAG or screen-reader conformance claim.', 'Production accessibility and manual UAT remain deferred.'] };
+  const manifest = { schemaVersion: 'i5-02-simple-vite-v3-evidence-v1', acceptanceRevision: contract.acceptanceRevision, runId: green.runId, implementationInputSha: contract.implementationInputSha, testedSourceSha: greenResult.sourceSha, testedTreeSha: greenResult.testedTreeSha, branch: contract.branch, authorityMode: greenResult.authority.authorityMode, freshLiveHead: greenResult.authority.freshLiveHead, issue6IntegrationSha: contract.issue6IntegrationSha, fixtureIdentities: contract.fixtureIdentities, lockSha256: contract.lockSha256, tools: greenResult.tools, commands: greenResult.commands, browserInventory: browser, groups, redProvenance: { result: 'pass', testOnlySha: redResult.sourceSha, testedTreeSha: redResult.testedTreeSha }, targetedReviewFixRed: { result: reviewFixRed.result.result, sourceSha: reviewFixRed.result.sourceSha, rc: reviewFixRed.result.rc, assertionIds: reviewFixRed.result.assertionIds, log: 'tdd/review-fix-red/focused-tests.tap' }, secondTargetedReviewFixRed: { result: secondReviewFixRed.result.result, sourceSha: secondReviewFixRed.result.sourceSha, testedTreeSha: secondReviewFixRed.result.testedTreeSha, rc: secondReviewFixRed.result.rc, assertionIds: secondReviewFixRed.result.assertionIds, log: 'tdd/second-targeted-review-fix-red/focused-tests.tap' }, thirdTargetedReviewFixRed: { result: thirdReviewFixRed.result.result, sourceSha: thirdReviewFixRed.result.sourceSha, testedTreeSha: thirdReviewFixRed.result.testedTreeSha, rc: thirdReviewFixRed.result.rc, assertionIds: thirdReviewFixRed.result.assertionIds, log: 'tdd/third-targeted-review-fix-red/focused-tests.tap' }, evidenceClosureRedSha: EVIDENCE_CLOSURE_RED_SHA, testNameInventory, artifactLocators, axeSummary, noJsFacts, scanSummary, ownedResourceSummary, audit: audit.metadata?.vulnerabilities, redaction: { result: 'pass', findings: [] }, cleanupRollback: rollback, limitations: ['Chromium and axe automation are not a full WCAG or screen-reader conformance claim.', 'Production accessibility and manual UAT remain deferred.'] };
   if (validateEvidenceManifest(manifest).length) throw new Error('generated manifest is invalid');
   writeFileSync(resolve(destination, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
   const finalScan = finalRetainedScan(destination);

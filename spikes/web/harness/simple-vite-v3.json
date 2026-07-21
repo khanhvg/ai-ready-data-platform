@@ -24,7 +24,8 @@
   },
   "groups": ["V3-01","V3-02","V3-03","V3-04","V3-05","V3-06","V3-07"],
   "port": 4175,
-  "ceilingsMs": {"authority":60000,"install":300000,"build":180000,"node":120000,"hostReady":15000,"playwright":300000,"audit":180000,"verb":120000,"red":900000,"gate":1200000},
+  "authorityLookupMs": 60000,
+  "ceilingsMs": {"install":300000,"build":180000,"node":120000,"hostReady":15000,"playwright":300000,"audit":180000},
   "commands": {
     "install":["npm","--prefix","spikes/web/candidates/vite","ci","--ignore-scripts","--no-audit","--no-fund"],
     "build":["npm","--prefix","spikes/web/candidates/vite","run","build"],

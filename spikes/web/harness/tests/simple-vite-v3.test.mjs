@@ -294,13 +294,13 @@ test('V3-07 authority lookup timeout is bounded and fails closed deterministical
     fixtureContract.authorityLookupMs = 100;
     writeFileSync(contractPath, `${JSON.stringify(fixtureContract, null, 2)}\n`);
     mkdirSync(fakeBin);
-    writeFileSync(fakeGit, `#!/bin/sh\nif [ "$1" = "ls-remote" ]; then sleep 5; exit 0; fi\nexec ${JSON.stringify(realGit)} "$@"\n`);
+    writeFileSync(fakeGit, `#!/bin/sh\nif [ "$1" = "ls-remote" ]; then\n  case "$FAKE_GIT_LS_REMOTE_MODE" in\n    timeout) exec sleep 5 ;;\n    error) exit 42 ;;\n    malformed) printf 'not-a-sha\\trefs/heads/feature/issue-5-02-web-spike\\n'; exit 0 ;;\n  esac\nfi\nexec ${JSON.stringify(realGit)} "$@"\n`);
     chmodSync(fakeGit, 0o700);
     const started = Date.now();
     const result = spawnSync(process.execPath, ['spikes/web/harness/scripts/simple-vite-v3.mjs', 'preflight', '--implementation-input', contract.implementationInputSha], {
       cwd: clone,
       encoding: 'utf8',
-      env: { ...process.env, PATH: `${fakeBin}:${process.env.PATH}` },
+      env: { ...process.env, PATH: `${fakeBin}:${process.env.PATH}`, FAKE_GIT_LS_REMOTE_MODE: 'timeout' },
       timeout: 1200,
     });
     const durationMs = Date.now() - started;
@@ -309,6 +309,15 @@ test('V3-07 authority lookup timeout is bounded and fails closed deterministical
     const output = JSON.parse(result.stdout);
     assert.notEqual(result.status, 0);
     assert.ok(output.failures.includes('authority-lookup-timeout'));
+    for (const [mode, failure] of [['error', 'authority-lookup-error'], ['malformed', 'fresh-live-ambiguous-or-invalid']]) {
+      const failed = spawnSync(process.execPath, ['spikes/web/harness/scripts/simple-vite-v3.mjs', 'preflight', '--implementation-input', contract.implementationInputSha], {
+        cwd: clone,
+        encoding: 'utf8',
+        env: { ...process.env, PATH: `${fakeBin}:${process.env.PATH}`, FAKE_GIT_LS_REMOTE_MODE: mode },
+      });
+      assert.notEqual(failed.status, 0);
+      assert.ok(JSON.parse(failed.stdout).failures.includes(failure), `${mode} lookup must report ${failure}`);
+    }
   } finally {
     rmSync(temporaryRoot, { recursive: true, force: true });
   }
