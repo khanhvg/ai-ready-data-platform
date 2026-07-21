@@ -1,0 +1,29 @@
+model {
+  learner = person 'Learner' 'Learns through guided local exercises'
+  operator = person 'Instructor and operator' 'Reviews progress, failures, and evidence'
+  browser = softwareSystem 'Browser' 'Local learner interface'
+  retail = softwareSystem 'Retail data platform' 'Synthetic retail source, transformation, BI, orchestration, lake, and catalog tools'
+  identity = softwareSystem 'Hosted identity (future)' 'External future context; not a local runtime dependency'
+  aws = softwareSystem 'AWS services (future)' 'External future context; not implemented by this baseline'
+  learning = softwareSystem 'Learning platform' 'Guided learning, controlled execution, and verifiable evidence' {
+    portal = container 'Portal modular monolith' 'Presents journeys and progress' 'Web application'
+    runner = container 'Isolated runner' 'Executes allow-listed commands in private workspaces' 'Python process' {
+      bff = component 'BFF client' 'Sends authenticated execution requests' 'Local protocol'
+      transport = component 'Transport authentication' 'Authenticates the local transport' 'Unix socket or loopback'
+      policy = component 'Policy chain' 'Applies command and workspace policy' 'Python'
+      registry = component 'Command registry' 'Resolves reviewed command ownership' 'Declarative registry'
+      workspace = component 'Workspace manager' 'Allocates marker-bound private state' 'POSIX descriptors'
+      state = component 'State and idempotency' 'Prevents duplicate transitions' 'Local state'
+      verifier = component 'Verifier and evidence' 'Checks outcomes and retains bounded evidence' 'JSON contracts'
+    }
+    progress = container 'Progress and evidence repository' 'Stores progress and integrity envelopes' 'Local files'
+    adapters = container 'Data adapters' 'Connects reviewed learning commands to retail tools' 'Python'
+  }
+  learner -> browser 'Uses' 'HTTPS or local loopback'
+  browser -> learning.portal 'Loads journeys and status' 'Local HTTP'
+  learning.portal -> learning.runner 'Requests an allow-listed run' 'Unix socket or loopback'
+  learning.runner -> learning.progress 'Writes verified evidence' 'Private file contract'
+  learning.adapters -> retail 'Invokes Rill, Airflow, Iceberg, and OpenMetadata adapters' 'Reviewed CLI interfaces'
+  learning.runner -> learning.adapters 'Dispatches registered data commands' 'Local process'
+  operator -> learning.progress 'Reviews results and controlled failures' 'Read-only contract'
+}

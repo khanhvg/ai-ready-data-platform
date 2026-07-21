@@ -1,0 +1,93 @@
+<!-- Pages: 1 -->
+<svg width="1305pt" height="1195pt"
+ viewBox="0.00 0.00 1305.00 1195.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-labelledby="title desc"><title id="title">Learning and retail platform landscape</title><desc id="desc">landscape view for product-owner: business-outcomes-and-external-tools</desc>
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(15.05 1180.25)">
+<!-- learner -->
+<g id="node1" class="node">
+<title>learner</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="320.04,-1165.2 0,-1165.2 0,-985.2 320.04,-985.2 320.04,-1165.2"/>
+<text xml:space="preserve" text-anchor="start" x="125.55" y="-1078.2" font-family="Arial" font-size="20.00" fill="#eff6ff">Learner</text>
+<text xml:space="preserve" text-anchor="start" x="33.69" y="-1055.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Learns through guided local exercises</text>
+</g>
+<!-- browser -->
+<g id="node2" class="node">
+<title>browser</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="345.04,-842.4 25,-842.4 25,-662.4 345.04,-662.4 345.04,-842.4"/>
+<text xml:space="preserve" text-anchor="start" x="148.35" y="-755.4" font-family="Arial" font-size="20.00" fill="#eff6ff">Browser</text>
+<text xml:space="preserve" text-anchor="start" x="110.81" y="-732.4" font-family="Arial" font-size="15.00" fill="#bfdbfe">Local learner interface</text>
+</g>
+<!-- operator -->
+<g id="node3" class="node">
+<title>operator</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="750.04,-1165.2 430,-1165.2 430,-985.2 750.04,-985.2 750.04,-1165.2"/>
+<text xml:space="preserve" text-anchor="start" x="488.85" y="-1078.2" font-family="Arial" font-size="20.00" fill="#eff6ff">Instructor and operator</text>
+<text xml:space="preserve" text-anchor="start" x="453.28" y="-1055.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Reviews progress, failures, and evidence</text>
+</g>
+<!-- learning -->
+<g id="node4" class="node">
+<title>learning</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="548.59,-519.6 227.45,-519.6 227.45,-339.6 548.59,-339.6 548.59,-519.6"/>
+<text xml:space="preserve" text-anchor="start" x="310.2" y="-441.6" font-family="Arial" font-size="20.00" fill="#eff6ff">Learning platform</text>
+<text xml:space="preserve" text-anchor="start" x="247.51" y="-418.6" font-family="Arial" font-size="15.00" fill="#bfdbfe">Guided learning, controlled execution, and</text>
+<text xml:space="preserve" text-anchor="start" x="325.9" y="-400.6" font-family="Arial" font-size="15.00" fill="#bfdbfe">verifiable evidence</text>
+</g>
+<!-- retail -->
+<g id="node5" class="node">
+<title>retail</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="548.04,-180 228,-180 228,0 548.04,0 548.04,-180"/>
+<text xml:space="preserve" text-anchor="start" x="301.31" y="-102" font-family="Arial" font-size="20.00" fill="#eff6ff">Retail data platform</text>
+<text xml:space="preserve" text-anchor="start" x="248.79" y="-79" font-family="Arial" font-size="15.00" fill="#bfdbfe">Synthetic retail source, transformation, BI,</text>
+<text xml:space="preserve" text-anchor="start" x="265.86" y="-61" font-family="Arial" font-size="15.00" fill="#bfdbfe">orchestration, lake, and catalog tools</text>
+</g>
+<!-- identity -->
+<g id="node6" class="node">
+<title>identity</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="1270.57,-1165.2 949.47,-1165.2 949.47,-985.2 1270.57,-985.2 1270.57,-1165.2"/>
+<text xml:space="preserve" text-anchor="start" x="1008.86" y="-1087.2" font-family="Arial" font-size="20.00" fill="#eff6ff">Hosted identity (future)</text>
+<text xml:space="preserve" text-anchor="start" x="969.53" y="-1064.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">External future context; not a local runtime</text>
+<text xml:space="preserve" text-anchor="start" x="1069.15" y="-1046.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">dependency</text>
+</g>
+<!-- aws -->
+<g id="node7" class="node">
+<title>aws</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="1274.74,-842.4 945.3,-842.4 945.3,-662.4 1274.74,-662.4 1274.74,-842.4"/>
+<text xml:space="preserve" text-anchor="start" x="1012.78" y="-764.4" font-family="Arial" font-size="20.00" fill="#eff6ff">AWS services (future)</text>
+<text xml:space="preserve" text-anchor="start" x="965.36" y="-741.4" font-family="Arial" font-size="15.00" fill="#bfdbfe">External future context; not implemented by</text>
+<text xml:space="preserve" text-anchor="start" x="1068.33" y="-723.4" font-family="Arial" font-size="15.00" fill="#bfdbfe">this baseline</text>
+</g>
+<!-- learner&#45;&gt;browser -->
+<g id="edge1" class="edge">
+<title>learner&#45;&gt;browser</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M166.95,-985.27C170.16,-944.07 173.99,-894.96 177.29,-852.57"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="179.9,-852.93 177.86,-845.25 174.66,-852.52 179.9,-852.93"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="173.27,-902.4 173.27,-925.2 211.17,-925.2 211.17,-902.4 173.27,-902.4"/>
+<text xml:space="preserve" text-anchor="start" x="176.27" y="-908.2" font-family="Arial" font-size="14.00" fill="#c9c9c9">Uses</text>
+</g>
+<!-- browser&#45;&gt;learning -->
+<g id="edge3" class="edge">
+<title>browser&#45;&gt;learning</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M241.3,-662.47C267.7,-620.74 299.23,-570.91 326.28,-528.16"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="328.4,-529.73 330.19,-521.99 323.96,-526.92 328.4,-529.73"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="292.61,-579.6 292.61,-602.4 462.05,-602.4 462.05,-579.6 292.61,-579.6"/>
+<text xml:space="preserve" text-anchor="start" x="295.61" y="-585.4" font-family="Arial" font-size="14.00" fill="#c9c9c9">Loads journeys and status</text>
+</g>
+<!-- operator&#45;&gt;learning -->
+<g id="edge2" class="edge">
+<title>operator&#45;&gt;learning</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M582.48,-985.34C571.5,-883.87 545.82,-714.49 489.02,-579.6 481.69,-562.19 472.18,-544.69 461.95,-528.11"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="464.37,-527.04 458.15,-522.1 459.93,-529.84 464.37,-527.04"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="560.9,-741 560.9,-763.8 805.79,-763.8 805.79,-741 560.9,-741"/>
+<text xml:space="preserve" text-anchor="start" x="563.9" y="-746.8" font-family="Arial" font-size="14.00" fill="#c9c9c9">Reviews results and controlled failures</text>
+</g>
+<!-- learning&#45;&gt;retail -->
+<g id="edge4" class="edge">
+<title>learning&#45;&gt;retail</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M388.02,-339.9C388.02,-293.94 388.02,-237.67 388.02,-190.27"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="390.65,-190.51 388.02,-183.01 385.4,-190.51 390.65,-190.51"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="388.02,-240 388.02,-279.6 601,-279.6 601,-240 388.02,-240"/>
+<text xml:space="preserve" text-anchor="start" x="391.02" y="-262.6" font-family="Arial" font-size="14.00" fill="#c9c9c9">Invokes Rill, Airflow, Iceberg, and</text>
+<text xml:space="preserve" text-anchor="start" x="391.02" y="-245.8" font-family="Arial" font-size="14.00" fill="#c9c9c9">OpenMetadata adapters</text>
+</g>
+<!-- identity&#45;&gt;aws -->
+</g>
+</svg>

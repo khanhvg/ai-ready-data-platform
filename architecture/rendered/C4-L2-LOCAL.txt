@@ -1,0 +1,27 @@
+ID: C4-L2-LOCAL
+Title: Local learning platform containers
+Type: container
+Audience: developer-learner
+Concern: actual-local-processes
+Scope: learning-platform
+Owner: I5-01
+Legend: C4 elements and labelled unidirectional relations
+
+Elements:
+- browser | softwareSystem | Browser | Local learner interface | parent=none
+- learner | person | Learner | Learns through guided local exercises | parent=none
+- learning.adapters | container | Data adapters | Connects reviewed learning commands to retail tools | parent=none
+- learning.portal | container | Portal modular monolith | Presents journeys and progress | parent=none
+- learning.progress | container | Progress and evidence repository | Stores progress and integrity envelopes | parent=none
+- learning.runner | container | Isolated runner | Executes allow-listed commands in private workspaces | parent=none
+- retail | softwareSystem | Retail data platform | Synthetic retail source, transformation, BI, orchestration, lake, and catalog tools | parent=none
+
+Relations:
+- Loads journeys and status: browser -> learning.portal | Local HTTP
+- Uses: learner -> browser | HTTPS or local loopback
+- Invokes Rill, Airflow, Iceberg, and OpenMetadata adapters: learning.adapters -> retail | Reviewed CLI interfaces
+- Requests an allow-listed run: learning.portal -> learning.runner | Unix socket or loopback
+- Dispatches registered data commands: learning.runner -> learning.adapters | Local process
+- Writes verified evidence: learning.runner -> learning.progress | Private file contract
+
+Limitations: descriptive architecture only; future context is not implemented or a runtime dependency.

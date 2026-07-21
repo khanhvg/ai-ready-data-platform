@@ -1,0 +1,70 @@
+{
+  "integrityClaim": "local-corruption-detection-not-authenticity",
+  "packageLockSha256": "7a56d803a47454023f40a04bcdb3b037f4ab2c2a05321292ad3b7f7225c2118c",
+  "reviewStatus": "fitness-validated",
+  "schemaVersion": "architecture-render-manifest-v1",
+  "sourceClosureSha256": "9f0b07f5cd68bd39e1f94e8233fdd4cf69663a944aef398413d0a78f8da8349d",
+  "toolchain": {
+    "graphviz": "15.0.0",
+    "likec4": "1.59.1",
+    "node": "22.22.3",
+    "npm": "10.9.8",
+    "wasmGraphviz": "1.22.2"
+  },
+  "views": [
+    {
+      "id": "C4-L0",
+      "key": "index",
+      "svgBytes": 7624,
+      "svgSha256": "2d41f7e064c832a6b09a3715dfd4a0c8f9a3fe4c4789cac5ac8f3fd746e4b965",
+      "txtBytes": 1450,
+      "txtSha256": "e76a7da77a76fb0db70ba52d611c0c29343e5da2b6be2ed2a4231b8c4136fc2a",
+      "type": "landscape"
+    },
+    {
+      "id": "C4-L1",
+      "key": "c4_l1",
+      "svgBytes": 6936,
+      "svgSha256": "59075f6e6a4041953137fe988c9e309090228742cc3beb5d114ed4b4f113f33d",
+      "txtBytes": 1355,
+      "txtSha256": "6720223e2c09f2f346ad7fde6e600c72f75685332851caa495bda61ce4046d65",
+      "type": "system-context"
+    },
+    {
+      "id": "C4-L2-LOCAL",
+      "key": "c4_l2_local",
+      "svgBytes": 9298,
+      "svgSha256": "cdda1e25b0f735d5c0d54d88f18fa7ee51f39d24b8acdeaa97f5df0271232736",
+      "txtBytes": 1636,
+      "txtSha256": "03cbe8c843b52c20a4c4602dcd9dd7b1b54b4a3030ef07d1284ee24ba6b10b7c",
+      "type": "container"
+    },
+    {
+      "id": "C4-L3-RUNNER",
+      "key": "c4_l3_runner",
+      "svgBytes": 5188,
+      "svgSha256": "65125df61b15955ab7ac1bae7ba9eb8d0679670cbac4afb586713f07b7691bfc",
+      "txtBytes": 1143,
+      "txtSha256": "4406e3dfcb88d9b37e59843cf7e06fd8564845e11f7fb2c515a59136c9ac110a",
+      "type": "component"
+    },
+    {
+      "id": "DEP-LOCAL",
+      "key": "dep_local",
+      "svgBytes": 9511,
+      "svgSha256": "ece5a0bba7230cef7f69a9da8535fee2a06523bba0883d30b507684b8c028a0b",
+      "txtBytes": 2282,
+      "txtSha256": "7d0b2395ccfa329c2d4ff2349c328384117fc2878ccfadec7460795ebbcbb3d0",
+      "type": "deployment"
+    },
+    {
+      "id": "DYN-JOURNEY",
+      "key": "dyn_journey",
+      "svgBytes": 12202,
+      "svgSha256": "4c64440ff0040df7d75f148931b6758b4790fbab55e53af62ff735f08d3b3598",
+      "txtBytes": 1302,
+      "txtSha256": "f55c05126387b5eb8a3ce20a9dd45bb0cd5fb33c9fc20aae75eff4a83db36a0b",
+      "type": "dynamic"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+<!-- Pages: 1 -->
+<svg width="824pt" height="1110pt"
+ viewBox="0.00 0.00 824.00 1110.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-labelledby="title desc"><title id="title">Privileged runner design boundary</title><desc id="desc">component view for security-reviewer: privileged-execution-design-only</desc>
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(15.05 1095.05)">
+<!-- bff -->
+<g id="node1" class="node">
+<title>bff</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="320.04,-1080 0,-1080 0,-900 320.04,-900 320.04,-1080"/>
+<text xml:space="preserve" text-anchor="start" x="115.01" y="-1002.8" font-family="Arial" font-size="20.00" fill="#eff6ff">BFF client</text>
+<text xml:space="preserve" text-anchor="start" x="119.55" y="-981.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">Local protocol</text>
+<text xml:space="preserve" text-anchor="start" x="26.59" y="-960.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Sends authenticated execution requests</text>
+</g>
+<!-- transport -->
+<g id="node2" class="node">
+<title>transport</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="320.04,-780 0,-780 0,-600 320.04,-600 320.04,-780"/>
+<text xml:space="preserve" text-anchor="start" x="52.18" y="-702.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Transport authentication</text>
+<text xml:space="preserve" text-anchor="start" x="91.01" y="-681.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">Unix socket or loopback</text>
+<text xml:space="preserve" text-anchor="start" x="52.87" y="-660.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Authenticates the local transport</text>
+</g>
+<!-- policy -->
+<g id="node3" class="node">
+<title>policy</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="320.04,-480 0,-480 0,-300 320.04,-300 320.04,-480"/>
+<text xml:space="preserve" text-anchor="start" x="106.66" y="-402.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Policy chain</text>
+<text xml:space="preserve" text-anchor="start" x="139.78" y="-381.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">Python</text>
+<text xml:space="preserve" text-anchor="start" x="26.62" y="-360.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Applies command and workspace policy</text>
+</g>
+<!-- registry -->
+<g id="node4" class="node">
+<title>registry</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="320.04,-180 0,-180 0,0 320.04,0 320.04,-180"/>
+<text xml:space="preserve" text-anchor="start" x="78.33" y="-102.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Command registry</text>
+<text xml:space="preserve" text-anchor="start" x="104.39" y="-81.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">Declarative registry</text>
+<text xml:space="preserve" text-anchor="start" x="25.79" y="-60.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Resolves reviewed command ownership</text>
+</g>
+<!-- workspace -->
+<g id="node5" class="node">
+<title>workspace</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="772.04,-1080 452,-1080 452,-900 772.04,-900 772.04,-1080"/>
+<text xml:space="preserve" text-anchor="start" x="519.76" y="-1002.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Workspace manager</text>
+<text xml:space="preserve" text-anchor="start" x="558.56" y="-981.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">POSIX descriptors</text>
+<text xml:space="preserve" text-anchor="start" x="489.88" y="-960.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Allocates marker&#45;bound private state</text>
+</g>
+<!-- state -->
+<g id="node6" class="node">
+<title>state</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="772.04,-780 452,-780 452,-600 772.04,-600 772.04,-780"/>
+<text xml:space="preserve" text-anchor="start" x="509.73" y="-702.8" font-family="Arial" font-size="20.00" fill="#eff6ff">State and idempotency</text>
+<text xml:space="preserve" text-anchor="start" x="580.58" y="-681.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">Local state</text>
+<text xml:space="preserve" text-anchor="start" x="514.05" y="-660.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Prevents duplicate transitions</text>
+</g>
+<!-- verifier -->
+<g id="node7" class="node">
+<title>verifier</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="794.26,-480 429.78,-480 429.78,-300 794.26,-300 794.26,-480"/>
+<text xml:space="preserve" text-anchor="start" x="518.07" y="-402.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Verifier and evidence</text>
+<text xml:space="preserve" text-anchor="start" x="566.51" y="-381.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">JSON contracts</text>
+<text xml:space="preserve" text-anchor="start" x="449.83" y="-360.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Checks outcomes and retains bounded evidence</text>
+</g>
+<!-- bff&#45;&gt;transport -->
+<!-- transport&#45;&gt;policy -->
+<!-- policy&#45;&gt;registry -->
+<!-- workspace&#45;&gt;state -->
+<!-- state&#45;&gt;verifier -->
+</g>
+</svg>

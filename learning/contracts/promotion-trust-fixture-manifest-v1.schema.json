@@ -1,0 +1,9 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:ai-ready-data-platform:promotion-trust-fixture-manifest-v1",
+  "type":"object",
+  "required":["schemaVersion","fixtureId","contractId","producerCommand","testedTreeSha","profile","seed","inputWindow","pythonLockSha256","twoCleanRuns","cleanRunEvidenceLocators","evidence","artifacts","canonicalization","digestAlgorithm","redactionClass","publisherAuthenticity","mergedIdentity"],
+  "properties":{
+    "schemaVersion":{"const":"promotion-trust-fixture-manifest-v1"},"fixtureId":{"const":"promotion-trust-small-42-v1"},"contractId":{"const":"promotion-trust-v1"},"producerCommand":{"const":"make golden-clean PROFILE=small SEED=42"},"testedTreeSha":{"type":"string","pattern":"^[0-9a-f]{40}$"},"profile":{"const":"small"},"seed":{"const":42},"inputWindow":{"type":"object"},"pythonLockSha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"twoCleanRuns":{"const":"equal"},"cleanRunEvidenceLocators":{"type":"array","minItems":2,"maxItems":2},"evidence":{"type":"object"},"artifacts":{"type":"array","minItems":5},"canonicalization":{"const":"rfc8785-jcs-v1"},"digestAlgorithm":{"const":"sha-256"},"redactionClass":{"const":"sanitized-synthetic-aggregate"},"publisherAuthenticity":{"const":"externally-attested-not-claimed"},"mergedIdentity":{"const":"absent-until-reviewed-remote-merge"}
+  },"additionalProperties":false
+}

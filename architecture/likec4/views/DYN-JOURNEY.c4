@@ -1,0 +1,14 @@
+views {
+  dynamic view dyn_journey {
+    title 'First learning journey'
+    learner -> browser 'Load'
+    browser -> learning 'Start'
+    learning -> retail 'Run'
+    retail -> learning 'Record controlled failure'
+    operator -> learning 'Diagnose'
+    learning -> retail 'Reset'
+    retail -> learning 'Verify'
+    learning -> operator 'Retain evidence'
+    operator -> learner 'Complete'
+  }
+}
