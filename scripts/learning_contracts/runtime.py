@@ -10,6 +10,7 @@ import os
 import platform
 import re
 import resource
+import secrets
 import signal
 import stat
 import subprocess
@@ -30,6 +31,7 @@ RUNTIME_INTERPRETER = pathlib.PurePosixPath("venv/bin/python")
 RUNTIME_LOCK = ROOT / "requirements/golden-py312-macos-arm64.lock"
 RUNTIME_PLAN = ROOT / "plans/260721-008-version-learning-contracts/phase-05-stage-a-compatibility-release-and-staged-handoff.md"
 _SHA256_PATTERN = frozenset("0123456789abcdef")
+RUN_MARKER_ENV = "LEARNING_RUN_OWNERSHIP_MARKER"
 
 
 def _parse_json(raw: bytes) -> object:
@@ -216,40 +218,106 @@ def _same_file(before: os.stat_result, after: os.stat_result) -> bool:
     )
 
 
-def _process_snapshot() -> dict[int, tuple[int, int, int]]:
+def _process_snapshot() -> dict[int, tuple[int, int, int, str, int]]:
     result = subprocess.run(
-        ["ps", "-axo", "pid=,ppid=,pgid=,rss=,state="],
+        ["ps", "-axo", "pid=,ppid=,pgid=,uid=,lstart=,rss=,state="],
         check=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
         text=True,
     )
-    members: dict[int, tuple[int, int, int]] = {}
+    members: dict[int, tuple[int, int, int, str, int]] = {}
     for line in result.stdout.splitlines():
-        fields = line.split()
-        if len(fields) == 5 and not fields[4].startswith("Z"):
-            members[int(fields[0])] = (int(fields[1]), int(fields[2]), int(fields[3]) * 1024)
+        fields = line.split(maxsplit=10)
+        if len(fields) == 11 and not fields[10].startswith("Z"):
+            members[int(fields[0])] = (
+                int(fields[1]), int(fields[2]), int(fields[3]), " ".join(fields[4:9]),
+                int(fields[9]) * 1024,
+            )
     return members
 
 
-def _owned_snapshot(root_pid: int, retained: set[int]) -> dict[int, int]:
-    """Retain the complete observed lineage, including descendants that call setsid()."""
+def _darwin_process_has_marker(pid: int, marker: bytes, marker_paths: tuple[bytes, ...]) -> bool:
+    try:
+        import ctypes
+
+        libc = ctypes.CDLL(None, use_errno=True)
+        mib = (ctypes.c_int * 3)(1, 49, pid)
+        size = ctypes.c_size_t()
+        if libc.sysctl(mib, 3, None, ctypes.byref(size), None, 0) == 0 and size.value:
+            buffer = ctypes.create_string_buffer(size.value)
+            if libc.sysctl(mib, 3, buffer, ctypes.byref(size), None, 0) == 0:
+                token = RUN_MARKER_ENV.encode() + b"=" + marker
+                if token in buffer.raw[:size.value].split(b"\0"):
+                    return True
+        list_fds = 1
+        vnode_path_info = 2
+        descriptor_bytes = ctypes.create_string_buffer(16384)
+        used = libc.proc_pidinfo(pid, list_fds, 0, descriptor_bytes, len(descriptor_bytes))
+        if used <= 0:
+            return False
+        for offset in range(0, used - 7, 8):
+            descriptor = int.from_bytes(descriptor_bytes.raw[offset:offset + 4], sys.byteorder, signed=True)
+            fd_type = int.from_bytes(descriptor_bytes.raw[offset + 4:offset + 8], sys.byteorder)
+            if fd_type != 1:
+                continue
+            info = ctypes.create_string_buffer(8192)
+            length = libc.proc_pidfdinfo(pid, descriptor, vnode_path_info, info, len(info))
+            if length > 0 and any(path + b"\0" in info.raw[:length] for path in marker_paths):
+                return True
+    except (AttributeError, OSError, ValueError):
+        return False
+    return False
+
+
+def _process_has_marker(pid: int, marker: str, marker_paths: tuple[pathlib.Path, ...]) -> bool:
+    token = RUN_MARKER_ENV.encode() + b"=" + marker.encode()
+    if platform.system() == "Linux":
+        try:
+            if token in (pathlib.Path("/proc") / str(pid) / "environ").read_bytes().split(b"\0"):
+                return True
+        except OSError:
+            pass
+        expected = {path.resolve().as_posix() for path in marker_paths}
+        try:
+            return any(os.readlink(child) in expected for child in (pathlib.Path("/proc") / str(pid) / "fd").iterdir())
+        except OSError:
+            return False
+    if platform.system() == "Darwin":
+        return _darwin_process_has_marker(
+            pid, marker.encode(), tuple(path.resolve().as_posix().encode() for path in marker_paths),
+        )
+    return False
+
+
+def _owned_snapshot(
+    marker: str,
+    uid: int,
+    identities: dict[int, tuple[int, str]],
+    marker_paths: tuple[pathlib.Path, ...],
+) -> dict[int, int]:
+    """Find only exact-marker processes and pin each PID to its UID/start identity."""
     snapshot = _process_snapshot()
-    retained.add(root_pid)
-    retained.update(pid for pid, (_parent, group, _rss) in snapshot.items() if group == root_pid)
-    changed = True
-    while changed:
-        changed = False
-        for pid, (parent, _group, _rss) in snapshot.items():
-            if parent in retained and pid not in retained:
-                retained.add(pid)
-                changed = True
-    return {pid: snapshot[pid][2] for pid in retained if pid in snapshot}
+    owned: dict[int, int] = {}
+    for pid, (_parent, _group, process_uid, started, rss) in snapshot.items():
+        if pid == os.getpid() or process_uid != uid or not _process_has_marker(pid, marker, marker_paths):
+            continue
+        identity = (process_uid, started)
+        captured = identities.setdefault(pid, identity)
+        if captured == identity:
+            owned[pid] = rss
+    return owned
 
 
-def _terminate_owned(process: subprocess.Popen[bytes], retained: set[int]) -> None:
+def _terminate_owned(
+    process: subprocess.Popen[bytes],
+    marker: str,
+    uid: int,
+    identities: dict[int, tuple[int, str]],
+    marker_paths: tuple[pathlib.Path, ...],
+) -> None:
     def signal_members(signum: signal.Signals) -> None:
-        members = _owned_snapshot(process.pid, retained)
+        members = _owned_snapshot(marker, uid, identities, marker_paths)
         for pid in sorted(members, reverse=True):
             try:
                 os.kill(pid, signum)
@@ -258,9 +326,9 @@ def _terminate_owned(process: subprocess.Popen[bytes], retained: set[int]) -> No
 
     signal_members(signal.SIGTERM)
     deadline = time.monotonic() + 0.5
-    while _owned_snapshot(process.pid, retained) and time.monotonic() < deadline:
+    while _owned_snapshot(marker, uid, identities, marker_paths) and time.monotonic() < deadline:
         time.sleep(0.01)
-    if _owned_snapshot(process.pid, retained):
+    if _owned_snapshot(marker, uid, identities, marker_paths):
         signal_members(signal.SIGKILL)
     try:
         process.wait(timeout=2)
@@ -269,7 +337,7 @@ def _terminate_owned(process: subprocess.Popen[bytes], retained: set[int]) -> No
     cleanup_deadline = time.monotonic() + 2
     while time.monotonic() < cleanup_deadline:
         try:
-            members = _owned_snapshot(process.pid, retained)
+            members = _owned_snapshot(marker, uid, identities, marker_paths)
         except subprocess.SubprocessError as exc:
             raise LearningContractError("PROCESS_CLEANUP_FAILED") from exc
         if not members:
@@ -297,10 +365,17 @@ def run_bounded(
         raise LearningContractError("PROCESS_ARGUMENT_INVALID")
     if not cwd.is_dir() or cwd.is_symlink():
         raise LearningContractError("PROCESS_CWD_INVALID")
-    with tempfile.TemporaryFile(dir=cwd) as stdout_file, tempfile.TemporaryFile(dir=cwd) as stderr_file:
+    if RUN_MARKER_ENV in os.environ:
+        raise LearningContractError("PROCESS_MARKER_COLLISION")
+    marker = secrets.token_hex(32)
+    environment = os.environ.copy()
+    environment[RUN_MARKER_ENV] = marker
+    with tempfile.NamedTemporaryFile(prefix=f".learning-run-{marker}-", dir=cwd) as stdout_file, tempfile.NamedTemporaryFile(prefix=f".learning-run-{marker}-", dir=cwd) as stderr_file:
+        marker_paths = (pathlib.Path(stdout_file.name), pathlib.Path(stderr_file.name))
         process = subprocess.Popen(
             list(command),
             cwd=cwd,
+            env=environment,
             stdin=subprocess.DEVNULL,
             stdout=stdout_file,
             stderr=stderr_file,
@@ -308,7 +383,8 @@ def run_bounded(
         )
         deadline = time.monotonic() + timeout
         failure: str | None = None
-        owned = {process.pid}
+        identities: dict[int, tuple[int, str]] = {}
+        uid = os.getuid()
         while process.poll() is None:
             if time.monotonic() >= deadline:
                 failure = "PROCESS_TIMEOUT"
@@ -316,15 +392,15 @@ def run_bounded(
             if os.fstat(stdout_file.fileno()).st_size + os.fstat(stderr_file.fileno()).st_size > output_limit:
                 failure = "PROCESS_OUTPUT_LIMIT"
                 break
-            if sum(_owned_snapshot(process.pid, owned).values()) > max_rss_bytes:
+            if sum(_owned_snapshot(marker, uid, identities, marker_paths).values()) > max_rss_bytes:
                 failure = "PROCESS_RSS_LIMIT"
                 break
             time.sleep(0.01)
         if failure is not None:
-            _terminate_owned(process, owned)
+            _terminate_owned(process, marker, uid, identities, marker_paths)
             raise LearningContractError(failure)
-        if _owned_snapshot(process.pid, owned):
-            _terminate_owned(process, owned)
+        if _owned_snapshot(marker, uid, identities, marker_paths):
+            _terminate_owned(process, marker, uid, identities, marker_paths)
             raise LearningContractError("PROCESS_CLEANUP_FAILED")
         stdout_file.seek(0)
         stderr_file.seek(0)
@@ -338,7 +414,7 @@ def run_bounded(
             raise LearningContractError("PROCESS_RSS_LIMIT")
         if process.returncode != 0:
             raise LearningContractError("PROCESS_FAILED")
-        return stdout
+        return stdout.replace(marker.encode(), b"<OWNERSHIP_MARKER>")
 
 
 def validate_evidence_locator(root: pathlib.Path, locator: str, sha256: str) -> bytes:

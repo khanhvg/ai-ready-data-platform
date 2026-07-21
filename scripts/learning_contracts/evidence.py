@@ -161,3 +161,24 @@ def verify_manifest(value: dict[str, Any], *, root: pathlib.Path) -> None:
         raw = resolve_reference(root, item["locator"], item["sha256"])
         if len(raw) != item["size"]:
             raise LearningContractError("MANIFEST_ENTRY_TAMPER")
+
+
+def validate_review_bundle_integer_fields(
+    manifest: dict[str, Any],
+    *,
+    commands: list[dict[str, Any]],
+    red_records: list[dict[str, Any]],
+    review: dict[str, Any],
+) -> None:
+    """Enforce JSON integer encodings only at review-bundle integer schema paths."""
+    values = [
+        manifest.get("totalBytes"),
+        *(item.get("size") for item in manifest.get("entries", []) if isinstance(item, dict)),
+        *(item.get("rc") for item in commands if isinstance(item, dict)),
+        *(item.get("rc") for item in red_records if isinstance(item, dict)),
+    ]
+    for section in (review.get("scope"), review.get("resourceLimits")):
+        if isinstance(section, dict):
+            values.extend(section.values())
+    if any(type(value) is not int for value in values):
+        raise LearningContractError("REVIEW_BUNDLE_INTEGER_TYPE_INVALID")

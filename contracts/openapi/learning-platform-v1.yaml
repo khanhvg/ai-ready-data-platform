@@ -1428,6 +1428,10 @@
             "code": "CONTRACT_VERSION_UNSUPPORTED"
           },
           {
+            "status": 409,
+            "code": "WORKSPACE_REVISION_CONFLICT"
+          },
+          {
             "status": 404,
             "code": "DATA_PRODUCT_NOT_FOUND"
           },

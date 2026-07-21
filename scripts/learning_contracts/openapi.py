@@ -514,6 +514,15 @@ class LearningPlatform:
         self.idempotency[key] = (digest, copy.deepcopy(result))
         return result
 
+    def _retained_mutation(self, actor: str, headers: dict[str, str], body: dict[str, Any]) -> dict[str, Any] | None:
+        retained = self.idempotency.get((actor, headers["Idempotency-Key"]))
+        if retained is None:
+            return None
+        digest = hashlib.sha256(canonical_bytes(body)).hexdigest()
+        if retained[0] != digest:
+            raise LearningContractError("IDEMPOTENCY_KEY_REUSE")
+        return copy.deepcopy(retained[1])
+
     def _execute(self, operation_id: str, actor: str, params: dict[str, str], body: dict[str, Any], headers: dict[str, str], query: dict[str, Any]) -> dict[str, Any]:
         if operation_id == "listLessons":
             return {"schemaVersion": "lesson-page-v1", "items": list(self.lessons.values()), "nextCursor": None}
@@ -611,6 +620,9 @@ class LearningPlatform:
             return self.tools[params["toolId"]]
         if operation_id == "queryDataProduct":
             if params["productId"] != "promotion-trust": raise LearningContractError("DATA_PRODUCT_NOT_FOUND")
+            retained = self._retained_mutation(actor, headers, body)
+            if retained is not None:
+                return retained
             workspace = self._owned(self.workspaces, body["workspaceId"], actor, "WORKSPACE_NOT_FOUND")
             if body["expectedWorkspaceRevision"] != workspace["revision"]: raise LearningContractError("WORKSPACE_REVISION_CONFLICT")
             if body["queryId"] not in {"promotion-grains", "promotion-limitations"}: raise LearningContractError("QUERY_ID_OR_PARAMETER_INVALID")
