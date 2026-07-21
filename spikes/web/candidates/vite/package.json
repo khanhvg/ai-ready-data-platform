@@ -1,0 +1,1 @@
+{"name":"i5-02-vite-candidate","private":true,"version":"0.0.0","type":"module","scripts":{"build":"vite build","test":"node --test tests/*.test.mjs"},"dependencies":{"react":"19.2.7","react-dom":"19.2.7"},"devDependencies":{"@axe-core/playwright":"4.12.1","@playwright/test":"1.61.1","@vitejs/plugin-react":"6.0.1","vite":"8.1.5"}}
