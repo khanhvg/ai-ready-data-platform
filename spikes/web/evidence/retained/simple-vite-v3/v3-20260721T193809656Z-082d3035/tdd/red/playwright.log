@@ -1,0 +1,408 @@
+
+> i5-02-vite-candidate@0.0.0 test:smoke
+> playwright test tests/simple-vite-smoke.spec.mjs --config playwright.config.mjs --workers=1 --retries=0
+
+{
+  "config": {
+    "argv": [
+      "<PRIVATE_PATH>",
+      "<WORKSPACE>/spikes/web/candidates/vite/node_modules/.bin/playwright",
+      "test",
+      "tests/simple-vite-smoke.spec.mjs",
+      "--config",
+      "playwright.config.mjs",
+      "--workers=1",
+      "--retries=0"
+    ],
+    "configFile": "<WORKSPACE>/spikes/web/candidates/vite/playwright.config.mjs",
+    "rootDir": "<WORKSPACE>/spikes/web/candidates/vite/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "<WORKSPACE>/spikes/web/candidates/vite/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-desktop",
+        "name": "chromium-desktop",
+        "testDir": "<WORKSPACE>/spikes/web/candidates/vite/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "<WORKSPACE>/spikes/web/candidates/vite/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-narrow",
+        "name": "chromium-narrow",
+        "testDir": "<WORKSPACE>/spikes/web/candidates/vite/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "simple-vite-smoke.spec.mjs",
+      "file": "simple-vite-smoke.spec.mjs",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "@journey V3-03 V3-04 representative promotion-trust journey",
+          "ok": false,
+          "tags": [
+            "journey"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-desktop",
+              "projectName": "chromium-desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 5868,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('html')\nExpected: \u001b[32m\"vi\"\u001b[39m\nReceived: \u001b[31m\"en\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('html')\u001b[22m\n\u001b[2m    13 × locator resolved to <html lang=\"en\">…</html>\u001b[22m\n\u001b[2m       - unexpected value \"en\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('html')\nExpected: \u001b[32m\"vi\"\u001b[39m\nReceived: \u001b[31m\"en\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('html')\u001b[22m\n\u001b[2m    13 × locator resolved to <html lang=\"en\">…</html>\u001b[22m\n\u001b[2m       - unexpected value \"en\"\u001b[22m\n\n    at completeJourney (<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs:72:38)\n    at <WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs:113:3",
+                    "location": {
+                      "file": "<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs",
+                      "column": 38,
+                      "line": 72
+                    },
+                    "snippet": "  70 |   page.on('request', request => requests.push(request.url()));\n  71 |   await page.goto('/');\n> 72 |   await expect(page.locator('html')).toHaveAttribute('lang', 'vi');\n     |                                      ^\n  73 |   await expect(page.getByTestId('lesson-entry')).toContainText(exact.title);\n  74 |   await expect(page.getByText(exact.notice, { exact: true })).toBeVisible();\n  75 |   await expect(page.getByTestId('lesson-status')).toHaveText(exact.baseline);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs",
+                        "column": 38,
+                        "line": 72
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('html')\nExpected: \u001b[32m\"vi\"\u001b[39m\nReceived: \u001b[31m\"en\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('html')\u001b[22m\n\u001b[2m    13 × locator resolved to <html lang=\"en\">…</html>\u001b[22m\n\u001b[2m       - unexpected value \"en\"\u001b[22m\n\n\n  70 |   page.on('request', request => requests.push(request.url()));\n  71 |   await page.goto('/');\n> 72 |   await expect(page.locator('html')).toHaveAttribute('lang', 'vi');\n     |                                      ^\n  73 |   await expect(page.getByTestId('lesson-entry')).toContainText(exact.title);\n  74 |   await expect(page.getByText(exact.notice, { exact: true })).toBeVisible();\n  75 |   await expect(page.getByTestId('lesson-status')).toHaveText(exact.baseline);\n    at completeJourney (<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs:72:38)\n    at <WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs:113:3"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-07-21T17:06:59.760Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "<WORKSPACE>/spikes/web/candidates/vite/test-results/simple-vite-smoke--journey-91be3-ive-promotion-trust-journey-chromium-desktop/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "<WORKSPACE>/spikes/web/candidates/vite/test-results/simple-vite-smoke--journey-91be3-ive-promotion-trust-journey-chromium-desktop/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "<WORKSPACE>/spikes/web/candidates/vite/test-results/simple-vite-smoke--journey-91be3-ive-promotion-trust-journey-chromium-desktop/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs",
+                    "column": 38,
+                    "line": 72
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "ed428b470b526569704b-3244830689c7318cdca4",
+          "file": "simple-vite-smoke.spec.mjs",
+          "line": 112,
+          "column": 1
+        },
+        {
+          "title": "@desktop-only V3-05 one whole-page axe scan",
+          "ok": false,
+          "tags": [
+            "desktop-only"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-desktop",
+              "projectName": "chromium-desktop",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 5606,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('html')\nExpected: \u001b[32m\"vi\"\u001b[39m\nReceived: \u001b[31m\"en\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('html')\u001b[22m\n\u001b[2m    14 × locator resolved to <html lang=\"en\">…</html>\u001b[22m\n\u001b[2m       - unexpected value \"en\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('html')\nExpected: \u001b[32m\"vi\"\u001b[39m\nReceived: \u001b[31m\"en\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('html')\u001b[22m\n\u001b[2m    14 × locator resolved to <html lang=\"en\">…</html>\u001b[22m\n\u001b[2m       - unexpected value \"en\"\u001b[22m\n\n    at completeJourney (<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs:72:38)\n    at <WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs:117:3",
+                    "location": {
+                      "file": "<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs",
+                      "column": 38,
+                      "line": 72
+                    },
+                    "snippet": "  70 |   page.on('request', request => requests.push(request.url()));\n  71 |   await page.goto('/');\n> 72 |   await expect(page.locator('html')).toHaveAttribute('lang', 'vi');\n     |                                      ^\n  73 |   await expect(page.getByTestId('lesson-entry')).toContainText(exact.title);\n  74 |   await expect(page.getByText(exact.notice, { exact: true })).toBeVisible();\n  75 |   await expect(page.getByTestId('lesson-status')).toHaveText(exact.baseline);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs",
+                        "column": 38,
+                        "line": 72
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('html')\nExpected: \u001b[32m\"vi\"\u001b[39m\nReceived: \u001b[31m\"en\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('html')\u001b[22m\n\u001b[2m    14 × locator resolved to <html lang=\"en\">…</html>\u001b[22m\n\u001b[2m       - unexpected value \"en\"\u001b[22m\n\n\n  70 |   page.on('request', request => requests.push(request.url()));\n  71 |   await page.goto('/');\n> 72 |   await expect(page.locator('html')).toHaveAttribute('lang', 'vi');\n     |                                      ^\n  73 |   await expect(page.getByTestId('lesson-entry')).toContainText(exact.title);\n  74 |   await expect(page.getByText(exact.notice, { exact: true })).toBeVisible();\n  75 |   await expect(page.getByTestId('lesson-status')).toHaveText(exact.baseline);\n    at completeJourney (<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs:72:38)\n    at <WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs:117:3"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-07-21T17:07:13.823Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "<WORKSPACE>/spikes/web/candidates/vite/test-results/simple-vite-smoke--desktop-39cfd--05-one-whole-page-axe-scan-chromium-desktop/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "<WORKSPACE>/spikes/web/candidates/vite/test-results/simple-vite-smoke--desktop-39cfd--05-one-whole-page-axe-scan-chromium-desktop/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "<WORKSPACE>/spikes/web/candidates/vite/test-results/simple-vite-smoke--desktop-39cfd--05-one-whole-page-axe-scan-chromium-desktop/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs",
+                    "column": 38,
+                    "line": 72
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "ed428b470b526569704b-bad273e5b5888716c043",
+          "file": "simple-vite-smoke.spec.mjs",
+          "line": 116,
+          "column": 1
+        },
+        {
+          "title": "@desktop-only V3-06 real JavaScript-disabled response and DOM fallback",
+          "ok": false,
+          "tags": [
+            "desktop-only"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-desktop",
+              "projectName": "chromium-desktop",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 389,
+                  "error": {
+                    "message": "Error: lesson-entry must be in response bytes and source order\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m-1\u001b[39m\nReceived:   \u001b[31m-1\u001b[39m",
+                    "stack": "Error: lesson-entry must be in response bytes and source order\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m-1\u001b[39m\nReceived:   \u001b[31m-1\u001b[39m\n    at <WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs:136:72",
+                    "location": {
+                      "file": "<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs",
+                      "column": 72,
+                      "line": 136
+                    },
+                    "snippet": "  134 |     for (const id of ordered) {\n  135 |       const next = text.indexOf(`data-testid=\"${id}\"`);\n> 136 |       expect(next, `${id} must be in response bytes and source order`).toBeGreaterThan(offset);\n      |                                                                        ^\n  137 |       offset = next;\n  138 |     }\n  139 |     for (const token of [exact.title, exact.notice, exact.baseline, ...exact.grains.flatMap(([, grain, limitation]) => [grain, limitation]), 'insufficient-evidence', 'no-common-grain', exact.noJsReset, exact.reflection]) {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs",
+                        "column": 72,
+                        "line": 136
+                      },
+                      "message": "Error: lesson-entry must be in response bytes and source order\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m-1\u001b[39m\nReceived:   \u001b[31m-1\u001b[39m\n\n  134 |     for (const id of ordered) {\n  135 |       const next = text.indexOf(`data-testid=\"${id}\"`);\n> 136 |       expect(next, `${id} must be in response bytes and source order`).toBeGreaterThan(offset);\n      |                                                                        ^\n  137 |       offset = next;\n  138 |     }\n  139 |     for (const token of [exact.title, exact.notice, exact.baseline, ...exact.grains.flatMap(([, grain, limitation]) => [grain, limitation]), 'insufficient-evidence', 'no-common-grain', exact.noJsReset, exact.reflection]) {\n    at <WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs:136:72"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-07-21T17:07:21.460Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "<WORKSPACE>/spikes/web/candidates/vite/test-results/simple-vite-smoke--desktop-21582-d-response-and-DOM-fallback-chromium-desktop/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "<WORKSPACE>/spikes/web/candidates/vite/test-results/simple-vite-smoke--desktop-21582-d-response-and-DOM-fallback-chromium-desktop/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "<WORKSPACE>/spikes/web/candidates/vite/test-results/simple-vite-smoke--desktop-21582-d-response-and-DOM-fallback-chromium-desktop/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs",
+                    "column": 72,
+                    "line": 136
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "ed428b470b526569704b-f94e0467924cca152854",
+          "file": "simple-vite-smoke.spec.mjs",
+          "line": 124,
+          "column": 1
+        },
+        {
+          "title": "@journey V3-03 V3-04 representative promotion-trust journey",
+          "ok": false,
+          "tags": [
+            "journey"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-narrow",
+              "projectName": "chromium-narrow",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 5385,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('html')\nExpected: \u001b[32m\"vi\"\u001b[39m\nReceived: \u001b[31m\"en\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('html')\u001b[22m\n\u001b[2m    14 × locator resolved to <html lang=\"en\">…</html>\u001b[22m\n\u001b[2m       - unexpected value \"en\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('html')\nExpected: \u001b[32m\"vi\"\u001b[39m\nReceived: \u001b[31m\"en\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('html')\u001b[22m\n\u001b[2m    14 × locator resolved to <html lang=\"en\">…</html>\u001b[22m\n\u001b[2m       - unexpected value \"en\"\u001b[22m\n\n    at completeJourney (<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs:72:38)\n    at <WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs:113:3",
+                    "location": {
+                      "file": "<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs",
+                      "column": 38,
+                      "line": 72
+                    },
+                    "snippet": "  70 |   page.on('request', request => requests.push(request.url()));\n  71 |   await page.goto('/');\n> 72 |   await expect(page.locator('html')).toHaveAttribute('lang', 'vi');\n     |                                      ^\n  73 |   await expect(page.getByTestId('lesson-entry')).toContainText(exact.title);\n  74 |   await expect(page.getByText(exact.notice, { exact: true })).toBeVisible();\n  75 |   await expect(page.getByTestId('lesson-status')).toHaveText(exact.baseline);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs",
+                        "column": 38,
+                        "line": 72
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('html')\nExpected: \u001b[32m\"vi\"\u001b[39m\nReceived: \u001b[31m\"en\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('html')\u001b[22m\n\u001b[2m    14 × locator resolved to <html lang=\"en\">…</html>\u001b[22m\n\u001b[2m       - unexpected value \"en\"\u001b[22m\n\n\n  70 |   page.on('request', request => requests.push(request.url()));\n  71 |   await page.goto('/');\n> 72 |   await expect(page.locator('html')).toHaveAttribute('lang', 'vi');\n     |                                      ^\n  73 |   await expect(page.getByTestId('lesson-entry')).toContainText(exact.title);\n  74 |   await expect(page.getByText(exact.notice, { exact: true })).toBeVisible();\n  75 |   await expect(page.getByTestId('lesson-status')).toHaveText(exact.baseline);\n    at completeJourney (<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs:72:38)\n    at <WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs:113:3"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-07-21T17:07:23.142Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "<WORKSPACE>/spikes/web/candidates/vite/test-results/simple-vite-smoke--journey-91be3-ive-promotion-trust-journey-chromium-narrow/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "<WORKSPACE>/spikes/web/candidates/vite/test-results/simple-vite-smoke--journey-91be3-ive-promotion-trust-journey-chromium-narrow/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "<WORKSPACE>/spikes/web/candidates/vite/test-results/simple-vite-smoke--journey-91be3-ive-promotion-trust-journey-chromium-narrow/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "<WORKSPACE>/spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs",
+                    "column": 38,
+                    "line": 72
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "ed428b470b526569704b-3376044290579a277cab",
+          "file": "simple-vite-smoke.spec.mjs",
+          "line": 112,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-07-21T17:06:59.283Z",
+    "duration": 30032.727000000003,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 4,
+    "flaky": 0
+  }
+}

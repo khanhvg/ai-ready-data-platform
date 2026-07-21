@@ -1,0 +1,13 @@
+
+> i5-02-vite-candidate@0.0.0 build
+> vite build
+
+vite v8.1.5 building client environment for production...
+[2Ktransforming...✓ 16 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   6.41 kB │ gzip:  2.43 kB
+dist/assets/index-Dr8sqhZi.css    1.47 kB │ gzip:  0.69 kB
+dist/assets/index-Cabb1jql.js   192.81 kB │ gzip: 61.16 kB
+
+✓ built in 427ms

@@ -1,0 +1,101 @@
+TAP version 13
+# Subtest: V3-07 harness contract closes authority, seven groups, commands, and write paths
+ok 1 - V3-07 harness contract closes authority, seven groups, commands, and write paths
+  ---
+  duration_ms: 0.962125
+  type: 'test'
+  ...
+# Subtest: V3-07 S3 scanner rejects credentials, private paths, PII, injection, and remote imports
+ok 2 - V3-07 S3 scanner rejects credentials, private paths, PII, injection, and remote imports
+  ---
+  duration_ms: 1.030459
+  type: 'test'
+  ...
+# Subtest: V3-07 ownership ledger fails closed on foreign port, missing fingerprint, and run mismatch
+ok 3 - V3-07 ownership ledger fails closed on foreign port, missing fingerprint, and run mismatch
+  ---
+  duration_ms: 0.333042
+  type: 'test'
+  ...
+# Subtest: V3-07 retained manifest is closed over exact-head RED, 7/7, redaction, and rollback
+ok 4 - V3-07 retained manifest is closed over exact-head RED, 7/7, redaction, and rollback
+  ---
+  duration_ms: 0.69125
+  type: 'test'
+  ...
+# Subtest: V3-07 runner contains bounded commands and never imports comparison, native, timer, or cloud paths
+ok 5 - V3-07 runner contains bounded commands and never imports comparison, native, timer, or cloud paths
+  ---
+  duration_ms: 0.511875
+  type: 'test'
+  ...
+# Subtest: V3-07 fast bounded command exits promptly without referenced harness timers
+not ok 6 - V3-07 fast bounded command exits promptly without referenced harness timers
+  ---
+  duration_ms: 1223.778208
+  type: 'test'
+  location: '<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:110:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    fast-success subprocess did not exit promptly: ETIMEDOUT
+    + actual - expected
+
+    + 'ETIMEDOUT'
+    - undefined
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual: 'ETIMEDOUT'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:127:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: V3-07 bounded command escalates TERM to KILL for its owned group and leaves no descendant
+ok 7 - V3-07 bounded command escalates TERM to KILL for its owned group and leaves no descendant
+  ---
+  duration_ms: 523.101291
+  type: 'test'
+  ...
+# Subtest: V3-07 host READY timeout rejects boundedly and cleans its owned process group
+ok 8 - V3-07 host READY timeout rejects boundedly and cleans its owned process group
+  ---
+  duration_ms: 627.004167
+  type: 'test'
+  ...
+# Subtest: V3-07 authority requires exact fresh-live head for feature branch and detached modes
+not ok 9 - V3-07 authority requires exact fresh-live head for feature branch and detached modes
+  ---
+  duration_ms: 7944.686916
+  type: 'test'
+  location: '<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:202:1'
+  failureType: 'testCodeFailure'
+  error: 'Expected "actual" to be strictly unequal to: 0'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 0
+  operator: 'notStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:227:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 7
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10378.93825
