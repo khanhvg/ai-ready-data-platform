@@ -100,6 +100,15 @@ class StateCompletionApiTests(unittest.TestCase):
             progress,
             {"expectedRevision": 2, "idempotencyKey": "complete-3", "evidenceId": "changed"},
         )
+        pristine = {"revision": 2, "state": "verified", "effects": []}
+        before = copy.deepcopy(pristine)
+        self.assert_code(
+            "PROGRESS_VERSION_CONFLICT",
+            completion.complete,
+            pristine,
+            {"expectedRevision": 1, "idempotencyKey": "complete-4", "evidenceId": "evidence-4"},
+        )
+        self.assertEqual(before, pristine)
 
     def test_i8_v3_prerequisite_hint_reset_011(self) -> None:
         """I8-V3-PREREQUISITE-HINT-RESET-011."""
@@ -145,6 +154,16 @@ class StateCompletionApiTests(unittest.TestCase):
             },
         }
         self.assertIsNone(openapi.validate_openapi_document(document, matrix()))
+        shipped = schema.read_document(schema.ROOT / "contracts/openapi/learning-platform-v1.yaml")
+        for operation_id, method, path, status in OPERATIONS:
+            operation = shipped["paths"][path][method.lower()]
+            self.assertIn("500", operation["responses"])
+            if method == "POST":
+                reference = operation["requestBody"]["content"]["application/json"]["schema"]["$ref"]
+                self.assertNotEqual("#/components/schemas/VersionedRequest", reference)
+        self.assertEqual(202, next(row[3] for row in OPERATIONS if row[0] == "resetWorkspace"))
+        self.assertEqual(202, next(row[3] for row in OPERATIONS if row[0] == "verifyWorkspace"))
+        self.assertEqual(202, next(row[3] for row in OPERATIONS if row[0] == "queryDataProduct"))
 
 
 if __name__ == "__main__":

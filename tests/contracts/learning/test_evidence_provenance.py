@@ -114,6 +114,21 @@ class EvidenceFitnessMigrationPromotionTests(unittest.TestCase):
             drifted = copy.deepcopy(value)
             drifted["sourceSha"] = "9" * 40
             self.assert_code("FITNESS_SCHEMA_INVALID", fitness.verify_fitness, drifted, root=root)
+            future = fitness_result(root)
+            future["owner"] = "I5-04"
+            future["commandId"] = "future-contracts-check"
+            future["payloadSha256"] = hashlib.sha256(canonical_bytes({key: child for key, child in future.items() if key != "payloadSha256"})).hexdigest()
+            activation = {
+                "schemaVersion": "command-owner-activation-v1",
+                "owner": "I5-04",
+                "commands": [{"commandId": "future-contracts-check", "availability": "implemented", "evidenceVersion": "fitness-result-v2"}],
+            }
+            self.assertIsNone(fitness.verify_fitness(future, root=root, activation=activation))
+
+            nested = copy.deepcopy(value)
+            nested["requested"]["parameters"] = [{"unexpected": True}]
+            nested["payloadSha256"] = hashlib.sha256(canonical_bytes({key: child for key, child in nested.items() if key != "payloadSha256"})).hexdigest()
+            self.assert_code("FITNESS_SCHEMA_INVALID", fitness.verify_fitness, nested, root=root)
 
     def test_i8_v3_migration_back_reader_016(self) -> None:
         """I8-V3-MIGRATION-BACK-READER-016."""

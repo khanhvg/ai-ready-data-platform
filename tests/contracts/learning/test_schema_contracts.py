@@ -85,8 +85,24 @@ class SchemaReaderCanonicalReferenceTests(unittest.TestCase):
                     "hardlink",
                     hashlib.sha256(b"content").hexdigest(),
                 )
+                nested = base / "nested"
+                nested.mkdir()
+                escaped = base.parent / f"{base.name}-escaped"
+                escaped.mkdir()
+                (escaped / "payload").write_bytes(b"escaped")
+                os.symlink(escaped, nested / "redirect")
+                self.assert_code(
+                    "REFERENCE_SPECIAL_FILE",
+                    references.resolve_reference,
+                    base,
+                    "nested/redirect/payload",
+                    hashlib.sha256(b"escaped").hexdigest(),
+                )
             finally:
                 outside.unlink(missing_ok=True)
+                if 'escaped' in locals():
+                    (escaped / "payload").unlink(missing_ok=True)
+                    escaped.rmdir()
 
 
 if __name__ == "__main__":

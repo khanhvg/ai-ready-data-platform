@@ -98,6 +98,18 @@ class S3CommandResourceCleanupTests(unittest.TestCase):
             runtime.cleanup_owned(owned, marker)
             self.assertFalse((owned / "mutable.tmp").exists())
             self.assertEqual(b"evidence", (owned / "evidence.json").read_bytes())
+            (owned / "first.tmp").write_bytes(b"first")
+            (owned / "regular").write_bytes(b"regular")
+            os.symlink("regular", owned / "unsafe")
+            marker = self.marker(owned, [
+                {"path": "evidence.json", "disposition": "preserve"},
+                {"path": "first.tmp", "disposition": "mutable"},
+                {"path": "regular", "disposition": "preserve"},
+                {"path": "unsafe", "disposition": "mutable"},
+            ])
+            self.write_marker(owned, marker)
+            self.assert_code("CLEANUP_ENTRY_UNSAFE", runtime.cleanup_owned, owned, marker)
+            self.assertEqual(b"first", (owned / "first.tmp").read_bytes())
 
     def test_i8_v3_rollback_foreign_preservation_024(self) -> None:
         """I8-V3-ROLLBACK-FOREIGN-PRESERVATION-024."""
