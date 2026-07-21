@@ -1,1 +1,1 @@
-{"operations":[{"operationId":"a","method":"GET","path":"/v1/a"},{"operationId":"b","method":"GET","path":"/v1/a"}]}
+{"family":"operation","case":"duplicate-method-path"}

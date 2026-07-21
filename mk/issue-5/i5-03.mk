@@ -1,4 +1,6 @@
-LEARNING_CONTRACTS_PY := $(lastword $(sort $(wildcard .artifacts/workspaces/golden/*/venv/bin/python)))
+LEARNING_RUNTIME_ROOT ?= /tmp/issue8-red-runtime/admitted
+LEARNING_RUNTIME_CANDIDATE ?=
+LEARNING_RUNTIME_INTERPRETER_SHA256 ?=
 unexport LESSON EVIDENCE
 
 # GNU Make 3.81 has no $(file ...) function. Keep command-line values raw with
@@ -6,24 +8,29 @@ unexport LESSON EVIDENCE
 # values are never exported or recursively expanded by Make.
 learning_shell_quote = '$(subst ','"'"',$(value $(1)))'
 
-.PHONY: learning-contracts-check lesson-check api-contracts-check evidence-verify
+.PHONY: learning-runtime-admit learning-contracts-check lesson-check api-contracts-check evidence-verify
 
 define require-learning-runtime
-	@test -n "$(LEARNING_CONTRACTS_PY)" || (echo "locked golden runtime missing; run make golden-clean PROFILE=small SEED=42" >&2; exit 2)
+	@test -n $(call learning_shell_quote,LEARNING_RUNTIME_INTERPRETER_SHA256) || (echo "LEARNING_RUNTIME_INTERPRETER_SHA256 is required" >&2; exit 2)
 endef
+
+learning-runtime-admit:
+	@test -n $(call learning_shell_quote,LEARNING_RUNTIME_CANDIDATE) || (echo "LEARNING_RUNTIME_CANDIDATE is required" >&2; exit 2)
+	$(require-learning-runtime)
+	@env -u PYTHONPATH PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.learning_contracts.runtime admit --runtime-root $(call learning_shell_quote,LEARNING_RUNTIME_ROOT) --candidate $(call learning_shell_quote,LEARNING_RUNTIME_CANDIDATE) --interpreter-sha256 $(call learning_shell_quote,LEARNING_RUNTIME_INTERPRETER_SHA256)
 
 learning-contracts-check:
 	$(require-learning-runtime)
-	@env -u PYTHONPATH PYTHONDONTWRITEBYTECODE=1 $(LEARNING_CONTRACTS_PY) -m scripts.learning_contracts.check check
+	@env -u PYTHONPATH PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.learning_contracts.runtime launch --runtime-root $(call learning_shell_quote,LEARNING_RUNTIME_ROOT) --interpreter-sha256 $(call learning_shell_quote,LEARNING_RUNTIME_INTERPRETER_SHA256) --timeout 120 -- check
 
 lesson-check:
 	$(require-learning-runtime)
-	@env -u PYTHONPATH PYTHONDONTWRITEBYTECODE=1 $(LEARNING_CONTRACTS_PY) -m scripts.learning_contracts.check lesson --lesson $(call learning_shell_quote,LESSON)
+	@env -u PYTHONPATH PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.learning_contracts.runtime launch --runtime-root $(call learning_shell_quote,LEARNING_RUNTIME_ROOT) --interpreter-sha256 $(call learning_shell_quote,LEARNING_RUNTIME_INTERPRETER_SHA256) --timeout 60 -- lesson --lesson $(call learning_shell_quote,LESSON)
 
 api-contracts-check:
 	$(require-learning-runtime)
-	@env -u PYTHONPATH PYTHONDONTWRITEBYTECODE=1 $(LEARNING_CONTRACTS_PY) -m scripts.learning_contracts.check api
+	@env -u PYTHONPATH PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.learning_contracts.runtime launch --runtime-root $(call learning_shell_quote,LEARNING_RUNTIME_ROOT) --interpreter-sha256 $(call learning_shell_quote,LEARNING_RUNTIME_INTERPRETER_SHA256) --timeout 60 -- api
 
 evidence-verify:
 	$(require-learning-runtime)
-	@env -u PYTHONPATH PYTHONDONTWRITEBYTECODE=1 $(LEARNING_CONTRACTS_PY) -m scripts.learning_contracts.check evidence --evidence $(call learning_shell_quote,EVIDENCE)
+	@env -u PYTHONPATH PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.learning_contracts.runtime launch --runtime-root $(call learning_shell_quote,LEARNING_RUNTIME_ROOT) --interpreter-sha256 $(call learning_shell_quote,LEARNING_RUNTIME_INTERPRETER_SHA256) --timeout 60 -- evidence --evidence $(call learning_shell_quote,EVIDENCE)

@@ -21,88 +21,216 @@
       "const": "completion-reconciliation-v1"
     },
     "authorityId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 512
+      "const": "learning-progress-authority-v1"
     },
     "authorityVersion": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 512
+      "const": "v1"
     },
     "idempotencyScope": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 512
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fields",
+        "requestDigest",
+        "sameRequest",
+        "differentRequest"
+      ],
+      "properties": {
+        "fields": {
+          "const": [
+            "authorityId",
+            "actorId",
+            "operationId",
+            "idempotencyKey"
+          ]
+        },
+        "requestDigest": {
+          "const": "sha-256+jcs"
+        },
+        "sameRequest": {
+          "const": "return-stored-result"
+        },
+        "differentRequest": {
+          "const": "IDEMPOTENCY_KEY_REUSE"
+        }
+      }
     },
     "commitPreconditions": {
       "type": "array",
-      "minItems": 1,
-      "maxItems": 256,
+      "minItems": 3,
+      "maxItems": 3,
       "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 512
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "required"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "required": {
+            "const": true
+          }
+        }
       }
     },
     "commitOrder": {
       "type": "array",
-      "minItems": 1,
-      "maxItems": 256,
+      "minItems": 4,
+      "maxItems": 4,
       "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 512
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "order",
+          "durable"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4
+          },
+          "durable": {
+            "type": "boolean"
+          }
+        }
       }
     },
     "uniqueConstraints": {
       "type": "array",
-      "minItems": 1,
-      "maxItems": 256,
+      "minItems": 3,
+      "maxItems": 3,
       "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 512
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "field",
+          "scope"
+        ],
+        "properties": {
+          "field": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "scope": {
+            "const": "authority-actor-operation"
+          }
+        }
       }
     },
     "faultPoints": {
       "type": "array",
-      "minItems": 1,
-      "maxItems": 256,
+      "minItems": 6,
+      "maxItems": 6,
       "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 512
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "disposition"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "disposition": {
+            "enum": [
+              "reconcile",
+              "already-attached"
+            ]
+          }
+        }
       }
     },
     "reconciliation": {
       "type": "array",
-      "minItems": 1,
-      "maxItems": 256,
+      "minItems": 3,
+      "maxItems": 3,
       "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 512
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "action",
+          "completes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "action": {
+            "enum": [
+              "return-stored-completion",
+              "revalidate-and-cas",
+              "quarantine"
+            ]
+          },
+          "completes": {
+            "type": "boolean"
+          }
+        }
       }
     },
     "resets": {
-      "type": "array",
-      "minItems": 1,
-      "maxItems": 256,
-      "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 512
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "casRequired",
+        "preserveEvidence",
+        "completionImmutable"
+      ],
+      "properties": {
+        "casRequired": {
+          "const": true
+        },
+        "preserveEvidence": {
+          "const": true
+        },
+        "completionImmutable": {
+          "const": true
+        }
       }
     },
     "conflicts": {
       "type": "array",
-      "minItems": 1,
-      "maxItems": 256,
+      "minItems": 2,
+      "maxItems": 2,
       "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 512
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "status",
+          "mutates"
+        ],
+        "properties": {
+          "code": {
+            "enum": [
+              "IDEMPOTENCY_KEY_REUSE",
+              "PROGRESS_VERSION_CONFLICT"
+            ]
+          },
+          "status": {
+            "enum": [
+              409,
+              412
+            ]
+          },
+          "mutates": {
+            "const": false
+          }
+        }
       }
     }
   }

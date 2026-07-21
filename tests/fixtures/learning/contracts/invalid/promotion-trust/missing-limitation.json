@@ -1,1 +1,1 @@
-{"grains":["promotion","fulfillment","returns","dq"],"limitations":[]}
+{"family":"promotion","case":"missing-limitation"}

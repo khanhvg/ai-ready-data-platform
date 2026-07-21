@@ -6,60 +6,203 @@
   "summary": "Assess promotion evidence without inventing a common grain.",
   "level": "mid",
   "competencies": [
-    "decision-traceability",
-    "data-contracts"
+    {
+      "id": "decision-traceability"
+    },
+    {
+      "id": "data-contracts"
+    }
   ],
-  "outcome": "Explain why four independent evidence grains cannot prove campaign causality.",
-  "stakeholder": "Retail Operations Director | promotion decision trust",
+  "outcome": {
+    "capability": "Explain why four independent evidence grains cannot prove campaign causality.",
+    "evidenceIds": [
+      "critical-assertions",
+      "decision-response"
+    ]
+  },
+  "stakeholder": {
+    "actor": "Retail Operations Director",
+    "concern": "promotion decision trust",
+    "decision": "Can promotion evidence support causal attribution?"
+  },
   "prerequisites": [
-    "golden-small-42"
+    {
+      "id": "golden-small-42",
+      "kind": "environment",
+      "required": true
+    }
   ],
   "prerequisiteChecks": [
-    "golden-runtime-read-only-required"
+    {
+      "probeId": "golden-runtime-read-only-required",
+      "kind": "contract",
+      "class": "required",
+      "expected": "pass",
+      "remediation": "Establish the admitted golden runtime.",
+      "retry": "read-only"
+    }
   ],
   "fr": [
-    "validate-four-grains"
+    {
+      "id": "validate-four-grains",
+      "measure": "Exactly four independent grains are preserved."
+    }
   ],
   "nfr": [
-    "offline",
-    "bounded"
+    {
+      "id": "offline",
+      "measure": "No network access."
+    },
+    {
+      "id": "bounded",
+      "measure": "Within declared resource limits."
+    }
   ],
   "asr": [
-    "single-completion-authority"
+    {
+      "id": "single-completion-authority",
+      "measure": "Only progress CAS emits completion."
+    }
   ],
   "architectureViews": [
-    "system-context",
-    "promotion-evaluation-dynamic"
+    {
+      "id": "system-context",
+      "required": true
+    },
+    {
+      "id": "promotion-evaluation-dynamic",
+      "required": true
+    }
   ],
-  "decision": "insufficient-evidence/no-common-grain",
+  "decision": {
+    "question": "Can the four grains prove campaign causality?",
+    "alternatives": [
+      "claim-common-grain",
+      "retain-independent-grains"
+    ],
+    "selected": "retain-independent-grains",
+    "status": "insufficient-evidence/no-common-grain"
+  },
   "patterns": [
-    "decision-evidence-bundle"
+    {
+      "id": "decision-evidence-bundle",
+      "addressedRisk": "unsupported-causal-attribution"
+    }
   ],
   "narrativeSteps": [
-    "frame",
-    "inspect",
-    "run",
-    "fail",
-    "trace",
-    "decide",
-    "reset",
-    "configure",
-    "verify",
-    "reflect"
+    {
+      "id": "frame",
+      "order": 1,
+      "reversible": true,
+      "staticEquivalent": true
+    },
+    {
+      "id": "inspect",
+      "order": 2,
+      "reversible": true,
+      "staticEquivalent": true
+    },
+    {
+      "id": "run",
+      "order": 3,
+      "reversible": true,
+      "staticEquivalent": true
+    },
+    {
+      "id": "fail",
+      "order": 4,
+      "reversible": true,
+      "staticEquivalent": true
+    },
+    {
+      "id": "trace",
+      "order": 5,
+      "reversible": true,
+      "staticEquivalent": true
+    },
+    {
+      "id": "decide",
+      "order": 6,
+      "reversible": true,
+      "staticEquivalent": true
+    },
+    {
+      "id": "reset",
+      "order": 7,
+      "reversible": true,
+      "staticEquivalent": true
+    },
+    {
+      "id": "configure",
+      "order": 8,
+      "reversible": true,
+      "staticEquivalent": true
+    },
+    {
+      "id": "verify",
+      "order": 9,
+      "reversible": true,
+      "staticEquivalent": true
+    },
+    {
+      "id": "reflect",
+      "order": 10,
+      "reversible": true,
+      "staticEquivalent": true
+    }
   ],
-  "lab": "promotion-trust-v1",
+  "lab": {
+    "id": "promotion-trust-v1",
+    "version": "1.0.0"
+  },
   "evidence": [
-    "critical-assertions",
-    "decision-response"
+    {
+      "assertionId": "critical-assertions",
+      "required": true
+    },
+    {
+      "assertionId": "decision-response",
+      "required": true
+    }
   ],
-  "reflection": "Which additive grain would support causal attribution?",
-  "accessibility": "keyboard-static-text-equivalent",
+  "reflection": {
+    "prompt": "Which additive grain would support causal attribution?",
+    "completes": false
+  },
+  "accessibility": {
+    "keyboard": true,
+    "announcements": true,
+    "staticEquivalent": true,
+    "reducedMotion": true
+  },
   "remediation": [
-    "PROMOTION_COMMON_GRAIN_FORBIDDEN"
+    {
+      "code": "PROMOTION_COMMON_GRAIN_FORBIDDEN",
+      "action": "Retain the four grains and state the limitation.",
+      "revealPolicy": "after-ordered-hints"
+    }
   ],
   "hints": [
-    "inspect-grains",
-    "compare-keys",
-    "state-limitation"
+    {
+      "id": "inspect-grains",
+      "order": 1,
+      "revealAfter": 0,
+      "evidenceEvent": "guidance-viewed",
+      "completes": false
+    },
+    {
+      "id": "compare-keys",
+      "order": 2,
+      "revealAfter": 1,
+      "evidenceEvent": "guidance-viewed",
+      "completes": false
+    },
+    {
+      "id": "state-limitation",
+      "order": 3,
+      "revealAfter": 2,
+      "evidenceEvent": "guidance-viewed",
+      "completes": false
+    }
   ]
 }

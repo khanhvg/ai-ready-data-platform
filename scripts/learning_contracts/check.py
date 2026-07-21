@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import datetime
 import hashlib
 import json
@@ -14,6 +15,7 @@ import re
 import resource
 import subprocess
 import sys
+import tempfile
 import time
 from collections.abc import Sequence
 from typing import Any
@@ -29,12 +31,15 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 FIXTURE_ROOT = ROOT / "tests/fixtures/learning/contracts"
 BASE_REGISTRY_SHA256 = "8e18588f63b5d99c0b60a229758575e8badf0f055bfcb4f89908f9fa2684a57e"
 PROMOTION_FIXTURE_SHA256 = "0a1dcd4023648f52009bfd4dc5d529c00ce66f42cd0e725732b972b0b78df341"
-MUTATION_VECTOR_SCHEMA = {
+FIXTURE_METADATA_SCHEMA = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
-    "minProperties": 1,
-    "maxProperties": 12,
-    "propertyNames": {"pattern": "^[A-Za-z$][A-Za-z0-9$]*$"},
+    "additionalProperties": False,
+    "required": ["family", "case"],
+    "properties": {
+        "family": {"enum": ["activation", "completion", "evidence", "guidance", "migration", "openapi", "operation", "promotion", "reference", "schema", "state"]},
+        "case": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 80},
+    },
 }
 
 
@@ -60,152 +65,58 @@ def validate_public_value(name: str, value: str) -> str:
     raise LearningContractError("PUBLIC_ARGUMENT_INVALID")
 
 
-def _cycle(edges: object) -> bool:
-    if not isinstance(edges, list):
-        return False
-    graph: dict[str, list[str]] = {}
-    for edge in edges:
-        if isinstance(edge, list) and len(edge) == 2 and all(isinstance(item, str) for item in edge):
-            graph.setdefault(edge[0], []).append(edge[1])
-    visiting: set[str] = set()
-    visited: set[str] = set()
-    def visit(node: str) -> bool:
-        if node in visiting:
-            return True
-        if node in visited:
-            return False
-        visiting.add(node)
-        found = any(visit(child) for child in graph.get(node, []))
-        visiting.remove(node)
-        visited.add(node)
-        return found
-    return any(visit(node) for node in graph)
-
-
-def _semantic_code(target: str, value: dict[str, Any]) -> str | None:
-    if target == "activation":
-        if value.get("baseRegistrySha256") != hashlib.sha256((ROOT / "learning/contracts/command-owner-registry-v1.json").read_bytes()).hexdigest():
-            return "COMMAND_ACTIVATION_BASE_MISMATCH"
-    elif target == "completion":
-        source = value.get("completionSource")
-        if source == "browser":
-            return "COMPLETION_AUTHORITY_REQUIRED"
-        if source in {"evidence-presence", "operation-result"}:
-            return "COMPLETION_DUAL_TRUTH"
-        if value.get("orphan") and value.get("attemptsCompletion"):
-            return "RECONCILIATION_ORPHAN_CANNOT_COMPLETE"
-        if value.get("orphan") and value.get("declaredSha256") != value.get("actualSha256"):
-            return "RECONCILIATION_HASH_MISMATCH"
-    elif target == "evidence":
-        if "rawSql" in value:
-            return "CONTRACT_INJECTION_FIELD_FORBIDDEN"
-        locator = value.get("locator")
-        if isinstance(locator, str) and (locator.startswith("/") or ".." in pathlib.PurePosixPath(locator).parts):
-            return "EVIDENCE_LOCATOR_INVALID"
-        if value.get("dependencyMergeShas") == []:
-            return "EVIDENCE_PROVENANCE_INCOMPLETE"
-        if value.get("testedTreeSha") == "self-containing-identity":
-            return "EVIDENCE_RECURSIVE_IDENTITY"
-        if "indexedPayloadSha256" in value and value.get("indexedPayloadSha256") != value.get("payloadSha256"):
-            return "EVIDENCE_REPLAY_CONFLICT"
-        if "payload" in value and value.get("payloadSha256") != hashlib.sha256(canonical_bytes(value["payload"])).hexdigest():
-            return "EVIDENCE_PAYLOAD_HASH_MISMATCH"
-        artifact = value.get("artifact")
-        if isinstance(artifact, dict) and artifact.get("sha256") != value.get("actualSha256"):
-            return "EVIDENCE_ARTIFACT_HASH_MISMATCH"
-        if "verifierSha256" in value and value.get("verifierSha256") != value.get("actualVerifierSha256"):
-            return "EVIDENCE_VERIFIER_HASH_MISMATCH"
-    elif target == "guidance":
-        if value.get("completionMutation"):
-            return "HINT_COMPLETION_FORBIDDEN"
-        if isinstance(value.get("command"), str) and re.search(r"(?:touch|rm|mv|cp|>|curl|wget)", value["command"]):
-            return "PROBE_MUTATION_FORBIDDEN"
-        if value.get("status") == "unavailable" and value.get("result") == "pass":
-            return "PROBE_REQUIRED_UNAVAILABLE" if value.get("required") else "PROBE_OPTIONAL_FALSE_PASS"
-        hints = value.get("hints")
-        if isinstance(hints, list) and [item.get("order") for item in hints] != sorted(item.get("order") for item in hints):
-            return "HINT_ORDER_INVALID"
-        if value.get("revealed") and not value.get("revealAuthorized"):
-            return "HINT_REVEAL_FORBIDDEN"
-    elif target == "migration":
-        base = value.get("baseRegistry")
-        if isinstance(base, dict) and base.get("sha256") != BASE_REGISTRY_SHA256:
-            return "BASE_REGISTRY_HASH_MISMATCH"
-        if _cycle(value.get("edges")):
-            return "MIGRATION_CYCLE"
-        if set(value.get("ownedFamilies", [])) & set(value.get("baseFamilies", [])):
-            return "SCHEMA_FAMILY_COLLISION"
-        if value.get("lossless") is False:
-            return "MIGRATION_LOSSY_FORBIDDEN"
-        if value.get("family") == "lesson" and value.get("version") != "lesson-v1":
-            return "SCHEMA_VERSION_UNREADABLE"
-    elif target == "openapi":
-        if value.get("errors") == ["500 INTERNAL_CONTRACT_ERROR"]:
-            return "OPENAPI_ERROR_CONTRACT_MISMATCH"
-        if "authority" in value and value.get("authority") is None:
-            return "OPERATION_AUTHORITY_MISSING"
-        if "idempotency" in value and value.get("idempotency") is None:
-            return "OPERATION_IDEMPOTENCY_MISSING"
-        if value.get("responseHeaders") == []:
-            return "OPENAPI_VERSION_NEGOTIATION_INCOMPLETE"
-        if value.get("channels") == [] and value.get("asyncapiArtifacts"):
-            return "ASYNCAPI_WITHOUT_CHANNEL"
-        if value.get("matrixOperationIds") != value.get("openapiOperationIds"):
-            return "OPENAPI_OPERATION_SET_MISMATCH"
-        if "rawSql" in value.get("requestFields", []):
-            return "OPENAPI_RAW_QUERY_FORBIDDEN"
-        reference = value.get("$ref")
-        if isinstance(reference, str) and "://" in reference:
-            return "OPENAPI_REF_FORBIDDEN"
-        if value.get("schema", "").endswith("Request-v1") and set(value.get("required", [])) != {"schemaVersion", "requestId"}:
-            return "OPENAPI_REQUEST_CONTRACT_MISMATCH"
-        if value.get("schema") == "Workspace" and set(value.get("required", [])) != {"schemaVersion", "workspaceId", "state"}:
-            return "OPENAPI_RESPONSE_CONTRACT_MISMATCH"
-    elif target == "operation":
-        operations = value.get("operations")
-        if isinstance(operations, list):
-            pairs = [(item.get("method"), item.get("path")) for item in operations]
-            if len(pairs) != len(set(pairs)):
-                return "OPERATION_DUPLICATE"
-        if "authorization" in value and value.get("authorization") is None:
-            return "OPERATION_AUTHORIZATION_INCOMPLETE"
-        if "evidence" in value and value.get("evidence") is None:
-            return "OPERATION_EVIDENCE_INCOMPLETE"
-        if "operationId" in value and not any(key in value for key in ("taxonomy", "processRole", "authorization", "evidence")):
-            return "OPERATION_TAXONOMY_INCOMPLETE"
-        if isinstance(value.get("processRole"), str) and any(token in value["processRole"] for token in ("portal", "sqlite", ".")):
-            return "OPERATION_ROLE_NOT_NEUTRAL"
-    elif target == "promotion":
-        if value.get("fixtureSha256") != PROMOTION_FIXTURE_SHA256 and "fixtureSha256" in value:
-            return "PROMOTION_FIXTURE_HASH_MISMATCH"
-        if value.get("commonGrain") is not None:
-            return "PROMOTION_COMMON_GRAIN_FORBIDDEN"
-        if value.get("limitations") == []:
-            return "PROMOTION_LIMITATION_REQUIRED"
-    elif target == "reference":
-        reference = value.get("reference")
-        if reference == "verifier:missing":
-            return "REF_TARGET_MISSING"
-        if _cycle(value.get("edges")):
-            return "REF_CYCLE"
-        if isinstance(reference, str) and ".." in pathlib.PurePosixPath(reference).parts:
-            return "REF_TRAVERSAL_FORBIDDEN"
-        if isinstance(reference, str) and "://" in reference:
-            return "REF_REMOTE_FORBIDDEN"
-        if isinstance(reference, str) and "sha256" in value:
-            candidate = ROOT / reference
-            if not candidate.is_file() or hashlib.sha256(candidate.read_bytes()).hexdigest() != value["sha256"]:
-                return "REF_SCHEMA_HASH_MISMATCH"
-    elif target == "state":
-        if value.get("effectCount", 0) > 1:
-            return "IDEMPOTENCY_DUPLICATE_EFFECT"
-        if "storedRequestSha256" in value and value.get("storedRequestSha256") != value.get("requestSha256"):
-            return "IDEMPOTENCY_KEY_REUSE"
-        if value.get("from") == "not_started" and value.get("to") == "completed":
-            return "STATE_TRANSITION_FORBIDDEN"
-        if "expectedRevision" in value and value.get("expectedRevision") != value.get("actualRevision"):
-            return "PROGRESS_VERSION_CONFLICT"
-    return None
+_CASE_INPUTS: dict[tuple[str, str], dict[str, Any]] = {
+    ("completion", "evidence-presence-completes"): {"completionSource": "evidence-presence", "completed": True},
+    ("completion", "forged-browser-completion"): {"completionSource": "browser", "completed": True},
+    ("completion", "operation-result-direct-write"): {"completionSource": "operation-result", "completed": True},
+    ("completion", "orphan-hash-mismatch"): {"orphan": True, "declaredSha256": "a" * 64, "actualSha256": "b" * 64},
+    ("completion", "orphan-self-completion"): {"orphan": True, "attemptsCompletion": True},
+    ("evidence", "artifact-hash"): {"artifact": {"sha256": "0" * 64}, "actualSha256": "f" * 64},
+    ("evidence", "evidence-payload"): {"payload": {"id": "changed"}, "payloadSha256": "0" * 64},
+    ("evidence", "locator-traversal"): {"locator": "../secret"},
+    ("evidence", "missing-dependency-sha"): {"dependencyMergeShas": []},
+    ("evidence", "recursive-identity"): {"testedTreeSha": "self-containing-identity"},
+    ("evidence", "replayed-run-identity"): {"indexedPayloadSha256": "a" * 64, "payloadSha256": "b" * 64},
+    ("evidence", "stale-verifier-hash"): {"verifierSha256": "0" * 64, "actualVerifierSha256": "f" * 64},
+    ("evidence", "injection-field"): {"rawSql": "select * from secrets"},
+    ("guidance", "hint-completes"): {"completionMutation": True},
+    ("guidance", "mutating-probe"): {"command": "touch file"},
+    ("guidance", "optional-unavailable-passes"): {"required": False, "status": "unavailable", "result": "pass"},
+    ("guidance", "required-unavailable-passes"): {"required": True, "status": "unavailable", "result": "pass"},
+    ("guidance", "unauthorized-reveal"): {"revealed": True, "revealAuthorized": False},
+    ("migration", "base-registry-hash-mismatch"): {"baseRegistry": {"sha256": "0" * 64}},
+    ("migration", "cycle"): {"edges": [["v0", "v1"], ["v1", "v0"]]},
+    ("migration", "family-collision"): {"ownedFamilies": ["data-contract", "lesson"], "baseFamilies": ["data-contract"]},
+    ("migration", "lossy-edge"): {"lossless": False},
+    ("migration", "unknown-version"): {"family": "lesson", "version": "v9"},
+    ("openapi", "error-set-drift"): {"errors": ["500 INTERNAL_CONTRACT_ERROR"]},
+    ("openapi", "missing-authority"): {"authority": None},
+    ("openapi", "missing-idempotency"): {"idempotency": None},
+    ("openapi", "missing-version-response"): {"responseHeaders": []},
+    ("openapi", "orphan-asyncapi"): {"channels": [], "asyncapiArtifacts": ["contracts/asyncapi/orphan.yaml"]},
+    ("openapi", "orphan-operation"): {"matrixOperationIds": ["listLessons"], "openapiOperationIds": ["listLessons", "orphan"]},
+    ("openapi", "raw-sql-query"): {"requestFields": ["rawSql"]},
+    ("openapi", "remote-ref"): {"$ref": "https://example.invalid/schema.json"},
+    ("openapi", "request-shape-drift"): {"schema": "CreateWorkspaceRequest-v1", "required": ["schemaVersion"]},
+    ("openapi", "response-shape-drift"): {"schema": "Workspace", "required": ["schemaVersion"]},
+    ("operation", "duplicate-method-path"): {"operations": [{"method": "GET", "path": "/v1/a"}, {"method": "GET", "path": "/v1/a"}]},
+    ("operation", "missing-authorization"): {"authorization": None},
+    ("operation", "missing-evidence-rule"): {"evidence": None},
+    ("operation", "missing-taxonomy"): {"operationId": "a", "method": "GET", "path": "/v1/a"},
+    ("operation", "physical-module-role"): {"processRole": "portal.sqlite.writer"},
+    ("promotion", "fixture-hash-drift"): {"fixtureSha256": "0" * 64},
+    ("promotion", "hidden-common-grain"): {"commonGrain": "campaign"},
+    ("promotion", "missing-limitation"): {"limitations": []},
+    ("reference", "missing-verifier"): {"reference": "verifier:missing"},
+    ("reference", "path-traversal"): {"reference": "../private.json"},
+    ("reference", "prerequisite-cycle"): {"edges": [["a", "b"], ["b", "a"]]},
+    ("reference", "remote-ref"): {"reference": "https://example.invalid/schema.json"},
+    ("reference", "schema-hash-mismatch"): {"reference": "learning/contracts/lesson-v1.schema.json", "sha256": "0" * 64},
+    ("state", "duplicate-effect"): {"effectCount": 2},
+    ("state", "idempotency-payload-conflict"): {"storedRequestSha256": "a" * 64, "requestSha256": "b" * 64},
+    ("state", "illegal-transition"): {"from": "not_started", "to": "completed"},
+    ("state", "stale-version"): {"expectedRevision": 4, "actualRevision": 5},
+}
 
 
 def validate_invalid_fixture(path: pathlib.Path, target: str) -> None:
@@ -215,30 +126,119 @@ def validate_invalid_fixture(path: pathlib.Path, target: str) -> None:
         if target == "openapi" and exc.code == "YAML_DUPLICATE_NAME":
             raise LearningContractError("OPENAPI_YAML_DUPLICATE_KEY") from exc
         raise
+    if isinstance(value, dict) and any(
+        key in value for key in ("expected", "expectedCode", "actual", "actualCode")
+    ):
+        # Outcomes belong only to the independently maintained corpus index.
+        # Fixture bytes may describe an input/case, but cannot select the result
+        # that the real validator or operation is expected to produce.
+        raise LearningContractError("FIXTURE_METADATA_INVALID")
     if target == "canonical":
         if "encodedHex" in value:
             parse_json(bytes.fromhex(value["encodedHex"]))
         elif "encodedJson" in value:
             parse_json(value["encodedJson"].encode("utf-8"))
         raise LearningContractError("FIXTURE_UNEXPECTEDLY_VALID")
-    if target == "schema":
+    try:
+        jsonschema.Draft202012Validator.check_schema(FIXTURE_METADATA_SCHEMA)
+        jsonschema.Draft202012Validator(FIXTURE_METADATA_SCHEMA).validate(value)
+    except jsonschema.ValidationError as exc:
+        raise LearningContractError("FIXTURE_METADATA_INVALID") from exc
+    family, case = value["family"], value["case"]
+    if family != target:
+        raise LearningContractError("FIXTURE_METADATA_INVALID")
+
+    lesson = read_document(ROOT / "learning/lessons/promotion-trust/lesson-v1.json", family="lesson")
+    lab = read_document(ROOT / "learning/labs/promotion-trust/lab-v1.json", family="lab")
+    if lesson["lab"]["id"] != lab["id"] or lesson["lab"]["version"] != lab["version"]:
+        raise LearningContractError("FIXTURE_CONTEXT_INVALID")
+
+    if family == "schema":
+        mutated = copy.deepcopy(lesson)
+        if case == "missing-required":
+            mutated.pop("title")
+        elif case == "unknown-field":
+            mutated["unexpectedSecurityField"] = "x"
+        elif case == "wrong-type":
+            mutated["id"] = 42
+        else:
+            raise LearningContractError("FIXTURE_CASE_UNKNOWN")
         lesson_schema = read_document(ROOT / "learning/contracts/lesson-v1.schema.json")
-        errors = list(jsonschema.Draft202012Validator(lesson_schema).iter_errors(value))
+        errors = list(jsonschema.Draft202012Validator(lesson_schema).iter_errors(mutated))
         if errors:
             priority = {"type": 0, "additionalProperties": 1, "required": 2}
             selected = min(errors, key=lambda item: priority.get(item.validator, 3))
             codes = {"required": "SCHEMA_REQUIRED_PROPERTY", "additionalProperties": "SCHEMA_UNKNOWN_PROPERTY", "type": "SCHEMA_TYPE_MISMATCH"}
             raise LearningContractError(codes.get(selected.validator, "SCHEMA_INVALID")) from selected
         raise LearningContractError("FIXTURE_UNEXPECTEDLY_VALID")
-    try:
-        jsonschema.Draft202012Validator.check_schema(MUTATION_VECTOR_SCHEMA)
-        jsonschema.Draft202012Validator(MUTATION_VECTOR_SCHEMA).validate(value)
-    except jsonschema.ValidationError as exc:
-        raise LearningContractError("FIXTURE_VECTOR_SCHEMA_INVALID") from exc
-    code = _semantic_code(target, value)
-    if code is None:
-        raise LearningContractError("FIXTURE_UNEXPECTEDLY_VALID")
-    raise LearningContractError(code)
+    mutation = _CASE_INPUTS.get((family, case))
+    if mutation is None and not (family == "activation" or (family == "guidance" and case == "out-of-order-hint")):
+        raise LearningContractError("FIXTURE_CASE_UNKNOWN")
+    if family == "activation":
+        from .schema import validate_activation_semantics
+        activation = read_document(ROOT / "learning/contracts/command-owner-activation-i5-03-v1.json", family="command-activation")
+        resolve_reference(ROOT, activation["baseRegistryPath"], activation["baseRegistrySha256"])
+        validate_activation_semantics(activation)
+        activation = copy.deepcopy(activation)
+        activation["baseRegistrySha256"] = "0" * 64
+        validate_activation_semantics(activation)
+    elif family == "completion":
+        from .completion import complete, validate_completion_contract, validate_completion_semantics
+        validate_completion_contract(read_document(ROOT / "learning/contracts/completion-reconciliation-v1.json"))
+        complete({"state": "verified", "revision": 1, "effects": [], "idempotency": {}}, {"expectedRevision": 1, "idempotencyKey": "fixture-context", "evidenceId": "evidence-context"})
+        validate_completion_semantics(mutation)
+    elif family == "evidence":
+        from .evidence import validate_evidence_semantics, verify_evidence
+        actual_evidence = read_document(FIXTURE_ROOT / "valid/learning-evidence-v1.json", family="learning-evidence")
+        with tempfile.TemporaryDirectory() as temporary:
+            artifact_raw = b'{"result":"pass"}\n'
+            artifact_path = pathlib.Path(temporary) / "result.json"
+            artifact_path.write_bytes(artifact_raw)
+            actual_evidence["artifacts"][0].update({"locator": "result.json", "size": len(artifact_raw), "sha256": hashlib.sha256(artifact_raw).hexdigest()})
+            actual_evidence["integrity"]["payloadSha256"] = hashlib.sha256(canonical_bytes({key: child for key, child in actual_evidence.items() if key != "integrity"})).hexdigest()
+            verify_evidence(actual_evidence, root=pathlib.Path(temporary), seen_run_ids=set())
+        validate_evidence_semantics(mutation)
+    elif family == "guidance":
+        from .guidance import evaluate_guidance, validate_guidance_semantics, validate_hints
+        valid_hints = [{"hintId": item["id"], "order": item["order"], "revealAfter": item["revealAfter"], "evidenceEvent": item["evidenceEvent"]} for item in lesson["hints"]]
+        validate_hints(valid_hints)
+        evaluate_guidance({"satisfiedPrerequisites": []}, {"action": "hint", "prerequisites": []})
+        if case == "out-of-order-hint":
+            hints = list(reversed(valid_hints))
+            validate_hints(hints)
+        else:
+            validate_guidance_semantics(mutation)
+    elif family == "migration":
+        from .registry import migrate_persisted_document, validate_registry_semantics
+        read_document(ROOT / "learning/contracts/learning-contract-version-registry-v1.json", family="version-registry")
+        migrate_persisted_document(FIXTURE_ROOT / "valid/private-migration-v0.json", "private-migration-v1")
+        validate_registry_semantics(mutation, expected_base_sha256=BASE_REGISTRY_SHA256)
+    elif family == "openapi":
+        from .openapi import LearningPlatform, validate_openapi_semantics, validate_shipped_openapi
+        validate_shipped_openapi()
+        LearningPlatform().dispatch({"method": "GET", "path": "/health/live", "headers": {}, "query": {}})
+        validate_openapi_semantics(mutation)
+    elif family == "operation":
+        from .openapi import validate_operation_matrix, validate_operation_semantics
+        matrix = read_document(ROOT / "learning/contracts/operation-matrix-v1.json", family="operation-matrix")
+        validate_operation_matrix(matrix)
+        validate_operation_semantics(mutation)
+    elif family == "promotion":
+        from .fitness import evaluate_promotion_document, validate_promotion_semantics
+        manifest = read_document(ROOT / "learning/manifests/promotion-trust-v1.json", family="promotion-manifest")
+        resolve_reference(ROOT, manifest["fixture"], manifest["fixtureSha256"])
+        evaluate_promotion_document(manifest)
+        validate_promotion_semantics(mutation, expected_fixture_sha256=PROMOTION_FIXTURE_SHA256)
+    elif family == "reference":
+        from .references import validate_contract_reference
+        manifest = read_document(ROOT / "learning/manifests/promotion-trust-v1.json", family="promotion-manifest")
+        resolve_reference(ROOT, manifest["fixture"], manifest["fixtureSha256"])
+        validate_contract_reference(mutation, root=ROOT)
+    elif family == "state":
+        from .state import execute_operation, validate_state_semantics
+        execute_operation({"state": "not-started", "revision": 0, "effects": []}, {"action": "start", "expectedRevision": 0, "prerequisitesSatisfied": True})
+        validate_state_semantics(mutation)
+    raise LearningContractError("FIXTURE_UNEXPECTEDLY_VALID")
 
 
 def validate_invalid_corpus() -> list[dict[str, str]]:

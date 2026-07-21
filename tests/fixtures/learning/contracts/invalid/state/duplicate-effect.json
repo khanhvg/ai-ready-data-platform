@@ -1,1 +1,1 @@
-{"idempotencyKey":"k","requestSha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","effectCount":2}
+{"family":"state","case":"duplicate-effect"}

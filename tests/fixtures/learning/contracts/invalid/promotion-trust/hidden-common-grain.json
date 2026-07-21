@@ -1,1 +1,1 @@
-{"grains":["promotion","fulfillment","returns","dq"],"commonGrain":"campaign"}
+{"family":"promotion","case":"hidden-common-grain"}

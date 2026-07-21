@@ -125,3 +125,12 @@ def validate_document(value: Any, *, family: str) -> None:
         raise LearningContractError("SCHEMA_DOCUMENT_INVALID") from exc
     except jsonschema.exceptions.ValidationError as exc:
         raise LearningContractError("SCHEMA_INVALID") from exc
+
+
+def validate_activation_semantics(value: dict[str, Any], *, root: pathlib.Path = ROOT) -> None:
+    """Bind a command activation to the exact admitted base registry bytes."""
+    validate_document(value, family="command-activation")
+    base = value["baseRegistryPath"]
+    actual = __import__("hashlib").sha256((root / base).read_bytes()).hexdigest()
+    if value["baseRegistrySha256"] != actual:
+        raise LearningContractError("COMMAND_ACTIVATION_BASE_MISMATCH")

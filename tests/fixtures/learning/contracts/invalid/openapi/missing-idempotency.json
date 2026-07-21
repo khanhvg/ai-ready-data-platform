@@ -1,1 +1,1 @@
-{"operationId":"createWorkspace","idempotency":null}
+{"family":"openapi","case":"missing-idempotency"}

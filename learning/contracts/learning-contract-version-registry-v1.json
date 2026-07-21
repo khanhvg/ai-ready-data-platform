@@ -14,7 +14,7 @@
       "readerId": "lesson-reader-v1",
       "schema": {
         "path": "learning/contracts/lesson-v1.schema.json",
-        "sha256": "6c1fc3c06865ca832064008e2ae86987cbf932f38d30ef5586c50b727963485a"
+        "sha256": "9ece4e9cf5bf2a4dc375da13ce33ac7a696a374a225b0a7f9d1b9e089e7ea505"
       },
       "migrations": [
         {
@@ -33,7 +33,7 @@
       "readerId": "lab-reader-v1",
       "schema": {
         "path": "learning/contracts/lab-v1.schema.json",
-        "sha256": "a498caee1b7a1bf0a5e699ada3ae27c3894fa8e083bbe40ae8aaf1c51e82c0cb"
+        "sha256": "891c41100a28548e603ca1714aeaf5be2d541cd1780ab2ef72e3ef0740c6c16d"
       },
       "migrations": [
         {
@@ -90,7 +90,7 @@
       "readerId": "completion-reconciliation-reader-v1",
       "schema": {
         "path": "learning/contracts/completion-reconciliation-v1.schema.json",
-        "sha256": "246263593dabec8de1494392ab501f1cf8669934a39821a08e2cee830985603f"
+        "sha256": "64fed79f088cff1d0d548448c7d40fdbc4b8e60b6d4e57c0f08cdfbcd0c2f769"
       },
       "migrations": [
         {
@@ -109,7 +109,7 @@
       "readerId": "operation-matrix-reader-v1",
       "schema": {
         "path": "learning/contracts/operation-matrix-v1.schema.json",
-        "sha256": "1bf779bd4821205461e05b18f166c790dd9d5248750783e8225925d8c3d1a6e6"
+        "sha256": "98d77f883da45c47c6e277956ad31614003410ff43fea585fcdb432c4a12a128"
       },
       "migrations": [
         {
@@ -185,7 +185,7 @@
       "readerId": "learning-contract-set-reader-v1",
       "schema": {
         "path": "learning/contracts/learning-contract-set-v1.schema.json",
-        "sha256": "cccfb62f00304d103d1824372cf8e4b28f808c2390638ba6750c475e2f26c90b"
+        "sha256": "1cf55a7eeeff3d4a08340ae903d5f4e1812deb34849d99600296be507dd19648"
       },
       "migrations": [
         {

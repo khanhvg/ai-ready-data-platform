@@ -1,1 +1,1 @@
-{"schema":"CreateWorkspaceRequest-v1","required":["schemaVersion"]}
+{"family":"openapi","case":"request-shape-drift"}

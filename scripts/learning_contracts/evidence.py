@@ -5,6 +5,7 @@ from __future__ import annotations
 import pathlib
 import hashlib
 import os
+import re
 import stat
 import subprocess
 from typing import Any
@@ -12,6 +13,69 @@ from typing import Any
 from .canonical import canonical_bytes
 from .references import resolve_reference
 from .schema import LearningContractError, validate_document
+
+
+_PRIVATE_PATH = re.compile(
+    r"(?i)(?:file://)?(?:"
+    r"/Users/[^\s\"'<>]+|"
+    r"/private/[^\s\"'<>]+|"
+    r"/var/folders/[^\s\"'<>]+|"
+    r"/tmp/[^\s\"'<>]+"
+    r")"
+)
+
+
+def sanitize_retained_text(raw: str) -> str:
+    """Replace private local locators before text is retained as evidence."""
+    if not isinstance(raw, str):
+        raise LearningContractError("RETAINED_TEXT_INVALID")
+    sanitized = _PRIVATE_PATH.sub("<WORKSPACE>", raw)
+    repository = pathlib.Path(__file__).resolve().parents[2].as_posix()
+    sanitized = sanitized.replace(f"file://{repository}", "<WORKSPACE>")
+    sanitized = sanitized.replace(repository, "<WORKSPACE>")
+    return sanitized
+
+
+def verify_raw_log_bindings(records: list[dict[str, Any]], raw_log: str) -> None:
+    """Require each retained expected/actual token to be an exact raw-log line."""
+    if not isinstance(records, list) or not isinstance(raw_log, str):
+        raise LearningContractError("RAW_LOG_BINDING_INVALID")
+    sanitized_log = sanitize_retained_text(raw_log)
+    lines = sanitized_log.splitlines()
+    for record in records:
+        if not isinstance(record, dict) or not isinstance(record.get("id"), str):
+            raise LearningContractError("RAW_LOG_BINDING_INVALID")
+        for field in ("expected", "actual"):
+            token = record.get(field)
+            if (
+                not isinstance(token, str)
+                or not token
+                or token != sanitize_retained_text(token)
+                or token not in lines
+            ):
+                raise LearningContractError("RAW_LOG_BINDING_MISMATCH")
+
+
+def validate_evidence_semantics(value: dict[str, Any]) -> None:
+    """Validate evidence mutation invariants before storage or replay admission."""
+    if "rawSql" in value:
+        raise LearningContractError("CONTRACT_INJECTION_FIELD_FORBIDDEN")
+    locator = value.get("locator")
+    if isinstance(locator, str) and (locator.startswith("/") or ".." in pathlib.PurePosixPath(locator).parts):
+        raise LearningContractError("EVIDENCE_LOCATOR_INVALID")
+    if value.get("dependencyMergeShas") == []:
+        raise LearningContractError("EVIDENCE_PROVENANCE_INCOMPLETE")
+    if value.get("testedTreeSha") == "self-containing-identity":
+        raise LearningContractError("EVIDENCE_RECURSIVE_IDENTITY")
+    if "indexedPayloadSha256" in value and value.get("indexedPayloadSha256") != value.get("payloadSha256"):
+        raise LearningContractError("EVIDENCE_REPLAY_CONFLICT")
+    if "payload" in value and value.get("payloadSha256") != hashlib.sha256(canonical_bytes(value["payload"])).hexdigest():
+        raise LearningContractError("EVIDENCE_PAYLOAD_HASH_MISMATCH")
+    artifact = value.get("artifact")
+    if isinstance(artifact, dict) and artifact.get("sha256") != value.get("actualSha256"):
+        raise LearningContractError("EVIDENCE_ARTIFACT_HASH_MISMATCH")
+    if "verifierSha256" in value and value.get("verifierSha256") != value.get("actualVerifierSha256"):
+        raise LearningContractError("EVIDENCE_VERIFIER_HASH_MISMATCH")
 
 
 def verify_evidence(

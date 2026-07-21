@@ -67,3 +67,34 @@ def evaluate_promotion(grains: list[dict[str, Any]]) -> dict[str, Any]:
         "independentGrainCount": len(grains),
         "commonKeys": sorted(common),
     }
+
+
+def evaluate_promotion_document(value: dict[str, Any] | pathlib.Path) -> dict[str, Any]:
+    """Evaluate the released promotion fixture/manifest document, never a caller-supplied grain verdict."""
+    from .schema import read_document
+    document = read_document(value) if isinstance(value, pathlib.Path) else value
+    if not isinstance(document, dict):
+        raise LearningContractError("PROMOTION_DOCUMENT_INVALID")
+    grains = document.get("grains")
+    if grains is None and isinstance(document.get("sources"), list):
+        grains = []
+        for source in document["sources"]:
+            if not isinstance(source, str) or ":" not in source:
+                raise LearningContractError("PROMOTION_DOCUMENT_INVALID")
+            grain, keys = source.split(":", 1)
+            grains.append({"grain": grain, "keys": keys.split(",")})
+    result = evaluate_promotion(grains)
+    declared = document.get("decision")
+    if declared is not None and declared != result["decision"]:
+        raise LearningContractError("PROMOTION_DECISION_MISMATCH")
+    return result
+
+
+def validate_promotion_semantics(value: dict[str, Any], *, expected_fixture_sha256: str) -> None:
+    """Validate the released fixture identity and four-independent-grain conclusion."""
+    if value.get("fixtureSha256") != expected_fixture_sha256 and "fixtureSha256" in value:
+        raise LearningContractError("PROMOTION_FIXTURE_HASH_MISMATCH")
+    if value.get("commonGrain") is not None:
+        raise LearningContractError("PROMOTION_COMMON_GRAIN_FORBIDDEN")
+    if value.get("limitations") == []:
+        raise LearningContractError("PROMOTION_LIMITATION_REQUIRED")

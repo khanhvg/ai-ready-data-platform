@@ -10,7 +10,13 @@
         "operationId": "listLessons",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ContractVersion"
+            "$ref": "#/components/parameters/CorrelationId"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
           }
         ],
         "security": [
@@ -34,6 +40,44 @@
           "500": {
             "$ref": "#/components/responses/Problem"
           }
+        },
+        "x-api-version": "v1",
+        "x-authz": "catalog-read",
+        "x-csrf": "not-applicable",
+        "x-problems": [
+          {
+            "status": 400,
+            "code": "CORRELATION_ID_INVALID"
+          },
+          {
+            "status": 401,
+            "code": "AUTHENTICATION_REQUIRED"
+          },
+          {
+            "status": 403,
+            "code": "AUTHORIZATION_DENIED"
+          },
+          {
+            "status": 500,
+            "code": "INTERNAL_CONTRACT_ERROR"
+          },
+          {
+            "status": 400,
+            "code": "PAGE_ARGUMENT_INVALID"
+          }
+        ],
+        "x-idempotency": {
+          "mode": "read-only",
+          "keyHeader": null,
+          "canonicalRequestHash": false
+        },
+        "x-cas": {
+          "workspaceRevision": false,
+          "progressRevision": false
+        },
+        "x-evidence": {
+          "mode": "none",
+          "completionAuthority": null
         }
       }
     },
@@ -42,7 +86,7 @@
         "operationId": "getLesson",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ContractVersion"
+            "$ref": "#/components/parameters/CorrelationId"
           },
           {
             "name": "lessonId",
@@ -72,9 +116,50 @@
           "403": {
             "$ref": "#/components/responses/Problem"
           },
+          "404": {
+            "$ref": "#/components/responses/Problem"
+          },
           "500": {
             "$ref": "#/components/responses/Problem"
           }
+        },
+        "x-api-version": "v1",
+        "x-authz": "catalog-read",
+        "x-csrf": "not-applicable",
+        "x-problems": [
+          {
+            "status": 400,
+            "code": "CORRELATION_ID_INVALID"
+          },
+          {
+            "status": 401,
+            "code": "AUTHENTICATION_REQUIRED"
+          },
+          {
+            "status": 403,
+            "code": "AUTHORIZATION_DENIED"
+          },
+          {
+            "status": 500,
+            "code": "INTERNAL_CONTRACT_ERROR"
+          },
+          {
+            "status": 404,
+            "code": "LESSON_NOT_FOUND"
+          }
+        ],
+        "x-idempotency": {
+          "mode": "read-only",
+          "keyHeader": null,
+          "canonicalRequestHash": false
+        },
+        "x-cas": {
+          "workspaceRevision": false,
+          "progressRevision": false
+        },
+        "x-evidence": {
+          "mode": "none",
+          "completionAuthority": null
         }
       }
     },
@@ -83,7 +168,13 @@
         "operationId": "getProgress",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ContractVersion"
+            "$ref": "#/components/parameters/CorrelationId"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
           }
         ],
         "security": [
@@ -107,6 +198,44 @@
           "500": {
             "$ref": "#/components/responses/Problem"
           }
+        },
+        "x-api-version": "v1",
+        "x-authz": "actor-owned",
+        "x-csrf": "not-applicable",
+        "x-problems": [
+          {
+            "status": 400,
+            "code": "CORRELATION_ID_INVALID"
+          },
+          {
+            "status": 401,
+            "code": "AUTHENTICATION_REQUIRED"
+          },
+          {
+            "status": 403,
+            "code": "AUTHORIZATION_DENIED"
+          },
+          {
+            "status": 500,
+            "code": "INTERNAL_CONTRACT_ERROR"
+          },
+          {
+            "status": 400,
+            "code": "PAGE_ARGUMENT_INVALID"
+          }
+        ],
+        "x-idempotency": {
+          "mode": "read-only",
+          "keyHeader": null,
+          "canonicalRequestHash": false
+        },
+        "x-cas": {
+          "workspaceRevision": false,
+          "progressRevision": false
+        },
+        "x-evidence": {
+          "mode": "none",
+          "completionAuthority": null
         }
       }
     },
@@ -115,7 +244,7 @@
         "operationId": "getLessonProgress",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ContractVersion"
+            "$ref": "#/components/parameters/CorrelationId"
           },
           {
             "name": "lessonId",
@@ -145,9 +274,50 @@
           "403": {
             "$ref": "#/components/responses/Problem"
           },
+          "404": {
+            "$ref": "#/components/responses/Problem"
+          },
           "500": {
             "$ref": "#/components/responses/Problem"
           }
+        },
+        "x-api-version": "v1",
+        "x-authz": "actor-owned",
+        "x-csrf": "not-applicable",
+        "x-problems": [
+          {
+            "status": 400,
+            "code": "CORRELATION_ID_INVALID"
+          },
+          {
+            "status": 401,
+            "code": "AUTHENTICATION_REQUIRED"
+          },
+          {
+            "status": 403,
+            "code": "AUTHORIZATION_DENIED"
+          },
+          {
+            "status": 500,
+            "code": "INTERNAL_CONTRACT_ERROR"
+          },
+          {
+            "status": 404,
+            "code": "PROGRESS_NOT_FOUND"
+          }
+        ],
+        "x-idempotency": {
+          "mode": "read-only",
+          "keyHeader": null,
+          "canonicalRequestHash": false
+        },
+        "x-cas": {
+          "workspaceRevision": false,
+          "progressRevision": false
+        },
+        "x-evidence": {
+          "mode": "none",
+          "completionAuthority": null
         }
       }
     },
@@ -156,7 +326,7 @@
         "operationId": "createWorkspace",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ContractVersion"
+            "$ref": "#/components/parameters/CorrelationId"
           },
           {
             "name": "labId",
@@ -166,6 +336,18 @@
               "type": "string",
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
             }
+          },
+          {
+            "$ref": "#/components/parameters/Host"
+          },
+          {
+            "$ref": "#/components/parameters/Origin"
+          },
+          {
+            "$ref": "#/components/parameters/Csrf"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
           }
         ],
         "security": [
@@ -186,7 +368,13 @@
           "403": {
             "$ref": "#/components/responses/Problem"
           },
+          "404": {
+            "$ref": "#/components/responses/Problem"
+          },
           "409": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "412": {
             "$ref": "#/components/responses/Problem"
           },
           "415": {
@@ -208,6 +396,76 @@
               }
             }
           }
+        },
+        "x-api-version": "v1",
+        "x-authz": "actor-owned",
+        "x-csrf": "required",
+        "x-problems": [
+          {
+            "status": 400,
+            "code": "CORRELATION_ID_INVALID"
+          },
+          {
+            "status": 401,
+            "code": "AUTHENTICATION_REQUIRED"
+          },
+          {
+            "status": 403,
+            "code": "AUTHORIZATION_DENIED"
+          },
+          {
+            "status": 500,
+            "code": "INTERNAL_CONTRACT_ERROR"
+          },
+          {
+            "status": 400,
+            "code": "REQUEST_INVALID"
+          },
+          {
+            "status": 403,
+            "code": "ORIGIN_OR_CSRF_INVALID"
+          },
+          {
+            "status": 409,
+            "code": "IDEMPOTENCY_KEY_REUSE"
+          },
+          {
+            "status": 415,
+            "code": "MEDIA_TYPE_UNSUPPORTED"
+          },
+          {
+            "status": 422,
+            "code": "CONTRACT_VERSION_UNSUPPORTED"
+          },
+          {
+            "status": 404,
+            "code": "LAB_NOT_FOUND"
+          },
+          {
+            "status": 409,
+            "code": "WORKSPACE_ALREADY_EXISTS"
+          },
+          {
+            "status": 412,
+            "code": "PREREQUISITE_FAILED"
+          },
+          {
+            "status": 422,
+            "code": "LAB_PARAMETER_INVALID"
+          }
+        ],
+        "x-idempotency": {
+          "mode": "required",
+          "keyHeader": "Idempotency-Key",
+          "canonicalRequestHash": true
+        },
+        "x-cas": {
+          "workspaceRevision": false,
+          "progressRevision": true
+        },
+        "x-evidence": {
+          "mode": "none",
+          "completionAuthority": null
         }
       }
     },
@@ -216,7 +474,7 @@
         "operationId": "getWorkspace",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ContractVersion"
+            "$ref": "#/components/parameters/CorrelationId"
           },
           {
             "name": "workspaceId",
@@ -246,9 +504,50 @@
           "403": {
             "$ref": "#/components/responses/Problem"
           },
+          "404": {
+            "$ref": "#/components/responses/Problem"
+          },
           "500": {
             "$ref": "#/components/responses/Problem"
           }
+        },
+        "x-api-version": "v1",
+        "x-authz": "actor-owned",
+        "x-csrf": "not-applicable",
+        "x-problems": [
+          {
+            "status": 400,
+            "code": "CORRELATION_ID_INVALID"
+          },
+          {
+            "status": 401,
+            "code": "AUTHENTICATION_REQUIRED"
+          },
+          {
+            "status": 403,
+            "code": "AUTHORIZATION_DENIED"
+          },
+          {
+            "status": 500,
+            "code": "INTERNAL_CONTRACT_ERROR"
+          },
+          {
+            "status": 404,
+            "code": "WORKSPACE_NOT_FOUND"
+          }
+        ],
+        "x-idempotency": {
+          "mode": "read-only",
+          "keyHeader": null,
+          "canonicalRequestHash": false
+        },
+        "x-cas": {
+          "workspaceRevision": false,
+          "progressRevision": false
+        },
+        "x-evidence": {
+          "mode": "none",
+          "completionAuthority": null
         }
       }
     },
@@ -257,7 +556,7 @@
         "operationId": "startWorkspaceOperation",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ContractVersion"
+            "$ref": "#/components/parameters/CorrelationId"
           },
           {
             "name": "workspaceId",
@@ -267,6 +566,18 @@
               "type": "string",
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
             }
+          },
+          {
+            "$ref": "#/components/parameters/Host"
+          },
+          {
+            "$ref": "#/components/parameters/Origin"
+          },
+          {
+            "$ref": "#/components/parameters/Csrf"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
           }
         ],
         "security": [
@@ -287,7 +598,13 @@
           "403": {
             "$ref": "#/components/responses/Problem"
           },
+          "404": {
+            "$ref": "#/components/responses/Problem"
+          },
           "409": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "412": {
             "$ref": "#/components/responses/Problem"
           },
           "415": {
@@ -309,6 +626,76 @@
               }
             }
           }
+        },
+        "x-api-version": "v1",
+        "x-authz": "actor-owned",
+        "x-csrf": "required",
+        "x-problems": [
+          {
+            "status": 400,
+            "code": "CORRELATION_ID_INVALID"
+          },
+          {
+            "status": 401,
+            "code": "AUTHENTICATION_REQUIRED"
+          },
+          {
+            "status": 403,
+            "code": "AUTHORIZATION_DENIED"
+          },
+          {
+            "status": 500,
+            "code": "INTERNAL_CONTRACT_ERROR"
+          },
+          {
+            "status": 400,
+            "code": "REQUEST_INVALID"
+          },
+          {
+            "status": 403,
+            "code": "ORIGIN_OR_CSRF_INVALID"
+          },
+          {
+            "status": 409,
+            "code": "IDEMPOTENCY_KEY_REUSE"
+          },
+          {
+            "status": 415,
+            "code": "MEDIA_TYPE_UNSUPPORTED"
+          },
+          {
+            "status": 422,
+            "code": "CONTRACT_VERSION_UNSUPPORTED"
+          },
+          {
+            "status": 404,
+            "code": "WORKSPACE_NOT_FOUND"
+          },
+          {
+            "status": 409,
+            "code": "WORKSPACE_OPERATION_CONFLICT"
+          },
+          {
+            "status": 412,
+            "code": "WORKSPACE_REVISION_CONFLICT"
+          },
+          {
+            "status": 422,
+            "code": "COMMAND_ID_OR_ARGUMENT_INVALID"
+          }
+        ],
+        "x-idempotency": {
+          "mode": "required",
+          "keyHeader": "Idempotency-Key",
+          "canonicalRequestHash": true
+        },
+        "x-cas": {
+          "workspaceRevision": true,
+          "progressRevision": false
+        },
+        "x-evidence": {
+          "mode": "none",
+          "completionAuthority": null
         }
       }
     },
@@ -317,7 +704,7 @@
         "operationId": "getOperation",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ContractVersion"
+            "$ref": "#/components/parameters/CorrelationId"
           },
           {
             "name": "operationId",
@@ -347,9 +734,50 @@
           "403": {
             "$ref": "#/components/responses/Problem"
           },
+          "404": {
+            "$ref": "#/components/responses/Problem"
+          },
           "500": {
             "$ref": "#/components/responses/Problem"
           }
+        },
+        "x-api-version": "v1",
+        "x-authz": "actor-owned",
+        "x-csrf": "not-applicable",
+        "x-problems": [
+          {
+            "status": 400,
+            "code": "CORRELATION_ID_INVALID"
+          },
+          {
+            "status": 401,
+            "code": "AUTHENTICATION_REQUIRED"
+          },
+          {
+            "status": 403,
+            "code": "AUTHORIZATION_DENIED"
+          },
+          {
+            "status": 500,
+            "code": "INTERNAL_CONTRACT_ERROR"
+          },
+          {
+            "status": 404,
+            "code": "OPERATION_NOT_FOUND"
+          }
+        ],
+        "x-idempotency": {
+          "mode": "read-only",
+          "keyHeader": null,
+          "canonicalRequestHash": false
+        },
+        "x-cas": {
+          "workspaceRevision": false,
+          "progressRevision": false
+        },
+        "x-evidence": {
+          "mode": "none",
+          "completionAuthority": null
         }
       }
     },
@@ -358,7 +786,7 @@
         "operationId": "resetWorkspace",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ContractVersion"
+            "$ref": "#/components/parameters/CorrelationId"
           },
           {
             "name": "workspaceId",
@@ -368,6 +796,18 @@
               "type": "string",
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
             }
+          },
+          {
+            "$ref": "#/components/parameters/Host"
+          },
+          {
+            "$ref": "#/components/parameters/Origin"
+          },
+          {
+            "$ref": "#/components/parameters/Csrf"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
           }
         ],
         "security": [
@@ -388,7 +828,13 @@
           "403": {
             "$ref": "#/components/responses/Problem"
           },
+          "404": {
+            "$ref": "#/components/responses/Problem"
+          },
           "409": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "412": {
             "$ref": "#/components/responses/Problem"
           },
           "415": {
@@ -410,6 +856,72 @@
               }
             }
           }
+        },
+        "x-api-version": "v1",
+        "x-authz": "actor-owned",
+        "x-csrf": "required",
+        "x-problems": [
+          {
+            "status": 400,
+            "code": "CORRELATION_ID_INVALID"
+          },
+          {
+            "status": 401,
+            "code": "AUTHENTICATION_REQUIRED"
+          },
+          {
+            "status": 403,
+            "code": "AUTHORIZATION_DENIED"
+          },
+          {
+            "status": 500,
+            "code": "INTERNAL_CONTRACT_ERROR"
+          },
+          {
+            "status": 400,
+            "code": "REQUEST_INVALID"
+          },
+          {
+            "status": 403,
+            "code": "ORIGIN_OR_CSRF_INVALID"
+          },
+          {
+            "status": 409,
+            "code": "IDEMPOTENCY_KEY_REUSE"
+          },
+          {
+            "status": 415,
+            "code": "MEDIA_TYPE_UNSUPPORTED"
+          },
+          {
+            "status": 422,
+            "code": "CONTRACT_VERSION_UNSUPPORTED"
+          },
+          {
+            "status": 404,
+            "code": "WORKSPACE_NOT_FOUND"
+          },
+          {
+            "status": 409,
+            "code": "WORKSPACE_OPERATION_CONFLICT"
+          },
+          {
+            "status": 412,
+            "code": "WORKSPACE_REVISION_CONFLICT"
+          }
+        ],
+        "x-idempotency": {
+          "mode": "required",
+          "keyHeader": "Idempotency-Key",
+          "canonicalRequestHash": true
+        },
+        "x-cas": {
+          "workspaceRevision": true,
+          "progressRevision": false
+        },
+        "x-evidence": {
+          "mode": "none",
+          "completionAuthority": null
         }
       }
     },
@@ -418,7 +930,7 @@
         "operationId": "verifyWorkspace",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ContractVersion"
+            "$ref": "#/components/parameters/CorrelationId"
           },
           {
             "name": "workspaceId",
@@ -428,6 +940,18 @@
               "type": "string",
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
             }
+          },
+          {
+            "$ref": "#/components/parameters/Host"
+          },
+          {
+            "$ref": "#/components/parameters/Origin"
+          },
+          {
+            "$ref": "#/components/parameters/Csrf"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
           }
         ],
         "security": [
@@ -448,7 +972,13 @@
           "403": {
             "$ref": "#/components/responses/Problem"
           },
+          "404": {
+            "$ref": "#/components/responses/Problem"
+          },
           "409": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "412": {
             "$ref": "#/components/responses/Problem"
           },
           "415": {
@@ -470,6 +1000,76 @@
               }
             }
           }
+        },
+        "x-api-version": "v1",
+        "x-authz": "actor-owned",
+        "x-csrf": "required",
+        "x-problems": [
+          {
+            "status": 400,
+            "code": "CORRELATION_ID_INVALID"
+          },
+          {
+            "status": 401,
+            "code": "AUTHENTICATION_REQUIRED"
+          },
+          {
+            "status": 403,
+            "code": "AUTHORIZATION_DENIED"
+          },
+          {
+            "status": 500,
+            "code": "INTERNAL_CONTRACT_ERROR"
+          },
+          {
+            "status": 400,
+            "code": "REQUEST_INVALID"
+          },
+          {
+            "status": 403,
+            "code": "ORIGIN_OR_CSRF_INVALID"
+          },
+          {
+            "status": 409,
+            "code": "IDEMPOTENCY_KEY_REUSE"
+          },
+          {
+            "status": 415,
+            "code": "MEDIA_TYPE_UNSUPPORTED"
+          },
+          {
+            "status": 422,
+            "code": "CONTRACT_VERSION_UNSUPPORTED"
+          },
+          {
+            "status": 404,
+            "code": "WORKSPACE_NOT_FOUND"
+          },
+          {
+            "status": 409,
+            "code": "WORKSPACE_OPERATION_CONFLICT"
+          },
+          {
+            "status": 412,
+            "code": "WORKSPACE_REVISION_CONFLICT"
+          },
+          {
+            "status": 422,
+            "code": "VERIFIER_INPUT_INVALID"
+          }
+        ],
+        "x-idempotency": {
+          "mode": "required",
+          "keyHeader": "Idempotency-Key",
+          "canonicalRequestHash": true
+        },
+        "x-cas": {
+          "workspaceRevision": true,
+          "progressRevision": true
+        },
+        "x-evidence": {
+          "mode": "required",
+          "completionAuthority": "learning-progress-authority-v1"
         }
       }
     },
@@ -478,7 +1078,7 @@
         "operationId": "getEvidence",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ContractVersion"
+            "$ref": "#/components/parameters/CorrelationId"
           },
           {
             "name": "evidenceId",
@@ -508,9 +1108,57 @@
           "403": {
             "$ref": "#/components/responses/Problem"
           },
+          "404": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "409": {
+            "$ref": "#/components/responses/Problem"
+          },
           "500": {
             "$ref": "#/components/responses/Problem"
           }
+        },
+        "x-api-version": "v1",
+        "x-authz": "actor-owned",
+        "x-csrf": "not-applicable",
+        "x-problems": [
+          {
+            "status": 400,
+            "code": "CORRELATION_ID_INVALID"
+          },
+          {
+            "status": 401,
+            "code": "AUTHENTICATION_REQUIRED"
+          },
+          {
+            "status": 403,
+            "code": "AUTHORIZATION_DENIED"
+          },
+          {
+            "status": 500,
+            "code": "INTERNAL_CONTRACT_ERROR"
+          },
+          {
+            "status": 404,
+            "code": "EVIDENCE_NOT_FOUND"
+          },
+          {
+            "status": 409,
+            "code": "EVIDENCE_QUARANTINED"
+          }
+        ],
+        "x-idempotency": {
+          "mode": "read-only",
+          "keyHeader": null,
+          "canonicalRequestHash": false
+        },
+        "x-cas": {
+          "workspaceRevision": false,
+          "progressRevision": false
+        },
+        "x-evidence": {
+          "mode": "none",
+          "completionAuthority": null
         }
       }
     },
@@ -519,7 +1167,7 @@
         "operationId": "listTools",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ContractVersion"
+            "$ref": "#/components/parameters/CorrelationId"
           }
         ],
         "security": [
@@ -543,6 +1191,40 @@
           "500": {
             "$ref": "#/components/responses/Problem"
           }
+        },
+        "x-api-version": "v1",
+        "x-authz": "catalog-read",
+        "x-csrf": "not-applicable",
+        "x-problems": [
+          {
+            "status": 400,
+            "code": "CORRELATION_ID_INVALID"
+          },
+          {
+            "status": 401,
+            "code": "AUTHENTICATION_REQUIRED"
+          },
+          {
+            "status": 403,
+            "code": "AUTHORIZATION_DENIED"
+          },
+          {
+            "status": 500,
+            "code": "INTERNAL_CONTRACT_ERROR"
+          }
+        ],
+        "x-idempotency": {
+          "mode": "read-only",
+          "keyHeader": null,
+          "canonicalRequestHash": false
+        },
+        "x-cas": {
+          "workspaceRevision": false,
+          "progressRevision": false
+        },
+        "x-evidence": {
+          "mode": "none",
+          "completionAuthority": null
         }
       }
     },
@@ -551,7 +1233,7 @@
         "operationId": "getTool",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ContractVersion"
+            "$ref": "#/components/parameters/CorrelationId"
           },
           {
             "name": "toolId",
@@ -581,9 +1263,50 @@
           "403": {
             "$ref": "#/components/responses/Problem"
           },
+          "404": {
+            "$ref": "#/components/responses/Problem"
+          },
           "500": {
             "$ref": "#/components/responses/Problem"
           }
+        },
+        "x-api-version": "v1",
+        "x-authz": "catalog-read",
+        "x-csrf": "not-applicable",
+        "x-problems": [
+          {
+            "status": 400,
+            "code": "CORRELATION_ID_INVALID"
+          },
+          {
+            "status": 401,
+            "code": "AUTHENTICATION_REQUIRED"
+          },
+          {
+            "status": 403,
+            "code": "AUTHORIZATION_DENIED"
+          },
+          {
+            "status": 500,
+            "code": "INTERNAL_CONTRACT_ERROR"
+          },
+          {
+            "status": 404,
+            "code": "TOOL_NOT_FOUND"
+          }
+        ],
+        "x-idempotency": {
+          "mode": "read-only",
+          "keyHeader": null,
+          "canonicalRequestHash": false
+        },
+        "x-cas": {
+          "workspaceRevision": false,
+          "progressRevision": false
+        },
+        "x-evidence": {
+          "mode": "none",
+          "completionAuthority": null
         }
       }
     },
@@ -592,7 +1315,7 @@
         "operationId": "queryDataProduct",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ContractVersion"
+            "$ref": "#/components/parameters/CorrelationId"
           },
           {
             "name": "productId",
@@ -602,6 +1325,18 @@
               "type": "string",
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
             }
+          },
+          {
+            "$ref": "#/components/parameters/Host"
+          },
+          {
+            "$ref": "#/components/parameters/Origin"
+          },
+          {
+            "$ref": "#/components/parameters/Csrf"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
           }
         ],
         "security": [
@@ -620,6 +1355,9 @@
             "$ref": "#/components/responses/Problem"
           },
           "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "404": {
             "$ref": "#/components/responses/Problem"
           },
           "409": {
@@ -644,17 +1382,79 @@
               }
             }
           }
+        },
+        "x-api-version": "v1",
+        "x-authz": "actor-owned-product-read",
+        "x-csrf": "required",
+        "x-problems": [
+          {
+            "status": 400,
+            "code": "CORRELATION_ID_INVALID"
+          },
+          {
+            "status": 401,
+            "code": "AUTHENTICATION_REQUIRED"
+          },
+          {
+            "status": 403,
+            "code": "AUTHORIZATION_DENIED"
+          },
+          {
+            "status": 500,
+            "code": "INTERNAL_CONTRACT_ERROR"
+          },
+          {
+            "status": 400,
+            "code": "REQUEST_INVALID"
+          },
+          {
+            "status": 403,
+            "code": "ORIGIN_OR_CSRF_INVALID"
+          },
+          {
+            "status": 409,
+            "code": "IDEMPOTENCY_KEY_REUSE"
+          },
+          {
+            "status": 415,
+            "code": "MEDIA_TYPE_UNSUPPORTED"
+          },
+          {
+            "status": 422,
+            "code": "CONTRACT_VERSION_UNSUPPORTED"
+          },
+          {
+            "status": 404,
+            "code": "DATA_PRODUCT_NOT_FOUND"
+          },
+          {
+            "status": 409,
+            "code": "QUERY_OPERATION_CONFLICT"
+          },
+          {
+            "status": 422,
+            "code": "QUERY_ID_OR_PARAMETER_INVALID"
+          }
+        ],
+        "x-idempotency": {
+          "mode": "required",
+          "keyHeader": "Idempotency-Key",
+          "canonicalRequestHash": true
+        },
+        "x-cas": {
+          "workspaceRevision": true,
+          "progressRevision": false
+        },
+        "x-evidence": {
+          "mode": "none",
+          "completionAuthority": null
         }
       }
     },
     "/health/live": {
       "get": {
         "operationId": "getLiveness",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/ContractVersion"
-          }
-        ],
+        "parameters": [],
         "security": [],
         "responses": {
           "200": {
@@ -663,17 +1463,35 @@
           "500": {
             "$ref": "#/components/responses/Problem"
           }
+        },
+        "x-api-version": "v1",
+        "x-authz": "public-health",
+        "x-csrf": "not-applicable",
+        "x-problems": [
+          {
+            "status": 500,
+            "code": "HEALTH_INTERNAL_FAILURE"
+          }
+        ],
+        "x-idempotency": {
+          "mode": "read-only",
+          "keyHeader": null,
+          "canonicalRequestHash": false
+        },
+        "x-cas": {
+          "workspaceRevision": false,
+          "progressRevision": false
+        },
+        "x-evidence": {
+          "mode": "none",
+          "completionAuthority": null
         }
       }
     },
     "/health/ready": {
       "get": {
         "operationId": "getReadiness",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/ContractVersion"
-          }
-        ],
+        "parameters": [],
         "security": [],
         "responses": {
           "200": {
@@ -685,6 +1503,32 @@
           "503": {
             "$ref": "#/components/responses/Problem"
           }
+        },
+        "x-api-version": "v1",
+        "x-authz": "public-health",
+        "x-csrf": "not-applicable",
+        "x-problems": [
+          {
+            "status": 500,
+            "code": "HEALTH_INTERNAL_FAILURE"
+          },
+          {
+            "status": 503,
+            "code": "DEPENDENCY_NOT_READY"
+          }
+        ],
+        "x-idempotency": {
+          "mode": "read-only",
+          "keyHeader": null,
+          "canonicalRequestHash": false
+        },
+        "x-cas": {
+          "workspaceRevision": false,
+          "progressRevision": false
+        },
+        "x-evidence": {
+          "mode": "none",
+          "completionAuthority": null
         }
       }
     }
@@ -697,13 +1541,66 @@
       }
     },
     "parameters": {
-      "ContractVersion": {
-        "name": "X-Learning-Contract-Version",
+      "CorrelationId": {
+        "name": "X-Correlation-ID",
         "in": "header",
         "required": true,
         "schema": {
           "type": "string",
-          "const": "learning-platform-v1"
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        }
+      },
+      "Host": {
+        "name": "Host",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "const": "localhost"
+        }
+      },
+      "Origin": {
+        "name": "Origin",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "const": "http://localhost"
+        }
+      },
+      "Csrf": {
+        "name": "X-CSRF-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        }
+      },
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        }
+      },
+      "Cursor": {
+        "name": "cursor",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
         }
       }
     },
@@ -716,30 +1613,31 @@
         "additionalProperties": false,
         "required": [
           "schemaVersion",
-          "requestId",
-          "expectedRevision",
-          "parameters"
+          "labVersion",
+          "contractSetSha256",
+          "parameters",
+          "expectedProgressRevision"
         ],
         "properties": {
           "schemaVersion": {
-            "const": "learning-platform-v1"
+            "const": "create-workspace-request-v1"
           },
-          "requestId": {
+          "labVersion": {
             "type": "string",
-            "format": "uuid"
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
           },
-          "expectedRevision": {
-            "type": "integer",
-            "minimum": 0
+          "contractSetSha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           },
           "parameters": {
-            "type": "array",
-            "maxItems": 32,
-            "items": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 256
-            }
+            "type": "object",
+            "additionalProperties": false,
+            "maxProperties": 32
+          },
+          "expectedProgressRevision": {
+            "type": "integer",
+            "minimum": 0
           }
         }
       },
@@ -748,35 +1646,26 @@
         "additionalProperties": false,
         "required": [
           "schemaVersion",
-          "requestId",
-          "expectedRevision",
           "commandId",
-          "arguments"
+          "arguments",
+          "expectedWorkspaceRevision"
         ],
         "properties": {
           "schemaVersion": {
-            "const": "learning-platform-v1"
-          },
-          "requestId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "expectedRevision": {
-            "type": "integer",
-            "minimum": 0
+            "const": "start-operation-request-v1"
           },
           "commandId": {
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
           },
           "arguments": {
-            "type": "array",
-            "maxItems": 32,
-            "items": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 256
-            }
+            "type": "object",
+            "additionalProperties": false,
+            "maxProperties": 32
+          },
+          "expectedWorkspaceRevision": {
+            "type": "integer",
+            "minimum": 0
           }
         }
       },
@@ -785,20 +1674,19 @@
         "additionalProperties": false,
         "required": [
           "schemaVersion",
-          "requestId",
-          "expectedRevision"
+          "expectedWorkspaceRevision",
+          "preserveEvidence"
         ],
         "properties": {
           "schemaVersion": {
-            "const": "learning-platform-v1"
+            "const": "reset-workspace-request-v1"
           },
-          "requestId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "expectedRevision": {
+          "expectedWorkspaceRevision": {
             "type": "integer",
             "minimum": 0
+          },
+          "preserveEvidence": {
+            "const": true
           }
         }
       },
@@ -807,25 +1695,25 @@
         "additionalProperties": false,
         "required": [
           "schemaVersion",
-          "requestId",
-          "expectedRevision",
-          "evidenceId"
+          "verifierId",
+          "expectedWorkspaceRevision",
+          "expectedProgressRevision"
         ],
         "properties": {
           "schemaVersion": {
-            "const": "learning-platform-v1"
+            "const": "verify-workspace-request-v1"
           },
-          "requestId": {
+          "verifierId": {
             "type": "string",
-            "format": "uuid"
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
           },
-          "expectedRevision": {
+          "expectedWorkspaceRevision": {
             "type": "integer",
             "minimum": 0
           },
-          "evidenceId": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          "expectedProgressRevision": {
+            "type": "integer",
+            "minimum": 0
           }
         }
       },
@@ -834,97 +1722,39 @@
         "additionalProperties": false,
         "required": [
           "schemaVersion",
-          "requestId",
+          "workspaceId",
           "queryId",
-          "metrics",
-          "dimensions"
+          "parameters",
+          "expectedWorkspaceRevision"
         ],
         "properties": {
           "schemaVersion": {
-            "const": "learning-platform-v1"
+            "const": "registered-query-request-v1"
           },
-          "requestId": {
+          "workspaceId": {
             "type": "string",
-            "format": "uuid"
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
           },
           "queryId": {
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
           },
-          "metrics": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 32,
-            "uniqueItems": true,
-            "items": {
-              "type": "string",
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
-            }
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "maxProperties": 32
           },
-          "dimensions": {
-            "type": "array",
-            "maxItems": 32,
-            "uniqueItems": true,
-            "items": {
-              "type": "string",
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
-            }
-          }
-        }
-      },
-      "Lesson": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "schemaVersion",
-          "lessonId",
-          "title"
-        ],
-        "properties": {
-          "schemaVersion": {
-            "const": "learning-platform-v1"
-          },
-          "lessonId": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
-          },
-          "title": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 256
-          }
-        }
-      },
-      "Progress": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "schemaVersion",
-          "lessonId",
-          "state",
-          "revision"
-        ],
-        "properties": {
-          "schemaVersion": {
-            "const": "learning-platform-v1"
-          },
-          "lessonId": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
-          },
-          "state": {
-            "enum": [
-              "not-started",
-              "in-progress",
-              "verified",
-              "completed"
-            ]
-          },
-          "revision": {
+          "expectedWorkspaceRevision": {
             "type": "integer",
             "minimum": 0
           }
         }
+      },
+      "Lesson": {
+        "$ref": "../../learning/contracts/lesson-v1.schema.json"
+      },
+      "Progress": {
+        "$ref": "../../learning/contracts/progress-v1.schema.json"
       },
       "Workspace": {
         "type": "object",
@@ -932,16 +1762,27 @@
         "required": [
           "schemaVersion",
           "workspaceId",
+          "labId",
+          "labVersion",
           "state",
-          "revision"
+          "revision",
+          "activeOperationId",
+          "links"
         ],
         "properties": {
           "schemaVersion": {
-            "const": "learning-platform-v1"
+            "const": "workspace-v1"
           },
           "workspaceId": {
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "labId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "labVersion": {
+            "type": "string"
           },
           "state": {
             "enum": [
@@ -955,6 +1796,17 @@
           "revision": {
             "type": "integer",
             "minimum": 0
+          },
+          "activeOperationId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "links": {
+            "type": "object",
+            "additionalProperties": false,
+            "maxProperties": 32
           }
         }
       },
@@ -964,23 +1816,71 @@
         "required": [
           "schemaVersion",
           "operationId",
-          "state"
+          "workspaceId",
+          "kind",
+          "status",
+          "requestSha256",
+          "revision",
+          "resultRef",
+          "failure",
+          "createdAt",
+          "updatedAt"
         ],
         "properties": {
           "schemaVersion": {
-            "const": "learning-platform-v1"
+            "const": "operation-v1"
           },
           "operationId": {
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
           },
-          "state": {
+          "workspaceId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "kind": {
+            "enum": [
+              "command",
+              "reset",
+              "verify",
+              "registered-query"
+            ]
+          },
+          "status": {
             "enum": [
               "accepted",
               "running",
               "succeeded",
               "failed"
             ]
+          },
+          "requestSha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "resultRef": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "failure": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -990,44 +1890,45 @@
         "required": [
           "schemaVersion",
           "operationId",
-          "state"
+          "status",
+          "requestSha256",
+          "workspaceRevision",
+          "pollAfterMs",
+          "links"
         ],
         "properties": {
           "schemaVersion": {
-            "const": "learning-platform-v1"
+            "const": "operation-accepted-v1"
           },
           "operationId": {
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
           },
-          "state": {
+          "status": {
             "const": "accepted"
+          },
+          "requestSha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "workspaceRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "pollAfterMs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5000
+          },
+          "links": {
+            "type": "object",
+            "additionalProperties": false,
+            "maxProperties": 32
           }
         }
       },
       "Evidence": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "schemaVersion",
-          "evidenceId",
-          "status"
-        ],
-        "properties": {
-          "schemaVersion": {
-            "const": "learning-platform-v1"
-          },
-          "evidenceId": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
-          },
-          "status": {
-            "enum": [
-              "pass",
-              "fail"
-            ]
-          }
-        }
+        "$ref": "../../learning/contracts/learning-evidence-v1.schema.json"
       },
       "Tool": {
         "type": "object",
@@ -1035,20 +1936,39 @@
         "required": [
           "schemaVersion",
           "toolId",
-          "title"
+          "status",
+          "required",
+          "deepLink",
+          "remediationId"
         ],
         "properties": {
           "schemaVersion": {
-            "const": "learning-platform-v1"
+            "const": "tool-v1"
           },
           "toolId": {
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
           },
-          "title": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 256
+          "status": {
+            "enum": [
+              "ready",
+              "unavailable"
+            ]
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "deepLink": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "remediationId": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         }
       },
@@ -1057,17 +1977,42 @@
         "additionalProperties": false,
         "required": [
           "schemaVersion",
-          "status"
+          "status",
+          "checks"
         ],
         "properties": {
           "schemaVersion": {
-            "const": "learning-platform-v1"
+            "const": "health-status-v1"
           },
           "status": {
             "enum": [
               "ok",
               "degraded"
             ]
+          },
+          "checks": {
+            "type": "array",
+            "maxItems": 32,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "status"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+                },
+                "status": {
+                  "enum": [
+                    "ok",
+                    "not-ready"
+                  ]
+                }
+              }
+            }
           }
         }
       },
@@ -1076,18 +2021,26 @@
         "additionalProperties": false,
         "required": [
           "schemaVersion",
-          "items"
+          "items",
+          "nextCursor"
         ],
         "properties": {
           "schemaVersion": {
-            "const": "learning-platform-v1"
+            "const": "lesson-page-v1"
           },
           "items": {
             "type": "array",
-            "maxItems": 256,
+            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/Lesson"
             }
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 256
           }
         }
       },
@@ -1096,18 +2049,26 @@
         "additionalProperties": false,
         "required": [
           "schemaVersion",
-          "items"
+          "items",
+          "nextCursor"
         ],
         "properties": {
           "schemaVersion": {
-            "const": "learning-platform-v1"
+            "const": "progress-page-v1"
           },
           "items": {
             "type": "array",
-            "maxItems": 256,
+            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/Progress"
             }
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 256
           }
         }
       },
@@ -1116,18 +2077,26 @@
         "additionalProperties": false,
         "required": [
           "schemaVersion",
-          "items"
+          "items",
+          "nextCursor"
         ],
         "properties": {
           "schemaVersion": {
-            "const": "learning-platform-v1"
+            "const": "tool-page-v1"
           },
           "items": {
             "type": "array",
-            "maxItems": 256,
+            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/Tool"
             }
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 256
           }
         }
       }

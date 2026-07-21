@@ -72,7 +72,14 @@
         "operationId",
         "parameters",
         "security",
-        "responses"
+        "responses",
+        "x-api-version",
+        "x-authz",
+        "x-csrf",
+        "x-problems",
+        "x-idempotency",
+        "x-cas",
+        "x-evidence"
       ],
       "properties": {
         "operationId": {
@@ -81,7 +88,7 @@
         },
         "parameters": {
           "type": "array",
-          "minItems": 1,
+          "minItems": 0,
           "maxItems": 16,
           "items": {
             "$ref": "#/$defs/parameter"
@@ -138,13 +145,117 @@
         "responses": {
           "type": "object",
           "minProperties": 2,
-          "maxProperties": 8,
+          "maxProperties": 12,
           "patternProperties": {
             "^[1-5][0-9][0-9]$": {
               "$ref": "#/$defs/reference"
             }
           },
           "additionalProperties": false
+        },
+        "x-api-version": {
+          "const": "v1"
+        },
+        "x-authz": {
+          "enum": [
+            "catalog-read",
+            "actor-owned",
+            "actor-owned-product-read",
+            "public-health"
+          ]
+        },
+        "x-csrf": {
+          "enum": [
+            "required",
+            "not-applicable"
+          ]
+        },
+        "x-problems": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "code"
+            ],
+            "properties": {
+              "status": {
+                "type": "integer",
+                "minimum": 400,
+                "maximum": 599
+              },
+              "code": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Z0-9_]{2,63}$"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "keyHeader",
+            "canonicalRequestHash"
+          ],
+          "properties": {
+            "mode": {
+              "enum": [
+                "read-only",
+                "required"
+              ]
+            },
+            "keyHeader": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "canonicalRequestHash": {
+              "type": "boolean"
+            }
+          }
+        },
+        "x-cas": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "workspaceRevision",
+            "progressRevision"
+          ],
+          "properties": {
+            "workspaceRevision": {
+              "type": "boolean"
+            },
+            "progressRevision": {
+              "type": "boolean"
+            }
+          }
+        },
+        "x-evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "completionAuthority"
+          ],
+          "properties": {
+            "mode": {
+              "enum": [
+                "none",
+                "required"
+              ]
+            },
+            "completionAuthority": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
         }
       }
     },
