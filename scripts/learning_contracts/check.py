@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from . import canonical, completion, references, registry, runtime, schema, state
+from . import canonical, completion, evidence, references, registry, runtime, schema, state
 
 @dataclass(frozen=True)
 class Outcome:
@@ -33,4 +33,6 @@ def evaluate(domain: str, value: Any) -> Outcome:
         return Outcome(state.code(value))
     if domain == "completion":
         return Outcome(completion.code(value))
+    if domain == "evidence":
+        return Outcome(evidence.code(value))
     return Outcome("BEHAVIOR_NOT_IMPLEMENTED")
