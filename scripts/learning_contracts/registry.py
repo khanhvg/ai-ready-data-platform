@@ -10,3 +10,8 @@ from .schema import LearningContractError
 def migrate_document(value: dict[str, Any], target_version: str) -> dict[str, Any]:
     del value, target_version
     raise LearningContractError("LEARNING_MIGRATION_NOT_IMPLEMENTED")
+
+
+def validate_registry(value: dict[str, Any]) -> None:
+    del value
+    raise LearningContractError("LEARNING_REGISTRY_NOT_IMPLEMENTED")

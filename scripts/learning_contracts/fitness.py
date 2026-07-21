@@ -11,3 +11,8 @@ from .schema import LearningContractError
 def verify_fitness(value: dict[str, Any], *, root: pathlib.Path) -> None:
     del value, root
     raise LearningContractError("LEARNING_FITNESS_NOT_IMPLEMENTED")
+
+
+def evaluate_promotion(grains: list[dict[str, Any]]) -> dict[str, Any]:
+    del grains
+    raise LearningContractError("LEARNING_PROMOTION_NOT_IMPLEMENTED")
