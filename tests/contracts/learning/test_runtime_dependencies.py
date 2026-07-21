@@ -4,8 +4,10 @@ import hashlib
 import json
 import os
 import pathlib
+import shutil
 import signal
 import socket
+import subprocess
 import sys
 import tempfile
 import time
@@ -95,6 +97,44 @@ class S3CommandResourceCleanupTests(unittest.TestCase):
                 os.kill(child_pid, 0)
             rss_code = "x=bytearray(32*1024*1024);print(len(x))"
             self.assert_code("PROCESS_RSS_LIMIT", runtime.run_bounded, [sys.executable, "-c", rss_code], cwd=root, timeout=2, max_rss_bytes=16 * 1024 * 1024)
+            output_code = "import sys;sys.stdout.write('x' * 65537)"
+            self.assert_code("PROCESS_OUTPUT_LIMIT", runtime.run_bounded, [sys.executable, "-c", output_code], cwd=root, timeout=2, output_limit=65536)
+            lingering = (
+                "import pathlib,subprocess,sys;"
+                "p=subprocess.Popen([sys.executable,'-c','import time;time.sleep(30)']);"
+                "pathlib.Path('lingering.pid').write_text(str(p.pid))"
+            )
+            self.assert_code(
+                "PROCESS_CLEANUP_FAILED", runtime.run_bounded,
+                [sys.executable, "-c", lingering], cwd=root, timeout=2,
+            )
+            lingering_pid = int((root / "lingering.pid").read_text(encoding="utf-8"))
+            with self.assertRaises(ProcessLookupError):
+                os.kill(lingering_pid, 0)
+
+    def test_six_high_h6_term_resistant_tree_and_foreign_process(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            foreign = subprocess.Popen([sys.executable, "-c", "import time;time.sleep(30)"])
+            resistant = (
+                "import os,pathlib,signal,subprocess,sys,time;"
+                "signal.signal(signal.SIGTERM,signal.SIG_IGN);"
+                "p=subprocess.Popen([sys.executable,'-c',"
+                "'import signal,time;signal.signal(signal.SIGTERM,signal.SIG_IGN);time.sleep(30)']);"
+                "pathlib.Path('resistant.pid').write_text(str(p.pid));time.sleep(30)"
+            )
+            try:
+                self.assert_code(
+                    "PROCESS_TIMEOUT", runtime.run_bounded,
+                    [sys.executable, "-c", resistant], cwd=root, timeout=0.2,
+                )
+                owned_pid = int((root / "resistant.pid").read_text(encoding="utf-8"))
+                with self.assertRaises(ProcessLookupError):
+                    os.kill(owned_pid, 0)
+                os.kill(foreign.pid, 0)
+            finally:
+                foreign.terminate()
+                foreign.wait(timeout=3)
 
     def test_i8_v3_cleanup_owned_manifest_023(self) -> None:
         """I8-V3-CLEANUP-OWNED-MANIFEST-023."""
@@ -157,6 +197,38 @@ class S3CommandResourceCleanupTests(unittest.TestCase):
                 candidate.mkdir()
                 (candidate / "runtime-admission.json").write_text(json.dumps(expected), encoding="utf-8")
             self.assert_code("RUNTIME_ADMISSION_COUNT", runtime.select_admitted_runtime, root, expected)
+
+    def test_six_high_h6_runtime_admission_rejects_stale_and_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            candidate = root / "only"
+            interpreter = candidate / "venv/bin/python"
+            interpreter.parent.mkdir(parents=True)
+            shutil.copy2(sys.executable, interpreter)
+            expected = {
+                "schemaVersion": "learning-runtime-admission-v1",
+                "interpreterSha256": hashlib.sha256(interpreter.read_bytes()).hexdigest(),
+                "toolSha256": "2" * 64,
+                "lockSha256": "3" * 64,
+                "planSha256": "4" * 64,
+                "inputSha": "abcaa2de7247d99c642fcad1535c24870f08c79f",
+            }
+            marker = dict(expected)
+            marker["inputSha"] = "0" * 40
+            (candidate / "runtime-admission.json").write_text(json.dumps(marker), encoding="utf-8")
+            self.assert_code("RUNTIME_ADMISSION_MISMATCH", runtime.select_admitted_runtime, root, expected)
+            (candidate / "runtime-admission.json").write_text(json.dumps(expected), encoding="utf-8")
+            interpreter.write_bytes(b"stale")
+            self.assert_code("RUNTIME_INTERPRETER_MISMATCH", runtime.select_admitted_runtime, root, expected)
+
+    def test_six_high_h6_public_make_targets_use_bounded_launcher(self) -> None:
+        fragment = (pathlib.Path(__file__).resolve().parents[3] / "mk/issue-5/i5-03.mk").read_text(encoding="utf-8")
+        self.assertNotIn("wildcard", fragment)
+        self.assertNotIn("lastword", fragment)
+        for target in ("learning-contracts-check", "lesson-check", "api-contracts-check", "evidence-verify"):
+            recipe = fragment.split(f"{target}:", 1)[1].split("\n\n", 1)[0]
+            self.assertIn("scripts.learning_contracts.runtime launch", recipe)
+            self.assertNotIn("$(LEARNING_CONTRACTS_PY)", recipe)
 
 
 if __name__ == "__main__":
