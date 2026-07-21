@@ -29,6 +29,7 @@
     "install":["npm","--prefix","spikes/web/candidates/vite","ci","--ignore-scripts","--no-audit","--no-fund"],
     "build":["npm","--prefix","spikes/web/candidates/vite","run","build"],
     "unit":["npm","--prefix","spikes/web/candidates/vite","run","test:unit"],
+    "harness":["node","--test","spikes/web/harness/tests/simple-vite-v3.test.mjs"],
     "smoke":["npm","--prefix","spikes/web/candidates/vite","run","test:smoke","--","--workers=1","--retries=0"],
     "audit":["npm","--prefix","spikes/web/candidates/vite","audit","--audit-level=high","--json"]
   },

@@ -1,2 +1,48 @@
-import{defineConfig}from'vite';import react from'@vitejs/plugin-react';import{loadFixture}from'./src/fixture.mjs';const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function fixtureHtml(){return{name:'tracked-fixture-html',transformIndexHtml(html){const{evidence,manifest,digests}=loadFixture();const acts=['Orient','Question','Inspect promotion grain','Inspect fulfillment grain','Inspect returns grain','Inspect data-quality grain','Try the headline','Observe controlled failure','Verify evidence boundaries','Reflect and reset'];const sections=acts.map((a,i)=>`<section id="act-${i+1}" data-act="${i+1}"><h2>Act ${i+1}: ${esc(a)}</h2>${i===1?'<p>Keep each source at its own grain. Similar windows do not create a join key.</p>':''}${i===6?'<p class="failure">Controlled failure: promotion performance cannot explain fulfillment, returns, or data quality.</p>':''}${i===8?`<div class="evidence">${evidence.sources.map(s=>`<article><h3>${esc(s.sourceId)}</h3><p><strong>Grain:</strong> ${esc(s.grain.join(', '))}</p><p>${s.records.length} sanitized aggregate records; independent evidence only.</p></article>`).join('')}</div>`:''}${i===9?`<p><strong>Conclusion:</strong> <code>${esc(evidence.decision.value)}</code></p><p><strong>Reason:</strong> <code>${esc(evidence.decision.reason)}</code></p><div id="probe"><p role="status">Exploration is reversible and unverified.</p></div>`:''}</section>`).join('');return html.replace('<!--FIXTURE-->',`${sections}<footer><p>Manifest ${esc(manifest.schemaVersion)}; local-artifact-integrity-only.</p><details><summary>Fixture digest facts</summary><pre>${esc(JSON.stringify(digests,null,2))}</pre></details><p class="notice">UNSCORED — NO COMPLETION OR ATTRIBUTION AUTHORITY</p></footer>`)}}}export default defineConfig({plugins:[react(),fixtureHtml()],build:{sourcemap:false}});
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { loadFixture } from './src/fixture.mjs';
+import { lessonContract } from './src/lesson-contract.mjs';
+
+const escapeHtml = value => String(value).replace(
+  /[&<>"']/g,
+  character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character],
+);
+
+function assertFixtureContract(evidence) {
+  const actualGrains = evidence.sources.map(({ grain }) => grain.join(' × '));
+  const expectedGrains = lessonContract.grains.map(({ value }) => value);
+  if (JSON.stringify(actualGrains) !== JSON.stringify(expectedGrains)) {
+    throw new Error('Tracked evidence grains do not match the lesson contract.');
+  }
+  if (
+    evidence.decision.value !== lessonContract.decision.value
+    || evidence.decision.reason !== lessonContract.decision.reason
+  ) {
+    throw new Error('Tracked evidence decision does not match the lesson contract.');
+  }
+}
+
+function fixtureHtml() {
+  return {
+    name: 'tracked-fixture-html',
+    transformIndexHtml(html) {
+      const { evidence, manifest, digests } = loadFixture();
+      assertFixtureContract(evidence);
+
+      const sourceSignatures = evidence.sources
+        .map(({ grain }) => `<li><code>${escapeHtml(grain.join(', '))}</code></li>`)
+        .join('');
+      const digestFacts = Object.entries(digests)
+        .map(([name, digest]) => `<li><span>${escapeHtml(name)}</span>: <code>${escapeHtml(digest)}</code></li>`)
+        .join('');
+      const metadata = `<details class="fixture-metadata"><summary>Dữ liệu fixture đã theo dõi</summary><p>Manifest ${escapeHtml(manifest.schemaVersion)}; chỉ xác minh tính toàn vẹn của dữ liệu cục bộ.</p><p>Định dạng mảng mức hạt trong fixture:</p><ul>${sourceSignatures}</ul><p>SHA-256:</p><ul>${digestFacts}</ul></details>`;
+
+      return html.replace('<!--FIXTURE-METADATA-->', metadata);
+    },
+  };
+}
+
+export default defineConfig({
+  plugins: [react(), fixtureHtml()],
+  build: { sourcemap: false },
+});

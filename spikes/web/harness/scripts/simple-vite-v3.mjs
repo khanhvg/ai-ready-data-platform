@@ -186,9 +186,44 @@ function treeSha() {
   return result.stdout.trim();
 }
 
+function commandVersion(program, args = ['--version']) {
+  const result = spawnSync(program, args, { cwd: ROOT, encoding: 'utf8' });
+  return result.status === 0 ? result.stdout.trim() : 'unavailable';
+}
+
+function playwrightInventory(logPath) {
+  const report = JSON.parse(readFileSync(logPath, 'utf8'));
+  const entries = report.suites.flatMap(suite => suite.specs).flatMap(spec => spec.tests.map(entry => ({
+    title: spec.title,
+    project: entry.projectName,
+    status: entry.status,
+    retries: entry.results.reduce((maximum, result) => Math.max(maximum, result.retry || 0), 0),
+  })));
+  return entries.sort((a, b) => `${a.project}:${a.title}`.localeCompare(`${b.project}:${b.title}`));
+}
+
+function cleanupCandidateRuntime(directory) {
+  const distIndex = resolve(CANDIDATE, 'dist/index.html');
+  if (existsSync(distIndex)) cpSync(distIndex, resolve(directory, 'response-index.html'));
+  const targets = ['node_modules', 'dist', 'test-results', 'playwright-report'].map(name => resolve(CANDIDATE, name));
+  for (const target of targets) rmSync(target, { recursive: true, force: true });
+  const preserved = resolve(directory, 'result.json');
+  const result = {
+    result: targets.every(target => !existsSync(target)) && existsSync(preserved) ? 'pass' : 'fail',
+    removed: targets.map(relativePath),
+    preserved: relativePath(preserved),
+    scope: 'run-owned-candidate-runtime-only',
+  };
+  writeFileSync(resolve(directory, 'rollback.json'), `${JSON.stringify(result, null, 2)}\n`);
+  return result;
+}
+
 async function execute(mode, implementationInput) {
   const authority = preflight(implementationInput);
   if (authority.result !== 'pass') throw new Error(`authority failed: ${authority.failures.join('; ')}`);
+  for (const name of ['node_modules', 'dist', 'test-results', 'playwright-report']) {
+    if (existsSync(resolve(CANDIDATE, name))) throw new Error(`pre-existing candidate runtime is not owned by this run: ${name}`);
+  }
   const id = runId();
   const directory = makeRunDirectory(mode, id);
   const packageBefore = hashFile('spikes/web/candidates/vite/package.json');
@@ -199,6 +234,7 @@ async function execute(mode, implementationInput) {
     results.push(await runBounded('install', contract.commands.install, contract.ceilingsMs.install, directory));
     results.push(await runBounded('build', contract.commands.build, contract.ceilingsMs.build, directory));
     results.push(await runBounded('unit', contract.commands.unit, contract.ceilingsMs.node, directory));
+    if (mode === 'gate') results.push(await runBounded('harness', contract.commands.harness, contract.ceilingsMs.node, directory));
     if (results[1].rc === 0) {
       owned = await startHost(id, directory);
       results.push(await runBounded('playwright', contract.commands.smoke, contract.ceilingsMs.playwright, directory));
@@ -219,10 +255,15 @@ async function execute(mode, implementationInput) {
     const named = `${unit?.stdout || ''}${unit?.stderr || ''}${smoke?.stdout || ''}${smoke?.stderr || ''}`;
     pass = results[0]?.rc === 0 && results[1]?.rc === 0 && packageBefore === packageAfter && lockBefore === lockAfter && (unit?.rc !== 0 || smoke?.rc !== 0) && /V3-02/.test(named) && /V3-03|V3-04|V3-05|V3-06/.test(named) && !/ERR_MODULE_NOT_FOUND|Cannot find package|browserType\.launch: Executable doesn't exist/.test(named);
   } else {
-    pass = results.length === 5 && results.every(({ rc, timedOut }) => rc === 0 && !timedOut) && packageBefore === packageAfter && lockBefore === lockAfter;
+    pass = results.length === 6 && results.every(({ rc, timedOut }) => rc === 0 && !timedOut) && packageBefore === packageAfter && lockBefore === lockAfter;
   }
-  const summary = { schemaVersion: `i5-02-simple-vite-v3-${mode}-v1`, result: pass ? 'pass' : 'fail', runId: id, implementationInputSha: implementationInput, sourceSha: git(['rev-parse', 'HEAD']), testedTreeSha: treeSha(), authority, packageBefore, packageAfter, lockBefore, lockAfter, inventory, commands: results.map(({ name, command, rc, timedOut, durationMs }) => ({ name, command, rc, timedOut, durationMs })) };
+  const browserInventory = smoke?.rc === 0 ? playwrightInventory(resolve(directory, 'playwright.log')) : [];
+  const summary = { schemaVersion: `i5-02-simple-vite-v3-${mode}-v1`, result: pass ? 'pass' : 'fail', runId: id, implementationInputSha: implementationInput, sourceSha: git(['rev-parse', 'HEAD']), testedTreeSha: treeSha(), authority, packageBefore, packageAfter, lockBefore, lockAfter, inventory, browserInventory, tools: { node: process.version, npm: commandVersion('npm'), chrome: commandVersion('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome') }, commands: results.map(({ name, command, rc, timedOut, durationMs }) => ({ name, command, rc, timedOut, durationMs })) };
   writeFileSync(resolve(directory, 'result.json'), `${JSON.stringify(summary, null, 2)}\n`);
+  if (mode === 'gate') {
+    const cleanup = cleanupCandidateRuntime(directory);
+    if (cleanup.result !== 'pass') { summary.result = 'fail'; writeFileSync(resolve(directory, 'result.json'), `${JSON.stringify(summary, null, 2)}\n`); }
+  }
   process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
   if (!pass) process.exitCode = 1;
   return summary;
@@ -280,14 +321,28 @@ export function retainRun() {
   mkdirSync(resolve(destination, 'security'), { recursive: true });
   mkdirSync(resolve(destination, 'lifecycle'), { recursive: true });
   for (const name of ['unit.log', 'playwright.log', 'result.json']) if (existsSync(resolve(red.directory, name))) cpSync(resolve(red.directory, name), resolve(destination, 'tdd/red', name));
-  for (const name of ['install.log', 'build.log', 'unit.log', 'playwright.log', 'result.json']) if (existsSync(resolve(green.directory, name))) cpSync(resolve(green.directory, name), resolve(destination, 'green', name));
+  for (const name of ['install.log', 'build.log', 'unit.log', 'harness.log', 'playwright.log', 'result.json', 'response-index.html']) if (existsSync(resolve(green.directory, name))) cpSync(resolve(green.directory, name), resolve(destination, 'green', name));
   if (existsSync(resolve(green.directory, 'browser-results'))) cpSync(resolve(green.directory, 'browser-results'), resolve(destination, 'green/browser-results'), { recursive: true });
   cpSync(resolve(green.directory, 'npm-audit.log'), resolve(destination, 'security/npm-audit.json'));
   cpSync(resolve(green.directory, 'scans.json'), resolve(destination, 'security/scans.json'));
   cpSync(resolve(green.directory, 'owned-resources.json'), resolve(destination, 'lifecycle/owned-resources.json'));
+  cpSync(resolve(green.directory, 'rollback.json'), resolve(destination, 'lifecycle/rollback.json'));
   const audit = JSON.parse(readFileSync(resolve(green.directory, 'npm-audit.log'), 'utf8'));
-  const groups = contract.groups.map(id => ({ id, result: 'pass' }));
-  const manifest = { schemaVersion: 'i5-02-simple-vite-v3-evidence-v1', acceptanceRevision: contract.acceptanceRevision, runId: green.runId, implementationInputSha: contract.implementationInputSha, testedSourceSha: greenResult.sourceSha, testedTreeSha: greenResult.testedTreeSha, branch: contract.branch, issue6IntegrationSha: contract.issue6IntegrationSha, fixtureIdentities: contract.fixtureIdentities, lockSha256: contract.lockSha256, commands: greenResult.commands, groups, redProvenance: { result: 'pass', testOnlySha: redResult.sourceSha, testedTreeSha: redResult.testedTreeSha }, audit: audit.metadata?.vulnerabilities, redaction: { result: 'pass', findings: [] }, cleanupRollback: { result: 'pass', scope: 'run-owned-only' }, limitations: ['Chromium and axe automation are not a full WCAG or screen-reader conformance claim.', 'Production accessibility and manual UAT remain deferred.'] };
+  const browser = greenResult.browserInventory;
+  const has = (project, fragment) => browser.some(entry => entry.project === project && entry.title.includes(fragment) && entry.status === 'expected' && entry.retries === 0);
+  const commandPassed = name => greenResult.commands.some(command => command.name === name && command.rc === 0 && !command.timedOut);
+  const groupChecks = {
+    'V3-01': commandPassed('install') && commandPassed('build') && greenResult.packageBefore === greenResult.packageAfter && greenResult.lockBefore === greenResult.lockAfter,
+    'V3-02': commandPassed('unit'),
+    'V3-03': has('chromium-desktop', 'V3-03 V3-04') && has('chromium-narrow', 'V3-03 V3-04'),
+    'V3-04': has('chromium-desktop', 'V3-03 V3-04') && has('chromium-narrow', 'V3-03 V3-04'),
+    'V3-05': has('chromium-desktop', 'V3-05'),
+    'V3-06': has('chromium-desktop', 'V3-06'),
+    'V3-07': commandPassed('harness') && commandPassed('npm-audit') && scans.result === 'pass',
+  };
+  const groups = contract.groups.map(id => ({ id, result: groupChecks[id] ? 'pass' : 'fail' }));
+  const rollback = JSON.parse(readFileSync(resolve(green.directory, 'rollback.json'), 'utf8'));
+  const manifest = { schemaVersion: 'i5-02-simple-vite-v3-evidence-v1', acceptanceRevision: contract.acceptanceRevision, runId: green.runId, implementationInputSha: contract.implementationInputSha, testedSourceSha: greenResult.sourceSha, testedTreeSha: greenResult.testedTreeSha, branch: contract.branch, issue6IntegrationSha: contract.issue6IntegrationSha, fixtureIdentities: contract.fixtureIdentities, lockSha256: contract.lockSha256, tools: greenResult.tools, commands: greenResult.commands, browserInventory: browser, groups, redProvenance: { result: 'pass', testOnlySha: redResult.sourceSha, testedTreeSha: redResult.testedTreeSha }, audit: audit.metadata?.vulnerabilities, redaction: { result: 'pass', findings: [] }, cleanupRollback: rollback, limitations: ['Chromium and axe automation are not a full WCAG or screen-reader conformance claim.', 'Production accessibility and manual UAT remain deferred.'] };
   if (validateEvidenceManifest(manifest).length) throw new Error('generated manifest is invalid');
   writeFileSync(resolve(destination, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
   writeFileSync(resolve(destination, 'hash-index.json'), `${JSON.stringify({ schemaVersion: 'i5-02-simple-vite-v3-hash-index-v1', files: fileIndex(destination, new Set(['hash-index.json'])) }, null, 2)}\n`);
