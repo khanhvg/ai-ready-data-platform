@@ -11,8 +11,15 @@
 5. **Regression:** stage-local suite + exact released dependency blast radius + protected hashes.
 
 Unconditional `fail`, a test that passes because a file is merely absent, fake rows/services,
-mock-only catalog/object behavior, expected-code echo and in-place mutation of golden fixtures are
-invalid RED evidence.
+ignored/skipped/xfail fixtures or assertions, mock-only catalog/object behavior, expected-code
+echo and in-place mutation of golden fixtures are invalid RED evidence. Missing
+dependency/tool/service là gate hoặc typed environmental failure, không phải behavior RED và
+không được dùng thay cho actual failing behavior.
+
+Mỗi stable behavior ID phải giữ một sequence riêng theo exact tested tree: characterization
+expected/actual → RED expected/actual với đúng một controlled condition → minimum GREEN
+expected/actual → refactor/regression expected/actual. Không được batch nhiều behavior vào một RED,
+viết GREEN trước rồi dựng lại RED, hoặc chỉ lưu expected code mà thiếu actual state/value/effect.
 
 ## Characterization anchors before any RED
 
@@ -22,6 +29,7 @@ invalid RED evidence.
 | `DL-CHAR-MOD` | 18 sources; 18 staging, 6 intermediate, 16 core, 11 marts; 51 models | Read-only |
 | `DL-CHAR-DQ` | 141 generic tests; 179 pass, 7 warn, 0 fail, 186 total; nine configured warn IDs | Read-only |
 | `DL-CHAR-MET` | Exact Rill sources/dimensions/expressions and weighted/unweighted distinctions | Read-only |
+| `DL-CHAR-ARCH` | Exact six architecture IDs and manifest audience/concern/scope; source closure, six SVG/text pairs and render-manifest hashes | Read-only |
 | `DL-CHAR-REL` | Ordered exact 11-set; manifest/current-pointer pure contract; publisher remains sequential drop/create | Read-only |
 | `DL-CHAR-ICE` | Current local publisher/read-back behavior is a gap, not atomic/conflict/orphan proof | Read-only |
 | `DL-CHAR-OM` | Current catalog verifier checks non-zero populations/count context, not exact reconcile | Read-only |
@@ -56,6 +64,7 @@ invalid RED evidence.
 | `DL-EVD-001` | Two serial equivalent runs | Deterministic semantic evidence projection; allowed runtime drift isolated |
 | `DL-EVD-002` | Artifact/hash/index/dependency/tree/content/verifier binding changed or replayed | Typed integrity/replay failure; completion unchanged |
 | `DL-PROT-001` | Protected Git object or semantic projection differs | Exact mismatch and STOP before publication |
+| `DL-ARCH-001` | Six-view ID/set/order, audience/concern/scope, source, SVG/text or render-manifest semantics drift | Issue #6 architecture reader names exact mismatch; no golden view/source/render mutation |
 | `DL-PAT-001` | Pattern/service has no named failure/evidence row | Content contract rejects pattern theater |
 | `DL-OPT-001` | Optional service absent/starting/error | Honest status/remediation; affected verify cannot pass |
 
@@ -68,7 +77,7 @@ invalid RED evidence.
 | `DL-DEP-010` | Exact passing merged #10 SHA/renderer/API/E2E artifacts exist and ancestry holds |
 | `DL-LEASE-001` | Serialized lease names exact owner, paths, input SHA and active/non-overlap window |
 | `DL-SEC-001` | Traversal/absolute/encoded path/ref rejected before file/process/service mutation |
-| `DL-SEC-002` | Symlink/hardlink/swap/foreign destination rejected; protected tree unchanged |
+| `DL-SEC-002` | Symlink/hardlink/swap, FIFO/socket/device/other non-regular file and foreign source/destination rejected before read/write; protected tree unchanged |
 | `DL-SEC-003` | SQL/template/shell metacharacter input cannot change fixed query/target/argv authority |
 | `DL-SEC-004` | Credential/private-path/PII canary absent from retained content/log/evidence |
 | `DL-SEC-005` | Cleanup/reconcile deletes only exact run-owned object/entity set; foreign sentinels survive |
@@ -79,6 +88,7 @@ invalid RED evidence.
 | `DL-MIG-001` | Additive N/N-1 readers dual-read, atomic switch and prior-state rollback pass |
 | `DL-PUB-001` | Only fresh Stage C real journey + live valid evidence can set completion |
 | `DL-PUB-002` | Reload/back-forward/reset/replay/accessibility paths preserve legal state/evidence authority |
+| `DL-REV-001` | Fresh independent implementation/security review binds exact 40-hex head and has zero unresolved Critical/High |
 | `DL-HUM-001` | Human approval record names exact independently reviewed 40-hex head |
 | `DL-SCOPE-001` | Changed-command/path scan finds no AWS/Terraform apply/resource or destructive repo action |
 
@@ -94,7 +104,8 @@ Required semantic fields, mapped to exact #8 schema names only after release:
 - contract, registry, fixture and protected-tree hashes;
 - sanitized parameters (`small`, `42` where required), tool/service versions and topology;
 - ordered operation/state transitions, fault boundary and actual result;
-- assertion expected/actual summaries, result, failure class and remediation;
+- per-behavior characterization/RED/GREEN/refactor-regression sequence; assertion expected/actual
+  state/value/effect summaries, result, failure class and remediation;
 - artifact media type, relative locator, byte size and SHA-256;
 - release/manifest/pointer/snapshot/catalog/namespace identities when applicable;
 - cleanup/rollback result, redaction/retention class and evidence index hash.

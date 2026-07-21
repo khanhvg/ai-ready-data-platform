@@ -135,9 +135,9 @@ teaching aesthetics.
 
 ## Security considerations
 
-Run full S3 negative suite for path/ref/symlink, SQL/template injection, credential/PII/private
-paths, object/catalog scope, evidence tamper/replay and resource/process limits. Cleanup refusal is
-safer than deleting unknown state.
+Run full S3 negative suite for path/ref/link/FIFO/socket/device/other special file, SQL/template
+injection, credential/PII/private paths, object/catalog scope, evidence tamper/replay and
+resource/process limits. Cleanup refusal is safer than deleting unknown state.
 
 ## Next steps
 

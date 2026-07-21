@@ -73,7 +73,8 @@ state.
 6. Run final four-command contract and exact released #6/#8/#9/#10 blast radius serially.
 7. Verify changed paths, protected objects, private/credential/PII scan, no AWS/Terraform/cloud
    action, and clean run-owned cleanup.
-8. Obtain fresh independent implementation/security review with zero unresolved Critical/High.
+8. Obtain fresh independent implementation/security review (`DL-REV-001`) bound to the exact
+   reviewed 40-hex head with zero unresolved Critical/High.
 9. Obtain human approval naming exact reviewed head; recheck remote head/mergeability/tests
    immediately before merge in the later authorized phase.
 

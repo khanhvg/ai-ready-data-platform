@@ -9,8 +9,9 @@ release. Chỉ amendment sau release mới được điền các trường rỗn
 
 | Field | Value | Gate |
 |---|---|---|
-| Repository input | `24be3b34c6b0fcdbd07c5800dcab349054e34713` | Exact local HEAD và integration tracking input |
-| Issue #6 | Closed, `shipped`; merge SHA bằng repository input | Read-only golden authority |
+| Planner/product input | `24be3b34c6b0fcdbd07c5800dcab349054e34713` | Integration input trước planner-only commit; read-only product tree |
+| Initial validation input | `24ff21db72e0d08d34b62c3280e76ab6329665eb` | Exact clean local/tracking/fresh-live plan head |
+| Issue #6 | Closed, `shipped`; merge SHA bằng planner/product input | Read-only golden authority |
 | Issue #8 | Open; chưa có released learning-contract handoff | Stage A blocked |
 | Issue #9 | Open; chưa có released runner handoff | Stage B blocked |
 | Issue #10 | Open; chưa có passing merged real-journey handoff | Stage C blocked |
@@ -24,8 +25,8 @@ release. Chỉ amendment sau release mới được điền các trường rỗn
 | B — #9 runner + lease | `` | `` | `` | `` | `blocked-unreleased-dependency-and-lease` |
 | C — #10 merged journey | `` | `` | `` | `` | `blocked-unmerged-dependency` |
 
-Static placeholder check phải chứng minh các ô resolution trên rỗng; không thay bằng `TBD`, branch
-head, plan commit, label hoặc guessed path.
+Static placeholder check phải chứng minh các ô resolution trên rỗng; không thay bằng placeholder
+token, branch head, plan commit, label hoặc guessed path.
 
 ## Dependency-derived path templates
 
@@ -42,6 +43,11 @@ Templates chỉ mô tả cách amendment lấy giá trị từ release thật; c
 
 Fixed issue-owned destination `mk/issue-5/i5-07.mk` is authorized by Issue #12 but cannot receive
 recipes until Stage B command IDs and ownership are amended. Root `Makefile` stays protected.
+
+Released #8 completion/evidence schemas/readers, #9 private runner registry/API và #10
+renderer/routes chỉ được consume read-only sau exact release tương ứng. Issue #12 chỉ nối qua
+extension point được release và lease; cấm copy schema, parallel registry, duplicate truth,
+invented compatibility adapter hoặc browser-to-command fallback.
 
 ## Amendment protocol per stage
 

@@ -8,6 +8,14 @@
 - Test IDs `DL-*` là stable behavior IDs của Issue #12. Released #8/#9/#10 amendment có thể map
   chúng sang schema/registry/API fields, nhưng không được đổi nghĩa.
 
+## Business requirements
+
+| ID | Business outcome | Stage/phase | Stable verification IDs | Evidence | Recovery / STOP |
+|---|---|---|---|---|---|
+| BUS-01 | Learner foundation→mid phải thao tác, gây lỗi có kiểm soát, sửa, verify và reset; output cuối không phải docs dump | A-C / P2-P5 | `DL-LAB-001`, `DL-PUB-001` | Learner action + exact expected/actual + real journey | Không publish/complete content chỉ đọc |
+| BUS-02 | Nền tảng dạy đúng golden truth và không đổi business semantics để làm lab pass | All / P1-P5 | `DL-PROT-001`, `DL-ARCH-001`, `DL-MET-002` | Issue #6 semantic readers, protected objects, six-view oracle | STOP, revert Issue #12-owned change |
+| BUS-03 | Lab cốt lõi dùng được trên máy 16GB không cloud; service tùy chọn phải trung thực | B-C / P3-P5 | `DL-RES-001`, `DL-OPT-001` | Serial resource report + typed availability | Stop optional profile; không claim affected completion |
+
 ## Functional and learning requirements
 
 | ID | Requirement | Stage/phase | Stable verification IDs | Evidence | Recovery / STOP |
@@ -42,13 +50,15 @@
 | NFR-DET-01 | Same admitted input ⇒ deterministic verifier/evidence projection | P2-P5 | `DL-EVD-001` | Two serial run hashes | Preserve both; reject mismatch |
 | NFR-RES-01 | Core serial profile chạy trong 16GB; không Docker/cloud requirement | P2-P5 | `DL-RES-001` | Tool/profile/resource report | Stop optional services; core remains usable |
 | NFR-OPT-01 | Optional service unavailable/error không masquerade controlled failure/pass | P3-P5 | `DL-OPT-001` | Typed state/remediation | No completion for affected lab |
-| NFR-SEC-01 | Typed untrusted input; path/ref/symlink containment trước mutation | P2-P5 | `DL-SEC-001`, `DL-SEC-002` | Negative path/ref/symlink suite | Reject before process/object write |
+| NFR-SEC-01 | Typed untrusted input; path/ref/link/special-file containment trước read hoặc mutation | P2-P5 | `DL-SEC-001`, `DL-SEC-002` | Negative traversal/ref/link/FIFO/socket/device suite | Reject before file/process/object effect |
 | NFR-SEC-02 | Fixed query/template authority; no raw SQL/template injection | P2-P5 | `DL-SEC-003` | Injection corpus + argv/query capture | Reject; no DB/catalog effect |
 | NFR-SEC-03 | Credentials/private paths/PII không vào content/evidence/log | P2-P5 | `DL-SEC-004` | Canary/redaction/private-locator scan | Quarantine evidence; rotate if exposed |
 | NFR-SEC-04 | Catalog/object/namespace cleanup exact và ownership-scoped | P3-P5 | `DL-SEC-005` | Foreign sentinel survives | Refuse cleanup; manual adjudication |
 | NFR-SEC-05 | Evidence tamper/replay/tree mismatch bị phát hiện | P2-P5 | `DL-SEC-006`, `DL-EVD-002` | Canonical payload/index/artifact hashes | Preserve corrupted evidence; no completion |
 | NFR-MIG-01 | Additive migration; N-1 readers/adapters còn đọc; switch atomic | P3-P5 | `DL-MIG-001` | Dual-read/rollback evidence | Switch prior pointer/reader |
 | NFR-REP-01 | Chỉ plan artifacts trong planner commit; product/protected path unchanged | Planner / P1 | `DL-PROT-001` | Changed-path + protected hash scan | Abort planner push |
+| NFR-ARCH-01 | Exact six Issue #6 architecture view IDs/manifest semantics/source/render pairs không đổi | P1-P5 | `DL-ARCH-001` | Read-only architecture projection + tree/render hashes | STOP on view/source/semantic/render drift |
+| NFR-REV-01 | Fresh independent implementation/security review tại exact head, zero unresolved Critical/High | P5 | `DL-REV-001` | Exact-head review artifact and findings | Head drift/finding ⇒ review invalid; STOP |
 | NFR-HUM-01 | Human approval gắn exact reviewed head trước merge | P5 | `DL-HUM-001` | GitHub exact-head approval record | Head changed ⇒ approval invalid |
 | NFR-NOCLOUD-01 | Không AWS/Terraform apply/resources/destructive repo action | All | `DL-SCOPE-001` | Command/diff/evidence scan | Immediate STOP |
 
@@ -65,5 +75,8 @@
 | Orphan object cleanup deletes foreign bytes | Ownership/safety | Run-owned index + exact allow-list | Foreign sentinel preserved |
 | Prefix reconcile deletes neighbor namespace | Governance safety | Exact FQN/namespace/managed-set reconciliation | Collision namespace untouched |
 | Evidence file edited/replayed | Integrity/provenance | Canonical hash/index + tested-tree binding | Tamper/replay typed failure |
+| Generator/DuckDB/dbt/Rill or six-view truth drifts | Learning correctness/reproducibility | Immutable Issue #6 semantic readers + protected hashes | Exact input/model/test/grain/metric/view mismatch |
+| Optional Iceberg/OpenMetadata service unavailable | Truthful availability | Typed environmental state, no fake controlled failure | `not-run-optional` and affected completion false |
+| Portal/UI state tries to complete a lab | Completion integrity | Fresh released verifier/evidence authority only | UI action alone leaves completion false |
 
 Any pattern without a row above or an amendment-backed new row fails `DL-PAT-001`.

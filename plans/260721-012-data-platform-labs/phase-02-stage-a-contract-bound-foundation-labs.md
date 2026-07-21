@@ -32,6 +32,8 @@ portal publication hoặc runnable-completion claim.
 - Foundation→junior route: grain/determinism → model layers/quality → weighted metric correctness.
 - Mỗi lab có prerequisite, starter, task, controlled failure, hints, verify, evidence requirements,
   reset semantics, gated solution và reflection.
+- Mỗi candidate phải dẫn tới một learner action và expected-vs-actual artifact kiểm chứng được;
+  prose/links/scroll-only content không đủ và không được coi là hands-on completion.
 - `small`, seed `42` và Issue #6 readers/fixtures là truth; controlled failure được tạo trong
   private copy, không sửa golden files.
 - Weighted lab dùng real golden rows của một metric Issue #6 bắt buộc weighting (ví dụ
@@ -106,6 +108,8 @@ prove duplication. Do not add a general framework, registry, API or renderer.
 ## Success criteria
 
 - [ ] Three foundation/junior lab candidates satisfy full content contract.
+- [ ] Mỗi candidate có learner action và expected-vs-actual contract rõ ràng; không phải docs
+      dump hoặc completion-by-reading.
 - [ ] Verifier candidate is non-mutating and Issue #6 remains byte/semantic identical.
 - [ ] Invalid average-of-averages fails against real golden data with useful remediation.
 - [ ] Output cannot be described as runnable or complete learner experience.
@@ -122,7 +126,8 @@ prove duplication. Do not add a general framework, registry, API or renderer.
 ## Security considerations
 
 Treat content fields/paths/refs as untrusted. No raw SQL, shell, environment, credentials,
-absolute path, PII or browser action. Negative tests `DL-SEC-001/003/004/006` run before handoff.
+absolute path, link/special file, PII or browser action. Negative tests
+`DL-SEC-001/002/003/004/006` run before handoff.
 
 ## Next steps
 

@@ -12,7 +12,9 @@ created: "2026-07-22"
 createdBy: "ck:plan"
 source: skill
 planningMode: "deep-tdd-planner-only"
-inputSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
+plannerInputSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
+initialValidationInputSha: "24ff21db72e0d08d34b62c3280e76ab6329665eb"
+goldenAuthoritySha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
 dependencyIssue8ReleaseSha: ""
 dependencyIssue9ReleaseSha: ""
 dependencyIssue10MergeSha: ""
@@ -25,9 +27,11 @@ currentImplementationCommands: []
 ## Tổng quan
 
 Lập kế hoạch Vietnamese-first từ foundation đến mid cho các lab data-platform có thao tác thật,
-lỗi có kiểm soát, xác minh, evidence và reset. Kế hoạch bảo vệ tuyệt đối semantic golden của
-Issue #6 tại input SHA `24be3b34c6b0fcdbd07c5800dcab349054e34713`; không coi label/plan/branch mở
-của #8, #9 hoặc #10 là release có thể tiêu thụ.
+lỗi có kiểm soát, xác minh, evidence và reset; output cuối không được là docs dump. Kế hoạch bảo
+vệ tuyệt đối semantic golden của Issue #6 tại authority SHA
+`24be3b34c6b0fcdbd07c5800dcab349054e34713`. Initial validation bắt đầu từ plan-only child
+`24ff21db72e0d08d34b62c3280e76ab6329665eb`; không coi label/plan/branch mở của #8, #9 hoặc #10
+là release có thể tiêu thụ.
 
 Đây là artifact **planner-only**. Không lab, verifier, pipeline seam, registry, API, renderer,
 Make target hay portal integration nào được triển khai hoặc xác nhận runnable trong phase này.
@@ -77,7 +81,9 @@ verify, immutable evidence, reset, gated solution và reflection. Reflection/hin
 - Được ghi sau gate phù hợp: `learning/labs/data-platform/**`, data-lab verifiers theo path do
   released contracts quy định, lease data-contract/pipeline đã serialize, và
   `mk/issue-5/i5-07.mk`.
-- Chỉ đọc: contracts/data/views/fixtures/readers Issue #6 và toàn bộ golden semantics.
+- Chỉ đọc: contracts/data/views/fixtures/readers Issue #6 và toàn bộ golden semantics; released
+  completion/evidence authority của #8, private runner authority của #9 và renderer/API authority
+  của #10. Không copy schema, tạo parallel registry, duplicate truth hoặc invented adapter.
 - Bảo vệ: root `Makefile`, `release-manifest.json`, `docs/code-standards.md`, shared contracts,
   architecture views, portal, runner và pipeline ngoài lease chính xác.
 - Không AWS/Terraform apply/destroy, cloud resource, destructive migration, PR hoặc merge.
@@ -112,7 +118,7 @@ không được dùng để claim lab service-backed đã pass.
       trong planner output.
 - [ ] Stage A/B/C có STOP, independent revalidation và readiness gate riêng.
 - [ ] Stable test IDs bao phủ ingest/model/quality, orchestration, metrics, 11-asset atomicity,
-      Iceberg, OpenMetadata, evidence và protected semantics.
+      Iceberg, OpenMetadata, evidence, exact six-view oracle và protected semantics.
 - [ ] Human exact-head pre-merge approval bắt buộc; approval của SHA khác không chuyển tiếp.
 
 ## Companion artifacts
@@ -123,7 +129,56 @@ không được dùng để claim lab service-backed đã pass.
 - [Data architecture and recovery](./data-architecture-and-recovery.md)
 - [Test and evidence strategy](./test-and-evidence-strategy.md)
 - [Protected baseline manifest](./protected-baseline-manifest.md)
+- [Independent initial validation report](./validation/initial-validation-report.md)
 
 ## Open questions
 
 None. Dependency outputs are unresolved gates, not planner assumptions.
+
+## Validation Log
+
+### Session 1 — 2026-07-22
+
+**Trigger:** Fresh independent `$ck:plan validate` at exact plan head
+`24ff21db72e0d08d34b62c3280e76ab6329665eb` against the user-supplied ten-part adversarial
+contract.
+
+**Questions asked:** 0. The exact user contract supplied all binding decisions; dependency
+outputs remain unresolved gates rather than questions to guess.
+
+### Verification Results
+
+- **Tier:** Full — Fact Checker, Flow Tracer, Scope Auditor and Contract Verifier.
+- **Claims checked:** 86.
+- **Verified:** 86 | **Failed:** 0 | **Unverified:** 0 after bounded plan-only fixes.
+- **Initial objective defect families fixed:** 7.
+- **Report:** [Initial independent validation](./validation/initial-validation-report.md).
+
+### Confirmed Decisions
+
+- Planner/product input and immutable Issue #6 authority are
+  `24be3b34c6b0fcdbd07c5800dcab349054e34713`; initial validation input is the separate plan-only
+  child `24ff21db72e0d08d34b62c3280e76ab6329665eb`.
+- Stage A/B/C dependency authority remains empty and fail-closed.
+- No current schema/path/command/runner/renderer authority was inferred from future declarations.
+- Stage A cannot claim runnable completion; Stage B cannot claim portal completion; Stage C alone
+  may claim the real learner journey after exact merged #10 authority.
+- Exact six-view semantics, special files, per-behavior TDD sequence and fresh exact-head
+  implementation review are release blockers.
+
+### Impact on Phases
+
+- Phase 1: separated validation input from golden authority and added six-view characterization.
+- Phase 2: added learner-action/expected-actual and no-docs-dump criteria.
+- Phase 3: unchanged authority; its S3/TDD companion contracts were strengthened.
+- Phase 4: unchanged authority and Stage C-only completion boundary.
+- Phase 5: fresh implementation/security review now has stable ID `DL-REV-001`.
+
+### Whole-Plan Consistency Sweep
+
+- Files reread: `plan.md`, all five phase files and all six companion plan artifacts.
+- Decision deltas checked: 7.
+- Reconciled stale/implicit references: 19.
+- Unresolved contradictions: 0.
+- Recommendation: pass initial validation with fixes; do not cook. Move to plan audit, then run a
+  fresh dependency-aware readiness audit that remains blocked until exact releases/lease exist.

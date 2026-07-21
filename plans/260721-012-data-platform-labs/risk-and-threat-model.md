@@ -20,7 +20,7 @@ privileged execution boundary.
 | ID | Threat / abuse case | Required control | Negative test | Residual disposition |
 |---|---|---|---|---|
 | TH-01 | Traversal, absolute path, encoded separator, Git ref ambiguity | Typed relative refs, containment and allow-list before open | `DL-SEC-001` | STOP on ambiguous resolver |
-| TH-02 | Symlink/hardlink/swap/TOCTOU reaches repo or foreign bytes | Descriptor/realpath/ownership checks defined by released #9; refuse unsafe destination | `DL-SEC-002` | No weak fallback |
+| TH-02 | Symlink/hardlink/swap/TOCTOU or FIFO/socket/device/other special file reaches repo, blocks a reader or exposes foreign bytes | Descriptor/realpath/regular-file/ownership checks defined by released #9; refuse unsafe source/destination before read/write | `DL-SEC-002` | No weak fallback |
 | TH-03 | SQL or template injection changes query/catalog target | Released fixed query/assertion IDs; typed values; no learner raw SQL/template | `DL-SEC-003` | Reject unsupported exercise |
 | TH-04 | Env/credentials/private path/PII leaks to evidence or error | Minimal env, redaction, safe relative locators, no raw rows/full dumps | `DL-SEC-004` | Quarantine and rotate exposed secret |
 | TH-05 | Broad object/catalog/namespace delete | Exact release ID/FQN + managed marker + run-owned ownership index | `DL-SEC-005`, `DL-OM-001` | Manual cleanup for unknown owner |

@@ -117,7 +117,8 @@ Reset is not repository clean. It must:
    separately authorized operation.
 3. Replace starter workspace atomically.
 4. Remove only bytes/objects/entities whose ownership descriptor matches the exact run.
-5. Refuse symlink, unknown marker, mismatched device/inode/namespace/FQN or foreign sentinel.
+5. Refuse symlink/hardlink, FIFO/socket/device/other special file, unknown marker, mismatched
+   device/inode/namespace/FQN or foreign sentinel before read/write/delete.
 6. Re-run post-reset oracle and protected hash scan.
 
 ## Resource profile

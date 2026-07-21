@@ -27,7 +27,9 @@ từng Stage A/B/C khi dependency thật được release. Plan/label/open branc
 
 ### Functional
 
-- Local HEAD phải bằng exact authorized input trước planner commit; Issue #6 shipped tại SHA đó.
+- Initial validator phải bắt đầu tại exact plan head
+  `24ff21db72e0d08d34b62c3280e76ab6329665eb`; planner/product input và Issue #6 immutable
+  authority riêng là `24be3b34c6b0fcdbd07c5800dcab349054e34713`.
 - Record current truth read-only: warnings, marts, lineage, publish/catalog gaps, curated set và
   fixture/contract hashes.
 - Stage amendment phải điền exact 40-hex dependency SHA, exact released paths/commands, tree/blob
@@ -60,6 +62,8 @@ tục blocked; không tạo adapter hay “equivalent” path trong lúc cook.
 - [ ] `DL-CHAR-MOD`: dbt source/layer/model/mart/grain truth.
 - [ ] `DL-CHAR-DQ`: nine configured warnings, seven warn/two pass, zero errors.
 - [ ] `DL-CHAR-MET`: exact Rill source/dimension/measure/weighting distinctions.
+- [ ] `DL-CHAR-ARCH`: exact six architecture IDs, manifest audience/concern/scope semantics,
+      source closure, rendered SVG/text pairs and deterministic render-manifest hashes.
 - [ ] `DL-CHAR-REL`: exact 11-set + manifest/pointer contract; publisher gap retained.
 - [ ] `DL-CHAR-ICE`: current service behavior not relabeled atomic/conflict/orphan proof.
 - [ ] `DL-CHAR-OM`: count-oriented current check not relabeled exact reconciliation.
@@ -90,7 +94,8 @@ checks after each amendment.
 ## Success criteria
 
 - [ ] Current planner output retains empty #8/#9/#10 resolution and implementation fields.
-- [ ] Immutable baseline facts match Issue #6 without mutation.
+- [ ] Immutable baseline facts, including exact six-view semantics, match Issue #6 without
+      mutation.
 - [ ] Every stage owns a separate exact-SHA amendment/revalidation/readiness chain.
 - [ ] No guessed schema, registry, API, renderer, command or implementation path appears.
 

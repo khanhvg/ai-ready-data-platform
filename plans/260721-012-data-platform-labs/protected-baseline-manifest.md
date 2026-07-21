@@ -45,6 +45,11 @@ semantic assertions vẫn lấy từ Issue #6 readers/contracts, không chỉ t�
 - Marts: exact ordered 11 IDs, row/content/schema/grain truth from `retail-golden-v1`.
 - Rill: expression/source/dimension/weighting semantics, including intentional weighted and
   explicitly unweighted measures, remain unchanged.
+- Architecture: exact six IDs only — `C4-L0`, `C4-L1`, `C4-L2-LOCAL`, `C4-L3-RUNNER`,
+  `DEP-LOCAL`, `DYN-JOURNEY` — with their manifest audience/concern/scope semantics, source
+  closure, six SVG/text pairs and deterministic render-manifest hashes remain unchanged. The
+  `architecture/` tree object above is the byte oracle; Issue #6 architecture reader is the
+  semantic oracle.
 - Airflow: six default + two optional task IDs/edges remain characterized until a narrow lease.
 - Publication: current sequential drop/create and shallow read-back are a known gap, not an atomic
   guarantee.
