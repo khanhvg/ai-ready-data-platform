@@ -104,7 +104,14 @@ export function preflight(implementationInput) {
 }
 
 function sanitize(text) {
-  return String(text).split(ROOT).join('<WORKSPACE>');
+  return String(text)
+    .split(ROOT).join('<WORKSPACE>')
+    .replace(/\/Users\/[^/\s"'<>]+(?:\/[^\s"'<>]*)*/g, '<PRIVATE_PATH>')
+    .replace(/\/home\/[^/\s"'<>]+(?:\/[^\s"'<>]*)*/g, '<PRIVATE_PATH>');
+}
+
+function copySanitized(source, destination) {
+  writeFileSync(destination, sanitize(readFileSync(source, 'utf8')));
 }
 
 async function runBounded(name, command, ceilingMs, directory) {
@@ -323,13 +330,13 @@ export function retainRun() {
   mkdirSync(resolve(destination, 'green'), { recursive: true });
   mkdirSync(resolve(destination, 'security'), { recursive: true });
   mkdirSync(resolve(destination, 'lifecycle'), { recursive: true });
-  for (const name of ['unit.log', 'playwright.log', 'result.json']) if (existsSync(resolve(red.directory, name))) cpSync(resolve(red.directory, name), resolve(destination, 'tdd/red', name));
-  for (const name of ['install.log', 'build.log', 'unit.log', 'harness.log', 'playwright.log', 'result.json', 'response-index.html']) if (existsSync(resolve(green.directory, name))) cpSync(resolve(green.directory, name), resolve(destination, 'green', name));
+  for (const name of ['unit.log', 'playwright.log', 'result.json']) if (existsSync(resolve(red.directory, name))) copySanitized(resolve(red.directory, name), resolve(destination, 'tdd/red', name));
+  for (const name of ['install.log', 'build.log', 'unit.log', 'harness.log', 'playwright.log', 'result.json', 'response-index.html']) if (existsSync(resolve(green.directory, name))) copySanitized(resolve(green.directory, name), resolve(destination, 'green', name));
   if (existsSync(resolve(green.directory, 'browser-results'))) cpSync(resolve(green.directory, 'browser-results'), resolve(destination, 'green/browser-results'), { recursive: true });
-  cpSync(resolve(green.directory, 'npm-audit.log'), resolve(destination, 'security/npm-audit.json'));
-  cpSync(resolve(green.directory, 'scans.json'), resolve(destination, 'security/scans.json'));
-  cpSync(resolve(green.directory, 'owned-resources.json'), resolve(destination, 'lifecycle/owned-resources.json'));
-  cpSync(resolve(green.directory, 'rollback.json'), resolve(destination, 'lifecycle/rollback.json'));
+  copySanitized(resolve(green.directory, 'npm-audit.log'), resolve(destination, 'security/npm-audit.json'));
+  copySanitized(resolve(green.directory, 'scans.json'), resolve(destination, 'security/scans.json'));
+  copySanitized(resolve(green.directory, 'owned-resources.json'), resolve(destination, 'lifecycle/owned-resources.json'));
+  copySanitized(resolve(green.directory, 'rollback.json'), resolve(destination, 'lifecycle/rollback.json'));
   const audit = JSON.parse(readFileSync(resolve(green.directory, 'npm-audit.log'), 'utf8'));
   const browser = greenResult.browserInventory;
   const has = (project, fragment) => browser.some(entry => entry.project === project && entry.title.includes(fragment) && entry.status === 'expected' && entry.retries === 0);
