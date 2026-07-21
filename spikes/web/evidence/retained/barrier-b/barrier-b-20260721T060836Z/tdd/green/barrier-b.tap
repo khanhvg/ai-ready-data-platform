@@ -1,0 +1,144 @@
+2026-07-21T06:12:55Z
+monotonic_ns=217408520512416
+TAP version 13
+# Subtest: BARRIER-B-ABSENT rejects an absent dependency input
+ok 1 - BARRIER-B-ABSENT rejects an absent dependency input
+  ---
+  duration_ms: 4.040125
+  type: 'test'
+  ...
+# Subtest: BARRIER-B-ANCESTRY rejects an unmerged M2
+ok 2 - BARRIER-B-ANCESTRY rejects an unmerged M2
+  ---
+  duration_ms: 0.176708
+  type: 'test'
+  ...
+# Subtest: BARRIER-B-CROSSED rejects crossed path identities
+ok 3 - BARRIER-B-CROSSED rejects crossed path identities
+  ---
+  duration_ms: 0.215541
+  type: 'test'
+  ...
+# Subtest: BARRIER-B-TAMPER rejects a changed SHA or blob
+ok 4 - BARRIER-B-TAMPER rejects a changed SHA or blob
+  ---
+  duration_ms: 0.126917
+  type: 'test'
+  ...
+# Subtest: BARRIER-B-SCHEMA rejects schema-invalid v2 input
+ok 5 - BARRIER-B-SCHEMA rejects schema-invalid v2 input
+  ---
+  duration_ms: 0.602375
+  type: 'test'
+  ...
+# Subtest: BARRIER-B-PORTABLE rejects non-portable or authenticity-laundered input
+ok 6 - BARRIER-B-PORTABLE rejects non-portable or authenticity-laundered input
+  ---
+  duration_ms: 0.117333
+  type: 'test'
+  ...
+# Subtest: BARRIER-B-ATTRIBUTION rejects attribution-bearing cross-grain input
+ok 7 - BARRIER-B-ATTRIBUTION rejects attribution-bearing cross-grain input
+  ---
+  duration_ms: 0.252833
+  type: 'test'
+  ...
+# Subtest: BARRIER-B-STALE rejects stale recorded digests
+ok 8 - BARRIER-B-STALE rejects stale recorded digests
+  ---
+  duration_ms: 0.146916
+  type: 'test'
+  ...
+# Subtest: BARRIER-B-GRAINS requires four exact independent grains and bounded conclusion
+ok 9 - BARRIER-B-GRAINS requires four exact independent grains and bounded conclusion
+  ---
+  duration_ms: 0.4515
+  type: 'test'
+  ...
+# Subtest: BARRIER-B-CLEAN rejects Issue \#7 edits to dependency-owned paths
+ok 10 - BARRIER-B-CLEAN rejects Issue \#7 edits to dependency-owned paths
+  ---
+  duration_ms: 0.405959
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 61.218708
+{
+  "schemaVersion": "i5-02-barrier-b-result-v1",
+  "resultStatus": "pass",
+  "barrierB": "closed-executable-pass",
+  "issue6MergeSha": "24be3b34c6b0fcdbd07c5800dcab349054e34713",
+  "snapshot": {
+    "mergeSha": "24be3b34c6b0fcdbd07c5800dcab349054e34713",
+    "mergeIsAncestor": true,
+    "trackedClean": true,
+    "issueOwnedPathsChanged": [],
+    "identities": {
+      "contracts/data/retail-golden-v1.json": [
+        "f303282e3b524e1273e702c9b8b24b500aaa01afdd3c3b623ac997afba8840cc",
+        "2bdd653ced3ce3f69652d2b873f21699e1e1fc81"
+      ],
+      "contracts/data/promotion-trust-v1.yaml": [
+        "c30e1938aae6eeffa2adf0c0b3bdee15f7f877d769cce09e171d43dc2f153cfe",
+        "876789d549276b44a6e64cc4c9a471886fd2752b"
+      ],
+      "tests/fixtures/learning/promotion-trust/evidence-v1.json": [
+        "2f4d90228fa2ea8859a8db630ff587b6cebdc10a0bf6b7db25e46c3dc27181d5",
+        "6b5d8a01a59856cdb93a674a0cce5c2bcc9527e0"
+      ],
+      "tests/fixtures/learning/promotion-trust/manifest.json": [
+        "0a1dcd4023648f52009bfd4dc5d529c00ce66f42cd0e725732b972b0b78df341",
+        "a4b32032962f5f787d733f7de8cf657491944e37"
+      ]
+    },
+    "manifest": {
+      "schemaVersion": "promotion-trust-fixture-manifest-v2",
+      "portableSchemaValid": true,
+      "portableIntegrityValid": true,
+      "integrityScope": "local-artifact-integrity-only",
+      "publisherAuthenticity": "externally-attested-not-claimed",
+      "testedTreeIsAncestor": true
+    },
+    "semantics": {
+      "grains": [
+        [
+          "promo_name",
+          "channel"
+        ],
+        [
+          "carrier",
+          "region_name"
+        ],
+        [
+          "reason",
+          "category_name",
+          "region_name"
+        ],
+        [
+          "scenario"
+        ]
+      ],
+      "conclusion": "insufficient-evidence",
+      "reason": "no-common-grain",
+      "crossGrainRelationships": [],
+      "attributionBearingFields": []
+    },
+    "recordedDigests": {
+      "contracts/data/retail-golden-v1.json": "f303282e3b524e1273e702c9b8b24b500aaa01afdd3c3b623ac997afba8840cc",
+      "contracts/data/promotion-trust-v1.yaml": "c30e1938aae6eeffa2adf0c0b3bdee15f7f877d769cce09e171d43dc2f153cfe",
+      "tests/fixtures/learning/promotion-trust/evidence-v1.json": "2f4d90228fa2ea8859a8db630ff587b6cebdc10a0bf6b7db25e46c3dc27181d5",
+      "tests/fixtures/learning/promotion-trust/manifest.json": "0a1dcd4023648f52009bfd4dc5d529c00ce66f42cd0e725732b972b0b78df341"
+    }
+  },
+  "failures": []
+}
+2026-07-21T06:12:55Z
+monotonic_ns=217408788683875
+

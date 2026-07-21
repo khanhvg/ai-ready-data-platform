@@ -1,0 +1,38 @@
+2026-07-21T06:32:49Z
+TAP version 13
+# Subtest: GATE-D-MANUAL missing actual OS evidence forces no-winner
+ok 1 - GATE-D-MANUAL missing actual OS evidence forces no-winner
+  ---
+  duration_ms: 1.595791
+  type: 'test'
+  ...
+# Subtest: GATE-D-NOSCORE eliminated candidates cannot receive numeric scores
+ok 2 - GATE-D-NOSCORE eliminated candidates cannot receive numeric scores
+  ---
+  duration_ms: 0.319
+  type: 'test'
+  ...
+# Subtest: GATE-D-WINNER complete comparable evidence may name only highest passing candidate
+ok 3 - GATE-D-WINNER complete comparable evidence may name only highest passing candidate
+  ---
+  duration_ms: 0.138167
+  type: 'test'
+  ...
+# Subtest: GATE-D-STATUS ADR automation status is Proposed only
+ok 4 - GATE-D-STATUS ADR automation status is Proposed only
+  ---
+  duration_ms: 0.119291
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 50.929042
+2026-07-21T06:32:49Z
+monotonic_ns=218602711898958
+
