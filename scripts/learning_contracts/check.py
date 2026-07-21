@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from . import canonical, references, registry, runtime, schema
+from . import canonical, completion, references, registry, runtime, schema, state
 
 @dataclass(frozen=True)
 class Outcome:
@@ -29,4 +29,8 @@ def evaluate(domain: str, value: Any) -> Outcome:
         return Outcome(references.code(value))
     if domain == "migration":
         return Outcome(registry.migration_code(value))
+    if domain == "state":
+        return Outcome(state.code(value))
+    if domain == "completion":
+        return Outcome(completion.code(value))
     return Outcome("BEHAVIOR_NOT_IMPLEMENTED")
