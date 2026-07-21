@@ -5,8 +5,9 @@ import os
 import pathlib
 import tempfile
 import unittest
+from unittest import mock
 
-from scripts.learning_contracts import canonical, references, schema
+from scripts.learning_contracts import canonical, check, references, schema
 
 
 class SchemaReaderCanonicalReferenceTests(unittest.TestCase):
@@ -103,6 +104,51 @@ class SchemaReaderCanonicalReferenceTests(unittest.TestCase):
                 if 'escaped' in locals():
                     (escaped / "payload").unlink(missing_ok=True)
                     escaped.rmdir()
+
+    def test_six_high_h1_fixture_metadata_cannot_select_result(self) -> None:
+        """A fixture can identify a case, but cannot inject its expected result."""
+        with tempfile.TemporaryDirectory() as temporary:
+            path = pathlib.Path(temporary) / "fixture.json"
+            path.write_text(
+                '{"completionSource":"evidence-presence","completed":true,'
+                '"expectedCode":"COMPLETION_DUAL_TRUTH"}',
+                encoding="utf-8",
+            )
+            self.assert_code(
+                "FIXTURE_METADATA_INVALID",
+                check.validate_invalid_fixture,
+                path,
+                "completion",
+            )
+
+    def test_six_high_h5_intermediate_replacement_cannot_redirect_read(self) -> None:
+        """Replacing a checked component before pathname reopen must not redirect bytes."""
+        with tempfile.TemporaryDirectory() as temporary:
+            base = pathlib.Path(temporary)
+            inside = base / "nested"
+            inside.mkdir()
+            (inside / "payload.json").write_bytes(b"inside")
+            outside = base / "outside"
+            outside.mkdir()
+            (outside / "payload.json").write_bytes(b"outside")
+            original_reader = references.read_regular_bytes
+            replaced = False
+
+            def replace_then_read(path: pathlib.Path) -> bytes:
+                nonlocal replaced
+                if not replaced:
+                    replaced = True
+                    inside.rename(base / "held-inside")
+                    os.symlink("outside", inside)
+                return original_reader(path)
+
+            with mock.patch.object(references, "read_regular_bytes", replace_then_read):
+                raw = references.resolve_reference(
+                    base,
+                    "nested/payload.json",
+                    hashlib.sha256(b"outside").hexdigest(),
+                )
+            self.assertNotEqual(b"outside", raw)
 
 
 if __name__ == "__main__":

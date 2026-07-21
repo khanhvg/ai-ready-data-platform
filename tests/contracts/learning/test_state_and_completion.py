@@ -143,6 +143,38 @@ class StateCompletionApiTests(unittest.TestCase):
         self.assertEqual(202, next(row[3] for row in OPERATIONS if row[0] == "verifyWorkspace"))
         self.assertEqual(202, next(row[3] for row in OPERATIONS if row[0] == "queryDataProduct"))
 
+    def test_six_high_h4_dispatch_executes_authoritative_state(self) -> None:
+        platform = openapi.LearningPlatform()
+        common = {
+            "Authorization": "Bearer learner-1",
+            "X-Correlation-ID": "correlation-1",
+            "Origin": "http://localhost",
+            "Host": "localhost",
+            "X-CSRF-Token": "csrf-1",
+            "Idempotency-Key": "workspace-1",
+            "Content-Type": "application/json",
+        }
+        created = platform.dispatch({
+            "method": "POST",
+            "path": "/v1/labs/promotion-trust-v1/workspaces",
+            "headers": common,
+            "body": {
+                "schemaVersion": "create-workspace-request-v1",
+                "labVersion": "1.0.0",
+                "contractSetSha256": "0" * 64,
+                "parameters": {},
+                "expectedProgressRevision": 0,
+            },
+        })
+        self.assertEqual(201, created["status"])
+        workspace_id = created["body"]["workspaceId"]
+        fetched = platform.dispatch({
+            "method": "GET",
+            "path": f"/v1/workspaces/{workspace_id}",
+            "headers": {"Authorization": "Bearer learner-1", "X-Correlation-ID": "correlation-2"},
+        })
+        self.assertEqual(created["body"], fetched["body"])
+
 
 if __name__ == "__main__":
     unittest.main()

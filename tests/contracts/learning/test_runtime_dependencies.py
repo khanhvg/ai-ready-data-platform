@@ -128,6 +128,24 @@ class S3CommandResourceCleanupTests(unittest.TestCase):
             runtime.cleanup_owned(owned, marker, owned_root=owned.parent)
             self.assertFalse((owned / "mutable.tmp").exists())
 
+    def test_six_high_h6_runtime_admission_is_exact_and_unique(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            expected = {
+                "schemaVersion": "learning-runtime-admission-v1",
+                "interpreterSha256": "1" * 64,
+                "toolSha256": "2" * 64,
+                "lockSha256": "3" * 64,
+                "planSha256": "4" * 64,
+                "inputSha": "abcaa2de7247d99c642fcad1535c24870f08c79f",
+            }
+            self.assert_code("RUNTIME_ADMISSION_COUNT", runtime.select_admitted_runtime, root, expected)
+            for name in ("first", "second"):
+                candidate = root / name
+                candidate.mkdir()
+                (candidate / "runtime-admission.json").write_text(json.dumps(expected), encoding="utf-8")
+            self.assert_code("RUNTIME_ADMISSION_COUNT", runtime.select_admitted_runtime, root, expected)
+
 
 if __name__ == "__main__":
     unittest.main()

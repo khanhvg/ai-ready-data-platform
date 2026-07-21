@@ -164,6 +164,18 @@ class EvidenceFitnessMigrationPromotionTests(unittest.TestCase):
                 root=root,
             )
 
+    def test_six_high_h2_raw_log_binding_is_sanitized_and_exact(self) -> None:
+        raw = "FAILED /Users/alice/work/repo/test.py /tmp/result file:///private/var/a"
+        sanitized = evidence.sanitize_retained_text(raw)
+        self.assertNotIn("/Users/", sanitized)
+        self.assertNotIn("/tmp/", sanitized)
+        self.assertNotIn("/private/", sanitized)
+        self.assertIn("<WORKSPACE>", sanitized)
+        records = [{"id": "H2-RED", "expected": "EXPECTED_TOKEN", "actual": "ACTUAL_TOKEN"}]
+        evidence.verify_raw_log_bindings(records, "EXPECTED_TOKEN\nACTUAL_TOKEN\n")
+        with self.assertRaises(LearningContractError):
+            evidence.verify_raw_log_bindings(records, "EXPECTED_TOKEN\n")
+
 
 if __name__ == "__main__":
     unittest.main()
