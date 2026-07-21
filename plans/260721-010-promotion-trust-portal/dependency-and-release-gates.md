@@ -2,16 +2,32 @@
 
 ## Current Fresh-Live State
 
-Checked on 2026-07-21 after fetching `origin` and reading the live GitHub issue records.
+Rechecked on 2026-07-22 from the exact validation input after comparing local, tracking, and
+fresh-live refs and reading the live GitHub issue records.
 
 | Dependency | Fresh-live fact | Planning use | Implementation consequence |
 |---|---|---|---|
 | Issue #6 | CLOSED/`shipped`; verified merge `24be3b34c6b0fcdbd07c5800dcab349054e34713` | Binding data/fixture truth | Read-only baseline for both stages |
-| Issue #7 | OPEN/`ready for plan audit`; validated simple-Vite planning head `aa93dfac5cd4a5f4d351ad045b634bbd42254902` | Vite + React is the owner-selected direction | Not a merged Vite handoff; Stage A blocked |
-| Issue #8 | OPEN/`ready for plan validation`; planner output `93837667326cb7a298c21921ac04e602ea7313d0` | Confirms candidate Stage A intent only | Not a released contract; Stage A blocked |
-| Issue #9 | OPEN/`ready for plan audit`; validated-plan output `4cea857fd4a79dca966f4c6b8d4350b4e5d372a2` | Confirms runner plan exists only | Not a released runner; Stage B blocked |
+| Issue #7 | OPEN/`ready to cook`; no merged Vite handoff | Vite + React is the owner-selected direction | An audited implementation input is not a merge/release; Stage A blocked |
+| Issue #8 | OPEN/`ready for plan audit`; no released Stage A contract | Confirms validated planning intent only | No consumable completion/evidence/browser contract; Stage A blocked |
+| Issue #9 | OPEN/`ready for plan audit`; no released runner | Confirms validated runner planning intent only | No consumable private runner contract; Stage B blocked |
 
-These heads are provenance facts, not consumable release SHAs. A later head may supersede them.
+These live records are provenance facts, not consumable release SHAs. A later record may
+supersede them.
+
+## Empty Implementation Authority at Validation
+
+Missing dependencies are implementation blockers, not values to fill with provisional heads.
+Both stages therefore have empty authority until real releases exist:
+
+| Stage | File allow-list | Command allow-list | Dependency SHA allow-list | Cookable |
+|---|---|---|---|---|
+| A | `[]` | `[]` | `[]` | `false` |
+| B | `[]` | `[]` | `[]` | `false` |
+
+The owner-selected Vite direction does not authorize an unmerged Issue #7 implementation SHA.
+A later amendment must pin real dependency SHAs and derived file/command allow-lists, then pass
+fresh independent revalidation and dependency-aware readiness before either stage may cook.
 
 ## Gate A — Static Portal Authority
 
@@ -80,7 +96,8 @@ approval.
 
 ## Stage/Branch Strategy
 
-A fresh readiness audit may authorize Stage A independently because it has no runner dependency.
+A later exact-SHA amendment plus fresh readiness audit may authorize Stage A independently
+because it has no runner dependency.
 If Stage A is reviewed and merged while Stage B remains blocked, Issue #10 stays OPEN and must
 retain the non-completing claim. Stage B starts only from a fresh exact integration head that
 contains accepted Stage A and GB-01..GB-05. No rebase, merge, PR, or cook is authorized by this
@@ -88,6 +105,7 @@ plan.
 
 ## Planning STOP Disposition
 
-No unresolved planning STOP exists at publication: missing #7/#8/#9 releases are deliberately
-external implementation gates with a complete fail-closed protocol. Any conflict discovered by
-fresh independent validation or readiness changes this disposition to blocked before cook.
+No unresolved plan-validity STOP remains after independent validation fixes. Missing #7/#8/#9
+releases remain deliberate external implementation STOPs; current file, command, and dependency
+SHA allow-lists are empty. Readiness must remain dependency-blocked until a later amendment pins
+real handoffs and is revalidated. Any mismatch remains `fail`, never a provisional adapter.

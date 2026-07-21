@@ -46,29 +46,19 @@ released #8/#9 interfaces; no fake/ignored fixture or browser-direct privilege.
 
 ## Architecture
 
-Interactive components submit only released logical actions to the same-origin BFF. The BFF
-maps them to exact #9 registry operations, polls/reconciles using released semantics, validates
-evidence, and commits completion through #8. Client route state remains presentation-only. Static
-fallback and explicit unavailable mode remain deployable when execution is disabled.
+Interactive components submit only released logical actions to the same-origin BFF. The BFF maps
+them to exact #9 registry operations and applies the released version-negotiation, CAS,
+idempotency, crash/retry, reset, error, unavailable, and reconciliation semantics. It validates
+evidence and commits completion once through #8. Client route state remains presentation-only.
+Static fallback and explicit unavailable mode remain usable when execution is disabled.
 
 ## Related Code Files
 
-- Modify: `apps/learning-portal/src/client/app/portal-app.tsx`
-- Modify: `apps/learning-portal/src/client/app/portal-router.ts`
-- Modify: `apps/learning-portal/src/client/features/promotion-trust/controlled-failure.tsx`
-- Modify: `apps/learning-portal/src/client/features/promotion-trust/decision-panel.tsx`
-- Modify: `apps/learning-portal/src/client/features/promotion-trust/reset-panel.tsx`
-- Create: `apps/learning-portal/src/client/features/promotion-trust/verified-evidence.tsx`
-- Create: `apps/learning-portal/src/client/features/promotion-trust/evidence-download.tsx`
-- Modify: `apps/learning-portal/src/server/http/bff-router.ts`
-- Modify: `apps/learning-portal/src/server/state/reconciliation.ts`
-- Modify: `apps/learning-portal/src/server/evidence/evidence-service.ts`
-- Create: `apps/learning-portal/tests/e2e/promotion-trust-real-journey.spec.ts`
-- Create: `apps/learning-portal/tests/e2e/runner-crash-retry.spec.ts`
-- Create: `apps/learning-portal/tests/e2e/reset-idempotency.spec.ts`
-- Create: `apps/learning-portal/tests/e2e/evidence-integrity.spec.ts`
-- Modify: focused unit/contract/accessibility/security tests under `apps/learning-portal/tests/**`
-- Delete: none
+- Authorized Stage B create/modify/delete paths now: `[]`.
+- Authorized Stage B implementation commands now: `[]`.
+- Consumable Stage B dependency SHAs now: `[]`.
+- The later exact-SHA amendment must derive the smallest journey/test subset beneath the portal
+  ownership ceiling from accepted Stage A and released #8/#9, then pass revalidation/readiness.
 
 ## Tests Before
 
@@ -105,7 +95,8 @@ evidence download digest. The final exact Make aggregate remains Phase 7.
 
 ## Implementation Steps
 
-1. Allocate a clean namespaced real workspace and retain failing full-journey evidence.
+1. Stop until the later amendment pins real #9 and exact Stage B paths/commands, then allocate a
+   clean namespaced real workspace and retain failing full-journey evidence.
 2. Enable the released start/operation controls through the same-origin BFF only.
 3. Render real controlled-failure evidence and distinct environmental error/remediation states.
 4. Record the exact released decision through canonical #8 state, never client inference.

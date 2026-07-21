@@ -30,7 +30,8 @@ This phase is hard-blocked today and never edits runner/shared-contract source.
 - Prove GB-01..GB-05 and exact #8/#9 cross-release compatibility.
 - Bind only the released #9 private client/API, registry, problems, idempotency, readiness, and
   verified-artifact interface.
-- Implement portal SQLite/reconciliation exactly as the one #8 completion authority specifies.
+- Implement one server-side completion/reconciliation binding exactly as the released #8
+  authority specifies, with no second progress/evidence truth.
 - Keep all runner credentials/config server-only and all browser calls same-origin.
 
 ### Non-functional
@@ -43,29 +44,20 @@ This phase is hard-blocked today and never edits runner/shared-contract source.
 
 ## Architecture
 
-`released-runner-client.ts` is the only BFF→runner adapter. It consumes the exact #9 released
-module or generated client path and authenticates over its private transport. The portal never
-implements runner commands. `completion-repository.ts` and `reconciliation.ts` implement the
-exact #8 transaction/recovery protocol; `evidence-service.ts` accepts only verified immutable #9
-handles and safe #8 evidence metadata.
+One server-only BFF→runner adapter consumes the exact #9 released module or generated client path
+and authenticates over its private transport. The portal never implements runner commands. One
+completion/reconciliation binding implements the exact #8 CAS, transaction, idempotency, and
+recovery protocol; one evidence boundary accepts only verified immutable #9 handles and safe #8
+evidence metadata. Exact modules remain deferred to the later #9 amendment.
 
 ## Related Code Files
 
-- Modify: `apps/learning-portal/src/server/contracts/release-bindings.generated.ts`
-- Create: `apps/learning-portal/src/server/runner/released-runner-client.ts`
-- Create: `apps/learning-portal/src/server/state/completion-repository.ts`
-- Create: `apps/learning-portal/src/server/state/reconciliation.ts`
-- Create: `apps/learning-portal/src/server/evidence/evidence-service.ts`
-- Modify: `apps/learning-portal/src/server/config/runtime-config.ts`
-- Modify: `apps/learning-portal/src/server/http/bff-router.ts`
-- Modify: `apps/learning-portal/src/server/http/http-security.ts`
-- Create: `apps/learning-portal/tests/contracts/runner-release-gate.test.ts`
-- Create: `apps/learning-portal/tests/contracts/completion-authority.test.ts`
-- Create: `apps/learning-portal/tests/security/runner-boundary.test.ts`
-- Create: `apps/learning-portal/tests/security/evidence-download.test.ts`
-- Create: `apps/learning-portal/tests/unit/reconciliation.test.ts`
-- Read only: exact #8/#9 released interfaces and conformance assets
-- Delete: none
+- Authorized Stage B create/modify/delete paths now: `[]`.
+- Authorized Stage B implementation commands now: `[]`.
+- Consumable Stage B dependency SHAs now: `[]`.
+- A later amendment may authorize only the smallest released-#9 integration subset beneath
+  `apps/learning-portal/**` (including portal tests) and the issue fragment after revalidation
+  and readiness.
 
 ## Tests Before
 
@@ -100,13 +92,14 @@ typecheck/build/audit/bundle scans, and `git diff --check`. Do not yet claim ful
 
 ## Implementation Steps
 
-1. Stop unless a fresh Stage B readiness audit authorizes an exact input containing accepted
-   Stage A and the released #9 handoff.
+1. Stop unless a later amendment pins accepted Stage A, released #9, and exact Stage B
+   file/command allow-lists, then passes fresh independent revalidation and Stage B readiness.
 2. Prove GB-01..GB-05, exact #8 compatibility, protected hashes, clean state, and lease ownership.
-3. Retain RED failures before creating any runner client or completion store.
+3. Retain RED failures before creating any runner client or completion binding.
 4. Bind the exact #9 server client/API/registry/problem/idempotency/evidence interfaces.
 5. Add strict BFF mapping, portal session/CSRF, and runner capability/readiness reduction.
-6. Implement the exact #8 SQLite completion transaction and startup reconciliation.
+6. Implement the exact released #8 CAS/completion transaction and startup reconciliation once,
+   using only the storage binding authorized by the amended release matrix.
 7. Implement safe verified-evidence metadata/download service without buffering unbounded bytes.
 8. Run conformance/fault/security/refactor/regression checks and emit Gate B evidence.
 
@@ -124,7 +117,7 @@ typecheck/build/audit/bundle scans, and `git diff --check`. Do not yet claim ful
 | Risk | Mitigation |
 |---|---|
 | #9 lacks required client/harness/verified handle | STOP and return upstream; no local substitute |
-| SQLite driver incompatible with #7 Node | Readiness decision; exact lock; do not switch storage silently |
+| Released #8 storage binding incompatible with #7 Node | Readiness decision; exact lock; do not switch storage or duplicate authority silently |
 | BFF becomes generic runner proxy | Closed operation mapping and unknown-operation negative |
 | Orphan evidence completes on startup | Exact #8 reconciliation/quarantine tests |
 

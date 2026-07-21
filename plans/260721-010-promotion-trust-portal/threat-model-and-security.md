@@ -119,7 +119,8 @@ are external same-origin assets or nonce-free compiled CSS.
 
 ## Storage and Evidence Security
 
-- Portal SQLite is mode-restricted and located in an I5-05 namespaced runtime root.
+- The exact released #8 server-side completion store is mode-restricted and located in an
+  I5-05-namespaced runtime root pinned by the later amendment.
 - Use one transaction for evidence-index/completion commit exactly as #8 specifies.
 - Validate schema/registry/canonicalization, artifact hash graph, tested tree, dependency SHAs,
   fixture/contract/verifier hashes, redaction and retention before completion.
@@ -134,7 +135,8 @@ are external same-origin assets or nonce-free compiled CSS.
 Portal/BFF needs no AWS, Terraform, model, OpenMetadata, Rill, Airflow, MinIO, Lakekeeper, Docker,
 or cloud credential. It passes only the minimum released configuration to the runner client and
 never forwards ambient environment. Tests inject canaries for common cloud/model token names and
-private paths and require zero propagation to browser, logs, child process, SQLite, or evidence.
+private paths and require zero propagation to browser, logs, child process, completion store, or
+evidence.
 
 No endpoint or command may call AWS/cloud/Terraform, install packages at runtime, fetch external
 content, or invoke optional heavy profiles. Dependency installation is a separate locked
@@ -160,8 +162,10 @@ high-confidence assignments/signatures/canary values and inspect matches before 
 
 ## Retention, Cleanup, and Rollback
 
-- Evidence root: `.artifacts/evidence/local-journey/{run-id}/` using
-  `fitness-result-v1` until an exact compatible #8 successor is released and pinned.
+- Evidence root: `.artifacts/evidence/local-journey/{run-id}/` using only the exact
+  portal-compatible result/evidence schema released by #8 and pinned by the later amendment.
+  The current `fitness-result-v1` registry row is read-only provenance, not an I5-05 runtime
+  fallback or permission to preselect a successor version.
 - Retain tests-before failure evidence, dependency manifests, journey result, browser trace,
   screenshots, axe output, download digest, cleanup/rollback result, redaction class, and human
   UAT/approval records through review/release policy.

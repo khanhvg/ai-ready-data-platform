@@ -42,23 +42,20 @@ readiness-authorized implementation input. This phase remains externally blocked
 
 ## Architecture
 
-`verify-release-gates.mjs` reads release metadata and files only after readiness provides their
-exact locators. It verifies before generating `release-bindings.generated.ts`. The binding is an
+The later-amendment release gate reads release metadata and files only after readiness provides
+their exact locators. It verifies before generating any app-owned binding. The binding is an
 index of externally owned interfaces, not a schema copy or migration. The portal build and tests
 depend on this gate; no permissive default exists.
 
 ## Related Code Files
 
-- Create: `apps/learning-portal/scripts/verify-release-gates.mjs`
-- Create: `apps/learning-portal/tests/contracts/release-gates.test.ts`
-- Create: `apps/learning-portal/src/server/contracts/released-contracts.ts`
-- Create: `apps/learning-portal/src/server/contracts/release-bindings.generated.ts`
-- Read only: exact #7/#8 release files selected by GA-01/GA-02
-- Read only: `contracts/data/retail-golden-v1.json`
-- Read only: `contracts/data/promotion-trust-v1.yaml`
-- Read only: `tests/fixtures/learning/promotion-trust/evidence-v1.json`
-- Read only: `tests/fixtures/learning/promotion-trust/manifest.json`
-- Delete: none
+- Authorized Stage A create/modify/delete paths now: `[]`.
+- Authorized Stage A implementation commands now: `[]`.
+- Consumable Stage A dependency SHAs now: `[]`.
+- Later amendment ceiling: `apps/learning-portal/**` (including portal tests) and
+  `mk/issue-5/i5-05.mk`; the four Issue #6 handoff files remain read-only.
+- The amendment must derive exact paths from merged #7 and released #8, then pass revalidation
+  and readiness before this phase can execute.
 
 ## Tests Before
 
@@ -82,13 +79,15 @@ registry, schema fork, copied fixture, or generalized release framework.
 
 ## Regression Gate
 
-Run the exact locked contract test/build commands published by merged #7 and released #8, plus
-the focused I5-05 release-gate test. Record commands in `fitness-result-v1` evidence. Do not run
+Run only the exact locked contract/test/build commands pinned from merged #7 and released #8 by
+the later amendment, plus its focused I5-05 release-gate test. Record results in the exact
+portal-compatible #8 result/evidence schema; `fitness-result-v1` is not a fallback. Do not run
 Stage B or claim the Issue #10 Verify block.
 
 ## Implementation Steps
 
-1. Stop unless fresh independent validation and Stage A readiness authorize one exact input.
+1. Stop unless a later amendment pins exact #7/#8 SHAs and file/command allow-lists, then passes
+   fresh independent revalidation and Stage A readiness at one exact input.
 2. Fetch the authorized integration ref and prove local/tracking/fresh-live equality, clean state,
    ancestry, ownership, and absence of conflicting leases.
 3. Verify GA-01 and copy/promote only the exact accepted Vite foundation/path map and lock.

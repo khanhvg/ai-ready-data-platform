@@ -43,22 +43,19 @@ handoff for later Stage B.
 
 ## Architecture
 
-Stage A lifecycle starts only the portal/BFF in `stage-a-static` mode. The Make fragment delegates
+Stage A lifecycle starts only the portal/BFF in the exact non-completing capability defined by
+released #8 and pinned by the later amendment. Once authorized, the issue Make fragment delegates
 to locked app scripts and emits evidence below the registered local-journey root with stage and
 claim fields. The visual target is deterministic capture + checklist generation; it never marks
 the checklist approved.
 
 ## Related Code Files
 
-- Create/promote: `apps/learning-portal/playwright.config.ts`
-- Create: `apps/learning-portal/tests/e2e/promotion-trust-static.spec.ts`
-- Create: `apps/learning-portal/tests/e2e/no-js-static-fallback.spec.ts`
-- Create: `apps/learning-portal/tests/e2e/runner-unavailable.spec.ts`
-- Create: `apps/learning-portal/tests/visual/portal-visual-review.spec.ts`
-- Create: `apps/learning-portal/tests/security/bundle-and-private-path.test.ts`
-- Create: `apps/learning-portal/scripts/portal-lifecycle.mjs`
-- Create: `mk/issue-5/i5-05.mk`
-- Delete: none
+- Authorized Stage A create/modify/delete paths now: `[]`.
+- Authorized Stage A implementation commands now: `[]`.
+- Consumable Stage A dependency SHAs now: `[]`.
+- The later amendment must explicitly authorize the smallest portal/test subset and
+  `mk/issue-5/i5-05.mk`; the root Makefile remains denied.
 
 ## Tests Before
 
@@ -70,9 +67,10 @@ the checklist approved.
 
 ## Refactor
 
-Keep lifecycle/evidence helpers issue-local. Reuse the accepted #7 Playwright harness and #8
-FitnessResult writer if released. Do not create a second command registry or generalized root
-Make integration.
+Keep lifecycle/evidence helpers issue-local. Reuse only the accepted #7 Playwright harness and
+the exact portal-compatible #8 result/evidence writer when released. Do not treat
+`fitness-result-v1` as a fallback, create a second command registry, or generalize root Make
+integration.
 
 ## Tests After
 
@@ -91,11 +89,14 @@ browser/parser, deterministic render comparison, high-confidence scans, dependen
 
 ## Implementation Steps
 
-1. Retain RED IDs for command/claim/evidence/cleanup failures.
-2. Add Stage A lifecycle and exact I5-05 Make fragment delegates without root Make edits.
+1. Stop until the later amendment pins real dependencies and exact Stage A paths/commands, then
+   retain RED IDs for command/claim/evidence/cleanup failures.
+2. Add Stage A lifecycle and exact I5-05 Make fragment delegates only if that amendment
+   authorizes them, without root Make edits.
 3. Configure the one locked Chromium desktop+narrow smoke and no-JS context.
 4. Implement deterministic bounded visual capture/manifest/checklist.
-5. Emit closed FitnessResult/dependency/evidence manifests with explicit non-completion fields.
+5. Emit closed released-#8 result/dependency/evidence manifests with explicit non-completion
+   fields.
 6. Rehearse status/down/cleanup, stale PID, foreign process/path, and rollback to static build.
 7. Run Stage A regression checks at an exact clean head.
 8. Obtain independent review and human exact-head pre-merge approval only if a fresh readiness

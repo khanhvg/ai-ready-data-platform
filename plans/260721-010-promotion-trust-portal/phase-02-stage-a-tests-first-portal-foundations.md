@@ -40,31 +40,19 @@ completion path.
 
 ## Architecture
 
-The BFF serves built/static assets and only the exact read operations from the #8 release.
-`runtime-config.ts` contains the mode `stage-a-static` and no runner configuration. Client state
-is presentation-only. Security middleware runs before BFF routing and rejects unknown host,
-origin, content type, method, version, and body.
+The BFF serves built/static assets and only the exact read operations from the #8 release. Its
+released Stage A capability reports runner unavailable and contains no runner configuration.
+Client state is presentation-only. Security filtering runs before BFF routing and rejects
+unknown host, origin, content type, method, version, and body.
 
 ## Related Code Files
 
-- Create/promote: `apps/learning-portal/package.json`
-- Create/promote: `apps/learning-portal/package-lock.json`
-- Create/promote: `apps/learning-portal/index.html`
-- Create/promote: `apps/learning-portal/vite.config.ts`
-- Create/promote: `apps/learning-portal/tsconfig.json`
-- Create: `apps/learning-portal/src/client/main.tsx`
-- Create: `apps/learning-portal/src/client/app/portal-app.tsx`
-- Create: `apps/learning-portal/src/client/components/error-summary.tsx`
-- Create: `apps/learning-portal/src/client/components/status-region.tsx`
-- Create: `apps/learning-portal/src/client/components/runner-unavailable.tsx`
-- Create: `apps/learning-portal/src/server/main.ts`
-- Create: `apps/learning-portal/src/server/config/runtime-config.ts`
-- Create: `apps/learning-portal/src/server/http/http-security.ts`
-- Create: `apps/learning-portal/src/server/http/bff-router.ts`
-- Create: `apps/learning-portal/src/shared/problem-details.ts`
-- Create: `apps/learning-portal/src/shared/portal-view-models.ts`
-- Create: `apps/learning-portal/tests/{unit,contracts,security,accessibility}/**`
-- Delete: none
+- Authorized Stage A create/modify/delete paths now: `[]`.
+- Authorized Stage A implementation commands now: `[]`.
+- Consumable Stage A dependency SHAs now: `[]`.
+- A later amendment may authorize only the smallest #7/#8-derived subset beneath
+  `apps/learning-portal/**` (including portal tests) and `mk/issue-5/i5-05.mk` after revalidation
+  and readiness.
 
 ## Tests Before
 
@@ -96,11 +84,13 @@ calling Stage B targets.
 
 ## Implementation Steps
 
-1. Retain the failing tests and exact dependency/input identities.
-2. Promote the minimal accepted #7 Vite files into `apps/learning-portal/**`; remove all loser
+1. Stop until the later amendment pins real dependencies and exact Stage A paths/commands, then
+   retain the failing tests and exact dependency/input identities.
+2. Promote the minimal accepted #7 Vite files inside the authorized portal subset; remove all loser
    candidate code and unneeded score/timer machinery from the product copy.
 3. Add released #8 content loader and safe shared view model; do not copy shared schemas.
-4. Build the loopback BFF with strict headers and exact released read-only operations.
+4. Build the loopback BFF with strict headers and exact released read-only operations within the
+   amended allow-list.
 5. Build the semantic application/status/error skeleton with Stage A banner and no completion.
 6. Add closed runtime mode, offline detection, focus/live-region primitives, and safe errors.
 7. Run focused green/refactor/regression checks and preserve evidence.

@@ -74,9 +74,13 @@ make learn LESSON=promotion-trust
 `apps/learning-portal/**`. It does not edit root Make or invoke Docker/Compose/Rill/Airflow/
 Iceberg/OpenMetadata/AWS/Terraform.
 
-Stage A may run focused locked app commands and only the runner-independent portions of
-`portal-test`/`portal-a11y` after readiness authorizes their target surface. It cannot claim the
-Issue Verify block because `lesson-e2e` and `local-journey-e2e` require Stage B.
+The exact commands above are the immutable acceptance surface, not current implementation
+authority. The existing root Make include seam and command-owner registry reserve them for
+`mk/issue-5/i5-05.mk`. Today both stage command allow-lists are `[]`. After a later exact-SHA
+amendment and readiness authorize the fragment, every target must remain resolvable and return a
+typed non-zero dependency-unavailable result until its own stage gate is satisfied. Stage A may
+then run only the explicitly authorized runner-independent subsets; it cannot claim the Issue
+Verify block because `lesson-e2e` and `local-journey-e2e` require Stage B.
 
 ## Command Acceptance
 
@@ -90,18 +94,18 @@ Issue Verify block because `lesson-e2e` and `local-journey-e2e` require Stage B.
 | `make learn-down` | idempotent owned process-group stop, secret revocation, scoped workspace cleanup, evidence retained, foreign state untouched |
 | `make learn LESSON=promotion-trust` | loopback portal/private runner/core only; useful URL/status/teardown; unsafe prerequisite fails before mutation |
 
-Each required target emits `fitness-result-v1` or the exact released compatible successor under
-`.artifacts/evidence/local-journey/{run-id}/` with command, tool versions, input/output/tested-tree
-SHAs, dependency merge/release SHAs, contract/fixture/lock hashes, assertions, result, artifact
-hashes, redaction/retention class, and rollback result. Missing required tool/evidence is `fail`.
+Each required target emits only the exact portal-compatible result/evidence schema released by #8
+and pinned in the later amendment under `.artifacts/evidence/local-journey/{run-id}/`, with
+command, tool versions, input/output/tested-tree SHAs, dependency merge/release SHAs,
+contract/fixture/lock hashes, assertions, result, artifact hashes, redaction/retention class, and
+rollback result. The current `fitness-result-v1` registry row is not a runtime fallback. Missing
+required tool/evidence is `fail`.
 
 ## Chromium Smoke
 
-Use the exact Chromium revision locked by the merged Issue #7 handoff. The single smoke suite
-runs these fixed viewports:
-
-- desktop: 1440 × 900;
-- narrow: 390 × 844.
+Use the exact Chromium revision and one desktop plus one narrow viewport locked by the merged
+Issue #7 handoff and pinned in the later amendment. This plan does not invent viewport literals
+before that handoff.
 
 Fix locale `en-US`, timezone `UTC`, color scheme, reduced-motion mode, animation/transition
 suppression for capture, seeded data, route, and released dependency hashes. Assertions cover:
@@ -119,8 +123,8 @@ Automated checks are necessary but do not claim full WCAG 2.2 AA or screen-reade
 
 ## No-JavaScript and Static Fallback
 
-A real Chromium context with JavaScript disabled loads `/learn/promotion-trust` and follows the
-static path. A separate parser test reads the built static HTML. Both must prove the same stable
+A real Chromium context with JavaScript disabled loads the exact released interactive entry and
+follows its static path. A separate parser test reads the built static HTML. Both must prove the same stable
 released facts: stakeholder question, four mart IDs/grains, each limitation, expected controlled
 failure, `insufficient-evidence`, `no-common-grain`, reset explanation, baseline fixture label,
 and runner-unavailable/non-completion notice. No fact/control may exist only behind animation,
@@ -146,7 +150,7 @@ Run against the released #9 fault/conformance seams:
 
 `make portal-visual-review` is a bounded artifact generator, not native OS automation. It:
 
-1. runs the locked Chromium at the two fixed viewports;
+1. runs the locked Chromium at the one desktop and one narrow viewport pinned from #7;
 2. captures a fixed state list: entry/question, four-grain context, controlled failure,
    canonical decision, runner unavailable, reset/retry, verified evidence, and static fallback;
 3. records full-page and focused-control screenshots, trace, console/CSP result, viewport,

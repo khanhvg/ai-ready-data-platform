@@ -38,72 +38,32 @@ filesystem locator, arbitrary query capability, or direct artifact path.
 | Evidence | Labelled Issue #6 baseline reference only | Fresh runner evidence + integrity/download |
 | Claim | Readable static lesson shell | Complete local journey |
 
-## Exact Planned Implementation Paths
+## Ownership Ceiling and Deferred File Resolution
 
-The future implementation may create/promote only the following product layout. The exact Issue
-#7 handoff decides which listed Vite/TypeScript scaffolding files are copied unchanged versus
-minimally adapted; a path mismatch at the handoff gate stops implementation.
+The issue-level ownership ceiling is `apps/learning-portal/**` (including portal tests),
+`mk/issue-5/i5-05.mk`, and Issue #10 plan/evidence artifacts. The root Makefile already provides
+the `mk/issue-5/*.mk` include seam and must not change. Shared contracts, dependency source,
+fixtures, root configuration, CI, cloud, AWS, and Terraform remain read-only or denied.
 
-```text
-apps/learning-portal/
-  package.json
-  package-lock.json
-  index.html
-  vite.config.ts
-  tsconfig.json
-  playwright.config.ts
-  scripts/verify-release-gates.mjs
-  scripts/render-static-fallback.mjs
-  src/client/main.tsx
-  src/client/app/portal-app.tsx
-  src/client/app/portal-router.ts
-  src/client/app/route-state.ts
-  src/client/components/error-summary.tsx
-  src/client/components/status-region.tsx
-  src/client/components/runner-unavailable.tsx
-  src/client/features/promotion-trust/business-question.tsx
-  src/client/features/promotion-trust/four-mart-context.tsx
-  src/client/features/promotion-trust/controlled-failure.tsx
-  src/client/features/promotion-trust/decision-panel.tsx
-  src/client/features/promotion-trust/reset-panel.tsx
-  src/client/features/promotion-trust/verified-evidence.tsx
-  src/client/features/promotion-trust/evidence-download.tsx
-  src/client/styles/portal.css
-  src/server/main.ts
-  src/server/config/runtime-config.ts
-  src/server/contracts/released-contracts.ts
-  src/server/contracts/release-bindings.generated.ts
-  src/server/http/bff-router.ts
-  src/server/http/http-security.ts
-  src/server/runner/released-runner-client.ts
-  src/server/state/completion-repository.ts
-  src/server/state/reconciliation.ts
-  src/server/evidence/evidence-service.ts
-  src/shared/problem-details.ts
-  src/shared/portal-view-models.ts
-  src/static/promotion-trust-document.ts
-  tests/unit/
-  tests/contracts/
-  tests/security/
-  tests/accessibility/
-  tests/e2e/
-  tests/visual/
-```
+This validated plan does not select a product tree before the dependencies exist:
 
-Also create `mk/issue-5/i5-05.mk`. Do not modify the root Makefile; Issue #6 already owns the
-include/help seam. `package-lock.json` is staged by exact path if the repository ignore rule still
-matches it; `.gitignore` is never edited.
+| Stage | Authorized create/modify/delete paths now | Authorized implementation commands now | Consumable dependency SHAs now |
+|---|---|---|---|
+| A | `[]` | `[]` | `[]` |
+| B | `[]` | `[]` | `[]` |
 
-The directories in the tree are boundaries, not permission to create every conceivable helper.
-Keep files small and combine components when the released handoff makes a separate file
-unnecessary. No implementation path outside this tree and the issue Make fragment is implied.
+After exact released handoffs exist, a later amendment must derive the smallest concrete file and
+command allow-lists from the merged #7 promotion map and released #8/#9 consumption surfaces.
+That amendment must pin real 40-hex identities, receive independent revalidation and
+stage-specific readiness, and stay inside the ownership ceiling. A candidate path mentioned in
+historical planning is not authority.
 
 ## Contract Binding Policy
 
-`release-bindings.generated.ts` is created only after GA/GB pass. It records exact released
-method/path/`operationId` values, schema/type imports, registry command IDs, version strings, and
-source digests. It is regenerated deterministically from the released handoffs and compared in
-tests. It must not contain:
+An app-owned release-binding artifact may be authorized only by the later exact-SHA amendment. It
+records exact released method/path/`operationId` values, schema/type imports, registry command
+IDs, version strings, and source digests. It must be generated deterministically from the
+released handoffs and compared in tests. It must not contain:
 
 - a route or command copied from draft #8/#9 plans;
 - an I5-05-owned replacement schema or state machine;
@@ -116,6 +76,31 @@ OpenAPI and operation matrix and Issue #9 owns the final private API/registry. B
 released at this planner input, this plan deliberately does not freeze literal API URLs. At Gate
 A/B the generator binds their exact released method/path pairs. Absence or difference is a STOP,
 not an invitation to invent an adapter contract.
+
+## Release-Time Semantic Closure
+
+The later amendment must bind behavior as well as names, without inventing field/status literals:
+
+- **Version negotiation:** pin the exact #8/#9 supported and rejected version sets and their
+  compatibility matrix; an absent, unknown, draft, stale, or downgrade version fails closed.
+- **Single completion authority:** use only #8's released CAS/expected-revision rule and one
+  atomic completion/evidence transaction; the browser, reflection, route, runner, and evidence
+  index are never competing completion writers.
+- **Idempotency and response loss:** pin the released request-key scope, retention, committed
+  replay, in-flight duplicate, conflict, and expiry semantics. A retry with the same identity
+  reconciles one result; it never starts a second mutation.
+- **Crash/restart:** pin the exact committed/in-flight/orphan recovery rules for portal and runner
+  crashes, including when quarantine is mandatory and when a safe retry is allowed.
+- **Reset:** pin #9's exact reset operation and #8's corresponding CAS/progress transition; reset
+  preserves prior immutable evidence, proves the released fresh-ready oracle, and never completes.
+- **Errors and unavailable states:** pin released problem/status classes and remediation for
+  absent, starting, not-ready, crashed, containment-unavailable, conflict, invalid evidence, and
+  controlled lesson failure. Environmental states never advance progress.
+- **Evidence:** pin verified-handle identity, bounded byte/size/media/digest checks, and #8's
+  completion predicate. Metadata, bytes, or hash disagreement blocks download and completion.
+
+If either release omits one of these semantics, the corresponding stage remains disabled and the
+owner issue must supply it; I5-05 does not create a local compatibility contract.
 
 ## Logical Operation Boundary
 
@@ -149,14 +134,13 @@ operations.
 | Workspace/operation/idempotency | Issue #9 runner journal | opaque IDs/status | retry queries/returns committed operation |
 | Verification | Fresh Issue #9 verifier result | read-only summary | stale/uncommitted result cannot complete |
 | Evidence bytes | Issue #9 immutable verified handle | metadata/link only | digest/handle disagreement blocks |
-| Completion/progress | Portal SQLite implementing exact Issue #8 authority | derived read-only state | transaction/reconciliation; browser never writes completion |
+| Completion/progress | One server-side implementation of the exact released Issue #8 authority | derived read-only state | released CAS/transaction/reconciliation; browser never writes completion |
 
-The accepted master authority already selects portal SQLite for completion/progress. Store it
-under an untracked, namespaced I5-05 runtime root such as
-`.artifacts/runtime/learning-portal/{worktree-namespace}/portal.sqlite3`. The exact compatible
-Node driver is selected only from the released Node/package handoff and locked in the app lock.
-If no compatible driver can meet the authority/recovery tests, readiness stops for a reviewed
-decision; do not silently replace SQLite with browser storage or ad hoc JSON.
+The accepted master authority permits local server-side persistence, but Issue #8 owns the exact
+completion/CAS/reconciliation contract and its released binding. The later amendment must pin the
+storage path/driver only if the #7/#8 handoffs make them concrete. If no compatible local binding
+meets the authority/recovery tests, readiness stops for a reviewed decision; do not silently
+replace the authority with browser storage, ad hoc JSON, or a second progress truth.
 
 Never store a runner credential, CSRF token, canonical progress, completion, evidence bytes, raw
 logs, or private locators in `localStorage`, `sessionStorage`, IndexedDB, URL query/fragment, or a
@@ -165,12 +149,9 @@ service-worker cache. Non-sensitive route step and an outstanding idempotency ke
 
 ## Routing, History, and Reset
 
-Portal-owned document routes are:
-
-- `/learn/promotion-trust` — interactive shell; Stage A is read-only.
-- `/learn/promotion-trust/static` — generated semantic static/no-JavaScript equivalent.
-
-The selected narrative step comes from the exact released lesson step ID in the URL query and is
+Exact route literals are deferred to the released #8 browser contract and the later amendment;
+none is authorized now. The interactive and static/no-JavaScript routes must remain same-origin
+and deterministic. The selected narrative step comes from the exact released lesson step ID and is
 validated against the release; no canonical progress or operation state is encoded in the URL.
 Read-only step changes use `pushState`. Status refresh and mutation completion use
 `replaceState`. `popstate` changes only the visible read-only step and fetches canonical state; it
@@ -188,10 +169,9 @@ For reset:
 
 ## Static and No-JavaScript Path
 
-`render-static-fallback.mjs` consumes the exact Issue #8 release through the same validator/view
-model as the interactive route. It deterministically emits
-`dist/learn/promotion-trust/static/index.html` and the `noscript` redirect/link in the built
-entry document. The generated page contains the business question, four grains, calculations,
+The static renderer authorized by the later amendment must consume the exact Issue #8 release
+through the same validator/view model as the interactive route. It deterministically emits the
+released static route and a no-JavaScript link/fallback. The generated page contains the business question, four grains, calculations,
 limitations, controlled-versus-environmental explanation, exact
 `insufficient-evidence / no-common-grain` outcome, reset explanation, baseline-fixture label,
 runner-unavailable state, and no completion control.
