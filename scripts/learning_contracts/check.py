@@ -35,4 +35,6 @@ def evaluate(domain: str, value: Any) -> Outcome:
         return Outcome(completion.code(value))
     if domain == "evidence":
         return Outcome(evidence.code(value))
+    if domain == "operation":
+        return Outcome(schema.operation_code(value))
     return Outcome("BEHAVIOR_NOT_IMPLEMENTED")

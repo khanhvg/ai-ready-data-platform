@@ -17,4 +17,22 @@ def migration_code(value: dict[str, Any]) -> str:
     base = value.get("baseRegistry")
     if isinstance(base, dict) and base.get("sha256") != BASE_SCHEMA_REGISTRY_SHA:
         return "BASE_REGISTRY_HASH_MISMATCH"
-    return "BEHAVIOR_NOT_IMPLEMENTED"
+    if "version" in value and value["version"] not in {"v1", "v2"}:
+        return "SCHEMA_VERSION_UNREADABLE"
+    if value.get("lossless") is False:
+        return "MIGRATION_LOSSY_FORBIDDEN"
+    edges = value.get("edges", [])
+    if edges:
+        graph = {source: target for source, target in edges}
+        for origin in graph:
+            seen: set[str] = set()
+            node = origin
+            while node in graph:
+                if node in seen:
+                    return "MIGRATION_CYCLE"
+                seen.add(node); node = graph[node]
+    if set(value.get("ownedFamilies", [])).intersection(value.get("baseFamilies", [])):
+        return "SCHEMA_FAMILY_COLLISION"
+    if "readableVersions" in value and not set(value["readableVersions"]).issubset(value.get("readers", [])):
+        return "SCHEMA_VERSION_UNREADABLE"
+    return "OK"
