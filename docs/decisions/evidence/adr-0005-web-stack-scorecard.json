@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "adr-0005-web-stack-scorecard-v1",
+  "status": "Proposed",
+  "decision": "no-winner",
+  "acceptanceCanAdvance": false,
+  "implementationInputSha": "8869b9238704719caff5140d9412bb7bebcecc6f",
+  "issue6MergeSha": "24be3b34c6b0fcdbd07c5800dcab349054e34713",
+  "scoreAnchorSha256": "56a15b9babf3e354d5df8279929df0c12e61c2e2e58bc90a8364038b424c9a75",
+  "commonTree": "f00fe97715df5dd469302994349fb95c9412482b",
+  "fixtureConclusion": "insufficient-evidence",
+  "fixtureReason": "no-common-grain",
+  "missingOrInvalidEvidence": [
+    "Actual macOS keyboard traversal was not observable because System Events waited on OS Automation/Accessibility permission.",
+    "Named VoiceOver spoken/semantic traversal could not be captured honestly.",
+    "Actual 200% Chrome zoom, OS reduced-motion review, and actual no-JS comprehension review were therefore not performed.",
+    "Astro failed automated WCAG 2.2 target-size in both Chrome and Firefox."
+  ],
+  "browsers": {"chrome":"150.0.7871.129","firefox":"151.0","playwright":"1.61.1"},
+  "candidates": {
+    "vite": {"mode":"static-mpa-progressive-react","disposition":"INCOMPLETE_MANUAL","numericScore":null,"lockSha256":"96feead881be424d4c0d8d4629d7da0312722a3d7c945d08ed071542ea5d443c"},
+    "astro": {"mode":"static-react-island","disposition":"ELIMINATED","numericScore":null,"reasons":["chrome:target-size:serious","firefox:target-size:serious"],"lockSha256":"78677d1a272fdc5c9758810343f89e82f2914625a03259a575208fe1fafef760"},
+    "next": {"mode":"standalone-app-router","disposition":"INCOMPLETE_MANUAL","numericScore":null,"lockSha256":"4939388a7e7290ec640e418afac94dc68cfba7bf6b5692df61317b4c95de2e8b"}
+  }
+}

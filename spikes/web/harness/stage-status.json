@@ -4,9 +4,9 @@
   "gateA": "authorized-after-gate0",
   "candidates": "authorized-after-barrier-b",
   "barrierB": "closed-executable-pass",
-  "gateC": "blocked",
-  "gateD": "blocked",
-  "fullIssue": "incomplete",
+  "gateC": "incomplete-manual-evidence",
+  "gateD": "proposed-no-winner",
+  "fullIssue": "blocked",
   "issueComplete": false,
   "decisionGrade": false
 }

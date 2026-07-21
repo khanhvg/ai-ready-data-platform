@@ -1,0 +1,7 @@
+import assert from'node:assert/strict';import test from'node:test';import{pathToFileURL}from'node:url';const url=pathToFileURL(new URL('../scripts/decision.mjs',import.meta.url).pathname).href;
+async function load(){try{return await import(url)}catch(e){if(e.code==='ERR_MODULE_NOT_FOUND')assert.fail('GATE-D-RED: missing decision gate');throw e}}
+const complete={barrierB:true,automatedComplete:true,manualComplete:true,comparable:true,withinCap:true,candidates:{vite:{status:'PASS',score:80},astro:{status:'ELIMINATED',score:null},next:{status:'PASS',score:78}}};
+test('GATE-D-MANUAL missing actual OS evidence forces no-winner',async()=>{const{deriveDecision}=await load();const v=structuredClone(complete);v.manualComplete=false;assert.deepEqual(deriveDecision(v),{decision:'no-winner',scoresAllowed:false,acceptanceCanAdvance:false,missing:['actual-os-manual-evidence']})});
+test('GATE-D-NOSCORE eliminated candidates cannot receive numeric scores',async()=>{const{deriveDecision}=await load();const v=structuredClone(complete);v.candidates.astro.score=1;assert.throws(()=>deriveDecision(v),/eliminated.*score/i)});
+test('GATE-D-WINNER complete comparable evidence may name only highest passing candidate',async()=>{const{deriveDecision}=await load();assert.equal(deriveDecision(complete).decision,'vite')});
+test('GATE-D-STATUS ADR automation status is Proposed only',async()=>{const{validateAdr}=await load();assert.equal(validateAdr({status:'Proposed',decision:'no-winner'}),true);assert.throws(()=>validateAdr({status:'Accepted',decision:'vite'}),/Proposed/)});
