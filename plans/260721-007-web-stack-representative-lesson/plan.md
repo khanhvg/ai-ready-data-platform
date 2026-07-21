@@ -23,7 +23,9 @@ masterReadinessSha: "e440c5855732d5d8f5d634e3cc1359c010cc5ed3"
 currentAcceptanceRevision: "i5-02-acceptance-v2"
 currentAcceptanceAmendment: "automation-first-acceptance-amendment-v2.md"
 acceptanceReplanInputSha: "abbcb049b33ee0c6190caedfb5f3ca7fc57b8f59"
-acceptanceReplanStatus: "pending-fresh-independent-plan-validation"
+acceptanceReplanStatus: "validated-pass-with-fixes-awaiting-fresh-readiness-audit"
+independentValidationInputSha: "ae9e2296b971c9134638e66c09302b516f8ad6e6"
+independentValidationReport: "validation/automation-first-independent-validation-report-v2.md"
 barriers:
   gate0: retained-historical-evidence-read-only
   gateA: retained-historical-evidence-read-only
@@ -41,12 +43,15 @@ The binding current revision is
 [`i5-02-acceptance-v2`](./automation-first-acceptance-amendment-v2.md), planned from exact input
 `abbcb049b33ee0c6190caedfb5f3ca7fc57b8f59` after the
 [owner acceptance decision](https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5035256304).
-It is `PLANNER_ONLY_NOT_VALIDATED` until a fresh independent validator and then a fresh readiness
-auditor pass the exact amendment output SHA. It supersedes only the earlier clauses that made deep
-VoiceOver desktop-key traversal, macOS System Settings Reduce Motion, or native Chrome-menu 200%
-proof block the Issue #7 stack decision. Those three checks are deferred owner UAT/release risks;
-they contribute neither an automated pass nor score. Every other TDD, S3, fixture, fairness,
-retention, rollback, exact-head review, and human pre-merge gate remains binding.
+The planner handoff at input `ae9e2296b971c9134638e66c09302b516f8ad6e6` was
+`PLANNER_ONLY_NOT_VALIDATED`; the fresh independent validator recorded `PASS_WITH_FIXES` in the
+[automation-first validation report](./validation/automation-first-independent-validation-report-v2.md).
+A fresh readiness audit must still pass the exact published validation output. The amendment
+supersedes only the earlier clauses that made deep VoiceOver desktop-key traversal, macOS System
+Settings Reduce Motion, or native Chrome-menu 200% proof block the Issue #7 stack decision. Those
+three checks are deferred owner UAT/release risks; they contribute neither an automated pass nor
+score. Every other TDD, S3, fixture, fairness, retention, rollback, exact-head review, and human
+pre-merge gate remains binding.
 
 ## Overview
 
@@ -125,7 +130,7 @@ unchanged until the normal CLI-managed downstream transitions occur.
 | 4 | [Next App Router Foundation](./phase-04-next-app-router-foundation.md) | Pending / deferred | Not authorized by this audit; requires a later readiness audit, then 90m/3h kills |
 | 5 | [React Vite Typed API Foundation](./phase-05-react-vite-typed-api-foundation.md) | Pending / deferred | Not authorized by this audit; requires a later readiness audit, then 90m/3h kills |
 | 6 | [Barrier B Issue 6 Fixture Handoff](./phase-06-barrier-b-issue-6-fixture-handoff.md) | Pending / blocked | Merged #6 SHA + four exact digests + schema result |
-| 7 | [Gate C Real Fixture Rerun and Score](./phase-07-gate-c-real-fixture-rerun-and-score.md) | Pending / blocked | Barrier B + fresh browser + manual accessibility; shares final 2h window |
+| 7 | [Gate C Real Fixture Rerun and Score](./phase-07-gate-c-real-fixture-rerun-and-score.md) | Pending / blocked | Historical v1 text only; current runtime is equal automated Gate C v2, with the three native checks deferred to non-scoring release UAT |
 | 8 | [Gate D ADR Retention and Handoff](./phase-08-gate-d-adr-retention-and-handoff.md) | Pending / blocked | Complete Gate C; no extra budget beyond the final 2h window |
 
 ## Dependencies and Timing
@@ -161,8 +166,8 @@ Gate 0 -> Gate A -> Astro foundation ----+
 - [Security S3 disposition](./security-s3-disposition.md)
 - [Issue #6 fixture handoff](./issue-6-fixture-handoff.md)
 - [Implementation handoff](./implementation-handoff.md)
-- [Fresh readiness audit](./audit/readiness-audit-report.md)
-- [Authorized Gate 0/Gate A cook scope](./audit/cook-scope-gate-a.md)
+- [Historical readiness audit — not v2 authority](./audit/readiness-audit-report.md)
+- [Historical Gate 0/Gate A cook scope — not v2 authority](./audit/cook-scope-gate-a.md)
 - Preserved [discovery package](./discovery/planner-handoff.md)
 
 ## Plan Acceptance
@@ -194,21 +199,33 @@ Gate 0 -> Gate A -> Astro foundation ----+
 
 ## Planner Boundary
 
-Independent validation and a fresh readiness audit are the next external phases. This fresh
-automation-first acceptance replanner performed only authority research, plan authoring,
+The fresh automation-first acceptance replanner performed only authority research, plan authoring,
 planning-only structure/consistency checks, and publication. It did not validate, red-team, audit,
-implement, install, build, score, or merge.
+implement, install, build, score, or merge. Independent validation has now passed with the fixes
+recorded above; the sole next external phase is a fresh readiness audit.
 
 ## Readiness Audit Boundary
 
-The next fresh independent validator evaluates the exact published v2 replan SHA. Only after that
-passes may a fresh readiness auditor publish a bounded v2 cook scope. The earlier
+The fresh independent validator evaluated the exact published v2 replan SHA and recorded
+`PASS_WITH_FIXES`. A fresh readiness auditor must now evaluate the exact published validation
+output before publishing any bounded v2 cook scope. The earlier
 `audit/cook-scope-gate-a.md` remains historical and cannot authorize v2. Candidate source/locks,
 prior evidence, and Barrier B inputs remain immutable; v2 browser automation, scoring, ADR,
 review, PR, and merge remain unavailable until their explicit state transitions. Readiness audit
 cannot synthesize the required human pre-merge approval.
 
 ## Validation Log
+
+### 2026-07-21 — Fresh automation-first independent validation
+
+- Input: exact planner output `ae9e2296b971c9134638e66c09302b516f8ad6e6`.
+- Result: `PASS_WITH_FIXES`; no readiness, implementation, evidence, score, ADR, PR, or merge claim.
+- Corrected only current planning authority/index/matrix surfaces: exact three-item supersession,
+  deterministic keyboard/semantic/reflow/no-JS evidence, frozen dependency/API resolution,
+  fail-closed evidence schema, cache/profile equality, RED provenance, and timer accounting.
+- Whole-plan consistency sweep found zero unresolved contradictions after treating legacy v1
+  phases/companions as immutable historical text governed by the exact v2 supersession ledger.
+- See [automation-first independent validation report v2](./validation/automation-first-independent-validation-report-v2.md).
 
 ### 2026-07-21 — Independent initial validation
 

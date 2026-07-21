@@ -2,7 +2,7 @@
 title: "Issue #7 Automation-First Acceptance Amendment v2"
 issue: 7
 phase: fresh-automation-first-acceptance-replan
-status: pending-independent-validation
+status: validated-pass-with-fixes-awaiting-readiness-audit
 priority: P1
 acceptanceRevision: "i5-02-acceptance-v2"
 inputSha: "abbcb049b33ee0c6190caedfb5f3ca7fc57b8f59"
@@ -14,6 +14,8 @@ ownerDecisionComment: "https://github.com/khanhvg/ai-ready-data-platform/issues/
 cumulativeUsedSeconds: "3255.163904292"
 remainingSeconds: "3944.836095708"
 plannerBoundary: "PLANNER_ONLY_NOT_VALIDATED"
+validationInputSha: "ae9e2296b971c9134638e66c09302b516f8ad6e6"
+validationReport: "validation/automation-first-independent-validation-report-v2.md"
 created: "2026-07-21"
 ---
 
@@ -22,14 +24,17 @@ created: "2026-07-21"
 ## Verdict and Planning Boundary
 
 `i5-02-acceptance-v2` is the additive automation-first acceptance contract requested by the Issue
-#7 owner. This file is a plan only. It is `PLANNER_ONLY_NOT_VALIDATED`: it does not prove any gate,
-authorize implementation, run a browser, alter a candidate, apply a score, select a framework,
-change ADR-005, create a PR, approve a merge, merge, or authorize a production release.
+#7 owner. The immutable planner handoff at validation input
+`ae9e2296b971c9134638e66c09302b516f8ad6e6` was `PLANNER_ONLY_NOT_VALIDATED`. A fresh independent
+validation now records `PASS_WITH_FIXES` in
+[`validation/automation-first-independent-validation-report-v2.md`](./validation/automation-first-independent-validation-report-v2.md).
+This file remains a plan only: validation does not prove readiness or any product gate, authorize
+implementation, run a browser, alter a candidate, apply a score, select a framework, change
+ADR-005, create a PR, approve a merge, merge, or authorize a production release.
 
-The next phase is a fresh independent validation against the exact commit that first contains this
-amendment. A fresh readiness audit must follow a passing validation before any implementation or
-evidence run. The readiness audit must name the exact full `IMPLEMENTATION_INPUT_SHA`, exact v2
-paths, the cumulative timer start, and the single-writer lease.
+The next phase is a fresh independent readiness audit against the exact published validation output.
+It must pass before any implementation or evidence run and must name the exact full
+`IMPLEMENTATION_INPUT_SHA`, exact v2 paths, cumulative timer start, and single-writer lease.
 
 ## Immutable Authority and Provenance
 
@@ -82,6 +87,13 @@ The superseded locations are the manual-accessibility Gate C wording in `plan.md
 Those files remain immutable historical records. No desktop-key, CuaDriver, native Chrome menu,
 VoiceOver, Caption Panel, System Settings, TCC, personal profile, Hermes foreground, or OS-mutation
 technique audit may resume under v2.
+
+Legacy phrases such as `fresh browser + manual accessibility`, `current-browser/manual AT`, and
+the old `web-manual-a11y-check` target are non-executable historical text under v2. They cannot be
+invoked by Gate C v2, appear in `mustPass`, block scoring/local decision/PR creation, or contribute
+numeric points. Only the three checklist items in [Manual UAT and Residual Accessibility Risk](#manual-uat-and-residual-accessibility-risk)
+retain those native techniques, outside automation and scoring, as production-release sign-off
+risk. Every other legacy gate remains binding through its v2 automated or unchanged control.
 
 ### Still binding without reduction
 
@@ -145,12 +157,13 @@ accessibility risk before production release. A missing or failing item:
 - `FR-03`: Execute the deterministic keyboard action table below for both candidates with exact
   role/name/state/focus evidence.
 - `FR-04`: Run axe and produce normalized semantic/ARIA snapshots at every required checkpoint.
-- `FR-05`: Capture labelled 200%-equivalent and 320px narrow screenshots and numeric layout/focus
-  assertions without a native zoom claim.
+- `FR-05`: Capture labelled baseline, 640x400/device-scale-2 200%-equivalent, and separate 320px
+  narrow screenshots in Chrome and Firefox, with font/raster/layout/focus assertions and no native
+  zoom claim.
 - `FR-06`: Emulate reduced motion, preserve all required facts/controls, and prove nonessential
   animations/transitions are absent.
-- `FR-07`: Run a dedicated JavaScript-disabled project and dependency-free static parser for the
-  complete comprehension inventory.
+- `FR-07`: Run a real pre-navigation JavaScript-disabled project and dependency-free static parser
+  for the complete comprehension and interaction-degradation inventory.
 - `FR-08`: Record equal fixture/source/lock/browser/environment/order/cache/sample/resource inputs.
 - `FR-09`: Run equal S3, retention, rollback, and non-copy checks for Vite and Next.
 - `FR-10`: Apply immutable score anchors v2 only after complete must-pass evidence; never edit an
@@ -163,8 +176,8 @@ accessibility risk before production release. A missing or failing item:
 ### Non-functional requirements
 
 - `NFR-01 Determinism`: retries `0`, Playwright workers `1`, fixed locale `vi-VN` with recorded
-  fallback, timezone `Asia/Ho_Chi_Minh`, viewport/device scale, ports, browser versions, fixture
-  hashes, and exact ordered actions.
+  fallback, timezone `Asia/Ho_Chi_Minh`, exact per-project viewport/device scale, ports, browser
+  versions, fixture hashes, and exact ordered actions.
 - `NFR-02 Accessibility honesty`: automated scope is named exactly; deferred UAT never appears in
   `automatedPass`, `mustPass`, or numeric score fields.
 - `NFR-03 Resource safety`: serialized execution; no Docker; no heavy local profile; combined
@@ -194,7 +207,7 @@ frozen Vite/Next bytes + Issue #6 fixture + i5-02-acceptance-v2
   -> immutable score-anchors-v2 derivation
   -> Proposed ADR-005 winner/no-winner + deferred-UAT residual risk
   -> two independent exact-head reviews
-  -> PR -> exact-head human approval -> merge -> pristine verification
+  -> PR -> exact-head CI + human approval -> merge -> pristine verification
 ```
 
 ### Create after RED
@@ -208,6 +221,7 @@ frozen Vite/Next bytes + Issue #6 fixture + i5-02-acceptance-v2
 | `spikes/web/harness/authority-v2.json` | New implementation input, immutable identities, exact allow/deny paths |
 | `spikes/web/harness/stage-status-v2.json` | Explicit validation/audit/cook/Gate C/Gate D/UAT/release states |
 | `spikes/web/harness/score-anchors-v2.json` | Frozen automated-only 0..5 anchors and original weights |
+| `spikes/web/harness/playwright-deps.mjs` | Explicit relative bridge to the frozen Vite lock's Playwright/axe install; no harness package or ambient resolution |
 | `spikes/web/harness/playwright.config.mjs` | Serialized project matrix, zero retries, common environment |
 | `spikes/web/harness/playwright/candidate-fixture.mjs` | Candidate/base URL binding, normalized checkpoints, evidence writer |
 | `spikes/web/harness/playwright/journey.spec.mjs` | Complete journey in Chromium and Firefox |
@@ -234,11 +248,11 @@ frozen Vite/Next bytes + Issue #6 fixture + i5-02-acceptance-v2
 | `spikes/web/harness/tests/retention-v2.test.mjs` | v1 rewrite, self-indexing, missing artifact, unsafe path/field, bad parent digest |
 | `spikes/web/harness/tests/manual-uat-v1.test.mjs` | Only pending/pass/fail, human sign-off semantics, forbidden conformance claims |
 
-### Modify only after the RED record exists
+### Existing files: read-only or modify only after the RED record exists
 
 | Path | Additive change |
 |---|---|
-| `spikes/web/harness/test-ids.json` | Do not edit v1; instead reference the v1 digest from `acceptance-contract-v2.json` and use new v2 IDs in that file |
+| `spikes/web/harness/test-ids.json` | Read only; reference the v1 digest from `acceptance-contract-v2.json` and define new v2 IDs only in that additive contract |
 | `mk/issue-5/i5-02.mk` | Add explicit `*-v2` targets; preserve old targets for historical reproduction |
 | `docs/decisions/0005-web-stack.md` | Gate D only: keep `Proposed`, record v2 outcome and residual risk |
 | `docs/decisions/evidence/adr-0005-web-stack-scorecard.{md,json}` | Gate D only: derive from v2 indexes; no hand-edited observation |
@@ -249,6 +263,31 @@ under `spikes/web/evidence/retained/gate-c-v2/<run-id>/**` and
 `spikes/web/evidence/retained/gate-d-v2/<run-id>/**`. The new
 `spikes/web/evidence/retention-index-v2.json` records the SHA-256 of the immutable v1 retention
 index as its parent and indexes only new or explicitly inherited artifacts without rewriting v1.
+
+### Frozen tool and API resolution
+
+The repository has no harness `package.json` by design. All three immutable candidate locks already
+pin `@playwright/test@1.61.1` and `@axe-core/playwright@4.12.1`. The v2 harness therefore uses the
+Vite candidate's clean exact-lock install as the single toolchain owner for both Vite and Next:
+
+- `playwright-deps.mjs` imports only through explicit repository-relative paths beneath
+  `spikes/web/candidates/vite/node_modules/`; no bare import, `NODE_PATH`, symlink, `npx` download,
+  new manifest, or lock change is allowed;
+- the authority/comparability tests require the Vite and Next locks to name the same exact
+  Playwright and axe versions before that bridge is usable;
+- the orchestrator spawns
+  `spikes/web/candidates/vite/node_modules/.bin/playwright test --config spikes/web/harness/playwright.config.mjs`
+  without a shell and binds the same installed browser executables to both candidates; and
+- Playwright 1.61.1's typed APIs `locator.ariaSnapshot()`, `response.body()`,
+  `javaScriptEnabled`, `reducedMotion`, and `deviceScaleFactor` are the allowed primitives. A
+  missing API, Chrome channel, or matching Playwright Firefox executable is a fail-closed tool
+  preflight, not permission to install a browser, select another channel, or add a dependency.
+
+`static-html-parser-v2.mjs` uses only Node built-ins and a narrowly specified tokenizer: UTF-8
+decode, comments/doctype removal, start/end-tag nesting validation, attribute/entity decoding,
+script/style/template exclusion, source-order visible-text extraction, and malformed-input
+rejection. It does not claim a Node-provided HTML parser and may not import a transitive candidate
+package.
 
 ### Immutable implementation inputs
 
@@ -271,16 +310,22 @@ source-fix authority or extra time.
    lease, exact v2 paths, S3/TDD, and rollback; it names the sole implementation input.
 5. Only readiness PASS changes the workflow label to `ready to cook`.
 
-Any correction produces a new planner output and requires fresh validation. This planner does not
-perform either gate.
+An objective planning-only defect corrected by the independent validator may produce
+`PASS_WITH_FIXES` only after the same fresh session reruns the full verification and whole-plan
+consistency sweep. Any material change to owner scope, acceptance, architecture, timer, frozen
+input, or decision rule requires a new planner output and a new independent validation. The
+original planner performed neither gate.
 
 ### Phase 1 — RED contract and provenance
 
 1. Start the additive timer immediately before the first v2 implementation/test write or timed
    implementation command, whichever occurs first.
-2. Add only the seven v2 unit test files and inert invalid test fixtures. Record a binary-safe,
-   sorted whole-tree pre-RED manifest, its SHA-256, exact input SHA, monotonic/UTC timer boundary,
-   and path list before execution.
+2. The timer-start receipt is the first timed write: an existing host `node --input-type=module -e`
+   command captures `process.hrtime.bigint()` and UTC before it creates
+   `.artifacts/evidence/web-spike/<run-id>/tdd/timer-start-v2.json`. No v2 file, directory, install,
+   or generated fixture may precede that receipt. Add only the seven v2 unit test files and inert
+   invalid test fixtures, then record a binary-safe, sorted whole-tree pre-RED manifest, its
+   SHA-256, exact input SHA, start-receipt digest, and path list before execution.
 3. Run separately and retain full TAP/exit status:
 
 ```bash
@@ -295,7 +340,10 @@ node --test spikes/web/harness/tests/manual-uat-v1.test.mjs
 
 4. Expected RED is non-zero for absent v2 contracts/scripts, with every planned assertion executed.
    Syntax errors, missing test discovery, skipped/todo assertions, weakened v1 semantics, or a
-   candidate/source edit are invalid RED and stop the run.
+   candidate/source edit are invalid RED and stop the run. Tests must register every `node:test`
+   case before attempting a planned import/read; absent modules/contracts are loaded inside each
+   test case and fail that named assertion. A top-level missing-module abort that prevents the full
+   TAP test-name inventory from running is invalid RED.
 5. Retain sanitized RED provenance at
    `spikes/web/evidence/retained/gate-c-v2/<run-id>/tdd/red/**` only after GREEN confirms the
    intended failures.
@@ -363,9 +411,15 @@ It must execute, in order:
    retention digests, findings, and `PASS|FAIL`. A change after review invalidates both reports.
 3. PR creation is allowed only after both reviews pass and all revised automated/scoring gates pass.
    The PR may carry deferred UAT as pending residual risk.
-4. PR merge remains blocked until a repository-authorized human reviews the final exact PR head and
+4. PR merge remains blocked until every repository-required CI/status check reports success for the
+   exact final PR head and a repository-authorized human reviews that same head and
    records explicit approval naming that SHA. Standing auto-approval, the owner planning comment,
-   an agent, a score, or a label cannot synthesize this approval.
+   an agent, a score, a label, or an agent-authored status comment cannot synthesize either gate.
+   At validation time the repository exposes zero GitHub Actions workflows and zero protected-
+   branch status contexts. Issue #7 does not gain `.github/**` write authority: the readiness audit
+   records this as an external merge dependency, and a repository owner must provide/enable and
+   identify the exact-head CI path/context before merge. Current absence does not block local cook
+   or PR creation, but it does block merge and is never recorded as “CI passed.”
 5. After merge, fetch the merge commit into a pristine temporary worktree and rerun authority,
    shared/unit/v2 contract, clean build, Gate C v2 reproduction, S3, retention, and rollback checks.
    Do not release while deferred UAT is pending/failing. Remove the temporary worktree only after
@@ -375,8 +429,9 @@ It must execute, in order:
 
 `spikes/web/harness/playwright.config.mjs` uses `workers: 1`, `retries: 0`,
 `fullyParallel: false`, `repeatEach: 1`, traces/screenshots retained on first failure plus required
-checkpoints, locale `vi-VN`, timezone `Asia/Ho_Chi_Minh`, device scale `1`, and a fresh browser
-context per project. The exact projects are:
+checkpoints, locale `vi-VN`, timezone `Asia/Ho_Chi_Minh`, and a fresh non-persistent browser context
+with empty storage/cache state per project. Baseline projects use device scale `1`; the declared
+200%-equivalent projects use device scale `2` as specified below. The exact projects are:
 
 | Project | Engine/use | Required specs/claim |
 |---|---|---|
@@ -384,8 +439,10 @@ context per project. The exact projects are:
 | `journey-firefox` | frozen Playwright Firefox, `1280x800`, JS on | same complete journey, axe, semantic snapshots |
 | `keyboard-chromium` | stable Chrome, `1280x800`, JS on | action table, visible focus, parity, no trap |
 | `keyboard-firefox` | Firefox, `1280x800`, JS on | identical action table and parity |
-| `reflow-200-equivalent-chromium` | Chrome, `640x400`, JS on | CSS-viewport 200%-equivalent only; never native zoom |
-| `reflow-narrow-chromium` | Chrome, `320x800`, JS on | narrow linear reflow and focus visibility |
+| `reflow-200-equivalent-chromium` | Chrome, `640x400`, device scale `2`, JS on | CSS-viewport/raster 200%-equivalent only; never native zoom |
+| `reflow-200-equivalent-firefox` | Firefox, `640x400`, device scale `2`, JS on | identical CSS-viewport/raster 200%-equivalent contract |
+| `reflow-narrow-chromium` | Chrome, `320x800`, device scale `1`, JS on | separate narrow linear reflow and focus visibility |
+| `reflow-narrow-firefox` | Firefox, `320x800`, device scale `1`, JS on | identical separate narrow contract |
 | `reduced-motion-chromium` | Chrome, `1280x800`, `reducedMotion: reduce` | facts/controls unchanged; nonessential motion removed |
 | `no-js-chromium` | Chrome, `1280x800`, `javaScriptEnabled: false` | complete comprehension plus saved response/parser |
 
@@ -394,11 +451,43 @@ and evidence root. The orchestrator supplies exactly `vite` and `next`. An unkno
 different project list, extra browser, retry, parallel worker, changed locale/timezone/viewport,
 or missing output is non-zero.
 
+The orchestrator runs this exact project list once for Vite and once for Next with identical
+configuration bytes. It never reuses a persistent user-data directory, storage state, HTTP cache,
+service worker, page, or browser context across candidate/project boundaries. Browser-cache
+warmth is not a candidate measurement input; application cold/warm samples use only the separately
+declared server/runtime cache policy. Any profile/cache carryover, project omission, or candidate-
+specific override invalidates the whole comparison and produces no score.
+
 ## Deterministic Keyboard Action Table
 
 Each row runs from a fresh context for both Vite and Next in both keyboard projects. Focus evidence
 records step, key, active element role/name/state, URL/hash, status text, target rectangle,
 viewport, computed outline/box-shadow/contrast inputs, occlusion result, and screenshot digest.
+
+The acceptance contract freezes these evidence action IDs independently of DOM `id` attributes.
+Each ID maps to exactly one role/name/fragment tuple; a missing, duplicate, renamed, or extra
+interactive target fails rather than falling back to source order or a CSS selector:
+
+| Action ID | Exact role/name | Exact target/state |
+|---|---|---|
+| `ACT-LINK-01` | link `1. Orient` | `#act-1` |
+| `ACT-LINK-02` | link `2. Question` | `#act-2` |
+| `ACT-LINK-03` | link `3. Inspect promotion grain` | `#act-3` |
+| `ACT-LINK-04` | link `4. Inspect fulfillment grain` | `#act-4` |
+| `ACT-LINK-05` | link `5. Inspect returns grain` | `#act-5` |
+| `ACT-LINK-06` | link `6. Inspect data-quality grain` | `#act-6` |
+| `ACT-LINK-07` | link `7. Try the headline` | `#act-7` |
+| `ACT-LINK-08` | link `8. Observe controlled failure` | `#act-8` |
+| `ACT-LINK-09` | link `9. Verify evidence boundaries` | `#act-9` |
+| `ACT-LINK-10` | link `10. Reflect and reset` | `#act-10` |
+| `PROBE-RUN` | button `Run bounded probe` | controlled-failure status |
+| `PROBE-RESET` | button `Reset` | exact baseline status |
+| `FIXTURE-DIGEST-DISCLOSURE` | button `Fixture digest facts` (`summary` element) | expanded state |
+
+Every keyboard event must cause an observed `document.activeElement` transition to the registry
+entry expected for that step; enumerating focusable DOM nodes or calling `.focus()` is not evidence.
+Each before/after state retains a viewport screenshot and `locator.ariaSnapshot()` result with the
+same action ID, candidate, engine, tested source, and state digest.
 
 | Step | Action | Required result |
 |---|---|---|
@@ -410,7 +499,7 @@ viewport, computed outline/box-shadow/contrast inputs, occlusion result, and scr
 | `K-06` | Fresh state; activate `Run bounded probe` with `Space` | Normalized state/status digest equals `K-05` |
 | `K-07` | Focus `Reset`; activate independently with `Enter` and `Space` | Each route returns the same baseline status/digest; focus stays on Reset; repeated reset is idempotent |
 | `K-08` | Focus `Fixture digest facts`; activate with `Enter` and `Space` | Disclosure open/closed states and accessible state are equivalent; focus stays on summary |
-| `K-09` | Press `Escape`, then `Tab`, from each custom/disclosure/control state | Escape never strands focus; next expected target is reachable |
+| `K-09` | Press `Escape`, then `Tab`, from each disclosure/control state; assert dialog/modal inventory | Escape never mutates lesson state or strands focus; the frozen build's expected dialog/modal count is zero, and any unexpected open modal/dialog is a hard failure rather than a synthetic modal-escape pass |
 | `K-10` | Traverse until the final tabbable plus two bounded steps | No element repeats unexpectedly, no page-owned focus loop, and focus exits/returns according to browser default |
 | `K-11` | Compare keyboard activation with Playwright `click()` in separate clean contexts | Normalized URL, state, status, evidence, and storage digests match; click is parity evidence, not keyboard evidence |
 
@@ -455,6 +544,14 @@ or out-of-order targets. The required target inventory is:
 - reset: control, baseline/status result, and non-completion invariant; and
 - reflection: the Act 10 heading, reflection/review text, and reachable reset/review controls.
 
+For every checkpoint, `locator.ariaSnapshot()` of the page/main and role-based locator assertions
+are the semantic source; a hand-built DOM role guess, tag-name count, axe result, or source-text
+search cannot substitute. DOM reads are used only for complementary source order, relationship,
+computed-style, and geometry facts, and their target IDs must join one-to-one to the ARIA snapshot.
+The retained checkpoint bundle contains the complete ARIA snapshot, normalized schema record,
+viewport and full-page screenshots, and digests for all three; truncation or a screenshot-only/
+DOM-only record is missing evidence.
+
 Axe runs WCAG 2 A/AA, 2.1 A/AA, and 2.2 AA tags in both journey engines. Axe is necessary but
 not sufficient; a zero-violation result cannot replace any snapshot, focus, reflow, motion,
 static, or deferred-UAT record.
@@ -463,22 +560,38 @@ static, or deferred-UAT record.
 
 ### Reflow and false-claim prevention
 
-For both surviving candidates, capture entry, controlled failure, four-grain evidence,
-conclusion, reset, and reflection at `640x400` and `320x800`. For every screenshot assert:
+For both surviving candidates in both Chrome and Firefox, capture entry, controlled failure,
+four-grain evidence, conclusion, reset, and reflection in two separate modes:
+
+- `200%-equivalent`: compare the `1280x800`/device-scale-1 baseline with a `640x400` CSS viewport
+  rendered at device scale `2`, producing a `1280x800` raster. Assert the same computed root/body
+  and required-target CSS font sizes, line-height rules, and author styles as baseline. Halving the
+  CSS viewport while doubling raster scale represents only this revision's deterministic
+  200%-equivalent layout/reflow and visual-magnification contract; it neither invokes nor models,
+  verifies, or claims native browser zoom behavior.
+- `narrow`: use a distinct `320x800` CSS viewport at device scale `1`; never label this narrow-
+  width result as 200%-equivalent.
+
+For every candidate/engine/checkpoint screenshot assert:
 
 - document `scrollWidth <= clientWidth + 1`; a code block may scroll internally but cannot expand
   the page;
-- required target rectangles do not overlap each other, leave the document bounds, or intersect a
-  fixed/sticky overlay;
+- required target rectangles have positive dimensions, are not clipped by an ancestor, do not
+  overlap each other, leave the document/viewport bounds when required visible, render offscreen,
+  or intersect a fixed/sticky overlay;
 - every focused control is fully visible after native focus scrolling and passes the focus
-  occlusion test;
+  occlusion and `elementFromPoint` center/corner tests;
 - source/narrative order remains linear and no two-dimensional narrative scroll is needed; and
-- full-page and viewport screenshot byte hashes are retained.
+- full-page and viewport screenshot byte hashes, CSS/raster dimensions, computed font records, and
+  geometry records are retained.
 
 The evidence record must say:
 
 ```text
 evidenceKind=css-viewport-200-percent-equivalent
+baselineCssViewport=1280x800
+equivalentCssViewport=640x400
+equivalentDeviceScaleFactor=2
 nativeChromeMenuZoomPerformed=false
 nativeChromeMenuZoomStatus=deferred-owner-uat
 ```
@@ -496,8 +609,11 @@ actual macOS Reduce Motion validation.
 
 ### JavaScript-disabled complete comprehension
 
-The `no-js-chromium` project saves the original response bytes before DOM normalization. The
-dependency-free static parser and the browser DOM must independently find, in source order:
+The real `no-js-chromium` project creates its context with `javaScriptEnabled: false` before the
+first request and saves `response.body()` bytes before DOM normalization. Request interception,
+script blocking, an init script, post-load script removal, or a JS-enabled DOM snapshot is not an
+equivalent shortcut. The dependency-free static parser and the disabled-browser accessibility/
+visible-text inventory must independently find, in source order:
 
 1. Vietnamese primary language and the permanent non-completion/fixture label;
 2. stakeholder/decision question and evidence threshold;
@@ -507,13 +623,39 @@ dependency-free static parser and the browser DOM must independently find, in so
 6. conclusion `insufficient-evidence` and reason `no-common-grain`;
 7. reset scope/oracle and non-mutation statement;
 8. reflection prompt and local-to-hosted limitations without a cloud prerequisite; and
-9. a source-ordered linear review path covering all ten acts with reachable native links/controls.
+9. a source-ordered linear review path covering all ten acts with reachable native links/controls;
+   and
+10. visible interaction-degradation messaging that explains which enhanced probe/reset/disclosure
+    behaviors are unavailable without script, which native review links/controls remain usable,
+    and that no completion/evidence fact is lost.
 
 “Complete comprehension” means every item is visible/readable without executing script; no
 placeholder, empty mount, `noscript` warning, CSS-generated unique fact, or hidden scripted text
 counts. All facts and review controls remain. Browser and parser inventories must have the same
-digest. A Vite or Next failure eliminates that frozen candidate. The record says
+digest, but they are produced independently and compared only after both succeed. Both Vite and
+Next built responses run the same project/parser inputs; parser-only or browser-only success is
+missing evidence. A Vite or Next failure eliminates that frozen candidate. The record says
 `manualNoJsUatPerformed=false`; it makes only an automated JS-disabled/static-parser claim.
+
+## Gate C v2 Evidence Schema and Missing-Evidence Rule
+
+`gate-c-evidence-v2.schema.json` uses `additionalProperties: false` and requires, for each Vite and
+Next record, all of the following non-null groups: acceptance/schema version; run/candidate/project
+IDs; implementation/tested source/tested tree and Issue #6 SHAs; fixture, candidate source,
+candidate lock, common, v1 test-ID, v2 contract, v2 anchor, and browser digests; exact environment
+and tool/browser versions; action/checkpoint results; complete screenshot/ARIA/trace artifact
+indexes; reflow/font/geometry, reduced-motion/computed-style, and no-JS browser/parser inventories;
+run order, warmup, sample, retry, cache/profile, resource, S3, retention, rollback, and timer records;
+and final disposition. Every retained artifact entry requires a safe relative locator, byte length,
+SHA-256, producer project/checkpoint, and redaction result. Each declared candidate/project/action/
+checkpoint/sample key must occur exactly once.
+
+Missing, duplicate, null, schema-invalid, hash-invalid, unequal, timed-out, or tool-failed evidence
+can never be omitted or treated as zero. A deterministic candidate behavior failure yields that
+candidate's `ELIMINATED` with `numericScore: null`; a harness/tool/browser/fixture/environment/
+comparability failure yields `INCOMPLETE_AUTOMATED` for the comparison and no candidate scores.
+The partial raw record is retained with `resultStatus: fail`; neither case may synthesize
+`automatedPass`, an anchor level, a UAT result, or a winner.
 
 ## Equal Vite/Next Run and Measurement Contract
 
@@ -636,6 +778,23 @@ builds, browser/static runs, fixes to v2-owned harness/tests only, measurements,
 ADR/scorecard/UAT/retention generation, reproduction, and rollback. It ends when Gate D v2 closes
 or the remainder reaches zero.
 
+The timer record is append-only and nanosecond-based. `timer-start-v2.json` stores the pre-write
+monotonic/UTC start, exact remaining input, run ID, implementation input, command, and receipt
+digest. Every subsequent command wrapper records monotonic/UTC start and stop, duration, exit code,
+signal, timeout, and failure class. Elapsed active seconds are
+`(lastObservedMonotonicNs - segmentStartMonotonicNs) / 1e9`; failed commands, invalid samples,
+debugging, cleanup, and timeouts count in full. A process crash or missing normal stop is charged
+conservatively through the next observed monotonic recovery/expiry boundary, never reconstructed
+from file mtimes or an operator estimate. The hard timeout for any command is the lesser of its
+declared command timeout and the exact remaining budget; reaching it stops owned work, writes the
+failure record, and prevents further timed commands.
+
+Legal pre-timer setup is limited to the already named planning/audit publication, scheduler lease,
+read-only Git/ref/hash/path/tool/browser-presence checks, fixed run-ID/environment selection, and
+command review. It may not create a v2 directory/file, install a package/browser, generate a
+fixture, execute RED, build a candidate, warm a cache, or observe candidate behavior. The start
+receipt itself is the first v2 write, so RED provenance is never backfilled retrospectively.
+
 No retroactive pause, refund, replacement, reset, or extra candidate time is allowed. Only a
 documented external registry/browser outage or a required new owner decision may create a
 prospective pause under the existing policy; no pause is planned. Independent review, PR wait,
@@ -688,8 +847,10 @@ WCAG conformance claim without separate conformance scope and audit.
   invalidates reviews; any harness/test/anchor/raw-evidence/source change also invalidates affected
   runs and may require a full rerun.
 - PR creation is allowed after the automated decision and reviews. PR merge is still blocked by
-  explicit human approval of the exact final PR head. Standing auto-approval may advance safe
-  plan/validation/audit/cook/review phases but cannot impersonate this human gate.
+  successful repository CI/status checks and explicit human approval of the exact final PR head.
+  Standing auto-approval may advance safe plan/validation/audit/cook/review phases but cannot
+  impersonate either exact-head gate. With no current repository CI workflow/context, readiness
+  must retain an external merge dependency; validation does not manufacture or authorize one.
 - Pristine post-merge failure blocks issue completion and downstream release. Preserve evidence,
   return ADR-005 to Proposed/no-winner in a normal reviewed corrective/revert commit, and do not
   use reset/force-push/history rewrite.
@@ -708,12 +869,13 @@ Only the workflow label changes at each successful boundary; preserve `risk:high
 | `ready for plan validation` | Fresh independent validation PASS at exact head | `ready for plan audit` | No cook authorization |
 | `ready for plan audit` | Fresh readiness audit PASS naming implementation input/timer/scope | `ready to cook` | No gate/evidence pass |
 | `ready to cook` | v2 cook completes evidence/scoring/retention; two exact-head reviews PASS | `ready to review` | No human approval or merge claim |
-| `ready to review` | PR exists and authorized human approves exact final head | `review-passed` or repository-equivalent merge-authorized state | Auto-approval cannot satisfy |
+| `ready to review` | PR exists, required CI/status checks pass exact final head, and authorized human approves that same head | `review-passed` or repository-equivalent merge-authorized state | Auto-approval/agent status cannot satisfy either gate |
 | merge-authorized | Human-controlled merge and pristine post-merge verification PASS | Issue #7 implementation complete; production release still UAT-gated | No production release/full conformance claim |
 
 On validation/audit/cook/review failure, retain the prior workflow state or use
-`blocked-dependency` with exact blockers; never advance on partial evidence. This planning phase
-performs only the first transition.
+`blocked-dependency` with exact blockers; never advance on partial evidence. The original planner
+performed only the first transition; this independent validation descendant performs only the
+second and makes no readiness claim.
 
 ## Traceability Matrix
 
@@ -726,7 +888,7 @@ performs only the first transition.
 | `CON-05` | `FR-08`, `NFR-03` | serialized worker/server, RSS sampler, hard cap | process trees, RSS samples, concurrency record | stop/no-winner above cap; safe on 16GB host |
 | `CON-06` | `FR-09`, `NFR-04`, `NFR-06` | S3 scans, CSP/network/storage, rollback v2 | audit/license/provenance/CSP/credential/redaction/cleanup records | exploit/leak blocks decision; no cloud mutation |
 | Issue #6 authority | `FR-01`, `FR-08`, `NFR-05` | Barrier B and neutral read-only fixture projection | M2 ancestry, four digests/blobs/schema/grain conclusion | drift invalidates both candidates and all v2 score inputs |
-| Human governance | `FR-10`, `FR-11` | two exact-head reviews, PR approval gate, Proposed ADR | review reports and explicit human exact-SHA approval | merge blocked until human; release blocked until UAT |
+| Human governance | `FR-10`, `FR-11` | two exact-head reviews, exact-head CI/status and PR approval gates, Proposed ADR | review reports, CI/status contexts, and explicit human exact-SHA approval | merge blocked until CI + human; release blocked until UAT |
 
 ## Planning-Only Verification and Handoff
 
@@ -750,5 +912,5 @@ The independent validator must confirm, at minimum:
 No product/test/evidence implementation in this planning phase; no candidate source or lock edit;
 no prior evidence/index/attestation rewrite; no ADR/scorecard change; no winner; no native OS or
 browser execution; no CuaDriver; no System Settings; no VoiceOver; no Chrome-menu zoom; no root
-Makefile/.gitignore; no Issue #8+; no Docker/AWS/cloud/Terraform; no publisher/signing/release; no
-PR; no merge; and no synthesized human approval.
+Makefile/.gitignore; no `.github/**`/CI workflow creation; no Issue #8+; no Docker/AWS/cloud/
+Terraform; no publisher/signing/release; no PR; no merge; and no synthesized CI or human approval.

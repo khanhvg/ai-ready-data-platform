@@ -4,13 +4,15 @@
 
 The binding current revision is
 [`i5-02-acceptance-v2`](./automation-first-acceptance-amendment-v2.md). It is
-`PLANNER_ONLY_NOT_VALIDATED` until fresh independent validation and readiness audit pass its exact
-output SHA. The baseline rows below remain the immutable discovery/test-ID map, but every earlier
-clause that made deep VoiceOver desktop-key traversal, an actual macOS System Settings Reduce
-Motion toggle, native Chrome-menu 200% proof, or manual no-JS review block the Issue #7 decision is
-superseded by v2's decision-grade automated gates. The three owner-deferred checks remain explicit
-manual UAT and residual risk before production release; they cannot be recorded as an automated
-pass, cannot add score, and cannot support a full WCAG or screen-reader-conformance claim.
+validated `PASS_WITH_FIXES` at planner input
+`ae9e2296b971c9134638e66c09302b516f8ad6e6`; a fresh readiness audit of the exact published
+validation output remains required. The baseline rows below remain the immutable discovery/test-ID
+map. V2 supersedes only clauses that made deep VoiceOver desktop-key traversal, an actual macOS
+System Settings Reduce Motion toggle, or native Chrome-menu 200% proof block the Issue #7 decision.
+The three owner-deferred checks remain explicit manual UAT and residual risk before production
+release; they cannot be recorded as an automated pass, cannot add score, and cannot support a full
+WCAG or screen-reader-conformance claim. Every other gate, including automated no-JS browser plus
+independent static-parser comprehension, remains binding.
 
 ## Purpose
 
@@ -84,12 +86,12 @@ framework mode/build details but cannot replace these assertions.
 | `WEB-TRUST-002` | `four-grain.test.mjs`: forbidden-attribution scan finds no carrier/return/DQ fact assigned to promotion | Source/content/DOM/evidence scan and reviewer record | Remove attribution and every dependent artifact | Existing marts/#6 | BLOCKS | BLOCKS | BLOCKS |
 | `WEB-A11Y-001` | v2 `keyboard.spec.mjs`: all actions/disclosures/navigation work by deterministic keyboard automation with logical/visible focus, Enter/Space parity, reverse traversal, and no trap | Per-action focus/state trace, computed focus visibility, occlusion assertions, checkpoint screenshots | Replace custom widgets/flatten flow in a future separately authorized candidate spike, or eliminate under this frozen-source run | Fresh equal browser automation | Preview acceptance BLOCKS | BLOCKS | BLOCKS |
 | `WEB-A11Y-002` | v2 `semantics.spec.mjs`: landmarks/headings/controls/status/error/live targets and four grain labels/conclusion/reset/reflection match the versioned schema | Axe results plus normalized ARIA snapshots in Chrome and Firefox; VoiceOver UAT status is separate | Restore native semantics in a future separately authorized candidate spike, or eliminate | Fresh equal browser automation | Preview acceptance BLOCKS | BLOCKS | BLOCKS |
-| `WEB-A11Y-003` | v2 `reflow.spec.mjs`: declared 200%-equivalent CSS viewport and 320px narrow reflow have no page overflow, target overlap, occlusion, or hidden focus | Labelled screenshots plus bounding-box/scroll/focus assertions; native Chrome-menu zoom remains deferred UAT | Remove fixed/sticky layout in a future separately authorized candidate spike, or eliminate | Fresh equal browser automation | Preview acceptance BLOCKS | BLOCKS | BLOCKS |
+| `WEB-A11Y-003` | v2 `reflow.spec.mjs`: declared 640×400/device-scale-2 200%-equivalent and separate 320px narrow reflow in Chrome and Firefox have no page overflow, target overlap, clipping, offscreen target, occlusion, or hidden focus | Labelled baseline/equivalent/narrow screenshots plus font/raster/bounding-box/scroll/focus assertions; native Chrome-menu zoom remains deferred UAT | Remove fixed/sticky layout in a future separately authorized candidate spike, or eliminate | Fresh equal browser automation | Preview acceptance BLOCKS | BLOCKS | BLOCKS |
 | `WEB-A11Y-004` | v2 `reduced-motion.spec.mjs`: emulated reduced motion preserves the fact/control inventory while removing nonessential motion | Media-emulation trace, computed animation/transition assertions, inventory digest, screenshots; System Settings toggle remains deferred UAT | Disable nonessential motion in a future separately authorized candidate spike, or eliminate | Fresh equal browser automation | Preview acceptance BLOCKS | BLOCKS | BLOCKS |
-| `WEB-STATIC-001` | v2 `no-js.spec.mjs` plus dependency-free static parser: all facts, limitations, four grains, conclusion, reset, reflection, and linear review path remain understandable | Saved response bytes, parser result, normalized fact inventory, and JS-disabled screenshots | Restore server/static HTML in a future separately authorized candidate spike, or eliminate SPA-only candidate | Build/browser | BLOCKS | BLOCKS | BLOCKS |
+| `WEB-STATIC-001` | v2 `no-js.spec.mjs` plus dependency-free static parser: all facts, limitations, four grains, conclusion, reset, reflection, linear review path, and interaction-degradation message remain understandable | Real `javaScriptEnabled: false` response bytes, independent parser result, normalized fact inventory, and JS-disabled screenshots; script interception/removal is rejected | Restore server/static HTML in a future separately authorized candidate spike, or eliminate SPA-only candidate | Build/browser | BLOCKS | BLOCKS | BLOCKS |
 | `WEB-NOSCROLL-001` | `state-navigation.test.mjs`: scroll/hover/animation never commits, verifies, or reveals unique evidence | Event/transition trace and DOM comparison | Remove listener/unique hidden content | Gate A/browser | BLOCKS | BLOCKS | BLOCKS |
 | `WEB-API-001` | `browser-authority.test.mjs`: no credential, runner/private URL, wildcard CORS, direct privileged request | Bundle/source/storage/network/CSP scan | Remove unsafe seam; eliminate | S3/future BFF | BLOCKS | BLOCKS | BLOCKS |
-| `WEB-E2E-001` | `journey.spec.ts`: frame→fail→diagnose→reset→verify→evidence→reflection deterministic and non-completing in preview | Cross-browser trace/screenshots + state/evidence digest | Return to static sequence; fix or eliminate | Browser; #6 for decision run | Preview acceptance BLOCKS | BLOCKS | BLOCKS |
+| `WEB-E2E-001` | v2 `journey.spec.mjs`: frame→fail→diagnose→reset→verify→evidence→reflection deterministic and non-completing in preview | Cross-browser trace/screenshots + state/evidence digest | Return to static sequence; fix or eliminate | Browser; #6 for decision run | Preview acceptance BLOCKS | BLOCKS | BLOCKS |
 | `WEB-NONCOPY-001` | `non-copy.test.mjs` + reviewer: principles only; no copied prose/assets/layout/style/source | Inventory, file/license/source review, attestation | Remove derivative expression and rebuild | Project reviewer | BLOCKS publication | BLOCKS | BLOCKS |
 
 ## Four-Grain Release Invariant
