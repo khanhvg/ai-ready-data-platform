@@ -158,6 +158,52 @@ class S3CommandResourceCleanupTests(unittest.TestCase):
                     except ProcessLookupError:
                         pass
 
+    def test_final_repair_fast_exit_new_session_descendants_are_deterministically_reaped(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            survivors: list[int] = []
+            try:
+                for index in range(30):
+                    pid_path = root / f"fast-detached-{index}.pid"
+                    child_code = (
+                        "import pathlib,subprocess,sys;"
+                        "p=subprocess.Popen([sys.executable,'-c','import time;time.sleep(30)'],"
+                        "start_new_session=True);"
+                        f"pathlib.Path({pid_path.name!r}).write_text(str(p.pid))"
+                    )
+                    with self.assertRaises(LearningContractError):
+                        runtime.run_bounded([sys.executable, "-c", child_code], cwd=root, timeout=2)
+                    detached_pid = int(pid_path.read_text(encoding="utf-8"))
+                    try:
+                        os.kill(detached_pid, 0)
+                    except ProcessLookupError:
+                        continue
+                    survivors.append(detached_pid)
+                self.assertEqual([], survivors)
+            finally:
+                for pid in survivors:
+                    try:
+                        os.kill(pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+
+    def test_final_repair_process_marker_collision_is_refused_and_never_returned(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            with mock.patch.dict(os.environ, {runtime.RUN_MARKER_ENV: "foreign-marker"}):
+                self.assert_code(
+                    "PROCESS_MARKER_COLLISION", runtime.run_bounded,
+                    [sys.executable, "-c", "print('unreachable')"], cwd=root, timeout=2,
+                )
+            output = runtime.run_bounded(
+                [sys.executable, "-c", (
+                    "import os;print(os.environ.get(" + repr(runtime.RUN_MARKER_ENV) + ",''))"
+                )],
+                cwd=root,
+                timeout=2,
+            )
+            self.assertEqual(b"<OWNERSHIP_MARKER>\n", output)
+
     def test_review_h5_cleanup_does_not_unlink_replacement(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             owned = pathlib.Path(temporary) / "owned"

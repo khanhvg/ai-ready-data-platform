@@ -216,6 +216,68 @@ class StateCompletionApiTests(unittest.TestCase):
         self.assertEqual("PROGRESS_VERSION_CONFLICT", response["body"]["code"])
         self.assertEqual(before, (platform.workspaces, platform.operations, platform.evidence, platform.progress))
 
+    def test_final_repair_query_replay_precedes_cas_and_stale_new_key_is_mapped(self) -> None:
+        platform = openapi.LearningPlatform()
+        headers = {
+            "Authorization": "Bearer learner-1", "X-Correlation-ID": "create-query-workspace",
+            "Origin": "http://localhost", "Host": "localhost", "X-CSRF-Token": "csrf",
+            "Idempotency-Key": "create-query-workspace", "Content-Type": "application/json",
+        }
+        created = platform.dispatch({
+            "method": "POST", "path": "/v1/labs/promotion-trust-v1/workspaces", "headers": headers,
+            "body": {
+                "schemaVersion": "create-workspace-request-v1", "labVersion": "1.0.0",
+                "contractSetSha256": "0" * 64, "parameters": {}, "expectedProgressRevision": 0,
+            },
+        })
+        self.assertEqual(201, created["status"])
+        workspace_id = created["body"]["workspaceId"]
+        query = {
+            "schemaVersion": "registered-query-request-v1", "workspaceId": workspace_id,
+            "queryId": "promotion-grains", "parameters": {},
+            "expectedWorkspaceRevision": created["body"]["revision"],
+        }
+        query_headers = dict(
+            headers,
+            **{"X-Correlation-ID": "query-replay", "Idempotency-Key": "query-replay"},
+        )
+        request = {
+            "method": "POST", "path": "/v1/data-products/promotion-trust/queries",
+            "headers": query_headers, "body": query,
+        }
+        accepted = platform.dispatch(copy.deepcopy(request))
+        self.assertEqual(202, accepted["status"])
+        platform.workspaces[workspace_id]["revision"] += 1
+
+        replayed = platform.dispatch(copy.deepcopy(request))
+        self.assertEqual(accepted, replayed)
+        platform._validate_success("queryDataProduct", replayed["body"])
+
+        changed = copy.deepcopy(request)
+        changed["body"]["queryId"] = "promotion-limitations"
+        reuse = platform.dispatch(changed)
+        self.assertEqual(409, reuse["status"])
+        self.assertEqual("IDEMPOTENCY_KEY_REUSE", reuse["body"]["code"])
+        schema.validate_document(reuse["body"], family="problem-details")
+
+        stale = copy.deepcopy(request)
+        stale["headers"]["Idempotency-Key"] = "query-stale-new-key"
+        conflict = platform.dispatch(stale)
+        self.assertEqual(409, conflict["status"])
+        self.assertEqual("WORKSPACE_REVISION_CONFLICT", conflict["body"]["code"])
+        schema.validate_document(conflict["body"], family="problem-details")
+
+        row = next(
+            item for item in platform.matrix["operations"]
+            if item["operationId"] == "queryDataProduct"
+        )
+        self.assertIn(
+            {"status": 409, "code": "WORKSPACE_REVISION_CONFLICT"}, row["problems"],
+        )
+        operation = platform.openapi["paths"]["/v1/data-products/{productId}/queries"]["post"]
+        self.assertEqual(row["problems"], operation["x-problems"])
+        self.assertEqual({"$ref": "#/components/responses/Problem"}, operation["responses"]["409"])
+
 
 if __name__ == "__main__":
     unittest.main()

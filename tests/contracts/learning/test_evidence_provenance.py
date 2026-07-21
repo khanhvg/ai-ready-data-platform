@@ -176,6 +176,53 @@ class EvidenceFitnessMigrationPromotionTests(unittest.TestCase):
         with self.assertRaises(LearningContractError):
             evidence.verify_raw_log_bindings(records, "EXPECTED_TOKEN\n")
 
+    def test_final_repair_review_bundle_declared_integers_are_strict_json_integers(self) -> None:
+        manifest = {
+            "schemaVersion": "issue8-v3-final-repair-bundle-v1",
+            "totalBytes": 10,
+            "entries": [{"path": "primary.log", "sha256": "0" * 64, "size": 10}],
+        }
+        commands = [{"id": "primary", "log": "primary.log", "logSha256": "0" * 64, "rc": 0}]
+        red_records = [{"id": "A", "log": "red.log", "logSha256": "1" * 64, "rc": 1}]
+        review = {
+            "scope": {
+                "additions": 121, "modifications": 0, "deletions": 0,
+                "allowlistDelta": 0, "stageBPaths": 0,
+            },
+            "resourceLimits": {
+                "outputBytes": 10 * 1024 * 1024, "rssBytes": 512 * 1024 * 1024,
+                "timeoutSeconds": 120,
+            },
+            "nonIntegerMetadata": {"ratio": 1.5, "scientificMeasurement": 1e-3},
+        }
+        self.assertIsNone(
+            evidence.validate_review_bundle_integer_fields(
+                manifest, commands=commands, red_records=red_records, review=review,
+            )
+        )
+        integer_paths = [
+            (manifest, "totalBytes"),
+            (manifest["entries"][0], "size"),
+            (commands[0], "rc"),
+            (red_records[0], "rc"),
+            *[(review["scope"], key) for key in review["scope"]],
+            *[(review["resourceLimits"], key) for key in review["resourceLimits"]],
+        ]
+        for owner, key in integer_paths:
+            original = owner[key]
+            for invalid in (float(original), bool(original)):
+                with self.subTest(key=key, invalid=repr(invalid)):
+                    owner[key] = invalid
+                    self.assert_code(
+                        "REVIEW_BUNDLE_INTEGER_TYPE_INVALID",
+                        evidence.validate_review_bundle_integer_fields,
+                        manifest,
+                        commands=commands,
+                        red_records=red_records,
+                        review=review,
+                    )
+            owner[key] = original
+
 
 if __name__ == "__main__":
     unittest.main()
