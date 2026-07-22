@@ -12,6 +12,7 @@ import json
 import os
 import pathlib
 import py_compile
+import re
 import shutil
 import signal
 import socket
@@ -567,7 +568,15 @@ class Gate:
         return {"mismatchPreserved":True}
 
     def _no_runner_containers(self)->bool:
-        return not self.engine.command(["ps","-a","--filter","label=ai-ready.issue9.owner=issue-9","--format","{{.ID}}"],check=True).stdout.strip()
+        labeled=set(self.engine.command(["ps","-a","--filter","label=ai-ready.issue9.owner=issue-9","--format","{{.ID}}"],check=True).stdout.splitlines())
+        observed=set()
+        build_root=ROOT/".artifacts/build/issue-9"
+        for artifact in sorted(build_root.glob("*")) if build_root.is_dir() else []:
+            if artifact.is_file() and artifact.stat().st_size<=16*1024*1024:
+                observed.update(re.findall(r"(?:Running in |container(?:Id)?[\"':= ]+)([0-9a-f]{12,64})",artifact.read_text(errors="ignore"),re.IGNORECASE))
+        existing=self.engine.command(["ps","-a","--format","{{.ID}}"],check=True).stdout.splitlines()
+        logged={container_id for container_id in existing if any(container_id.startswith(candidate) or candidate.startswith(container_id) for candidate in observed)}
+        return not (labeled|logged)
 
     def _foreign_unchanged(self)->bool:
         return self._foreign_ids()==self.foreign_before
