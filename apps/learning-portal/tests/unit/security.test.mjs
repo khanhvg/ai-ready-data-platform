@@ -118,6 +118,8 @@ test("PTP-S3 foreign socket, state alias, and runtime mode never gain lifecycle 
   assert.equal(fs.existsSync(runtime), false);
   assert.equal(run(process.execPath, [lifecycle, "start"], { timeout: 30_000 }).status, 0);
   const original = await fsp.readFile(statePath, "utf8"); const state = JSON.parse(original); const controlDirectory = path.join("/private/tmp", `i5-05-portal-${state.runId}`); const controlPath = path.join(controlDirectory, "control.sock"); const ownedPath = path.join(controlDirectory, "owned.sock");
+  assert.equal("authority" in state, false, "child identity remains replaceable through portal.json");
+  assert.equal("publicKey" in state, false, "child public key leaked into mutable portal.json");
   let foreign;
   try {
     await fsp.rename(controlPath, ownedPath);
