@@ -145,6 +145,9 @@ class ViteConsumerBindingTests(unittest.TestCase):
     def test_i8b_alias_020_through_boundary_027_exact_invalid_inventory(self) -> None:
         actual = {path.name for path in INVALID_ROOT.glob("*.json") if path.is_file()}
         self.assertEqual(set(INVALID_CASES), actual, "BINDING_FIXTURE_INDEX_INCOMPLETE")
+
+    def test_i8b_alias_020_through_boundary_027_public_validation_codes(self) -> None:
+        self.load_binding()
         for name, expected in INVALID_CASES.items():
             with self.subTest(path=name):
                 self.assert_code(expected, self.validate_binding_path, INVALID_ROOT / name)
