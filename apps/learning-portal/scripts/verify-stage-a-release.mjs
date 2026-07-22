@@ -22,9 +22,9 @@ if (git(["rev-parse", `${release}^{tree}`]).stdout.trim() !== "a38594d420fe7df2b
 const model = await loadReleasedLearning({ root: repo });
 if (process.argv.includes("--local-only")) { console.log(JSON.stringify({ status: "pass", releasePaths: rows.length, bindingId: model.bindingId })); process.exit(0); }
 
-const runtimeRoot = path.join(repo, ".artifacts/workspaces/golden/i5-05-stage-a");
-const candidate = path.join(runtimeRoot, "venv");
-await fs.rm(runtimeRoot, { recursive: true, force: true }); await fs.mkdir(runtimeRoot, { recursive: true });
+const runtimeRoot = path.join(repo, ".artifacts/workspaces/golden");
+const candidate = path.join(runtimeRoot, "i5-05-stage-a");
+await fs.rm(candidate, { recursive: true, force: true }); await fs.mkdir(runtimeRoot, { recursive: true });
 const run = (command, args, options = {}) => { const result = spawnSync(command, args, { cwd: repo, stdio: "inherit", timeout: options.timeout ?? 300000, env: { ...process.env, ...options.env } }); if (result.status !== 0) throw new Error(`COMMAND_FAILED:${command}:${result.status}`); };
 run("python3.12", ["-m", "venv", candidate]);
 const python = path.join(candidate, "bin/python3.12");
