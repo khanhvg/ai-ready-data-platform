@@ -7,3 +7,4 @@ if os.fork() == 0:
         time.sleep(300)
     os._exit(0)
 os.wait()
+time.sleep(300)
