@@ -12,16 +12,16 @@ created: "2026-07-21T16:49:00.989Z"
 createdBy: "ck:plan"
 source: skill
 mode: fast-tdd-no-tasks
-integrationBaseSha: "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9"
-validationInputSha: "4a36bab4f8a8c9f393060cf7337b2e5ca45cd9b7"
-planningValidation: stage-a-release-amendment-pass
-readinessAuditInputSha: "4a36bab4f8a8c9f393060cf7337b2e5ca45cd9b7"
+integrationBaseSha: "5644f01b4c0443a81f3af0bcce80f44c847cd986"
+validationInputSha: "d79bcd0c3894c2b8477f1188faadc08f77480087"
+planningValidation: post-binding-stage-a-readiness-pass
+readinessAuditInputSha: "d79bcd0c3894c2b8477f1188faadc08f77480087"
 readinessVerdict: stage-a-ready
-cookScope: issue-10-stage-a
+cookScope: stage-a-static-portal
 dependencyIssue7: RELEASED_PR22_MERGE_1806B6D
-dependencyIssue8: RELEASED_STAGE_A_INTEGRATION_FECF6BB
+dependencyIssue8: RELEASED_FINAL_INTEGRATION_5644F01
 dependencyIssue9: BLOCKED_UNRELEASED
-stageAStatus: ready-from-integration-fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9
+stageAStatus: ready-from-integration-5644f01b4c0443a81f3af0bcce80f44c847cd986
 stageBStatus: blocked-on-issue-9-released-runner-sha
 ---
 
@@ -30,11 +30,12 @@ stageBStatus: blocked-on-issue-9-released-runner-sha
 ## Overview
 
 Deliver Stage A as a local, 16 GiB-friendly Vite + React static portal process from pristine
-released integration `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`. The released #7 toolchain and
-#8 Stage A validators, registry, lesson, lab, OpenAPI, progress/completion/evidence and promotion
-manifest contracts are now exact authorities. Stage A has no BFF or API: it renders a
+released integration `5644f01b4c0443a81f3af0bcce80f44c847cd986`. The released #7 toolchain and
+#8 validators, registry, lesson, lab, OpenAPI, progress/completion/evidence, promotion manifest,
+and shared Vite binding are now exact authorities. Stage A has no BFF or API: it renders a
 Vietnamese-first catalog/module/lesson/step shell, one promotion-trust vertical slice,
 read-only navigation, a real no-JavaScript equivalent, and explicit runner-unavailable behavior.
+It is explicitly a static Stage A slice, not the complete learning product.
 
 Stage A may be cooked only within the exact file/command/dependency allowlists in
 [the release amendment](./stage-a-release-amendment.md). It cannot claim execution, reset, fresh
@@ -63,9 +64,11 @@ and has empty authority.
 - **Stage A:** released Issue #7 PR #22 merge
   `1806b6d515f2f7a2ace2be7077af84a745ff221f`, approved feature head
   `b219ba2d3843934c3bce2fbbec2a844b48b2dfa9`, released Issue #8 Stage A PR #23 merge
-  `5c2244c2c860234d0df49cf0a42ad950c6495717`, and pristine composed integration
-  `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`. Stage A has no Issue #9 runner dependency and
-  cannot claim execution or completion.
+  `5c2244c2c860234d0df49cf0a42ad950c6495717`, final Issue #8 Stage B v2 head
+  `12e17427076fb31de85534bfbbbedca7e901e76c`, and pristine final integration
+  `5644f01b4c0443a81f3af0bcce80f44c847cd986`. Consume shared binding
+  `learning/bindings/vite/promotion-trust-v1.json` exactly; Stage A has no Issue #9 runner
+  dependency and cannot claim execution or completion.
 - **Stage B:** passing Stage A plus exact released Issue #9 runner API, registry, client/transport,
   idempotency, problem, and evidence handoff SHA.
 - Issue #6 data/fixture truth at input `24be3b34c6b0fcdbd07c5800dcab349054e34713`
@@ -93,7 +96,7 @@ and has empty authority.
 
 The maximum Issue #10 ownership ceiling is `apps/learning-portal/**`, portal tests within that
 tree, `mk/issue-5/i5-05.mk`, and Issue #10 plan/evidence artifacts. Stage A present cook authority
-is narrower: exactly 34 new tracked files, 18 admitted command surfaces, and the release
+is narrower: exactly 33 new tracked files, 18 admitted command surfaces, and 85 consumed release
 identities enumerated in the amendment. It has no modifies or deletes. Stage B file, command, and
 dependency SHA allow-lists remain `[]`. Any shared-contract, runner, root Make,
 architecture-view, fixture, data-pipeline, cloud, AWS, Terraform, or unrelated-path change is a
@@ -106,11 +109,11 @@ change; it cannot broaden the portal cook allow-list.
 
 ## Plan Exit
 
-The Session 1 validation and blocked readiness reports remain immutable historical snapshots.
-The exact-release amendment and fresh readiness audit at starting head
-`4a36bab4f8a8c9f393060cf7337b2e5ca45cd9b7` supersede only their dependency-state conclusions.
-Stage A may proceed from pristine released integration
-`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` within its closed allowlists. Stage B remains blocked
+The Session 1 validation, blocked readiness, and pre-binding Session 2 readiness report remain
+immutable historical snapshots. This post-binding amendment/readiness pass at exact clean input
+`d79bcd0c3894c2b8477f1188faadc08f77480087` supersedes their cook-base, binding, and scope-count
+conclusions. Stage A may proceed from pristine released integration
+`5644f01b4c0443a81f3af0bcce80f44c847cd986` within its closed allowlists. Stage B remains blocked
 on Issue #9 and has no cook authority. Stage A still requires two fresh independent exact-head
 implementation reviews and human exact-head approval before a human merge; planning readiness is
 not implementation, execution, evidence, completion, or merge approval.
@@ -157,7 +160,7 @@ unresolved product choice remained and repeating them as an interview would add 
 - Reconciled stale references: 13 plan files.
 - Unresolved contradictions: 0.
 
-### Session 2 — 2026-07-22 Stage A release amendment
+### Session 2 — 2026-07-22 Stage A release amendment (historical; binding-invalidated)
 
 **Trigger:** Fresh dependency-release amendment and readiness audit from exact clean plan head
 `4a36bab4f8a8c9f393060cf7337b2e5ca45cd9b7`, using remote Git objects and live GitHub records.
@@ -167,15 +170,15 @@ unresolved product choice remained and repeating them as an interview would add 
 - Issue #7 PR #22 is merged at `1806b6d515f2f7a2ace2be7077af84a745ff221f`; its approved feature
   head is `b219ba2d3843934c3bce2fbbec2a844b48b2dfa9`.
 - Issue #8 Stage A PR #23 is merged at `5c2244c2c860234d0df49cf0a42ad950c6495717`.
-- Composition PR #25 yields pristine released Stage A integration
-  `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`; release evidence is Issue #8 comment
-  `5043195549`.
+- Composition PR #25 yielded released Stage A integration
+  `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`; it is now the embedded Stage A source/first parent,
+  not the cook base.
 - Issue #9 remains unreleased. Stage B stays blocked with empty file, command, and dependency
   lists.
 
 #### Stage A disposition
 
-- Exact dependency bytes, protected identities, toolchain, 34-file write allowlist, command
+- Exact dependency bytes, protected identities, toolchain, historical 34-file write allowlist, command
   allowlist, requirements, scenarios, RED catalogue, S3 controls, cleanup, rollback, and review
   gates are closed in the amendment.
 - The useful slice is a Vietnamese-first reusable catalog/module/lesson/step shell with the
@@ -185,3 +188,35 @@ unresolved product choice remained and repeating them as an interview would add 
 - Strict CK validation, link/anchor, placeholder/future-SHA, dependency identity, path/command,
   requirement/scenario/RED/S3, diff-hygiene, and whole-plan results are recorded in the current
   readiness audit.
+
+### Session 3 — 2026-07-22 final Issue #8 binding release
+
+**Trigger:** Issue #8 CLOSED/`shipped` handoff comment `5047964988` at exact clean Issue #10 input
+`d79bcd0c3894c2b8477f1188faadc08f77480087`.
+
+#### Released authority and bounded scope delta
+
+- Final integration is `5644f01b4c0443a81f3af0bcce80f44c847cd986`, parents
+  `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` and
+  `12e17427076fb31de85534bfbbbedca7e901e76c`, tree
+  `a38594d420fe7df2b30265a8a72bb5fad1698012`.
+- Shared binding is `promotion-trust-vite-binding-v1`, SHA-256
+  `03d2aa6bd9fa178e6075865364a8ae8b83ce548c42b450d1858b451b45d0d1d0`; schema SHA-256 is
+  `74035baee08b378e46421466333d6933d1bad820337acd1b80a633d236173a43`; Stage A contract-set
+  SHA-256 remains `92aaf9a573f5d23b5bf5d8d7db1e68150d4b0944f0e6ab6e651b1a3d34408638`.
+- Consumed release closure is 85 paths. Portal-local `release-binding.stage-a.json` is removed
+  from authority, leaving exactly 33 create-only paths; the 18-command allowlist is unchanged.
+- Exact public documents are `/`, `/module`, `/lesson/promotion-trust`, and the ten released step
+  routes. `/module` is presentation-only and carries no invented module identifier.
+- Every route exposes the exact machine-readable static-slice/non-claim attributes and visible
+  Vietnamese-first not-full-product copy.
+
+#### Worktree and stage decision
+
+- The stopped clean pre-binding worktree at
+  `feature/issue-10-portal-stage-a`/`515bd919da243dd9f30395d3deef02f7819cd0a1` is preserved and
+  not reused.
+- Cook uses a new v2 branch/worktree from the final integration plus the four named plan-only
+  commits followed by the published readiness commit identified in the Issue #10 handoff.
+- Issue #9 remains open and unreleased. Stage B file/command/dependency authorities are `[]` and
+  every runner-backed action/evidence/reset/completion path remains blocked.

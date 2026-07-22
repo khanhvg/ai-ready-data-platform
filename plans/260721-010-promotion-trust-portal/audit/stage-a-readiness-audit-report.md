@@ -1,156 +1,209 @@
 ---
-title: "Issue #10 Stage A exact-release readiness audit"
+title: "Issue #10 Stage A post-binding release-readiness audit"
 auditDate: "2026-07-22"
-startHead: "4a36bab4f8a8c9f393060cf7337b2e5ca45cd9b7"
-integrationReleaseSha: "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9"
+inputSha: "d79bcd0c3894c2b8477f1188faadc08f77480087"
+integrationReleaseSha: "5644f01b4c0443a81f3af0bcce80f44c847cd986"
+integrationTreeSha: "a38594d420fe7df2b30265a8a72bb5fad1698012"
+bindingSha256: "03d2aa6bd9fa178e6075865364a8ae8b83ce548c42b450d1858b451b45d0d1d0"
 verdict: STAGE_A_READY
+cookScope: stage-a-static-portal
 stageB: blocked-on-issue9
 cloudAction: none
 ---
 
-# Issue #10 Stage A Exact-Release Readiness Audit
+# Issue #10 Stage A Post-Binding Release-Readiness Audit
 
 ## Verdict
 
-`STAGE_A_READY` for one bounded runner-independent cook from pristine integration
-`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`. The authority is exactly the 34 new tracked files,
-18 admitted command surfaces, released #7/#8 dependency bytes, protected identities, and gates in
-the [Stage A release amendment](../stage-a-release-amendment.md). Stage B is
-`blocked-on-issue9`; its file, command, and dependency SHA lists are empty.
+`STAGE_A_READY` for one bounded static portal cook from final released integration
+`5644f01b4c0443a81f3af0bcce80f44c847cd986`. The exact authority is 33 create-only tracked paths,
+18 command surfaces, and 85 consumed release paths. Stage B is `blocked-on-issue9`; its file,
+command, dependency, transport, action, evidence, reset, progress, and completion authorities are
+all `[]`.
 
 This is planning/cook readiness only. It does not claim that the portal was implemented, built,
-executed, reset, verified, evidenced, completed, reviewed, approved, or merged.
+run, reset, evidenced, completed, reviewed, approved, merged, or released. The product claim is a
+meaningful Vietnamese-first static Stage A portal slice, not the complete learning product.
 
-## Audit Scope and Independence
-
-- Worktree: `/Users/khanhvg/Documents/work/ai-ready-data-platform-issue-10-portal`
-- Required branch: `plan/issue-10-promotion-portal`
-- Exact clean starting head: `4a36bab4f8a8c9f393060cf7337b2e5ca45cd9b7`
-- Auditor runtime: Herdr agent `audit-issue10-stage-a-readiness`, terminal
-  `term_6572e6691c2beb3`, pane `w2:p5A`
-- Herdr process argv independently reported Codex model `gpt-5.6-sol` with
-  `model_reasoning_effort="xhigh"` and danger-full-access sandbox in the required worktree.
-- `$ck:plan-to-cook` was not exposed. The workflow-equivalent used CK plan strict validation,
-  exact-release amendment, dependency-aware readiness, whole-plan reconciliation, Git safety,
-  and GitHub handoff gates.
-- No dependency feature worktree or ignored/generated artifact was used as release evidence.
-- No portal implementation, product/config/data edit, credential access, merge, AWS, Terraform,
-  cloud, or destructive action occurred.
-
-The older independent validation and blocked readiness reports remain immutable historical
-snapshots. This audit supersedes only their stale #7/#8 dependency-state conclusion.
-
-## Remote Release Proof
-
-| Authority | Exact result | Audit disposition |
-|---|---|---|
-| Issue #7 approval | Feature head `b219ba2d3843934c3bce2fbbec2a844b48b2dfa9`, tree `8ebd0f9a8ead8a6f3c382088cf172f28742a9c0b`, owner approval comment `5041125607` | PASS |
-| Issue #7 PR #22 | Merge `1806b6d515f2f7a2ace2be7077af84a745ff221f`; ordered parent 2 is approved head; trees equal | PASS |
-| Issue #8 Stage A PR #23 | Merge `5c2244c2c860234d0df49cf0a42ad950c6495717`; parent 1 contains #7 merge | PASS |
-| Composition PR #25 | Merge `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`; parent 2 `734cf637a20ae186597e23d96a194ed4e30220ea`; composed tree equality | PASS |
-| Current integration | `refs/heads/integration/issue-5-local-learning` at `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` | PASS |
-| Released tree | Tree `27fc3667ef37892dad5c3fbfd76769f65a0760be`; 903 entries; listing SHA-256 `4b95afd87ee7702f74df4a4b09198e13b8fa7ba45434c8a6a511a3ff1c580018` | PASS |
-| Issue #8 evidence | Comment `5043195549`: release checks 56/56, invalid 65/65, API 16, final 4/4, inherited 19/19, 1/1, 13/13; no CI-success claim | PASS |
-| Issue #9 | OPEN and unreleased | Stage B BLOCKED |
-
-The 73-file release catalogue recomputes every admitted file from the fetched integration Git object and
-records Git blob, bytes, and SHA-256. Issue #7 toolchain values and Issue #8 validators, registry,
-lesson/lab/manifest, OpenAPI, progress/completion/evidence contracts were read from those objects.
-
-## Dependency and Protected-Identity Binding
-
-- Exact #7 package graph: Node `22.22.3`, npm `10.9.8`, lock v3, Vite `8.1.5`, React/React DOM
-  `19.2.7`, Playwright `1.61.1`, axe Playwright `4.12.1`, React plugin `6.0.1`.
-- Exact #8 direct validator/command and contract catalogue: 49 files plus its two exact runtime
-  admission inputs; exact lesson
-  reads `listLessons` and `getLesson` bound for compatibility but neither called nor exposed.
-- Seven protected Issue #6/release paths match their exact blob, byte, and SHA-256 identities.
-- Root Make's sorted `mk/issue-5/*.mk` include seam exists; all nine I5-05 command registry rows
-  remain `future-owner/not-runnable` with owner `mk/issue-5/i5-05.mk` at the release input.
-- The 34-file cook scope includes an app-owned released-schema activation instance that binds the
-  final fragment hash and all nine recipes to truthful `fitness-result-v2` output without a shared
-  registry edit.
-- All 34 Stage A tracked paths are absent at the released input, so authority is create-only.
-- No `apps/learning-portal`, `mk/issue-5/i5-05.mk`, or runner app exists in the released tree.
-
-`DEPENDENCY_BINDING=pass`.
-
-## Stage A Product and Trust Closure
-
-The amended plan preserves the product direction: a Vietnamese-first foundation-to-mid learning
-portal shell, with promotion-trust as the first vertical slice rather than the whole curriculum.
-Its provider/catalog/router/static-render seams accept later released #11/#12 manifests only
-through exact registered contracts and hashes, without inventing their content or redesigning the
-shell.
-
-Stage A is one Vite-built React/static document app and one GET/HEAD-only loopback static server.
-It has no BFF/API, runner import/probe/start/call, host-command surface, database, session, cookie,
-browser storage, service worker, cloud action, or completion authority. Static/no-JavaScript and
-React rendering share one escaped safe view model. Released #8 validators remain the contract
-truth; Issue #7 spike files remain toolchain evidence rather than copied architecture.
-
-The PTP-S3-01..14 catalogue is unique and complete. Stage B-only threats are proved by capability
-absence in Stage A rather than skipped. Exact CSP uses `connect-src 'none'` and
-`form-action 'none'`; output/process/request/artifact bounds and marker/PID/path cleanup are
-fail-closed. `S3=pass` for planning readiness.
-
-## TDD and Verification Closure
-
-The plan defines:
-
-- 11 Stage A requirements (`SA-R01..11`) and 10 scenarios (`SA-SC01..10`);
-- 14 explicit Stage A RED IDs plus the 14-row S3 RED range;
-- real RED paths through release adapter, provider/catalog, router, static/React render, server,
-  lifecycle, and Chromium—not missing-tool or retrospective failures;
-- exact frozen install, released validator, unit/contract/security, production build, audit,
-  public lifecycle/test, and required Stage B-negative commands;
-- one Chromium journey at 1280x800 and 360x800, one worker/no retries, axe zero
-  Critical/Serious, JavaScript-disabled navigation, history/reload, storage/network inspection,
-  and runner-unavailable/non-completion checks;
-- exact output/artifact ceilings, fixture identity, cleanup twice, rollback, two independent
-  exact-head reviews, bounded human UAT, and human exact-head pre-merge approval.
-
-The plan explicitly excludes superseded Next/Astro/framework comparison, Firefox/WebKit/native OS
-automation, performance contests, timers, and automated full-conformance claims.
-
-## Findings and Amendments
-
-| Finding | Severity | Amendment | Result |
-|---|---|---|---|
-| Prior normative files still treated #7/#8 as unreleased | High | Replaced with exact PR #22/#23/#25 and integration authorities | Closed |
-| Stage A inherited a BFF/API architecture despite runner independence | High | Reframed Stage A as static GET/HEAD documents only; BFF deferred to blocked Stage B | Closed |
-| Stage A implementation authority was empty | High | Added exact 34-file, 18-command, dependency-byte, toolchain, activation, and protected-identity closure | Closed |
-| Initial lesson could be mistaken for full course | Medium | Added generic catalog/module/lesson/step seams and explicit vertical-slice copy | Closed |
-| TDD/browser/security bounds were partly deferred or historical | Medium | Added real RED paths, exact viewports, no-JS/unavailable/S3/output/cleanup/review gates | Closed |
-
-No unresolved Critical, High, or Stage A-blocking Medium finding remains. Issue #9 remains a
-deliberate Stage B blocker.
-
-## Validation Record
+## Frozen Input and Independence
 
 | Check | Result |
 |---|---|
-| `ck plan validate ... --strict --json` | PASS: valid, zero issues, seven phases resolved |
-| CK parse/status | PASS: seven pending phase files; Stage B marked blocked in the normative plan |
-| Local Markdown links and anchors | PASS |
-| Placeholder/future-SHA scan | PASS: no unresolved placeholder or invented future identity in current normative artifacts |
-| Released path/blob/byte/SHA-256 recomputation | PASS |
-| Protected hashes and released-tree identity | PASS |
-| 34-path ownership/create-only closure | PASS |
-| 18-command allowlist and nine-command owner closure | PASS |
-| SA requirement/scenario, RED, and PTP-S3 catalog uniqueness | PASS |
-| Stage B file/command/dependency lists empty and Issue #9 block consistent | PASS |
-| `git diff --check` and plan-directory-only diff | PASS |
-| Whole-plan stale-state/architecture/claim sweep | PASS |
-| High-confidence secret/private-key/credential scan | PASS |
+| Required worktree/branch | Exact requested Issue #10 worktree on `plan/issue-10-promotion-portal` |
+| Local HEAD at start | `d79bcd0c3894c2b8477f1188faadc08f77480087` |
+| Configured upstream after fresh fetch | exact input |
+| Remote-tracking branch after fresh fetch | exact input |
+| Live GitHub branch head | exact input |
+| Initial tracked/untracked/index state | clean |
+| Auditor runtime | Herdr `audit-issue10-postbinding-readiness`; Codex `gpt-5.6-sol`; reasoning `xhigh` |
+| Write authority | Issue #10 plan/readiness artifacts only |
 
-## Handoff Decision
+No portal/test implementation, feature-worktree write, dependency-worktree write, merge,
+approval, runner, browser, package install, container/engine, cloud, AWS, Terraform, or destructive
+action occurred.
 
-On publication of this exact plan-only amendment commit, Issue #10 may remove
-`ready for plan audit` and add `ready to cook`. Cook scope is Stage A only: create exactly the 34
-listed files from pristine integration `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`; implement the
-static Vietnamese-first portal slice and exact tests/gates; perform no Stage B, release merge, or
-cloud action.
+## Active Worktrees, Agents, and Writer Overlap
 
-Any change to release identity, path/command list, protected hash, contract/version, product claim,
-or Issue #9 state requires a fresh audit. Stage B cannot inherit this PASS.
+- This auditor was the only writer in the Issue #10 plan worktree.
+- The old `feature/issue-10-portal-stage-a` worktree is clean at
+  `515bd919da243dd9f30395d3deef02f7819cd0a1`, has no Herdr/Codex process in that worktree, and is
+  ahead of/behind the now-advanced integration. It is preserved as non-authoritative pre-binding
+  history; this audit does not rely on a no-product reconciliation of its commits.
+- Issue #9 plan and cook worktrees were clean at
+  `308c736f8811ac9aeaf41ad5b27dea07d2e60b2e` and
+  `9eb31075aeb0e7b974ad15645460ab4987570f20`. Neither is a release.
+- Herdr also exposed Issue #11 activity in its separate worktree and a completed Issue #8 release
+  agent in the Issue #8 worktree. No active agent owned or changed an Issue #10 Stage A path.
+- No integration branch worktree, shared-contract lease, root-Make writer, portal writer, or
+  stopped-cook writer overlapped this plan audit.
+
+`OWNERSHIP_OVERLAP=pass`.
+
+## Final Remote Release Proof
+
+| Authority | Exact result |
+|---|---|
+| Integration release M | `5644f01b4c0443a81f3af0bcce80f44c847cd986` |
+| Ordered parents | `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`, `12e17427076fb31de85534bfbbbedca7e901e76c` |
+| Released tree | `a38594d420fe7df2b30265a8a72bb5fad1698012` |
+| Tree inventory | 921 entries; listing SHA-256 `a6681b3e7ee932fbd29728bc3f649017e57e6980871a3de9def9cb3ac318d9fe` |
+| Issue #8 | CLOSED/`shipped`; I5-03 shared-contract lease released |
+| Handoff | Issue #10 comment `5047964988`; release records `5047954510`, `5047954805` |
+| Issue #9 | OPEN; plan/cook provenance only; no reviewed/merged/pristine runner release |
+
+The Issue #8 release reports a brand-new tracked-files-only pristine verification directly at
+M/tree: focused binding `11/11`, invalid binding family `8/8`, full learning `67/67`, Stage A
+invalid `65/65`, final public behaviors `4/4`, Vite `5/5`, API `16`, evidence `13/13`, data
+`19/19`, migration `1/1`, protected/S3/resource/cleanup PASS. No repository checks are configured;
+this audit does not turn their absence into a CI-success claim.
+
+## Shared Binding and Dependency Closure
+
+- Shared binding: `learning/bindings/vite/promotion-trust-v1.json`.
+- Version/binding ID: `promotion-trust-vite-binding-v1`.
+- Binding SHA-256: `03d2aa6bd9fa178e6075865364a8ae8b83ce548c42b450d1858b451b45d0d1d0`.
+- Binding schema SHA-256:
+  `74035baee08b378e46421466333d6933d1bad820337acd1b80a633d236173a43`.
+- Stage A contract-set SHA-256:
+  `92aaf9a573f5d23b5bf5d8d7db1e68150d4b0944f0e6ab6e651b1a3d34408638`.
+- Full consumed catalogue: 85 unique paths, with Git blob, byte length, and SHA-256 recomputed from
+  M. The final tree changed three previously consumed bytes (`check.py`, `schema.py`, Issue #8
+  Phase 5) and added 12 binding/schema/adapter/test/invalid-fixture paths.
+- Seven Issue #6/protected identities, exact #7 Vite graph, Python lock, root Make include seam,
+  and all nine I5-05 command reservations remain byte-exact.
+
+The portal consumes the shared binding directly after released public validation. It creates no
+portal-local binding, alias/mapping table, copied schema, generated binding type, default,
+transform, canonicalizer, or invented module/identifier truth. The three non-identity mappings
+remain exclusively in the released binding. `DEPENDENCY_BINDING=pass`.
+
+## Stage A Scope Reconciliation
+
+The historical scope was 34 creates and 18 commands. Removing
+`apps/learning-portal/release-binding.stage-a.json` is the only product-path delta required by the
+shared release. The new authority is exactly 33 creates, zero modifies, zero deletes, and the same
+18 commands. Every one of the 33 paths is absent from M/tree.
+
+The scope touches only a bounded subset of `apps/learning-portal/**` and
+`mk/issue-5/i5-05.mk`. It does not overlap shared/Issue #7/Issue #8 source, root Make, data,
+fixtures, runner, README/docs, CI, cloud, AWS, or Terraform paths. Generated `node_modules`,
+`dist`, Playwright, runtime, log, screenshot, trace, and review files remain ignored run-owned
+state with no authority.
+
+`STAGE_A_SCOPE=33-create/0-modify/0-delete/18-commands/85-consumed-release-paths`.
+
+## Meaningful Static Product Slice
+
+Stage A provides exactly 13 canonical public documents: `/`, `/module`,
+`/lesson/promotion-trust`, and ten routes for released narrative-step IDs. `/module` is a
+presentation-only view and introduces no module identifier. The portal is Vietnamese-first,
+keyboard/focus/overflow aware, desktop+narrow responsive, axe-gated, and complete without
+JavaScript. Provider/catalog/router/static-render seams can accept later released #11/#12
+identifiers without inventing their content now.
+
+The portal renders the four independent grains through the released binding, keeps
+`PROMOTION_HEADLINE_INSUFFICIENT` distinct from runner unavailability, and shows only
+`insufficient-evidence / no-common-grain`. Every route visibly says the slice is not the complete
+learning product and emits machine-readable non-claim attributes: runner unavailable, execution
+disabled, reset not-run, fresh evidence false, progress disabled, completion disabled.
+
+## TDD, Browser, and Build Closure
+
+- RED begins at final M or a tests-only descendant in the fresh v2 worktree; a detached clean
+  checkout at the same tree must also pass without branch/upstream assumptions.
+- Released invalid fixtures traverse the real public binding adapter and exact eight failure
+  codes. Additional real-adapter cases cover missing/extra grain, lossy/cyclic alias, version,
+  type, unknown field, substitution, path, special-file, descriptor race, and authority state.
+- Portal RED then traverses the real adapter, provider/catalog/router, static/React render,
+  server/lifecycle, and exact public routes. Missing tools/imports and copied predicates are not
+  valid RED.
+- Ignored, generated, untracked, other-worktree, environment-selected, or absolute-path fixtures
+  cannot satisfy dependency or RED authority.
+- Production build runs twice with deterministic static output, no source maps, at most 128
+  regular files, 1 MiB each and 16 MiB aggregate.
+- One Chromium journey, one worker and zero retry covers 1280x800 and 360x800, exact fixture
+  `promotion-trust-small-42-v1`/seed 42, all 13 routes, history/reload, keyboard/focus/overflow,
+  reduced motion, axe zero Critical/Serious, JavaScript-disabled parity, CSP/console/network/
+  storage absence, and machine-readable non-claims.
+- Lifecycle and visual output retain exact process/time/file/byte/artifact ceilings, scoped
+  cleanup twice, foreign-state preservation, and rollback of only 33 tracked additions.
+
+`TDD=pass`; `VISUAL_ACCESSIBILITY=pass`; `RESOURCE_FEASIBILITY=pass` at planning readiness.
+
+## Security:S3 and Stage B Boundary
+
+All PTP-S3-01..14 controls remain mandatory. Stage A has one GET/HEAD-only loopback static
+process, exact Host/path/CSP/XSS/type/size/alias bounds, no body/API/CORS/session/cookie/storage/
+service-worker/network/credential surface, and no runner import/probe/start/call. It exposes no
+raw command, argv, path, URL, SQL, shell, engine, host bridge, mutation, evidence, progress, or
+completion path. `S3=pass` at planning readiness.
+
+Stage B remains blocked on an exact reviewed, merged, pristine Issue #9 release compatible with
+the pinned Issue #8 release. Current Issue #9 plan/cook heads are not adapters. No fake execution,
+synthetic success/evidence, browser-to-host/engine command, local-shell fallback, reset,
+verification, evidence, progress, or completion action is authorized. `STAGE_B=blocked-on-issue9`.
+
+## Fresh Implementation Worktree Decision
+
+Create a new `feature/issue-10-portal-stage-a-v2` branch/worktree directly from M after this output
+is published. Cherry-pick the ordered Issue #10 plan-only commits `ad87c3f`, `e2bba33`, `4a36bab`,
+and `d79bcd0`, followed by the published readiness commit identified in the Issue #10 handoff.
+Prove the resulting plan-directory tree equals the published output and that no product path
+changed before RED. Preserve the old stopped worktree without reset, rewrite, deletion, or reuse.
+
+## Validation and Publication Gates
+
+Prepublication validation passed:
+
+- CK 4.5.2 strict JSON: `valid: true`, zero issues, seven phase links resolved. CK JSON status is
+  correctly `pending`, with seven pending phases and zero implementation progress.
+- All 52 Markdown links resolve; all 30 anchored links target existing headings across 17 plan
+  Markdown files.
+- No unresolved placeholder/future SHA occurs in current authority. The sole brace template is
+  confined to the immutable Session 1 validation snapshot's deferred Stage B evidence example;
+  it is not Stage A authority.
+- The 85-row dependency catalogue has 85 unique paths, and every Git blob, byte length, and
+  SHA-256 matches M. The seven protected rows also independently match M.
+- The 33-row create allowlist is unique, equals the Phase 1–4 union, and every path is absent from
+  M. The 18 unique command rows exactly equal the verification sequence. The released registry
+  has nine exact I5-05 rows, all `future-owner`/`not-runnable`, bound to the future fragment and
+  `fitness-result-v1` before cook activation.
+- Catalogue closure is exact: 13 routes, seven non-claim attributes, 11 Stage A requirements, ten
+  scenarios, 14 Stage A REDs, eight released invalid-binding cases with matching released codes,
+  14 S3 controls, ten functional plus eight non-functional trace rows, and 12 risks.
+- Visual, accessibility, deterministic fixture, no-JavaScript, evidence, cleanup, rollback, and
+  process/time/file/byte ceilings agree across the amendment, threat model, verification plan,
+  and Phase 4. Stage B remains an empty-authority fail-closed gate in every current phase.
+- The working diff is 15 Issue #10 plan/readiness files and zero paths outside the plan directory;
+  private-path and high-confidence secret scans are empty, and `git diff --check` passes.
+- The whole-plan stale-term sweep found no current contradiction. References to the old base,
+  34-path scope, and portal-local binding occur only as final-release ancestry or explicitly
+  labelled historical/superseded facts.
+
+Publication still requires this focused plan-only commit, push, and fresh local/upstream/live
+equality before the Issue #10 comment and label transition; the issue handoff records those
+post-commit facts because a commit cannot embed its own SHA.
+
+On PASS, remove `ready for plan audit` and add `ready to cook` for Stage A only. Issue #10 remains
+open and Stage B explicitly blocked. Any failed publication gate changes the verdict to BLOCKED
+and preserves the current labels.
