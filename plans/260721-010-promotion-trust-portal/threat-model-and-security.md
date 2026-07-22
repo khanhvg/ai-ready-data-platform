@@ -109,9 +109,11 @@ cache, database, canonical progress, evidence bytes, raw logs, private locator, 
 environment field. Static navigation remains useful when offline after page load.
 
 Browser admission is exact: Playwright `1.61.1`, `browserName: chromium`, `channel: chrome`, one
-worker, zero retries, and one measured Chrome product/version/executable SHA-256 shared by RED and
-GREEN. Bundled-browser fallback, alternate browser/channel, browser download, or identity drift
-fails; absolute executable paths remain local-private.
+worker, zero retries, Chrome `150.0.7871.181`, and executable SHA-256
+`b724a4c5603cfc8b9d9f27a5153c8a39e7133e53666ced7f2a8b03bf49484f85` shared by RED and GREEN.
+Bundled-browser fallback, alternate browser/channel, browser download, or product/version/digest
+drift fails and requires a new readiness amendment; absolute executable paths remain
+local-private.
 
 No command or endpoint may invoke Issue #9, Docker, Rill, Airflow, Iceberg, OpenMetadata, MinIO,
 Lakekeeper, AWS, Terraform, cloud/model services, package installation at runtime, arbitrary host

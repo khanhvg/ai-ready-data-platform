@@ -47,8 +47,9 @@ merge approval, Issue completion, or Stage B authority.
 - Carry the contemporaneous RED logs forward by hash and verify they predate first semantics.
 - Bind base/derived/scaffold/tests/RED/first-semantic/later-semantic/final commits and trees, all
   85 inputs, locks/tools, browser, command argv/exits, resource and S3 results.
-- Bind exact Playwright/Chrome channel plus one identical measured browser product/version/
-  executable SHA-256 across RED and GREEN; keep the executable path local-private.
+- Bind exact Playwright/Chrome channel, Chrome `150.0.7871.181`, and executable SHA-256
+  `b724a4c5603cfc8b9d9f27a5153c8a39e7133e53666ced7f2a8b03bf49484f85` identically across
+  RED and GREEN; keep the executable path local-private.
 - Capture exactly one successful real Chromium trace with mode on and sources false; inspect its
   archive/privacy/count/size and hash it into the closed inventory.
 - Use non-self `inventory.json` → `generation-index.json` → atomic regular

@@ -2,9 +2,10 @@
 
 ## Decision
 
-Issue #10 Stage A has passed fresh independent plan validation with bounded plan-only corrections.
-It is not ready to cook: a separate fresh readiness audit is still required. The independent review
-of failed PR #29 invalidated the prior readiness conclusion at exact plan head
+Issue #10 Stage A has passed fresh independent plan validation and a separate fresh readiness
+audit with bounded plan-only corrections. Stage A v3 is ready to cook only at the published
+readiness output. The independent review of failed PR #29 invalidated the prior readiness
+conclusion at exact plan head
 `2f278eb25aaff9e050314b01d1be155b76793f11` because RED provenance, generic authority, and
 retained-evidence closure were incomplete.
 
@@ -412,10 +413,12 @@ manager. Direct ad hoc variants and root Make edits are denied.
   seconds, host readiness 15 seconds, Playwright 300 seconds, and audit 180 seconds.
 - One portal Node process; loopback `127.0.0.1`; runtime-selected port; no child after startup.
   Browser admission is exactly Playwright `1.61.1`, `browserName: chromium`, `channel: chrome`, one
-  worker, and zero retries. The RED and GREEN records must use the same measured Chrome
-  product/version/executable SHA-256; any identity change, bundled-browser fallback, alternate
-  channel, or browser download is failure. The absolute executable path is local-private and never
-  appears in sanitized or public evidence.
+  worker, zero retries, readiness-observed Chrome `150.0.7871.181`, and executable SHA-256
+  `b724a4c5603cfc8b9d9f27a5153c8a39e7133e53666ced7f2a8b03bf49484f85`. The RED and GREEN
+  records must use that same product/version/digest tuple; any identity change, bundled-browser
+  fallback, alternate channel, or browser download is failure and requires a new exact-browser
+  amendment/readiness audit. The absolute executable path is local-private and never appears in
+  sanitized or public evidence.
 - Production output is a closed post-build inventory of regular single-link files only: at most
   128 files, 1 MiB per file, and 16 MiB total. Every path, media type, byte size, and SHA-256 is
   recorded before serving. The server can open only that exact inventory with no source map,
@@ -628,11 +631,16 @@ fixture rows are forbidden.
 
 ## Verification and Review Gate
 
-1. Fresh independent validation of this correction has passed. Before implementation, require the
-   separate fresh readiness audit; until it passes at its exact output, cook scope is none.
+1. Fresh independent validation and the separate fresh readiness audit have passed. Cook authority
+   begins only at the exact readiness output published in the Issue #10 handoff.
 2. Prove a clean v3 branch whose start commit and fresh remote integration are exact
-   `5644f01b4c0443a81f3af0bcce80f44c847cd986`; before Commit 1, its only delta is the audited
-   v3 correction output plus its ensuing fresh independent validation and readiness plan commits.
+   `5644f01b4c0443a81f3af0bcce80f44c847cd986`. Before Commit 1, create one plan-seed commit whose
+   Issue #10 plan subtree equals correction subtree
+   `92b620712d6fdbf69eb0901554dcf27ae357bc7e` with 18 Markdown files; apply only the exact
+   `a9e5ee2…df013a3` validation delta and prove subtree
+   `60e9f41b517cf7ecfda9f85ce5038f8fadd8d981`; then apply only the exact
+   readiness delta from `df013a3…` to the 40-hex output named by the handoff and prove the resulting
+   subtree equals that output. Every seed/delta commit must be plan-directory-only.
 3. Prove Commit 1 is the exact 22-path semantics-free callable scaffold and Commit 2 is the exact
    eight-path tests-only delta. Capture contemporaneous RED before any semantic commit.
 4. Bind the first semantic and every later semantic commit/tree. Run exact validators, frozen
@@ -663,11 +671,11 @@ Preserve PR #29, `feature/issue-10-portal-stage-a-v2`, all v2 commits, and all v
 as failed audit history. Do not reuse, reset, rewrite, delete, amend, or retrofit evidence there.
 The earlier stopped pre-binding worktree is also non-authoritative.
 
-Only after this correction is separately readiness-audited, create
+Only after the published readiness output is remotely equal and the Issue is `ready to cook`, create
 `feature/issue-10-portal-stage-a-v3` in a new worktree directly from
-`5644f01b4c0443a81f3af0bcce80f44c847cd986`. Apply only this v3 correction output plus its ensuing
-fresh independent validation and readiness plan commits; the resulting plan directory must equal
-the validated/readiness output. Verify every pre-scaffold delta is beneath
+`5644f01b4c0443a81f3af0bcce80f44c847cd986`. Seed the exact correction subtree and apply the
+validation/readiness deltas exactly as specified by Verification Gate 2; the resulting plan
+directory must equal the published readiness output. Verify every pre-scaffold delta is beneath
 `plans/260721-010-promotion-trust-portal/**`; any product/test/evidence delta or conflict is a STOP.
 Do not cherry-pick or copy any v2 product, test, evidence, log, trace, manifest, fixture, or
 generated byte. Then execute the exact Commit 1/Commit 2/RED/semantic chronology above.

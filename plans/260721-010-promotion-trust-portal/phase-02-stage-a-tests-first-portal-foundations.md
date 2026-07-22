@@ -29,8 +29,10 @@ for named absent semantics before any semantic commit.
 - Add complete unit coverage for release/binding/registry/catalog/router/render/security and all
   seven prior defensive requirements.
 - Add complete Make delegate/lifecycle/request/build/evidence/blocked-result negatives.
-- Add one real Chromium journey test covering desktop, narrow, keyboard/focus/overflow, axe,
-  no-JavaScript, request/storage/console/CSP, and the future trace contract.
+- Add one real Chrome-channel Chromium journey test using exact Chrome `150.0.7871.181` and
+  executable SHA-256 `b724a4c5603cfc8b9d9f27a5153c8a39e7133e53666ced7f2a8b03bf49484f85`,
+  covering desktop, narrow, keyboard/focus/overflow, axe, no-JavaScript,
+  request/storage/console/CSP, and the future trace contract.
 - Add visual/evidence tests for exact inventory/hash/privacy/count/size/aggregate, atomic selector,
   interruption, stale-generation classification, resource records, and all S3 records.
 - Use only exact released controls and in-memory/private-run-owned one-change mutations. Track no
@@ -86,8 +88,9 @@ The tests themselves are the before state. They must cover:
 3. Run real valid controls, then one-change mutation families from the portfolio.
 4. Run all public Make commands, including the bounded scaffold lifecycle and both Stage B
    negatives.
-5. Run the real Chrome-channel journey against the scaffold; prove it reaches a served neutral
-   document and fails the named catalog semantics—not setup or connectivity.
+5. Admit the exact readiness-observed Chrome 150 product/version/digest, run the real
+   Chrome-channel journey against the scaffold, and prove it reaches a served neutral document
+   and fails the named catalog semantics—not setup, identity, or connectivity.
 6. Sanitize logs, verify raw/sanitized hashes and privacy, and close the RED inventory/index.
 7. Reject the RED generation if any expected failure is a missing import/tool/path, forced failure,
    mock/skip, predicate-only oracle, fallback fixture, or unbound summary.
