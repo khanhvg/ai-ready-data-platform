@@ -252,9 +252,16 @@ def _verify_repository() -> CheckResult:
                 and review.get("widths") == [1024, 1440]
                 and set(review_views) == set(VIEW_IDS)
                 and all(
-                    review_views[view_id].get("svgSha256") == _sha(base / f"rendered/{view_id}.svg")
+                    review_views[view_id].get("sourceSha256") == _sha(base / f"likec4/views/{view_id}.c4")
+                    and review_views[view_id].get("svgSha256") == _sha(base / f"rendered/{view_id}.svg")
+                    and review_views[view_id].get("textSha256") == _sha(base / f"rendered/{view_id}.txt")
                     and review_views[view_id].get("disposition") == "pass"
-                    and review_views[view_id].get("screenshots") == ["1024", "1440"]
+                    and set(review_views[view_id].get("screenshots", {})) == {"1024", "1440"}
+                    and all(
+                        review_views[view_id]["screenshots"][width]
+                        == _sha(review_path.parent / f"previews/{width}/browser-{view_id}.png")
+                        for width in ("1024", "1440")
+                    )
                     for view_id in VIEW_IDS
                 )
             )
