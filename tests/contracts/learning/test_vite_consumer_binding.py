@@ -141,6 +141,12 @@ class ViteConsumerBindingTests(unittest.TestCase):
         self.load_binding()
         value = self.validate_binding_path(BINDING)
         self.assertEqual("promotion-trust-vite-binding-v1", value["bindingId"])
+        with tempfile.TemporaryDirectory() as temporary:
+            self.assert_code(
+                "VITE_BINDING_REQUIRED",
+                check.validate_all_contracts,
+                binding_root=pathlib.Path(temporary),
+            )
 
     def test_i8b_alias_020_through_boundary_027_exact_invalid_inventory(self) -> None:
         actual = {path.name for path in INVALID_ROOT.glob("*.json") if path.is_file()}

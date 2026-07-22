@@ -376,13 +376,13 @@ def _verify_release_hashes() -> None:
             raise LearningContractError(f"CONTRACT_SET_HASH_MISMATCH:{item['path']}")
 
 
-def validate_all_contracts() -> list[dict[str, str]]:
+def validate_all_contracts(*, binding_root: pathlib.Path = ROOT) -> list[dict[str, str]]:
     from .openapi import validate_shipped_openapi
     validate_valid_corpus()
     invalid_rows = validate_invalid_corpus()
     validate_shipped_openapi()
     _verify_release_hashes()
-    validate_shipped_vite_binding()
+    validate_shipped_vite_binding(root=binding_root)
     return invalid_rows
 
 
