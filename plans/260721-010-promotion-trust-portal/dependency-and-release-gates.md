@@ -1,155 +1,134 @@
 # Dependency and Release Gates
 
-## Current Fresh-Live State
+## Current Exact-Release State
 
-Rechecked on 2026-07-22 from readiness input
-`e2bba33deff76985eb3bdae361d494d162c854f8` after proving local, tracking, and fresh-live Issue
-#10 refs equal and reading the live GitHub issue and PR records.
+Rechecked on 2026-07-22 from clean plan head
+`4a36bab4f8a8c9f393060cf7337b2e5ca45cd9b7` using fetched remote Git objects and live GitHub
+issue, pull-request, review, and release-evidence records. Dependency worktrees and ignored
+artifacts were not inputs.
 
-| Dependency | Fresh-live fact | Planning use | Implementation consequence |
-|---|---|---|---|
-| Issue #6 | CLOSED/`shipped`; verified merge `24be3b34c6b0fcdbd07c5800dcab349054e34713` | Binding data/fixture truth | Read-only baseline for both stages |
-| Issue #7 | OPEN/`ready for human review`; PR #22 is OPEN and mergeable at head `b219ba2d3843934c3bce2fbbec2a844b48b2dfa9` onto base `24be3b34c6b0fcdbd07c5800dcab349054e34713`, with no review or merge commit | Vite + React is the owner-selected direction; the PR head is provenance only | No human exact-head approval and no merge/release; Stage A blocked |
-| Issue #8 | OPEN/`ready to cook`; serialized six-High real-path repair is active; no released Stage A contract or shared-contract lease release | Confirms owner-directed repair only | No consumable completion/evidence/browser contract; Stage A blocked |
-| Issue #9 | OPEN/`ready for plan audit`; readiness audit published at `5cea5ce248b49ff8741af1b1e65f8ac2eb64698f` with `BLOCKED` and `COOK_SCOPE=none` | Blocked audit is durable planning evidence only | No released private runner contract; Stage B blocked |
+| Dependency | Released/live fact | Stage consequence |
+|---|---|---|
+| Issue #6 | CLOSED/`shipped`; merge `24be3b34c6b0fcdbd07c5800dcab349054e34713` | Seven protected data/contract identities remain read-only |
+| Issue #7 | CLOSED/`shipped`; approved feature head `b219ba2d3843934c3bce2fbbec2a844b48b2dfa9`; PR #22 merge `1806b6d515f2f7a2ace2be7077af84a745ff221f` | Exact Vite/React toolchain is usable by Stage A; spike product architecture is not |
+| Issue #8 | Stage A PR #23 merge `5c2244c2c860234d0df49cf0a42ad950c6495717`; release evidence comment `5043195549` | Exact validators, registries, lesson/lab/manifest, OpenAPI, progress/completion/evidence contracts are read-only Stage A authorities |
+| Composition | PR #25 merge and pristine released integration `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`, tree `27fc3667ef37892dad5c3fbfd76769f65a0760be` | Mandatory Stage A cook base |
+| Issue #9 | OPEN and unreleased | No Stage B runner authority; Stage B remains blocked |
 
-These live records are provenance facts, not consumable release SHAs. A later record may
-supersede them.
+The released integration has 903 tracked entries; the canonical `git ls-tree -r --full-tree`
+listing has SHA-256 `4b95afd87ee7702f74df4a4b09198e13b8fa7ba45434c8a6a511a3ff1c580018`.
+The exact per-file blob, byte, and SHA-256 catalogue is in the
+[Stage A release amendment](./stage-a-release-amendment.md#released-read-only-dependency-binding).
 
 ## Issue #7 Scope Reconciliation
 
-Gate A consumes only the final simple Vite + React release handoff. Its binding admission evidence
-is limited to the frozen-lock build, focused Node contract tests, one Chromium smoke at one desktop
-and one narrow viewport, one axe Critical/Serious scan, no-JavaScript/static fallback,
-fixture/hash identity, `npm audit` High/Critical disposition, S3 scans, cleanup/rollback, two fresh
-exact-head reviews, and human exact-head pre-merge approval.
+Stage A promotes only the released Node/npm/package-lock/Vite/React/Playwright/axe foundation:
+Node `22.22.3`, npm `10.9.8`, lockfile v3, Vite `8.1.5`, React/React DOM `19.2.7`, Playwright
+`1.61.1`, axe Playwright `4.12.1`, and React plugin `6.0.1` with the released transitive lock and
+integrity fields.
 
-VoiceOver/System Settings/native Chrome-menu automation, a Firefox/WebKit or multi-browser
-scorecard, performance sampling, timers, and Gate-D comparison work are preserved only as history
-and are not Gate A blockers. They must not be resumed or promoted into Issue #10 scope.
+The Issue #7 spike page, lesson contract, copied fixture, timer/score harness, retained spike
+evidence, and file layout are evidence of toolchain fitness only. They are not the portal
+architecture. Firefox/WebKit, VoiceOver/System Settings/native browser automation, performance
+sampling, timer scorecards, and Gate-D framework comparison are historical and not I5-05 gates.
 
-## Empty Implementation Authority at Validation
+## Exact Implementation Authority
 
-Missing dependencies are implementation blockers, not values to fill with provisional heads.
-Both stages therefore have empty authority until real releases exist:
-
-| Stage | File allow-list | Command allow-list | Dependency SHA allow-list | Cookable |
+| Stage | File authority | Command authority | Dependency authority | Cookable |
 |---|---|---|---|---|
-| A | `[]` | `[]` | `[]` | `false` |
+| A | Exactly 34 new tracked paths; no modifies/deletes | Exactly the release, install, test, build, audit, lifecycle, visual, and required-negative commands in the amendment | #7/#8/#25 identities above and their enumerated bytes | `true` |
 | B | `[]` | `[]` | `[]` | `false` |
 
-The owner-selected Vite direction does not authorize an unmerged Issue #7 implementation SHA.
-A later amendment must pin real dependency SHAs and derived file/command allow-lists, then pass
-fresh independent revalidation and dependency-aware readiness before either stage may cook.
+The exact lists in the amendment are normative. A path, command, dependency, version, route,
+operation, or artifact not listed there is denied even if it sits beneath the issue-level
+ownership ceiling.
 
 ## Ownership and Writer-Overlap Decision
 
-- Issue #7 owns its open spike/PR lineage; Issue #10 cannot copy from or treat that branch as a
-  release before human approval and merge.
-- Issue #8 is the active serialized writer for shared learning contracts. Issue #10 has no shared-
-  contract lease and cannot inspect, edit, borrow, or pin its in-flight checkpoint.
-- Issue #9 owns runner source and has no released runner authority. Issue #10 may consume only a
-  later exact released server-client/API handoff.
-- Root Make, shared contracts, dependency worktrees, and portal integration remain single-writer
-  surfaces. I5-05 future writes stay inside a released-dependency-derived subset of
-  `apps/learning-portal/**` plus `mk/issue-5/i5-05.mk`.
-
-No concurrent writer may touch shared contracts, root Make, or portal integration. An active lease,
-overlapping changed path, or missing lease release is a hard STOP.
+- Stage A creates only the enumerated subset of `apps/learning-portal/**` and
+  `mk/issue-5/i5-05.mk`; root Make already includes sorted `mk/issue-5/*.mk` fragments.
+- Issue #7/#8 sources, shared contracts, root `release-manifest.json`, Issue #6 fixtures, root
+  Make, runner source, `README.md`, `docs/**`, CI, cloud, AWS, Terraform, and other issue files are
+  read-only or denied.
+- The app consumes released #8 validators and maps a closed safe view model. It does not copy,
+  reinterpret, fork, or become a second owner of shared contract truth.
+- A conflicting active lease, changed path, release drift, or protected-hash drift is a hard
+  STOP. No concurrency is assumed for shared surfaces.
 
 ## Gate A — Static Portal Authority
 
-Stage A stays disabled until one fresh readiness phase proves all rows:
+Gate A is satisfied for planning/cook readiness only when the cook begins from pristine
+`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` and re-proves every row before the first product
+write.
 
-| ID | Required exact handoff | Fail-closed proof |
+| ID | Required proof | Failure disposition |
 |---|---|---|
-| GA-01 | Issue #7 has human exact-head approval and is merged into the authorized integration lineage | Remotely observed approval and merge SHA, reviewed Vite head, ancestry/blob equality, exact package manager/Node/npm requirements, product-source promotion map, package/lock digests, frozen-lock build, focused Node contracts, one Chromium desktop+narrow smoke, one axe Critical/Serious scan, no-JS/static fallback, fixture/hash identity, npm audit High/Critical, S3 scans, cleanup/rollback, and two exact-head review records |
-| GA-02 | Issue #8 Stage A is released into the authorized integration lineage | Remotely observed release SHA plus exact version matrix, schema registry activation, lesson/lab/progress/evidence schemas, promotion-trust lesson manifest/content, generated type/validator consumption path, OpenAPI and operation matrix, completion/reconciliation authority, migration/rollback matrix, artifact digests |
-| GA-03 | Fresh I5-05 implementation input contains GA-01 and GA-02 | Local HEAD = tracking ref = fresh live implementation ref; both release SHAs are ancestors; tree clean; no conflicting portal/shared-contract lease |
-| GA-04 | Issue #6 truth is unchanged | Four handoff paths match the SHA-256 and Git blob identities in `requirements-and-risk-traceability.md`; protected `release-manifest.json` hash unchanged |
-| GA-05 | Scope is still exclusive | Planned diff allow-list is only `apps/learning-portal/**` and `mk/issue-5/i5-05.mk` |
-
-If Issue #8 does not publish a directly consumable validator/type/operation-matrix interface, stop
-and return to the Issue #8 owner. I5-05 must not copy, reinterpret, or locally fork the contract.
+| GA-01 | #7 approval/head/merge ancestry and tree equality; exact released toolchain and lock | Stop on any identity, lock, integrity, tool, or ancestry mismatch |
+| GA-02 | #8 PR #23 plus PR #25 composition; exact release comment, schemas, registry, lesson/lab/manifest, validators, OpenAPI 16-operation matrix | Stop rather than create a local schema, type, route, or operation truth |
+| GA-03 | Cook HEAD, upstream, and fresh integration ref equal the pristine integration; clean tree; no overlap | Stop on wrong base, dirty input, or lease/path conflict |
+| GA-04 | Seven Issue #6/protected identities match `requirements-and-risk-traceability.md` | Stop on byte, blob, or digest drift |
+| GA-05 | Planned and final changed paths are exactly within the 34-path allowlist | Stop on additions, modifications, deletions, generated tracked output, or root changes |
 
 ### Gate A Claim Boundary
 
 Allowed:
 
-- Vite/React shell promoted from the exact Issue #7 handoff.
-- Canonical Issue #8 lesson content rendered read-only.
-- Browser history, static/no-JavaScript fallback, accessibility, responsive layout.
-- Explicit `runner-unavailable`, offline, and environmental failure states.
-- Baseline Issue #6 fixture displayed only as labelled retained reference evidence.
+- Vietnamese-first Vite/React catalog → module → lesson → narrative-step shell.
+- One promotion-trust vertical slice derived from exact released #8 contracts.
+- Read-only history navigation, deterministic static/no-JavaScript pages, and accessibility.
+- Explicit `runner unavailable`, offline, and environmental-failure explanations.
+- Issue #6 fixture facts labelled as retained baseline reference only.
 
 Forbidden:
 
-- Import or call an Issue #9 candidate API.
-- Create a runner-compatible placeholder, fake runner, or invented command registry.
-- Persist or synthesize completion.
-- Relabel Issue #6 fixture evidence as a fresh learner run.
-- Claim that failure/reset/verify actually executed.
+- Importing, starting, probing, or emulating Issue #9.
+- A BFF/API, proxy, mutation route, generic command/path/URL/SQL surface, or host command exposure.
+- Execution, reset, fresh evidence, progress, completion, or course-completion claims.
+- Browser storage/cookie/session/service-worker truth, credentials, cloud action, or external
+  content fetch.
+- Copying Issue #7 spike product code or duplicating Issue #8 schema/registry/content truth.
 
 ## Gate B — Real Journey Authority
 
-Stage B stays disabled until one fresh readiness phase proves all rows:
+Stage B stays disabled. Its file, command, and dependency lists remain empty until a separate
+exact-SHA amendment proves an accepted Stage A head and a released Issue #9 runner with its API,
+registry, transport/client, containment, idempotency, problem, reset, verifier, immutable-evidence,
+readiness, conformance, security, race, crash, cleanup, and rollback contracts. The #9 release
+must explicitly bind a compatible #8 release. Missing capability is a STOP, never an adapter
+guess or portal-owned implementation.
 
-| ID | Required exact handoff | Fail-closed proof |
-|---|---|---|
-| GB-01 | Stage A exact head is accepted | Stage A commands/evidence pass; static non-completion wording retained; exact head reviewed |
-| GB-02 | Issue #9 runner is released into the authorized integration lineage | Remotely observed release SHA; API/OpenAPI/client consumption path; private transport/launch-secret rules; exact registry and command IDs; state/idempotency/problem contracts; artifact/evidence API; readiness/status semantics; conformance harness; security/race/crash evidence and digests |
-| GB-03 | Fresh I5-05 Stage B input contains the Issue #9 release | Local = tracking = fresh live; runner release ancestor; exact API/registry/evidence digests match; no conflicting runner/shared-contract lease |
-| GB-04 | Cross-release compatibility is explicit | Issue #9 release names the exact Issue #8 release it consumes; Issue #8 schema/version registry still recognizes all required versions; no local adapter guess |
-| GB-05 | Runner is actually containable on the host | Released readiness probe passes. If containment is unavailable, runner remains disabled and Stage A fallback remains the only supported mode |
+The commands `make lesson-e2e LESSON=promotion-trust` and `make local-journey-e2e` are registered
+Stage B acceptance surfaces but must return non-zero `STAGE_B_DEPENDENCY_UNAVAILABLE` in Stage A
+without importing or acting on a runner.
 
-If Issue #9 lacks an immutable verified-artifact handle/download operation, exact idempotent reset
-semantics, or a conformance harness, Stage B stops. I5-05 cannot add those capabilities to runner
-source or infer them from draft plans.
+## Runtime Admission and Gate Recording
 
-## Vite Runtime Admission at Future Gate A
+From a fresh checkout at the released integration, Stage A must:
 
-The later amendment must bind the exact merged #7 Node/npm/package-manager/tool versions,
-committed package and lock paths/digests, promotion map, and install/build/test commands. From a
-fresh clean checkout, the exact released install contract must use the frozen lock. After the
-declared dependency acquisition/cache step, build, focused tests, static/no-JavaScript output, and
-the admitted Chromium/axe smoke must not require undeclared network access. Missing cache/tool,
-lock drift, lifecycle-script drift, or outbound access is `fail`, never an online fallback.
+1. recompute release ancestry, tree, per-path blob/bytes/SHA-256, protected identities, command
+   ownership, and the exact lock graph;
+2. run the released #8 `learning-contracts-check`, promotion lesson check, and 16-operation API
+   check through their admitted runtime;
+3. use frozen `npm ci --ignore-scripts --no-audit --no-fund`; after acquisition, run build and
+   focused checks without undeclared network access or package/runtime fallback;
+4. record the implementation input, dependency identities, paths, versions, tools, checks,
+   protected hashes, changed-path closure, and stable pass/failure code;
+5. keep dependency evidence distinct from learner-run evidence and human approval.
 
-Stage A contains no runner import or runner-compatible placeholder. Stage B server-only runner and
-optional-tool modules must be loaded only after their released capability/readiness gate and must
-never enter the browser bundle or make the static path fail at startup. The portal consumes the
-released #8 validators/view model instead of copying contract truth. No alternate framework,
-runtime, package manager, schema, fixture, or hand-written static contract may be introduced when
-the #7/#8 handoff is absent or incompatible.
+Missing cache/tool, network fallback, lifecycle-script execution, absent measurement, ignored
+failure, or alternate package manager is `fail`.
 
-## Gate Recording
+## Stage and Branch Strategy
 
-The future gate command records a closed manifest under the I5-05 evidence root with:
+Stage A cooks on a new branch from the pristine released integration, never from this planning
+branch or a feature worktree. Its exact implementation head requires focused tests, S3, two fresh
+independent reviews, bounded human visual/keyboard UAT, and human exact-head approval before a
+human merge. If Stage A merges while Stage B remains blocked, Issue #10 stays open and the portal
+retains its non-executing/non-completing claim.
 
-- implementation input and tested tree SHA;
-- dependency issue, reviewed head, merge/release SHA, and ancestry result;
-- every consumed path/package/module, byte length, Git blob ID, and SHA-256;
-- Node/npm/lock/tool versions from the released handoff;
-- exact schema, registry, OpenAPI, operation matrix, completion, runner API, command registry, and
-  evidence versions that actually exist;
-- active lease check, changed-path allow-list, protected hashes, and decision;
-- `pass` or a stable failure code. Absence or mismatch is `fail`, never skip.
+## Current Disposition
 
-The manifest is evidence of dependency identity, not publisher authenticity and not human
-approval.
-
-## Stage/Branch Strategy
-
-A later exact-SHA amendment plus fresh readiness audit may authorize Stage A independently
-because it has no runner dependency.
-If Stage A is reviewed and merged while Stage B remains blocked, Issue #10 stays OPEN and must
-retain the non-completing claim. Stage B starts only from a fresh exact integration head that
-contains accepted Stage A and GB-01..GB-05. No rebase, merge, PR, or cook is authorized by this
-plan.
-
-## Planning STOP Disposition
-
-No unresolved plan-validity STOP remains after independent validation fixes. Missing #7/#8/#9
-releases remain deliberate external implementation STOPs; current file, command, and dependency
-SHA allow-lists are empty. Readiness must remain dependency-blocked until a later amendment pins
-real handoffs and is revalidated. Any mismatch remains `fail`, never a provisional adapter.
+`STAGE_A_READY`: the released authorities and exact bounded cook scope are closed by the amendment
+and current readiness audit. `STAGE_B_BLOCKED`: Issue #9 remains unreleased and Stage B authority
+is empty. Planning readiness does not claim that the portal was built, tested, executed, reviewed,
+approved, or merged.

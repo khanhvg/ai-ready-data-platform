@@ -9,6 +9,8 @@ effort: "L"
 
 # Phase 6: Stage B real journey and completion integration
 
+> Blocked: Issue #9 is unreleased. Stage B file, command, and dependency allowlists are empty.
+
 ## Overview
 
 Connect the Stage A lesson shell to the real released runner and complete the exact learner path:
@@ -18,11 +20,11 @@ released #8/#9 interfaces; no fake/ignored fixture or browser-direct privilege.
 
 ## Context Links
 
-- [Exact journey data flow](./architecture-and-api-boundaries.md#exact-journey-data-flow)
-- [Routing/history/reset](./architecture-and-api-boundaries.md#routing-history-and-reset)
-- [Evidence display/download](./architecture-and-api-boundaries.md#evidence-display-and-download)
+- [Stage separation](./architecture-and-api-boundaries.md#stage-separation)
+- [Logical capability boundary](./architecture-and-api-boundaries.md#logical-capability-boundary)
+- [Gate B](./dependency-and-release-gates.md#gate-b--real-journey-authority)
 - [Requirements](./requirements-and-risk-traceability.md#requirement-catalogue)
-- [Recovery cases](./verification-evidence-and-uat.md#runner-failure-and-idempotency-cases)
+- [Stage B command negatives](./verification-evidence-and-uat.md#runner-unavailable-boundary)
 
 ## Requirements
 
@@ -135,5 +137,5 @@ include raw logs/env/paths or inline artifact HTML.
 
 ## Next Steps
 
-Phase 7 runs exact Issue #10 commands, release evidence, cleanup/rollback, bounded UAT, and human
-approval gates.
+Only after a released #9 exact-SHA amendment and Stage B readiness may Phase 7 run the complete
+journey evidence, cleanup/rollback, bounded UAT, and human approval gates.

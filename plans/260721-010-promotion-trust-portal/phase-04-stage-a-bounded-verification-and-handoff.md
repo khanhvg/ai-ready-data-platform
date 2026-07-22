@@ -11,121 +11,106 @@ effort: "M"
 
 ## Overview
 
-Prove and package the independently useful Stage A shell without overstating it. Run the focused
-Vite/unit/contract/security/accessibility/Chromium/no-JavaScript/build gates, create bounded
-visual/UAT artifacts, add only the I5-05 Make fragment, and preserve an explicit non-completion
-handoff for later Stage B.
+Add the GET/HEAD-only production server, scoped lifecycle, exact Issue #10 Make fragment, one
+Chromium desktop+narrow/no-JS journey, bounded visual artifacts, cleanup/rollback, and exact-head
+review handoff. Stage A remains explicitly runner-unavailable and non-completing.
 
 ## Context Links
 
-- [Exact command contract](./verification-evidence-and-uat.md#exact-issue-command-contract)
-- [Visual review](./verification-evidence-and-uat.md#deterministic-portal-visual-review)
-- [Stage A claim boundary](./dependency-and-release-gates.md#gate-a-claim-boundary)
-- [Retention and rollback](./threat-model-and-security.md#retention-cleanup-and-rollback)
+- [Exact commands](./verification-evidence-and-uat.md#exact-stage-a-command-contract)
+- [Chromium journey](./verification-evidence-and-uat.md#chromium-journey)
+- [Security/resource bounds](./threat-model-and-security.md#resource-and-artifact-security)
+- [Claim boundary](./dependency-and-release-gates.md#gate-a-claim-boundary)
 
 ## Requirements
 
 ### Functional
 
-- Make portal test/a11y/static/start/status/down functions discoverable from
-  `mk/issue-5/i5-05.mk` without root Make edits.
-- Run one locked Chromium smoke at desktop/narrow for Stage A states.
-- Produce deterministic visual artifacts/checklist and no-JS/static equivalence evidence.
-- Hand off exact Stage A head/dependencies/digests/results with `runner: unavailable` and
-  `completion: disabled`.
+- Serve only bounded built routes/files on `127.0.0.1`, runtime-selected port, GET/HEAD.
+- Implement `learn`, status, down, portal test/a11y/e2e/visual targets through the issue fragment.
+- Make both Stage B acceptance targets return typed non-zero unavailable without runner action.
+- Run fixed 1280x800 and 360x800 Chromium/no-JS/axe journey and bounded visual review.
+- Preserve review artifacts while stopping only the owned process, safely twice.
 
 ### Non-functional
 
-- No runner API import, real-lab claim, optional tool, Docker, cloud, or native OS automation.
-- Required failure is non-zero and schema-valid after safe evidence-root allocation.
-- Cleanup/status affect only the single portal process and preserve evidence.
-- Human exact-head review remains separate.
+- Exact wall-time/file/byte/process/request/artifact limits and marker/nonce containment.
+- No root Make edit, BFF/API, runner, Docker, cloud, native OS automation, or false approval.
+- Two independent implementation reviews and human exact-head approval remain future merge gates.
 
-## Architecture
+## Authorized Files
 
-Stage A lifecycle starts only the portal/BFF in the exact non-completing capability defined by
-released #8 and pinned by the later amendment. Once authorized, the issue Make fragment delegates
-to locked app scripts and emits evidence below the registered local-journey root with stage and
-claim fields. The visual target is deterministic capture + checklist generation; it never marks
-the checklist approved.
+Create only:
 
-## Related Code Files
+```text
+apps/learning-portal/playwright.config.mjs
+apps/learning-portal/command-owner-activation.stage-a.json
+apps/learning-portal/scripts/portal-lifecycle.mjs
+apps/learning-portal/scripts/serve-built-portal.mjs
+apps/learning-portal/scripts/write-review-artifacts.mjs
+apps/learning-portal/tests/e2e/stage-a.spec.mjs
+apps/learning-portal/tests/e2e/visual-review.spec.mjs
+mk/issue-5/i5-05.mk
+```
 
-- Authorized Stage A create/modify/delete paths now: `[]`.
-- Authorized Stage A implementation commands now: `[]`.
-- Consumable Stage A dependency SHAs now: `[]`.
-- The later amendment must explicitly authorize the smallest portal/test subset and
-  `mk/issue-5/i5-05.mk`; the root Makefile remains denied.
+Across Phases 1–4 the total must equal the amendment's 34 creates, no modifies/deletes.
 
 ## Tests Before
 
-1. Add failures for missing exact target mapping, wrong stage claim, runner import/config,
-   completion capability, unbounded capture, missing evidence fields, unsafe PID cleanup, and
-   omitted Stage A limitation.
-2. Capture failing Chromium/no-JS/axe/visual assertions before implementing the harness.
-3. Assert the full Issue #10 journey targets cannot pass/claim Stage B in static mode.
+1. Retain PTP-RED-A-023/024 through real server/lifecycle/artifact paths.
+2. Retain browser RED for desktop/narrow history, no-JS, axe, CSP, network/storage, and unavailable
+   states before the harness is green.
+3. Assert wrong Host/method/path/body, traversal/ambiguity, output overflow, special file/alias,
+   stale/reused PID, foreign path/process, repeated cleanup, and artifact overflow fail closed.
+4. Assert Stage B commands cannot pass, skip, import, start, or call a runner.
 
-## Refactor
+## Tests After and Regression
 
-Keep lifecycle/evidence helpers issue-local. Reuse only the accepted #7 Playwright harness and
-the exact portal-compatible #8 result/evidence writer when released. Do not treat
-`fitness-result-v1` as a fallback, create a second command registry, or generalize root Make
-integration.
-
-## Tests After
-
-- `portal-test` and `portal-a11y` runner-independent subsets pass if Stage A readiness authorizes
-  those exact targets.
-- Locked Chromium desktop/narrow and JavaScript-disabled/static tests pass.
-- Visual artifact list is fixed, complete, hashed, and accompanied by an unapproved UAT checklist.
-- Status/down correctly report/stop one portal process and preserve evidence.
-- Full journey/completion targets remain blocked with an explicit Stage B dependency result.
-
-## Regression Gate
-
-Run frozen install/build, focused tests, one Chromium smoke, axe Critical/Serious gate, no-JS
-browser/parser, deterministic render comparison, high-confidence scans, dependency audit,
-`git diff --check`, exact changed-path/protected-hash checks, and cleanup twice.
+- All exact amendment commands have the required Stage A result.
+- One-worker/zero-retry Chromium passes both viewports, axe zero Critical/Serious, no-JS parity,
+  no unexpected console/CSP/network/storage state.
+- Production output and review artifacts meet exact type/count/byte limits.
+- Status/down use PID/start identity and marker/nonce; down twice preserves review artifacts.
+- Audit has zero High/Critical; protected hashes, command ownership, changed paths, diff hygiene,
+  and secret/cloud/runner scans pass.
 
 ## Implementation Steps
 
-1. Stop until the later amendment pins real dependencies and exact Stage A paths/commands, then
-   retain RED IDs for command/claim/evidence/cleanup failures.
-2. Add Stage A lifecycle and exact I5-05 Make fragment delegates only if that amendment
-   authorizes them, without root Make edits.
-3. Configure the one locked Chromium desktop+narrow smoke and no-JS context.
-4. Implement deterministic bounded visual capture/manifest/checklist.
-5. Emit closed released-#8 result/dependency/evidence manifests with explicit non-completion
-   fields.
-6. Rehearse status/down/cleanup, stale PID, foreign process/path, and rollback to static build.
-7. Run Stage A regression checks at an exact clean head.
-8. Obtain independent review and human exact-head pre-merge approval only if a fresh readiness
-   phase authorizes a Stage A PR; this plan itself authorizes neither.
+1. Write server/lifecycle/browser/artifact/cleanup RED cases.
+2. Add closed static server and marker/nonce/PID lifecycle.
+3. Add frozen Playwright config and one Stage A journey.
+4. Add bounded visual artifact writer and unapproved human checklist.
+5. Add `mk/issue-5/i5-05.mk` delegates for all nine reserved targets, including Stage B negatives;
+   finalize and validate the app-owned activation against the immutable registry and final
+   fragment hash.
+6. Run exact released validators, frozen install, unit/build, Stage A browser/visual/audit/public
+   targets, both Stage B negatives, cleanup twice, and rollback rehearsal.
+7. Verify the final diff is exactly 34 creates, protected hashes unchanged, generated state
+   untracked/cleaned, and no cloud action.
+8. Obtain two fresh exact-head implementation reviews, bounded human UAT, and human exact-head
+   approval before any human merge.
 
 ## Success Criteria
 
-- [ ] Stage A static shell has complete focused evidence and deterministic artifacts.
-- [ ] All claims say runner unavailable and completion disabled.
-- [ ] The exact #7/#8 release/input identities and Issue #6 hashes are retained.
-- [ ] No Stage B command/result is falsely passed or skipped.
-- [ ] Lifecycle/cleanup is idempotent, scoped, and evidence-preserving.
-- [ ] Any future Stage A merge remains an open Issue #10 partial delivery.
+- [ ] Stage A portal is useful with JS enabled or disabled and runner absent.
+- [ ] Exact commands, Chromium/axe, S3, output, audit, cleanup, and rollback gates pass.
+- [ ] Claims remain static/read-only, runner unavailable, completion disabled.
+- [ ] Final tracked diff is exactly 34 creates and no other product/config/data path.
+- [ ] Stage B remains blocked and Issue #10 remains open after any Stage A partial release.
 
-## Risk Assessment
+## Risks and Rollback
 
 | Risk | Mitigation |
 |---|---|
-| Partial stage mistaken for issue completion | Closed claim fields, issue remains OPEN, full targets blocked |
-| Visual target becomes flaky OS automation | Locked Chromium, fixed viewports/state list, artifact-only checklist |
-| Root Make ownership violated | I5-05 fragment only; pre/post root hash |
-| Cleanup kills reused/foreign PID | PID + start identity + namespace marker negative tests |
+| Partial slice mistaken for issue completion | closed claim text, Stage B negative commands, issue stays open |
+| Server becomes application API | GET/HEAD closed file map and method negatives |
+| Visual gate becomes flaky ceremony | one Chromium, two fixed viewports, bounded named artifacts |
+| Cleanup kills foreign PID or evidence | PID/start identity, nonce/marker, path/alias negatives, retain review root |
 
-## Security Considerations
-
-Run the full Stage A-applicable S3 matrix, bundle scan, dependency audit, Host/Origin/CSP/XSS
-tests, credential/private-path scan, and protected hash checks. No browser session grants runner
-capability.
+Rollback removes only the exact 34 Stage A additions at a reviewed Git point; no released or
+retained evidence byte is deleted.
 
 ## Next Steps
 
-Wait for Gate B. Stage A may remain deployed as the safe fallback indefinitely.
+Stage A can be handed to exact-head review. Phase 5 remains blocked until Issue #9 has a released
+runner and a new exact Stage B amendment passes readiness.

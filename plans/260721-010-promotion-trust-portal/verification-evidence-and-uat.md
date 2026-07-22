@@ -2,211 +2,203 @@
 
 ## TDD Rule
 
-Each implementation phase begins with a retained failing test/evidence ID at the exact
-implementation input and dependency SHAs. Make the smallest in-scope implementation, keep the
-test green through refactor, then run the phase regression gate. Do not write portal behavior
-before the corresponding RED assertion exists. Do not weaken a test, schema, fixture, S3 control,
-or accessibility expectation to obtain green.
+Every behavior begins with a retained RED at pristine integration
+`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` or a tests-only descendant. RED must traverse the
+real portal adapter, model, static/React render, router, server, or lifecycle path and fail because
+the behavior is absent. Missing imports/tools, unconditional failure, snapshots of copied truth,
+or reconstructed evidence are invalid.
 
-Every retained RED record binds a stable RED ID to the exact pre-behavior source and tree SHA,
-dependency SHAs, tests-only changed-path closure when applicable, exact command and return code,
-expected failure, actual failure present in a retained raw log, and raw-log digest. RED must fail
-through the real released reader/validator/operation path for the intended reason before its
-behavior exists; retrospective reconstruction, unconditional failure, missing-tool/import failure,
-or an oracle that repeats fixture expectations is invalid. The same assertion is rerun GREEN at
-the reviewed exact head without weakening it.
+Each RED record binds ID, exact pre-behavior source/tree, dependency identities, tests-only diff,
+command/exit code, expected and actual failure, raw-log digest, and later GREEN at the reviewed
+head without weakening the assertion.
 
 ## Tests-Before Matrix
 
-| ID | First failing assertion | Stage |
+| ID | First real failing assertion | Stage |
 |---|---|---|
-| PTP-RED-A-001 | Missing/wrong #7/#8 release, version, digest, ancestry, or lock fails Gate A | A |
-| PTP-RED-A-002 | Issue #6 fixture/contract/protected hash drift fails | A |
-| PTP-RED-A-010 | Business question and four independent grains absent from shell | A |
-| PTP-RED-A-011 | Any cross-grain attribution or non-canonical decision renders | A/B |
-| PTP-RED-A-012 | Stage A offers mutation/completion or labels baseline fixture as fresh | A |
-| PTP-RED-A-013 | Back/forward/reload replays mutation or changes canonical progress | A/B |
-| PTP-RED-A-014 | JavaScript-disabled route lacks grains, limitations, decision, and unavailable state | A |
-| PTP-RED-A-015 | Runner unavailable/offline/environment failure is confused with controlled failure | A/B |
-| PTP-RED-A-016 | Focus, semantic name, narrow overflow, reduced motion, or live region fails | A/B |
-| PTP-RED-S3-001..014 | Negative rows in the S3 matrix fail for expected reason | A/B |
-| PTP-RED-B-001 | Missing/wrong #9 API/registry/evidence release fails Gate B | B |
-| PTP-RED-B-010 | Browser can observe/call runner transport or submit arbitrary input | B |
-| PTP-RED-B-011 | Duplicate/crash/reload produces more than one operation/result | B |
-| PTP-RED-B-012 | Reset deletes prior evidence or leaves non-ready workspace | B |
-| PTP-RED-B-013 | Completion occurs without fresh committed verifier result and valid evidence | B |
-| PTP-RED-B-014 | Artifact size/media/digest/handle disagreement still downloads/completes | B |
-| PTP-RED-B-015 | Exact journey does not execute controlled failure → decision → reset → verify | B |
-| PTP-RED-B-016 | `learn-down` stops/deletes foreign state or leaves owned process running | B |
+| PTP-RED-A-001 | Wrong integration/#7/#8/tree/blob/byte/hash/version/operation/lock is admitted | A |
+| PTP-RED-A-002 | Any protected Issue #6/release identity drifts without failure | A |
+| PTP-RED-A-010 | Real server/static render lacks catalog/module/lesson/step shell or required facts | A |
+| PTP-RED-A-011 | Cross-grain attribution or non-canonical decision renders | A |
+| PTP-RED-A-012 | Stage A exposes run/reset/verify/progress/evidence/completion or runner request | A |
+| PTP-RED-A-013 | Router back/forward/reload changes more than validated view state | A |
+| PTP-RED-A-014 | Built no-JS route lacks facts, navigation, unavailable, or non-completion state | A |
+| PTP-RED-A-015 | Runner unavailable is confused with controlled lesson failure | A |
+| PTP-RED-A-016 | Vietnamese semantics, focus, 360px reflow, reduced motion, or live status fails | A |
+| PTP-RED-A-020 | Provider admits unregistered family/path/hash/version/field | A |
+| PTP-RED-A-021 | Static and React renderers disagree on fact IDs or escaping | A |
+| PTP-RED-A-022 | Bundle/build contains #9, API mutation, storage, secret, cloud, or source map | A |
+| PTP-RED-A-023 | Process/request/output/artifact/alias/special-file ceilings are not enforced | A |
+| PTP-RED-A-024 | Status/cleanup can target foreign PID/path or remove retained review evidence | A |
+| PTP-RED-S3-001..014 | Corresponding S3 negative does not fail closed, including absence assertions | A |
+| PTP-RED-B-001..016 | Runner/journey/evidence/completion requirements | B, catalogued but not runnable |
 
-Tests load the exact tracked Issue #6 fixture and released #8 manifests read-only. No copied,
-synthetic, ignored, or framework-specific promotion data fixture is allowed. Real runner E2E uses
-the exact released #9 conformance path; if absent, Gate B fails.
+Tests load exact tracked released files. No copied, synthetic on-disk, ignored, generated, or
+framework-specific promotion data fixture is allowed. The SA-R11 seam test may use in-memory
+registered descriptors only; it must not invent #11/#12 content.
 
-## Practical Test Portfolio
+## Practical Stage A Portfolio
 
-| Layer | Scope | Bound |
+| Layer | Exact focus | Bound |
 |---|---|---|
-| Unit/component | route reducer, safe view model, status/error/live regions, controls, evidence metadata | focused files; no snapshot wall |
-| Contract | #6 hashes; #8 schema/types/operation/completion; #9 API/registry/problem/idempotency/evidence | exact releases only |
-| Security | PTP-S3-01..14 plus package/bundle/private-path scans | closed negative matrix |
-| Accessibility | semantic roles/names, keyboard, focus, live regions, reduced motion, overflow; axe | zero Critical/Serious |
-| Browser | real Chromium only; exact journey; desktop and one narrow viewport | one smoke suite |
-| Static/no-JS | real JavaScript-disabled Chromium plus deterministic static parser/equivalence | one lesson |
-| Recovery | runner unavailable/crash/retry, response loss, duplicate, reset/verify conflict, learn-down | exact #9 fault seams |
-| Visual/UAT | fixed screenshots and bounded checklist | no native OS automation |
+| Release/contract | release binding, per-file identities, #8 validators, registry, two lesson-read operation identities | exact released bytes |
+| Unit | provider/catalog/safe model/router/static render/security | focused Node tests; no snapshot wall |
+| Build | exact frozen Vite graph and deterministic static routes | production build, no source maps |
+| Security | PTP-S3-01..14, CSP/Host/path/XSS/storage/network/bundle/supply chain | closed negative matrix |
+| Accessibility | semantics, keyboard, focus, live status, reduced motion, overflow, axe | zero Critical/Serious |
+| Browser | one Chromium journey at 1280x800 then 360x800 | one worker, zero retry |
+| Static/no-JS | built parser plus JavaScript-disabled Chromium | same stable facts/routes |
+| Lifecycle | start/status/down twice, stale PID, foreign path/process, output bounds | one owned process |
+| Visual/UAT | fixed Stage A screenshots/trace/manifest/checklist | no native OS automation or approval claim |
 
-No Firefox/WebKit parity matrix, timer/scorecard, sample performance contest, native macOS
-automation, exhaustive device grid, or automated conformance claim belongs to I5-05.
-VoiceOver/System Settings/native Chrome-menu automation and Gate-D comparison work are likewise
-historical only and cannot become blocking gates.
+There is no Next.js/Astro comparison, Firefox/WebKit matrix, VoiceOver/System Settings/native
+browser control, performance contest, score/timer, exhaustive device grid, or automated
+conformance claim.
 
-## Exact Issue Command Contract
+## Exact Stage A Command Contract
 
-The final Stage B exact head must run the Issue #10 Verify block unchanged:
+Run only the exact allowlist in the amendment. The implementation gate sequence is:
 
 ```bash
+node apps/learning-portal/scripts/verify-stage-a-release.mjs
+make learning-contracts-check
+make lesson-check LESSON=promotion-trust
+make api-contracts-check
+npm --prefix apps/learning-portal ci --ignore-scripts --no-audit --no-fund
+npm --prefix apps/learning-portal run test:unit
+npm --prefix apps/learning-portal run build
+npm --prefix apps/learning-portal run test:stage-a -- --workers=1 --retries=0
+npm --prefix apps/learning-portal run test:visual -- --workers=1 --retries=0
+npm --prefix apps/learning-portal audit --audit-level=high --json
 make portal-test portal-a11y
-make lesson-e2e LESSON=promotion-trust
-make local-journey-e2e
+make portal-e2e
 make portal-visual-review
+make learn LESSON=promotion-trust
 make learn-status
 make learn-down
 ```
 
-Also exercise the accepted lifecycle entry:
+Then prove the Stage B commands fail without runner action:
 
 ```bash
-make learn LESSON=promotion-trust
+make lesson-e2e LESSON=promotion-trust
+make local-journey-e2e
 ```
 
-`mk/issue-5/i5-05.mk` owns these exact I5-05 targets and delegates to locked scripts under
-`apps/learning-portal/**`. It does not edit root Make or invoke Docker/Compose/Rill/Airflow/
-Iceberg/OpenMetadata/AWS/Terraform.
-
-The exact commands above are the immutable acceptance surface, not current implementation
-authority. The existing root Make include seam and command-owner registry reserve them for
-`mk/issue-5/i5-05.mk`. Today both stage command allow-lists are `[]`. After a later exact-SHA
-amendment and readiness authorize the fragment, every target must remain resolvable and return a
-typed non-zero dependency-unavailable result until its own stage gate is satisfied. Stage A may
-then run only the explicitly authorized runner-independent subsets; it cannot claim the Issue
-Verify block because `lesson-e2e` and `local-journey-e2e` require Stage B.
+Both required negatives return non-zero `STAGE_B_DEPENDENCY_UNAVAILABLE`. `mk/issue-5/i5-05.mk`
+owns the nine reserved I5-05 public targets and delegates only to locked portal scripts. It does
+not edit root Make, invoke Docker/optional profiles/cloud, or expose a generic host command.
 
 ## Command Acceptance
 
-| Command | Required result/evidence |
+| Command | Required Stage A result |
 |---|---|
-| `make portal-test portal-a11y` | unit/state/released-contract/S3 tests, build/typecheck, axe zero Critical/Serious, no hidden completion |
-| `make lesson-e2e LESSON=promotion-trust` | one Chromium journey for the exact released lesson; desktop+narrow; no-JS/static equivalence |
-| `make local-journey-e2e` | clean namespaced real runner/core journey, controlled failure, canonical decision, reset, fresh verify, completion, evidence download/digest, cleanup |
-| `make portal-visual-review` | deterministic bounded screenshots/trace/manifest/UAT checklist; no automatic human approval |
-| `make learn-status` | schema-valid owned PID/start identity, portal/runner readiness, workspace and evidence root; unavailable typed honestly |
-| `make learn-down` | idempotent owned process-group stop, secret revocation, scoped workspace cleanup, evidence retained, foreign state untouched |
-| `make learn LESSON=promotion-trust` | loopback portal/private runner/core only; useful URL/status/teardown; unsafe prerequisite fails before mutation |
+| release verifier and #8 checks | one exact-lock CPython 3.12.3 runtime is marker-admitted/cleaned; exact lesson/lab/manifest/registry and 16 OpenAPI operations pass |
+| frozen install/build/unit | exact lock graph, real adapter/router/render/security tests, deterministic bounded production output |
+| `make portal-test portal-a11y` | focused unit/contract/security/build plus axe zero Critical/Serious |
+| `make portal-e2e` | desktop+narrow, history/reload, no-JS, unavailable/non-completion, zero unexpected network/storage |
+| `make portal-visual-review` | bounded named Stage A artifacts and unapproved checklist |
+| `make learn` | start static server only and print canonical URL, runner unavailable, completion disabled |
+| `make learn-status` | report owned PID/start identity/static readiness and Stage B blocked |
+| `make learn-down` | stop only owned portal; idempotent twice; retain review evidence |
+| Stage B negatives | typed non-zero dependency unavailable; no runner import/start/call |
 
-Each required target emits only the exact portal-compatible result/evidence schema released by #8
-and pinned in the later amendment under `.artifacts/evidence/local-journey/{run-id}/`, with
-command, tool versions, input/output/tested-tree SHAs, dependency merge/release SHAs,
-contract/fixture/lock hashes, assertions, result, artifact hashes, redaction/retention class, and
-rollback result. The current `fitness-result-v1` registry row is not a runtime fallback. Missing
-required tool/evidence is `fail`.
+No Stage A command emits fresh learner-run, progress, completion, or verified evidence. Test and
+review records are implementation-review artifacts, not Issue #8 completion evidence.
 
-## Chromium Smoke
+## Release and Fixture Identity Tests
 
-Use the exact Chromium revision and one desktop plus one narrow viewport locked by the merged
-Issue #7 handoff and pinned in the later amendment. This plan does not invent viewport literals
-before that handoff.
+Before content tests, recompute:
 
-Fix locale `en-US`, timezone `UTC`, color scheme, reduced-motion mode, animation/transition
-suppression for capture, seeded data, route, and released dependency hashes. Assertions cover:
+- the exact #7/#8/#25 commit ancestry/tree relationships and 903-entry released tree listing;
+- every admitted released path's blob, byte length, and SHA-256 from the cook tree;
+- exact package/lock graph and tool versions;
+- all seven protected Issue #6/release identities;
+- root Make include and the nine I5-05 `future-owner/not-runnable` registry rows;
+- the app activation's base-registry/final-fragment hashes, nine exact command IDs,
+  `implemented` recipe availability, and `fitness-result-v2` output binding;
+- absence of the 34 Stage A create paths in the pristine integration.
 
-- visible focus and logical keyboard order;
-- no horizontal document overflow at both viewports;
-- business question, four grain names/limitations, controlled/environment failure distinction;
-- exact canonical decision;
-- reset/retry state and prior-evidence retention;
-- verified evidence metadata/download at Stage B;
-- no console/page/unhandled errors or CSP violations.
+Mutation tests change one identity, path, byte, hash, version, operation, unknown field, or lock
+edge at a time and require a stable fail-closed result before render.
 
-The same suite invokes axe once per required state set, with zero Critical/Serious violations.
-Automated checks are necessary but do not claim full WCAG 2.2 AA or screen-reader conformance.
+## Chromium Journey
 
-## No-JavaScript and Static Fallback
+Use the frozen Playwright/Chrome channel, one worker, no retry, locale `vi-VN`, timezone
+`Asia/Ho_Chi_Minh`, reduced motion, fixed color scheme, and animations suppressed only for
+capture. Run the same route sequence at 1280x800 and 360x800:
 
-A real Chromium context with JavaScript disabled loads the exact released interactive entry and
-follows its static path. A separate parser test reads the built static HTML. Both must prove the same stable
-released facts: stakeholder question, four mart IDs/grains, each limitation, expected controlled
-failure, `insufficient-evidence`, `no-common-grain`, reset explanation, baseline fixture label,
-and runner-unavailable/non-completion notice. No fact/control may exist only behind animation,
-hover, client JavaScript, or scroll position.
+1. open catalog and confirm Vietnamese-first shell plus one vertical-slice module/lesson;
+2. navigate module → promotion-trust lesson → ordered narrative steps;
+3. verify four independent grains, limitations, controlled-failure explanation, and canonical
+   decision without causal attribution;
+4. reach run/reset/verify explanation and confirm runner unavailable/no actionable control;
+5. use back, forward, and reload; confirm only view state changes and zero mutation/network replay;
+6. verify keyboard order/focus/live status/reduced motion/no overflow and axe zero Critical/Serious;
+7. inspect console, CSP, requests, cookies, all Web Storage/IndexedDB/Cache APIs, and bundle
+   exposure for zero prohibited state/capability.
 
-## Runner Failure and Idempotency Cases
+No console/page/unhandled/CSP error is allowed. Automated checks do not claim full WCAG or
+screen-reader conformance.
 
-Run against the released #9 fault/conformance seams:
+## No-JavaScript and Static Equivalence
 
-1. runner absent/not-ready before start: no mutation; static lesson remains available;
-2. runner crashes before commit: environmental failure; retry/recover/reset offered; no progress;
-3. result commits but response is lost: same idempotency key returns committed result;
-4. evidence commits before completion transaction: reconcile through the one #8 transaction or
-   quarantine; no early completion;
-5. duplicate click/request: one operation ID and one committed result;
-6. reset versus verify conflict: released typed conflict; never two successful mutations;
-7. portal restart: reload canonical runner/completion state; no POST replay;
-8. corrupted/missing artifact or wrong digest: evidence/download/completion fail;
-9. `learn-down` during active operation: released cancellation/reconciliation, full owned process
-   group stopped, prior evidence retained.
+A JavaScript-disabled Chromium context follows the same catalog/module/lesson/step links. A
+separate parser reads every generated route. Both must expose the same stable released facts,
+navigation, grain limitations, `PROMOTION_HEADLINE_INSUFFICIENT` explanation,
+`insufficient-evidence / no-common-grain`, runner-unavailable state, and non-completion warning.
 
-## Deterministic Portal Visual Review
+Static and React output share one safe model and escaping rules. No required fact/control may
+exist only behind JavaScript, animation, hover, external network, or scroll position.
 
-`make portal-visual-review` is a bounded artifact generator, not native OS automation. It:
+## Runner-Unavailable Boundary
 
-1. runs the locked Chromium at the one desktop and one narrow viewport pinned from #7;
-2. captures a fixed state list: entry/question, four-grain context, controlled failure,
-   canonical decision, runner unavailable, reset/retry, verified evidence, and static fallback;
-3. records full-page and focused-control screenshots, trace, console/CSP result, viewport,
-   locale/timezone, dependency/input/tested-tree SHAs, and artifact SHA-256;
-4. emits a deterministic manifest and `uat-checklist.md` beneath the current evidence root;
-5. exits non-zero on missing state/artifact, overflow, focus invisibility, console/CSP error,
-   mismatch, or unbounded capture count.
+Prove by import graph, built bundle/string scan, request observation, process inventory, DOM,
+storage inventory, and command negatives that Stage A:
 
-The checklist asks one human to review information hierarchy, focus visibility, error/live-region
-copy, grain honesty, narrow readability, static equivalence, reduced-motion result, evidence
-integrity wording, and absence of a false completion claim. Reviewer identity, exact head, date,
-result, and residual notes are added outside the deterministic artifact hash. The command never
-clicks VoiceOver/System Settings/native browser menus and never fabricates approval.
+- does not import/start/probe/call Issue #9 or any runner-compatible placeholder;
+- exposes no runner address/token, command/argv/path/URL/SQL, mutation method, API proxy, or
+  browser secret;
+- does not create progress, completion, workspace, run, reset, verifier, evidence, or download
+  state;
+- keeps the released controlled-failure explanation distinct from environmental unavailability.
 
-## Retention and Cleanup Evidence
+## Deterministic Visual Review
 
-Retain:
+`make portal-visual-review` captures only these Stage A states at both viewports, within the
+eight-screenshot ceiling: catalog/vertical-slice context, four-grain lesson context, canonical
+decision, and runner-unavailable/no-completion static fallback. It also emits one trace, axe JSON,
+no-JS inventory, console/CSP record, SHA-256 manifest, and `uat-checklist.md` under the bounded
+review root.
 
-- RED results and assertion IDs;
-- Gate A/B dependency identity manifests;
-- unit/contract/S3/a11y/axe reports;
-- Chromium trace/screenshots/static HTML digest;
-- real journey operation/state transition log;
-- evidence manifest/download digest;
-- learn status/down and rollback results;
-- exact-head human UAT/pre-merge approval.
+The checklist asks one human to review hierarchy, Vietnamese-first labels, focus, status/error
+copy, grain honesty, 360px readability, static parity, reduced motion, and absence of false
+course/run/completion claims. Reviewer identity, exact head, date, result, and residual notes are
+recorded separately; artifact generation never fabricates approval.
 
-Cleanup removes only marker-verified I5-05 temporary state and runner-owned workspace through the
-released API. It preserves committed evidence, the completion record for its retention period,
-the Issue #6 fixture, unrelated ignored files, other worktrees, and other process groups. A
-rollback first disables Stage B and proves Stage A fallback, then restores the exact reviewed Git
-point without deleting evidence.
+## Evidence, Cleanup, and Rollback
 
-## Release Gate
+Retain RED/GREEN records, release/protected identity manifests, unit/contract/S3/a11y results,
+build/output inventory, audit result, Chromium trace/screenshots, axe/no-JS/console/CSP records,
+artifact hashes, lifecycle/cleanup/rollback results, independent reviews, bounded UAT, and human
+exact-head approval through release policy.
 
-Before any Stage A or Stage B merge:
+Runtime and review roots, file/byte bounds, PID/start identity, marker/nonce containment, special
+file/alias denial, and idempotent cleanup are exact in the amendment. Cleanup preserves review
+artifacts and never touches repository/dependency/fixture/home/other-worktree/foreign-process
+state. Rollback removes only the exact 34 Stage A additions at a reviewed Git point.
 
-- fresh independent plan validation and stage-specific readiness are published at exact heads;
-- required tests and S3 scans pass with zero unresolved Critical/High findings;
-- changed paths match exclusive ownership; protected/shared hashes match;
-- two fresh independent implementation reviews bind the exact PR head: one covers code/contracts/
-  S3 and one covers accessibility/browser/evidence/operations; both have zero unresolved
-  Critical/High findings;
-- dependency releases bind the exact PR head;
-- the branch is clean and local = tracking = fresh-live;
-- no cloud/AWS/Terraform/destructive action occurred;
-- human exact-head pre-merge approval is recorded.
+## Exact-Head Release Gate
 
-Planning/static checks performed on this plan do not satisfy any item above.
+Before a Stage A human merge:
+
+- every exact command and TDD/S3 check above passes at one clean head;
+- changed paths equal the 34-path create allowlist; no modify/delete or generated tracked output;
+- release/protected hashes and command ownership match;
+- `npm audit` has zero High/Critical and axe has zero Critical/Serious;
+- two fresh independent exact-head reviews have zero unresolved Critical/High findings;
+- one named human completes bounded visual/keyboard UAT and exact-head approval;
+- local, upstream, and fresh PR head are equal; no cloud/AWS/Terraform action occurred.
+
+Stage A readiness planning satisfies none of those implementation/release gates. Stage B remains
+blocked and cannot be skipped, passed, or claimed by Stage A results.

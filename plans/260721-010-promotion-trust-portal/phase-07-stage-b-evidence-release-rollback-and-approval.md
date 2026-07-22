@@ -9,6 +9,8 @@ effort: "L"
 
 # Phase 7: Stage B evidence release rollback and approval
 
+> Blocked: Issue #9 is unreleased. Stage B file, command, and dependency allowlists are empty.
+
 ## Overview
 
 Converge the full vertical slice at one exact head: implement final lifecycle/Make delegates,
@@ -18,9 +20,9 @@ pre-merge approval. No PR/merge is implied by this plan.
 
 ## Context Links
 
-- [Exact commands and acceptance](./verification-evidence-and-uat.md#exact-issue-command-contract)
-- [Visual/UAT contract](./verification-evidence-and-uat.md#deterministic-portal-visual-review)
-- [Release gate](./verification-evidence-and-uat.md#release-gate)
+- [Stage A commands and Stage B negatives](./verification-evidence-and-uat.md#exact-stage-a-command-contract)
+- [Visual/UAT contract](./verification-evidence-and-uat.md#deterministic-visual-review)
+- [Exact-head release gate](./verification-evidence-and-uat.md#exact-head-release-gate)
 - [Threat retention/rollback](./threat-model-and-security.md#retention-cleanup-and-rollback)
 - [Hard STOP conditions](./requirements-and-risk-traceability.md#hard-stop-conditions)
 
@@ -156,7 +158,6 @@ private data, cloud credentials, source maps with secrets, or absolute local pat
 
 ## Next Steps
 
-After the plan itself receives fresh independent validation and readiness, staged cook may begin
-only when its dependency gate clears. After implementation evidence/human approval, a separate
-authorized Git phase decides PR/merge. Issue #10 closes only after Stage B merges and post-merge
-verification passes.
+Wait for a released Issue #9, an exact Stage B amendment, and fresh Stage B readiness. After later
+implementation evidence/human approval, a separate authorized Git phase decides PR/merge. Issue
+#10 closes only after Stage B merges and post-merge verification passes.

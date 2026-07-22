@@ -18,10 +18,10 @@ This phase is hard-blocked today and never edits runner/shared-contract source.
 ## Context Links
 
 - [Gate B](./dependency-and-release-gates.md#gate-b--real-journey-authority)
-- [Logical API boundary](./architecture-and-api-boundaries.md#logical-operation-boundary)
-- [State authority](./architecture-and-api-boundaries.md#state-and-storage-authority)
+- [Stage separation](./architecture-and-api-boundaries.md#stage-separation)
+- [Logical capability boundary](./architecture-and-api-boundaries.md#logical-capability-boundary)
 - [S3 matrix](./threat-model-and-security.md#stride-and-negative-test-matrix)
-- [Runner recovery cases](./verification-evidence-and-uat.md#runner-failure-and-idempotency-cases)
+- [Runner-unavailable boundary](./verification-evidence-and-uat.md#runner-unavailable-boundary)
 
 ## Requirements
 

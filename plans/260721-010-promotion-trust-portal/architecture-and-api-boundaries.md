@@ -2,247 +2,169 @@
 
 ## Decision
 
-Use one host-local Vite + React application with an in-process Node BFF and one separately
-released private runner process. This is a modular monolith at the portal boundary, not a
-distributed framework. It introduces no broker, worker fleet, service mesh, service worker,
-cloud service, container requirement, or second product database.
+Stage A is one Vite-built React application plus one minimal Node static-file process. It has no
+BFF, HTTP API, runner adapter, completion repository, session, database, or mutation surface.
+The built static documents are complete without JavaScript; React progressively enhances the same
+validated read-only view model.
 
 ```text
-Browser
-  | same-origin documents + released Issue #8 browser API only
-  v
-Learning portal process
-  |- Vite-built React client
-  |- static/no-JavaScript lesson renderer
-  |- same-origin BFF/security filter
-  |- released contract bindings and completion repository
-  '- server-only released Issue #9 runner adapter
-        | private transport + server-held runner credential
-        v
-     Issue #9 runner
-        |- command registry / workspace journal / verifier
-        '- immutable evidence and existing local data-product entrypoints
+released #8 files + validators + exact release binding
+                         |
+                         v
+              released-module-provider
+                         |
+                         v
+            closed safe PortalCatalog model
+                         |
+          catalog -> module -> lesson -> step
+                    /                    \
+        static document             React shell
+                    \                    /
+             Node GET/HEAD-only static server
+                         |
+                   loopback browser
 ```
 
-The browser never receives runner transport location, runner launch credential, command argv,
-filesystem locator, arbitrary query capability, or direct artifact path.
+Stage B is a separate future architecture decision. It may add a server-only BFF and released
+private Issue #9 adapter only after an exact #9 release amendment. Nothing in Stage A anticipates
+that dependency through a placeholder, probe, client, route, token, or browser contract.
 
 ## Stage Separation
 
 | Concern | Stage A | Stage B |
 |---|---|---|
-| Framework | Exact merged Issue #7 Vite/React handoff | Same exact accepted foundation |
-| Content/contracts | Exact released Issue #8 Stage A | Same release or explicit compatible successor |
-| Runner | No import/call; capability is unavailable | Exact released Issue #9 server-only client/API |
-| Completion | Disabled; no row/event can be written | One Issue #8 authority and reconciliation protocol |
-| Evidence | Labelled Issue #6 baseline reference only | Fresh runner evidence + integrity/download |
-| Claim | Readable static lesson shell | Complete local journey |
+| Framework | Exact #7 Vite/React toolchain | Accepted Stage A or explicit compatible successor |
+| Content/contracts | Exact released #8 files and validators | Same authority or released compatible successor |
+| Server | Built-in static GET/HEAD server | Deferred BFF, if exact #9 release requires it |
+| Runner | Absent; explicit unavailable state | Exact released #9 server-only client/API |
+| State | URL/history presentation state only | Deferred canonical runner/#8 completion state |
+| Evidence | Released fixture facts labelled retained baseline | Deferred fresh runner evidence |
+| Claim | Understandable portal lesson slice | Deferred complete local journey |
 
-## Ownership Ceiling and Deferred File Resolution
+## Exact Ownership and Files
 
-The issue-level ownership ceiling is `apps/learning-portal/**` (including portal tests),
-`mk/issue-5/i5-05.mk`, and Issue #10 plan/evidence artifacts. The root Makefile already provides
-the `mk/issue-5/*.mk` include seam and must not change. Shared contracts, dependency source,
-fixtures, root configuration, CI, cloud, AWS, and Terraform remain read-only or denied.
+The issue-level ceiling is `apps/learning-portal/**`, `mk/issue-5/i5-05.mk`, and Issue #10
+plan/evidence artifacts. Stage A is narrower: exactly the 34 creates in the
+[release amendment](./stage-a-release-amendment.md#exact-stage-a-tracked-write-allowlist), with no
+modifies or deletes. Root Make already supplies the fragment include seam and remains unchanged.
 
-Repository `README.md` and `docs/**` are also outside the I5-05 product-write ceiling. A later
-implementation review records documentation/release impact, but any required change is a separate
-owner-authorized serialized handoff rather than an expansion of this portal stage.
-
-This validated plan does not select a product tree before the dependencies exist:
-
-| Stage | Authorized create/modify/delete paths now | Authorized implementation commands now | Consumable dependency SHAs now |
-|---|---|---|---|
-| A | `[]` | `[]` | `[]` |
-| B | `[]` | `[]` | `[]` |
-
-After exact released handoffs exist, a later amendment must derive the smallest concrete file and
-command allow-lists from the merged #7 promotion map and released #8/#9 consumption surfaces.
-That amendment must pin real 40-hex identities, receive independent revalidation and
-stage-specific readiness, and stay inside the ownership ceiling. A candidate path mentioned in
-historical planning is not authority.
+Stage B paths, commands, and dependency identities are `[]`. Shared contracts, released lessons,
+validators, fixtures, root files, dependency source, runner source, `README.md`, `docs/**`, cloud,
+AWS, Terraform, CI, and other issues remain read-only or denied.
 
 ## Contract Binding Policy
 
-An app-owned release-binding artifact may be authorized only by the later exact-SHA amendment. It
-records exact released method/path/`operationId` values, schema/type imports, registry command
-IDs, version strings, and source digests. It must be generated deterministically from the
-released handoffs and compared in tests. It must not contain:
+`apps/learning-portal/release-binding.stage-a.json` is an app-owned closed index of external
+truth, not a new public contract. It binds:
 
-- a route or command copied from draft #8/#9 plans;
-- an I5-05-owned replacement schema or state machine;
-- permissive parsing or unknown-field stripping;
-- a browser-visible runner transport or credential;
-- a local fallback version when a released version is unavailable.
+- the #7 approved head, merge, package/lock identities, exact tool versions, and lock graph;
+- the #8 PR #23 and composed integration identities;
+- every admitted released #8 path, byte length, Git blob, SHA-256, schema family, and version;
+- exact read identities `listLessons` (`GET /v1/lessons`) and `getLesson`
+  (`GET /v1/lessons/{lessonId}`) for compatibility checks only;
+- protected Issue #6/release identities and the closed Stage A claim.
 
-The accepted master plan names candidate operations, but Issue #8 owns the final browser-facing
-OpenAPI and operation matrix and Issue #9 owns the final private API/registry. Because neither is
-released at this planner input, this plan deliberately does not freeze literal API URLs. At Gate
-A/B the generator binds their exact released method/path pairs. Absence or difference is a STOP,
-not an invitation to invent an adapter contract.
+The separate app-owned command activation is validated against the released generic activation
+schema and immutable command-owner registry. It binds the final I5-05 fragment digest and emits
+truthful `fitness-result-v2` results; it does not edit or replace shared registry truth.
 
-## Release-Time Semantic Closure
+The portal does not expose or call those HTTP operations. It reads the tracked released files at
+build time after the released validators pass. An unknown field, family, version, path, hash,
+operation identity, content type, or registry state fails the build before render. There is no
+permissive fallback, local schema, copied registry, hand-written lesson, or draft #9 value.
 
-The later amendment must bind behavior as well as names, without inventing field/status literals:
+## PortalCatalog and Extension Seams
 
-- **Version negotiation:** pin the exact #8/#9 supported and rejected version sets and their
-  compatibility matrix; an absent, unknown, draft, stale, or downgrade version fails closed.
-- **Single completion authority:** use only #8's released CAS/expected-revision rule and one
-  atomic completion/evidence transaction; the browser, reflection, route, runner, and evidence
-  index are never competing completion writers.
-- **Idempotency and response loss:** pin the released request-key scope, retention, committed
-  replay, in-flight duplicate, conflict, and expiry semantics. A retry with the same identity
-  reconciles one result; it never starts a second mutation.
-- **Crash/restart:** pin the exact committed/in-flight/orphan recovery rules for portal and runner
-  crashes, including when quarantine is mandatory and when a safe retry is allowed.
-- **Reset:** pin #9's exact reset operation and #8's corresponding CAS/progress transition; reset
-  preserves prior immutable evidence, proves the released fresh-ready oracle, and never completes.
-- **Errors and unavailable states:** pin released problem/status classes and remediation for
-  absent, starting, not-ready, crashed, containment-unavailable, conflict, invalid evidence, and
-  controlled lesson failure. Environmental states never advance progress.
-- **Evidence:** pin verified-handle identity, bounded byte/size/media/digest checks, and #8's
-  completion predicate. Metadata, bytes, or hash disagreement blocks download and completion.
+`PortalCatalog` is a closed internal projection with stable catalog, module, lesson, and narrative
+step identities plus only safe released facts. The initial catalog contains one module entry and
+one promotion-trust lesson vertical slice. It is never described as the entire course.
 
-If either release omits one of these semantics, the corresponding stage remains disabled and the
-owner issue must supply it; I5-05 does not create a local compatibility contract.
+The seams are deliberately content-driven:
+
+1. `released-module-provider` accepts only paths/families/versions/hashes recognized by an exact
+   released contract set and its validators.
+2. `module-catalog` orders module and lesson descriptors without hard-coded route switches.
+3. `portal-router` resolves catalog/module/lesson/step identities and stores only the selected
+   read-only view in the URL/history.
+4. static and React renderers consume the same `PortalCatalog` and stable fact IDs.
+
+Later #11/#12 releases can contribute curriculum/module/lesson/lab manifests through that
+provider after a new exact release binding. They do not require a shell, router, navigation, or
+rendering redesign. Stage A does not invent their content, metadata, levels, routes, commands, or
+contracts. Vietnamese is the default shell language; canonical released English IDs, questions,
+failure codes, and decision values remain visibly distinguishable.
 
 ## Runtime Loading Boundary
 
-Stage A startup resolves only the exact merged #7 runtime and exact released #8 read-only
-interfaces. It must not import, bundle, probe, or configure Issue #9 code. In Stage B, the private
-runner client and optional-tool adapters remain server-only and are loaded after the exact released
-capability/readiness gate; absence or incompatibility leaves the Stage A static route operational.
-No eager optional import may break offline/static startup or leak runner transport into the browser
-bundle.
+The production build resolves only exact #7 packages and exact #8 read-only files/validators.
+The browser bundle and static server must contain no Issue #9 path, module, URL, transport,
+credential, registry, command, environment, dynamic optional import, storage adapter, or
+completion code. Static startup must not probe Docker, a runner, optional tools, external network,
+or cloud.
 
-## Logical Operation Boundary
+Bundle/import and network/storage tests make this absence executable. A missing or incompatible
+Stage B capability leaves Stage A fully readable and reports `runner unavailable`; it is not a
+controlled lesson failure.
 
-Only these logical capabilities may cross the browser/BFF boundary, each using the exact Issue #8
-released operation:
+## Logical Capability Boundary
 
-| Capability | Stage | Browser input | BFF responsibility | Authority |
-|---|---|---|---|---|
-| lesson read | A/B | fixed released lesson ID | load/validate safe projection | #8 lesson release |
-| progress/completion read | A disabled/B enabled | current local actor/lesson | read canonical state | #8 completion protocol |
-| runner/tool status | A unavailable/B live | none | reduce released status, no transport detail | #9 status |
-| workspace start | B | released typed manifest inputs | validate, attach idempotency/correlation, call runner | #9 journal |
-| operation submit/status | B | released action/argument IDs only | map exact allow-list; never argv/path/SQL | #9 registry |
-| reset | B | workspace identity + idempotency | call exact reset; reconcile last committed state | #9 journal |
-| verify | B | released run/workspace identity | request fresh verifier result | #9 verifier |
-| evidence read/download | B | opaque evidence ID | verify authority/digest, stream bounded immutable handle | #8/#9 evidence |
-| completion commit | B, server only | none directly | atomic canonical commit after all predicates pass | #8 authority |
+| Capability | Stage A disposition | Authority |
+|---|---|---|
+| lesson/catalog read | Build-time validated projection only | exact released #8 files |
+| read-only navigation | URL and `history.state`; no canonical progress | portal view state |
+| runner/tool status | Constant explicit unavailable copy; no probe | Stage A claim boundary |
+| run/reset/verify | Explanation only; no control or request | denied |
+| progress/completion | No read/write/store/derived truth | denied |
+| evidence | Released baseline facts only, never fresh/downloadable evidence | exact #6/#8 release |
+| arbitrary command/path/URL/SQL/upload/proxy | No surface | denied |
 
-Every request and response is validated at the BFF. Unknown fields, versions, actions, states,
-identifiers, media types, or problem codes fail closed. The BFF does not expose generic proxy,
-filesystem, URL fetch, raw SQL, shell, environment, path, upload, or arbitrary download
-operations.
+Stage B logical operations remain descriptive historical requirements only. None becomes Stage A
+route, type, module, or test double.
 
-## State and Storage Authority
+## State, Routing, and History
 
-| State | Durable authority | Client representation | Crash/reload rule |
-|---|---|---|---|
-| Lesson/version | Exact Issue #8 release files | immutable view model | reload from BFF/static build |
-| Read-only route/step | URL + `history.state` | selected view only | back/forward changes view, never operation |
-| Portal session/CSRF | BFF launch session | HttpOnly cookie + in-memory response token | rotate on restart; never runner credential |
-| Workspace/operation/idempotency | Issue #9 runner journal | opaque IDs/status | retry queries/returns committed operation |
-| Verification | Fresh Issue #9 verifier result | read-only summary | stale/uncommitted result cannot complete |
-| Evidence bytes | Issue #9 immutable verified handle | metadata/link only | digest/handle disagreement blocks |
-| Completion/progress | One server-side implementation of the exact released Issue #8 authority | derived read-only state | released CAS/transaction/reconciliation; browser never writes completion |
+The only browser state is the selected catalog/module/lesson/narrative-step view. Canonical route
+generation is deterministic from validated IDs. Navigation uses same-origin links first, with
+React enhancement for `pushState`; `popstate`, back, forward, and reload select a view only. They
+cannot initiate a request, replay a mutation, advance progress, or complete anything.
 
-The accepted master authority permits local server-side persistence, but Issue #8 owns the exact
-completion/CAS/reconciliation contract and its released binding. The later amendment must pin the
-storage path/driver only if the #7/#8 handoffs make them concrete. If no compatible local binding
-meets the authority/recovery tests, readiness stops for a reviewed decision; do not silently
-replace the authority with browser storage, ad hoc JSON, or a second progress truth.
-
-Never store a runner credential, CSRF token, canonical progress, completion, evidence bytes, raw
-logs, or private locators in `localStorage`, `sessionStorage`, IndexedDB, URL query/fragment, or a
-service-worker cache. Non-sensitive route step and an outstanding idempotency key may live only in
-`history.state` so reload can reconcile without replaying a mutation.
-
-## Routing, History, and Reset
-
-Exact route literals are deferred to the released #8 browser contract and the later amendment;
-none is authorized now. The interactive and static/no-JavaScript routes must remain same-origin
-and deterministic. The selected narrative step comes from the exact released lesson step ID and is
-validated against the release; no canonical progress or operation state is encoded in the URL.
-Read-only step changes use `pushState`. Status refresh and mutation completion use
-`replaceState`. `popstate` changes only the visible read-only step and fetches canonical state; it
-never repeats a POST.
-
-For reset:
-
-1. Create one cryptographically random idempotency key and store it in the current history entry
-   before the request.
-2. Disable duplicate activation and share the in-flight promise.
-3. Send the exact Issue #8 mutation to the BFF; the BFF calls the exact Issue #9 reset operation.
-4. On timeout/reload, query/retry with the same key and reconcile the runner's committed result.
-5. Only after the released ready-state oracle passes may the BFF update canonical progress.
-6. Preserve earlier immutable evidence; reset never deletes it and never completes the lesson.
+Unknown, malformed, overlong, percent-ambiguous, traversal, dot-segment, or unregistered routes
+fail closed to a safe not-found document. No state lives in local/session storage, IndexedDB,
+Cache Storage, cookies, service workers, query secrets, fragments, or ambient globals.
 
 ## Static and No-JavaScript Path
 
-The static renderer authorized by the later amendment must consume the exact Issue #8 release
-through the same validator/view model as the interactive route. It deterministically emits the
-released static route and a no-JavaScript link/fallback. The generated page contains the business question, four grains, calculations,
-limitations, controlled-versus-environmental explanation, exact
-`insufficient-evidence / no-common-grain` outcome, reset explanation, baseline-fixture label,
-runner-unavailable state, and no completion control.
+`generate-static-routes.mjs` renders the admitted route set from the same safe model used by
+React. Every required route is a built HTML document with semantic navigation, breadcrumbs,
+released lesson facts, independent-grain limitations, canonical decision, explanation-only
+run/reset/verify steps, runner-unavailable notice, and explicit non-completion wording.
 
-There is no hand-maintained second lesson, copied raw fixture, ignored fixture, or separate fact
-source. Contract/content hash changes regenerate both modes and equivalence tests compare stable
-IDs/text facts. Static fallback remains useful when runner or JavaScript is unavailable but does
-not claim a run occurred.
+There is no second hand-maintained page or raw HTML/MDX execution. Stable fact-ID equivalence,
+escaping tests, a built-output parser, and JavaScript-disabled Chromium prove parity. Missing JS,
+runner, network, animation, hover, or optional tools cannot hide required facts.
 
-## Exact Journey Data Flow
+## Stage A Data Flow
 
-1. Render the Retail Operations business question from the released lesson.
-2. Show promotion, fulfillment, returns, and data-quality marts as four independent grains.
-3. Stage B starts an isolated workspace using only the released typed operation.
-4. The released runner produces the controlled `PROMOTION_HEADLINE_INSUFFICIENT` failure.
-5. The UI distinguishes this expected lesson failure from environmental/runner failure.
-6. Record the exact canonical decision `insufficient-evidence` / `no-common-grain`.
-7. Reset idempotently and prove base/golden hashes remain unchanged.
-8. Run the released verification operation against the fresh workspace.
-9. Validate committed evidence schema, canonical digest, artifacts, dependency/fixture/tested-tree
-   identities, and completion predicates.
-10. Commit completion once through the Issue #8 authority, display metadata, and provide a
-    bounded integrity-checked download.
+1. Verify the exact integration, release binding, protected identities, lock, and command owner.
+2. Run released #8 learning, lesson, and API validators.
+3. Map only admitted released fields into `PortalCatalog`.
+4. Render Vietnamese-first catalog/module/lesson/step static documents.
+5. Build the React enhancement from the same model.
+6. Serve only bounded built regular files over loopback GET/HEAD.
+7. Explain the four independent grains and canonical
+   `insufficient-evidence / no-common-grain` outcome.
+8. Report runner unavailable and completion disabled; perform no lab action.
 
-Stage A renders/explains steps 1, 2, 4, 5, 6, and 7 from released static content but executes none
-of steps 3 or 7..10.
+No step produces a workspace, run, reset, fresh verification, evidence, progress, completion, or
+course claim.
 
-## Evidence Display and Download
+## Static Server and Performance Shape
 
-Display only released safe fields: evidence/run/lesson/lab IDs and versions, decision/reason,
-assertion results, tested tree, dependency release SHAs, fixture/contract/verifier hashes,
-artifact media type/size/SHA-256, status, redaction/retention class, and honest local-integrity
-language. Never display absolute paths, raw environment, credentials, private runner URL,
-unbounded logs, raw customer/order identifiers, or HTML from an artifact.
+The Node server binds `127.0.0.1` on a runtime-selected port, accepts exact local Host values,
+serves GET/HEAD only, and rejects bodies, traversal, ambiguous decoding, unknown routes, and
+foreign Hosts. It serves only admitted build-root regular files with declared media types and the
+strict Stage A headers/CSP.
 
-The BFF accepts only an opaque evidence/artifact ID present in the canonical index, requests the
-exact immutable verified handle from #9, confirms metadata/digest before exposure, and streams the
-bounded regular bytes with `Content-Disposition: attachment`, `X-Content-Type-Options: nosniff`,
-`Cache-Control: no-store`, exact length, digest, and ETag. Handle/digest/size/media-type drift
-blocks the response and completion. The browser UI displays the expected digest; automated tests
-hash the downloaded bytes. Local SHA-256 is corruption detection, not publisher authentication or
-non-repudiation.
-
-## Offline and Unavailable Behavior
-
-- No service worker or offline mutation queue.
-- Network loss after page load keeps validated narrative visible, disables mutation, announces
-  offline status once, and offers explicit retry.
-- Runner absent/starting/not-ready/crashed is an environmental state, not the controlled failure.
-- Required local tool absence blocks before mutation with released remediation.
-- Rill, Airflow, Iceberg, OpenMetadata, Docker, cloud, and AWS remain optional/unstarted and are
-  never queried by the core journey.
-- Stage A is the durable fallback if Stage B containment or runner readiness fails.
-
-## Performance Shape
-
-Run one portal/BFF process, one released runner process, and the existing bounded local
-DuckDB/core entrypoints. Poll only while an operation is active with released bounds; no
-background refresh storm, broker, container stack, or eager evidence buffering. Stream bounded
-artifacts and lazy-render large evidence tables. This respects the 16 GiB design envelope without
-inventing a numeric performance/resource release threshold owned by Issue #8.
+One Node process and one Playwright worker are allowed. Install/build/test/server/output/review
+ceilings are exact in the amendment. There is no broker, worker fleet, database, service worker,
+poller, container, optional profile, API buffering, external fetch, runner, or cloud component.
