@@ -192,7 +192,19 @@ def check_repository() -> CheckResult:
     if promotion.get("pinnedSchema", {}).get("sha256") != "43fc68833237ef5b522f82fbbd18caba0f11e16bf66e0ff26cf44f0238c39871":
         codes.append("I11_REF_STALE")
     operation_matrix = _read("learning/contracts/operation-matrix-v1.json")
-    if len(operation_matrix.get("operations", [])) != 16 or operation_matrix.get("channels") != []:
+    released_operation_ids = [operation.get("operationId") for operation in operation_matrix.get("operations", [])]
+    if len(released_operation_ids) != 16 or len(set(released_operation_ids)) != 16 or operation_matrix.get("channels") != []:
+        codes.append("I11_API_OPERATION_UNRELEASED")
+    j02 = next((module for module in modules if module.get("moduleId") == "J02"), {})
+    api_exercise = j02.get("exercise", {})
+    operation_reasoning = api_exercise.get("operationReasoning", [])
+    if (
+        api_exercise.get("operationIdBindings") != released_operation_ids
+        or [row.get("operationId") for row in operation_reasoning] != released_operation_ids
+        or any(not row.get("reasonVi") for row in operation_reasoning)
+        or "AsyncAPI" not in api_exercise.get("rejectedChannelReasonVi", "")
+        or "getOperation" not in api_exercise.get("rejectedChannelReasonVi", "")
+    ):
         codes.append("I11_API_OPERATION_UNRELEASED")
     for path in manifest.get("moduleCollections", []):
         if not _schema_valid(_read(path), "architecture-module-collection-v1.schema.json"):

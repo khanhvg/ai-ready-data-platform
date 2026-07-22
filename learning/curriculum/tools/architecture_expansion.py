@@ -26,6 +26,7 @@ import time
 from typing import Sequence
 import urllib.request
 import xml.etree.ElementTree as ET
+import yaml
 
 from .content_io import CheckResult, NormalizedRequest, content_sha256, normalize_request
 
@@ -145,6 +146,8 @@ def _verify_repository() -> CheckResult:
         "modelSha256": base / "likec4/model/architecture-curriculum.c4",
         "specificationSha256": base / "likec4/specification.c4",
         "viewManifestSha256": base / "likec4/view-manifest.yaml",
+        "traceSha256": ROOT / "learning/curriculum/traces/architecture-trace-v1.json",
+        "bridgeMappingSha256": ROOT / "learning/curriculum/mappings/local-aws-conceptual-v1.json",
     }
     if any(closure.get(field) != _sha(path) for field, path in closure_paths.items()):
         codes.append("I11_RENDER_STALE")
@@ -158,6 +161,11 @@ def _verify_repository() -> CheckResult:
         "DYN-OFFICE": ["request-open", "admit-budget-capacity", "start-compute", "restore-hydrate", "pass-readiness", "expose-endpoint", "probe-data-authority", "probe-metadata-authority", "probe-bi-path", "compare-equivalence", "declare-ready", "stop-admission", "drain-work", "checkpoint-authorities", "stop-compute", "inventory-residual-state-cost"],
         "DYN-RESTORE": ["create-empty-boundary", "restore-objects", "register-catalog", "publish-current-pointer", "verify-table-read", "restore-clickhouse-authority", "hydrate-query-state", "restore-bi-metadata", "run-equivalence", "record-rto-rpo", "restore-db", "restore-search", "reconnect-openmetadata", "reingest-lineage", "verify-owner-classification", "restore-evidence-index", "verify-payload-hashes", "reconcile-current-state", "reject-stale-completion", "record-recovery-result"],
     }
+    view_metadata = {
+        row["id"]: row for row in yaml.safe_load((base / "likec4/view-manifest.yaml").read_text(encoding="utf-8"))["views"]
+    }
+    trace = json.loads((ROOT / "learning/curriculum/traces/architecture-trace-v1.json").read_text(encoding="utf-8"))
+    mapping = json.loads((ROOT / "learning/curriculum/mappings/local-aws-conceptual-v1.json").read_text(encoding="utf-8"))
     for view_id in VIEW_IDS:
         row = rows.get(view_id, {})
         source = base / f"likec4/views/{view_id}.c4"
@@ -187,9 +195,21 @@ def _verify_repository() -> CheckResult:
         box = [float(value) for value in root.get("viewBox", "0 0 0 0").split()]
         if len(box) != 4 or box[2] <= 0 or box[3] <= 0 or box[2] / box[3] > 2.4:
             codes.append("I11_VISUAL_ASPECT")
-        fonts = [float(element.get("font-size")) for element in root.iter() if element.get("font-size")]
+        text_elements = [element for element in root.iter() if element.tag == f"{namespace}text" and element.get("font-size")]
+        fonts = [float(element.get("font-size")) for element in text_elements]
+        primary_fonts = [
+            float(element.get("font-size")) for element in text_elements
+            if element.get("font-weight") == "700" and float(element.get("font-size")) < max(fonts, default=0)
+        ]
+        secondary_fonts = [
+            float(element.get("font-size")) for element in text_elements
+            if element.get("font-weight") != "700"
+        ]
         scale = 1024 / box[2] if len(box) == 4 and box[2] else 0
-        if not fonts or max(fonts) * scale < 18 or min(fonts) * scale < 12:
+        title_px = round(max(fonts, default=0) * scale, 2)
+        primary_px = round(min(primary_fonts, default=0) * scale, 2)
+        secondary_px = round(min(secondary_fonts, default=0) * scale, 2)
+        if title_px < 18 or primary_px < 14 or secondary_px < 12:
             codes.append("I11_VISUAL_FIT_FONT")
         rects = []
         for element in root.iter():
@@ -220,6 +240,22 @@ def _verify_repository() -> CheckResult:
         positions = [alternative.find(step) for step in expected]
         if any(position < 0 for position in positions) or positions != sorted(positions):
             codes.append("I11_VISUAL_TEXT_PARITY")
+        metadata = view_metadata.get(view_id, {})
+        if any(str(metadata.get(field, "")) not in alternative for field in ("audience", "concern", "scope")):
+            codes.append("I11_VISUAL_TEXT_PARITY")
+        for bridge in mapping["bridges"]:
+            bridge_tokens = [bridge["bridgeId"], bridge["claimClass"], *bridge["relationBindings"], *bridge["topologyBindings"].values()]
+            if any(token not in alternative for token in bridge_tokens):
+                codes.append("I11_VISUAL_TEXT_PARITY")
+        for flow in (flow for flow in trace["criticalFlows"] if flow["dynamicView"] == view_id):
+            topology_tokens = [
+                flow["flowId"], flow["deploymentView"], flow["topology"]["environmentId"],
+                *flow["topology"]["endpointPlacements"].keys(), *flow["topology"]["endpointPlacements"].values(),
+                *flow["topology"]["trustBoundaryNodes"], *flow["topology"]["failureNodes"],
+            ]
+            topology_tokens.extend(token for edge in flow["topology"]["edges"] for token in (edge["stepId"], edge["sourceNode"], edge["targetNode"]))
+            if any(token not in alternative for token in topology_tokens):
+                codes.append("I11_VISUAL_TEXT_PARITY")
         raw_sha = row.get("rawSvgSha256")
         if root.get("data-source-sha256") != _sha(source) or root.get("data-raw-sha256") != raw_sha:
             codes.append("I11_RENDER_STALE")
@@ -231,8 +267,8 @@ def _verify_repository() -> CheckResult:
         })
         if row.get("semanticProjectionSha256") != projection_sha or row.get("freshnessSha256") != freshness:
             codes.append("I11_RENDER_SEMANTIC_ERASURE")
-        expected_visual = {"aspect": 2.0, "titlePx1024": 20.48, "primaryPx1024": 12.8,
-                           "secondaryPx1024": 12.8, "minContrast": min_contrast,
+        expected_visual = {"aspect": 2.0, "titlePx1024": title_px, "primaryPx1024": primary_px,
+                           "secondaryPx1024": secondary_px, "minContrast": min_contrast,
                            "onCanvas": on_canvas, "overlap": overlap, "clipping": not text_on_canvas}
         if row.get("visual") != expected_visual: codes.append("I11_RENDER_STALE")
         mutated = source.read_bytes() + b"\n// semantic-mutation\n"
@@ -332,6 +368,8 @@ def _run_owned(
     env: dict[str, str] | None = None, rss_limit: int = 1_610_612_736,
     process_limit: int = 16, output_limit: int = MAX_OUTPUT, file_root: Path | None = None,
     file_count_limit: int = 1_000_000, file_bytes_limit: int = 1_073_741_824,
+    secondary_file_root: Path | None = None, secondary_file_count_limit: int = 1_000_000,
+    secondary_file_bytes_limit: int = 1_073_741_824,
 ) -> tuple[int, dict[str, object]]:
     started = time.monotonic()
     process = subprocess.Popen(
@@ -345,6 +383,7 @@ def _run_owned(
     output = bytearray()
     peak_rss = max_processes = samples = 0
     peak_file_count = peak_file_bytes = 0
+    peak_secondary_file_count = peak_secondary_file_bytes = 0
     breach = ""
     term_sent = kill_sent = False
     zero_members = False
@@ -358,6 +397,10 @@ def _run_owned(
             if file_root is not None and samples % 10 == 0:
                 file_count, file_bytes = _tree_measure(file_root)
                 peak_file_count, peak_file_bytes = max(peak_file_count, file_count), max(peak_file_bytes, file_bytes)
+            if secondary_file_root is not None and samples % 10 == 0:
+                secondary_count, secondary_bytes = _tree_measure(secondary_file_root)
+                peak_secondary_file_count = max(peak_secondary_file_count, secondary_count)
+                peak_secondary_file_bytes = max(peak_secondary_file_bytes, secondary_bytes)
             samples += 1
             if time.monotonic() - started > deadline_seconds: breach = "deadline"
             elif peak_rss > rss_limit: breach = "rss"
@@ -365,6 +408,8 @@ def _run_owned(
             elif len(output) > output_limit: breach = "output"
             elif peak_file_count > file_count_limit: breach = "file-count"
             elif peak_file_bytes > file_bytes_limit: breach = "file-bytes"
+            elif peak_secondary_file_count > secondary_file_count_limit: breach = "staging-file-count"
+            elif peak_secondary_file_bytes > secondary_file_bytes_limit: breach = "staging-file-bytes"
             if breach:
                 term_sent, kill_sent, zero_members = _terminate_group(process)
                 break
@@ -401,6 +446,7 @@ def _run_owned(
         "reaped": process.poll() is not None, "zeroDescendants": zero_members,
         "returnStatus": process.returncode,
         "peakFileCount": peak_file_count, "peakFileBytes": peak_file_bytes,
+        "peakStagingFileCount": peak_secondary_file_count, "peakStagingFileBytes": peak_secondary_file_bytes,
     }
     return (process.returncode if not breach else 124), metrics
 
@@ -462,12 +508,34 @@ def _view_semantics(view_id: str, source_text: str) -> tuple[str, list[tuple[str
     return title, relations
 
 
-def _render_text_alternative(view_id: str, source_text: str) -> bytes:
+def _render_text_alternative(source_root: Path, view_id: str, source_text: str) -> bytes:
     title, relations = _view_semantics(view_id, source_text)
-    lines = [title, f"Mã view: {view_id}", "Giới hạn: thiết kế tĩnh; AWS chỉ khái niệm/TBC; không phải bằng chứng runtime hay triển khai."]
+    view_manifest = yaml.safe_load((ROOT / "architecture/expansions/i5-06/likec4/view-manifest.yaml").read_text(encoding="utf-8"))
+    metadata = next(row for row in view_manifest["views"] if row["id"] == view_id)
+    trace = json.loads((ROOT / "learning/curriculum/traces/architecture-trace-v1.json").read_text(encoding="utf-8"))
+    mapping = json.loads((ROOT / "learning/curriculum/mappings/local-aws-conceptual-v1.json").read_text(encoding="utf-8"))
+    lines = [
+        title, f"Mã view: {view_id}", f"Đối tượng: {metadata['audience']}",
+        f"Mối quan tâm: {metadata['concern']}", f"Phạm vi: {metadata['scope']}",
+        "Giới hạn: thiết kế tĩnh; AWS chỉ khái niệm/TBC; không phải bằng chứng runtime hay triển khai.",
+    ]
     if relations:
+        elements = sorted({endpoint for source, target, _label, _step in relations for endpoint in (source, target)})
+        lines.append(f"Phần tử: {', '.join(elements)}")
         lines.append("Thứ tự quan hệ:")
         lines.extend(f"{ordinal}. {label} [{step_id}; {source} -> {target}]" for ordinal, (source, target, label, step_id) in enumerate(relations, 1))
+        lines.append("Ràng buộc topology triển khai:")
+        for flow in (row for row in trace["criticalFlows"] if row["dynamicView"] == view_id):
+            placements = ", ".join(f"{endpoint}={node}" for endpoint, node in flow["topology"]["endpointPlacements"].items())
+            edges = "; ".join(
+                f"{edge['ordinal']}.{edge['stepId']}:{edge['sourceNode']}->{edge['targetNode']}"
+                for edge in flow["topology"]["edges"]
+            )
+            lines.extend([
+                f"- {flow['flowId']}; deployment={flow['deploymentView']}; environment={flow['topology']['environmentId']}",
+                f"  placements: {placements}", f"  edges: {edges}",
+                f"  trust: {', '.join(flow['topology']['trustBoundaryNodes'])}; failure: {', '.join(flow['topology']['failureNodes'])}",
+            ])
     elif view_id == "DEP-AWS":
         lines.extend([
             "Phân cấp triển khai: aws_conceptual.",
@@ -476,7 +544,18 @@ def _render_text_alternative(view_id: str, source_text: str) -> bytes:
             "Ranh giới authority: authority_boundary > lake_instance, governance_instance, recovery_state > evidence_instance.",
         ])
     else:
-        lines.append("Phạm vi container: admission, compute, lake, bi, governance, evidenceStore.")
+        included = re.search(r"include ([^\n]+)", source_text)
+        elements = included.group(1).replace(",", ", ") if included else "operator, admission, compute, lake, bi, governance, evidenceStore"
+        lines.append(f"Phần tử container: {elements}.")
+        model_text = (source_root / "model/architecture-curriculum.c4").read_text(encoding="utf-8")
+        model_relations = re.findall(r"^\s*([A-Za-z0-9_.]+) -> ([A-Za-z0-9_.]+) '([^']+)'", model_text, re.MULTILINE)
+        lines.append("Quan hệ mô hình:")
+        lines.extend(f"- {source} -> {target}: {label}" for source, target, label in model_relations if source.startswith("awsConcept.") or target.startswith("awsConcept.") or source == "operator" or target == "operator")
+    lines.append("Bridge khái niệm (không phải bằng chứng runtime):")
+    lines.extend(
+        f"- {bridge['bridgeId']}; claim={bridge['claimClass']}; relations={','.join(bridge['relationBindings'])}; topology={bridge['topologyBindings']['sourceNode']}->{bridge['topologyBindings']['targetNode']}"
+        for bridge in mapping["bridges"]
+    )
     return ("\n".join(lines) + "\n").encode("utf-8")
 
 
@@ -499,7 +578,7 @@ def _render_accessible_svg(view_id: str, source_text: str, raw_sha: str) -> byte
             row = ordinal - 1 if column == 0 else ordinal - 11
             x, y = (35 if column == 0 else 615), 72 + row * 48
             parts.append(f'<rect data-node="step-{ordinal}" x="{x}" y="{y}" width="550" height="42" rx="7" fill="#f8fafc" stroke="#334155" stroke-width="2"/>')
-            parts.append(_svg_text(x + 12, y + 18, f"{ordinal}. {label}", size=15, weight=700))
+            parts.append(_svg_text(x + 12, y + 18, f"{ordinal}. {label}", size=17, weight=700))
             parts.append(_svg_text(x + 12, y + 36, f"{source} → {target}", size=15))
         parts.append(_svg_text(40, 580, "Chú giải: số thứ tự do renderer tạo; quan hệ một chiều; failure/recovery giữ đúng trình tự.", size=15))
     elif view_id == "DEP-AWS":
@@ -541,7 +620,7 @@ def _render_bundle(source: Path, raw: Path, model: Path, final: Path) -> dict[st
         source_bytes = view_source.read_bytes()
         raw_svg = raw / f"{view_id}.raw.svg"
         source_text = source_bytes.decode("utf-8")
-        text_bytes = _render_text_alternative(view_id, source_text)
+        text_bytes = _render_text_alternative(source, view_id, source_text)
         svg_bytes = _render_accessible_svg(view_id, source_text, _sha(raw_svg))
         svg_path, text_path = final / f"{view_id}.svg", final / f"{view_id}.txt"
         svg_path.write_bytes(svg_bytes); text_path.write_bytes(text_bytes)
@@ -639,12 +718,18 @@ def _toolchain_verification() -> tuple[list[str], dict[str, object]]:
         if time.monotonic() > deadline:
             raise TimeoutError("I11_RESOURCE_DEADLINE")
 
-    def run(argv: Sequence[str], cwd: Path, env: dict[str, str]) -> None:
+    def run(argv: Sequence[str], cwd: Path, env: dict[str, str], staging_root: Path | None = None) -> None:
         check_deadline()
         remaining = deadline - time.monotonic()
         if remaining <= 0:
             raise TimeoutError("I11_RESOURCE_DEADLINE")
-        status, metrics = _run_owned(argv, remaining, cwd=cwd, env=env, file_root=cwd)
+        if staging_root is None and cwd.parent == workspace and cwd.name.startswith("tool-"):
+            staging_root = workspace / cwd.name.replace("tool-", "stage-", 1)
+        status, metrics = _run_owned(
+            argv, remaining, cwd=cwd, env=env, file_root=workspace,
+            file_bytes_limit=2_684_354_560, secondary_file_root=staging_root,
+            secondary_file_count_limit=4096, secondary_file_bytes_limit=1_073_741_824,
+        )
         executable = Path(argv[0])
         metrics["argv"] = [Path(value).name if value.startswith((str(ROOT), str(cwd), "/var/", "/private/")) else value for value in argv]
         metrics["executableSha256"] = _sha(executable.resolve()) if executable.is_file() else None
@@ -885,8 +970,25 @@ def _copy_and_remove_owned_artifacts(evidence_root: Path) -> list[str]:
     copied: list[str] = []
     if not artifacts.exists():
         raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
+    inventory_path = evidence_root / "artifact-ownership-inventory.json"
+    if not inventory_path.is_file():
+        raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
+    inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+    if inventory.get("schemaVersion") != "i11-owned-artifact-inventory-v1" or inventory.get("issue") != 11 or inventory.get("cookRunId") != "260722-cook-v3":
+        raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
+    inventory_rows = {row.get("relativeRoot"): row for row in inventory.get("ownedRuns", [])}
+    actual_roots = {
+        marker.parent.relative_to(artifacts).as_posix()
+        for marker in artifacts.rglob(".golden-owner.json")
+    }
+    if not inventory_rows or set(inventory_rows) != actual_roots:
+        raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
     allowed_purposes = {"learning-contracts-check", "lesson-check", "api-contracts-check", "architecture-check", "architecture-render", "help"}
-    for marker in sorted(artifacts.rglob(".golden-owner.json")):
+    for relative_root, expected_owner in sorted(inventory_rows.items()):
+        run_root = artifacts / relative_root
+        marker = run_root / ".golden-owner.json"
+        if not marker.is_file() or run_root.is_symlink():
+            raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
         run_root = marker.parent
         record = json.loads(marker.read_text(encoding="utf-8"))
         observed = run_root.stat()
@@ -898,6 +1000,11 @@ def _copy_and_remove_owned_artifacts(evidence_root: Path) -> list[str]:
             or not run_root.is_relative_to(artifacts)
             or record.get("purpose") not in allowed_purposes
             or not admitted_family
+            or expected_owner != {
+                "relativeRoot": relative.as_posix(), "purpose": record.get("purpose"),
+                "runId": record.get("runId"), "device": observed.st_dev, "inode": observed.st_ino,
+                "markerSha256": _sha(marker),
+            }
         ):
             raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
         for result_path in sorted(path for path in run_root.glob("*.json") if path.name != ".golden-owner.json"):
@@ -913,7 +1020,14 @@ def _copy_and_remove_owned_artifacts(evidence_root: Path) -> list[str]:
     if not admission.is_file() or runtime_root.is_symlink():
         raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
     admission_record = json.loads(admission.read_text(encoding="utf-8"))
-    if admission_record.get("runtimeRoot") not in (None, ".artifacts/workspaces/golden/i11-stage-a-v3"):
+    expected_runtime = inventory.get("runtime")
+    if (
+        admission_record.get("runtimeRoot") not in (None, ".artifacts/workspaces/golden/i11-stage-a-v3")
+        or expected_runtime != {
+            "relativeRoot": "workspaces/golden/i11-stage-a-v3",
+            "admissionSha256": _sha(admission),
+        }
+    ):
         raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
     shutil.rmtree(runtime_root)
     for owned_cache in (
@@ -949,10 +1063,12 @@ def _close_evidence(evidence_root: Path, head: str, cleanup: dict[str, object]) 
     provenance_path.write_text(json.dumps(provenance, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     owner = {
         "schemaVersion": "i11-stage-a-evidence-owner-v1", "owner": "I5-06",
-        "runId": "260722-cook-v3", "inputGitSha": "5f28f83bc2062e0bc7b8792d9aaa744a0b7e175b",
+        "issue": 11, "runId": "260722-cook-v3", "inputGitSha": "5f28f83bc2062e0bc7b8792d9aaa744a0b7e175b",
         "testedTreeSha": head, "stage": "A-static-only", "cloudAction": "none",
-        "repositoryIdentity": "ai-ready-data-platform", "branch": "feature/issue-11-architecture-stage-a-v3",
-        "rootLocator": "repository-root", "evidenceRootLocator": ".claude/evidence/issue-11-stage-a/260722-cook-v3",
+        "repositoryIdentitySha256": "472e05cbb2d1d21c1868360fe2a76e51d8df8627bb889d47b1ab9f4b8579322f",
+        "rootIdSha256": "4c38bf19cc0e7cfc9342ece08722afc9bb751fd7fdd86038ef530ab25a009171",
+        "branch": "feature/issue-11-architecture-stage-a-v3", "rootLocator": "repository-root",
+        "evidenceRootLocator": ".claude/evidence/issue-11-stage-a/260722-cook-v3",
         "createdAt": datetime.datetime.now(datetime.UTC).isoformat().replace("+00:00", "Z"),
         "nonce": os.urandom(32).hex(), "privacyClass": "sanitized-no-private-locators",
         "chronology": {
@@ -1029,10 +1145,11 @@ def _repository_handoff() -> CheckResult:
     ignored = [row for row in ignored if row]
     if any(not row.startswith(b"!! .claude/") for row in ignored): codes.append("I11_CLEAN_IGNORED_UNOWNED")
     cleanup = {
-        "schemaVersion": "i11-cleanup-result-v1", "testedTreeSha": head,
+        "schemaVersion": "i11-cleanup-result-v1", "issue": 11, "testedTreeSha": head,
         "trackedCreates": len(rows), "rollbackExact": rollback_exact,
         "protectedCount": len(protected), "protectedHashes": protected,
         "porcelainBytes": len(porcelain), "ignoredEntries": len(ignored),
+        "artifactOwnershipInventorySha256": _sha(evidence_root / "artifact-ownership-inventory.json"),
         "copiedProtectedCommandResults": sorted(copied), "s3Findings": sorted(set(findings)),
         "stageB": "blocked", "cloudAction": "none",
     }

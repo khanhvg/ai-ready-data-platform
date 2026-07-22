@@ -124,12 +124,23 @@ def check_repository() -> CheckResult:
     bridges = mapping.get("bridges", [])
     if len(bridges) != 8 or len({item.get("bridgeId") for item in bridges}) != 8:
         codes.append("I11_BRIDGE_MISSING")
+    trace_relation_bindings = {
+        f"{flow['flowId']}:{relation['stepId']}"
+        for flow in flows.values() for relation in flow.get("dynamicRelations", [])
+    }
+    source_relation_bindings = {
+        token for path in view_paths.values() if path.is_file()
+        for token in re.findall(r"\[([A-Z0-9-]+:[a-z0-9-]+)\]", path.read_text(encoding="utf-8"))
+    }
     for bridge in bridges:
         if bridge.get("claimClass") != "conceptual-only": codes.append("I11_BRIDGE_RUNTIME_CLAIM")
         if not bridge.get("divergences") or not bridge.get("preservedInvariant"): codes.append("I11_BRIDGE_DIVERGENCE_MISSING")
         topology = bridge.get("topologyBindings", {})
         if topology.get("sourceNode") not in deployment_nodes["DEP-LOCAL"] or topology.get("targetNode") not in deployment_nodes["DEP-AWS"]:
             codes.append("I11_TOPOLOGY_BINDING_MISMATCH")
+        relation_bindings = bridge.get("relationBindings", [])
+        if not relation_bindings or len(relation_bindings) != len(set(relation_bindings)) or not set(relation_bindings).issubset(trace_relation_bindings & source_relation_bindings):
+            codes.append("I11_BRIDGE_MISSING")
     module_documents = [
         module for path in sorted((ROOT / "learning/curriculum/modules").glob("*.json"))
         for module in dict(load_json(path).payload).get("modules", [])

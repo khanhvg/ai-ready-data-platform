@@ -1,6 +1,10 @@
 Công bố dữ liệu có kiểm soát (Controlled data publication)
 Mã view: DYN-PUBLISH
+Đối tượng: data-platform-governance
+Mối quan tâm: commit-retry-ingest-order
+Phạm vi: local-publication
 Giới hạn: thiết kế tĩnh; AWS chỉ khái niệm/TBC; không phải bằng chứng runtime hay triển khai.
+Phần tử: curriculum, localCatalog, metadataGovernance, objectStore, operator, publisher
 Thứ tự quan hệ:
 1. Dàn snapshot [stage-snapshot; curriculum -> publisher]
 2. Ghi object [write-object; publisher -> objectStore]
@@ -18,3 +22,25 @@ Thứ tự quan hệ:
 14. Ingest logical lineage [ingest-logical; publisher -> metadataGovernance]
 15. Kiểm tra catalog [verify-catalog; metadataGovernance -> operator]
 16. Đóng cửa sổ [close-window; operator -> metadataGovernance]
+Ràng buộc topology triển khai:
+- CF-PUBLISH-STAGE-COMMIT; deployment=DEP-LOCAL; environment=local
+  placements: curriculum=portal_instance, localCatalog=retail_instance, objectStore=retail_instance, publisher=retail_instance
+  edges: 1.stage-snapshot:portal_instance->retail_instance; 2.write-object:retail_instance->retail_instance; 3.validate-object:retail_instance->retail_instance; 4.commit-catalog-pointer:retail_instance->retail_instance; 5.verify-read-back:retail_instance->retail_instance
+  trust: developer_host, workspace_evidence; failure: portal_instance, retail_instance
+- CF-PUBLISH-RETRY-RESUME; deployment=DEP-LOCAL; environment=local
+  placements: curriculum=portal_instance, localCatalog=retail_instance, objectStore=retail_instance, publisher=retail_instance
+  edges: 1.detect-partial:retail_instance->retail_instance; 2.read-commit-state:retail_instance->retail_instance; 3.resume-idempotently:retail_instance->retail_instance; 4.verify-pointer:retail_instance->retail_instance; 5.close-attempt:retail_instance->portal_instance
+  trust: developer_host, workspace_evidence; failure: portal_instance, retail_instance
+- CF-CATALOG-INGEST-HANDOFF; deployment=DEP-LOCAL; environment=local
+  placements: localCatalog=retail_instance, metadataGovernance=adapters_instance, operator=developer_host, publisher=retail_instance
+  edges: 1.publish-current-pointer:retail_instance->retail_instance; 2.open-ingestion-window:developer_host->adapters_instance; 3.ingest-physical:retail_instance->adapters_instance; 4.ingest-logical:retail_instance->adapters_instance; 5.verify-catalog:adapters_instance->developer_host; 6.close-window:developer_host->adapters_instance
+  trust: developer_host, workspace_evidence; failure: adapters_instance, developer_host, retail_instance
+Bridge khái niệm (không phải bằng chứng runtime):
+- BR-ANALYTICS-01; claim=conceptual-only; relations=CF-RESTORE-ANALYTICS:run-equivalence; topology=retail_instance->compute_instance
+- BR-BI-01; claim=conceptual-only; relations=CF-OFFICE-READINESS:probe-bi-path; topology=retail_instance->bi_instance
+- BR-GOVERNANCE-01; claim=conceptual-only; relations=CF-CATALOG-INGEST-HANDOFF:ingest-physical; topology=progress_instance->governance_instance
+- BR-LAKE-01; claim=conceptual-only; relations=CF-PUBLISH-STAGE-COMMIT:write-object,CF-PUBLISH-STAGE-COMMIT:commit-catalog-pointer; topology=retail_instance->lake_instance
+- BR-COMPUTE-01; claim=conceptual-only; relations=CF-OFFICE-OPEN:start-compute,CF-OFFICE-CLOSE:stop-compute; topology=runner_instance->compute_instance
+- BR-STATE-01; claim=conceptual-only; relations=CF-RESTORE-EVIDENCE:reconcile-current-state; topology=workspace_evidence->recovery_state
+- BR-SECURITY-01; claim=conceptual-only; relations=CF-OFFICE-OPEN:admit-budget-capacity; topology=developer_host->edge
+- BR-COST-01; claim=conceptual-only; relations=CF-OFFICE-CLOSE:inventory-residual-state-cost; topology=developer_host->admission_instance

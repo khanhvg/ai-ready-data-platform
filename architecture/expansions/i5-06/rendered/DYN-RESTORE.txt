@@ -1,6 +1,10 @@
 Khôi phục theo authority — chỉ khái niệm (Authority restore — conceptual only)
 Mã view: DYN-RESTORE
+Đối tượng: incident-commander-governance
+Mối quan tâm: authority-ordered-restore
+Phạm vi: restore-conceptual
 Giới hạn: thiết kế tĩnh; AWS chỉ khái niệm/TBC; không phải bằng chứng runtime hay triển khai.
+Phần tử: awsConcept.bi, awsConcept.compute, awsConcept.evidenceStore, awsConcept.governance, awsConcept.lake, operator
 Thứ tự quan hệ:
 1. Tạo ranh giới trống [create-empty-boundary; operator -> awsConcept.evidenceStore]
 2. Khôi phục object [restore-objects; awsConcept.evidenceStore -> awsConcept.lake]
@@ -22,3 +26,29 @@ Thứ tự quan hệ:
 18. Reconcile current state [reconcile-current-state; awsConcept.evidenceStore -> awsConcept.lake]
 19. Từ chối completion stale [reject-stale-completion; awsConcept.evidenceStore -> operator]
 20. Ghi kết quả recovery [record-recovery-result; awsConcept.evidenceStore -> operator]
+Ràng buộc topology triển khai:
+- CF-RESTORE-OBJECT-CATALOG; deployment=DEP-AWS; environment=aws_conceptual
+  placements: awsConcept.evidenceStore=evidence_instance, awsConcept.lake=lake_instance, operator=edge
+  edges: 1.create-empty-boundary:edge->evidence_instance; 2.restore-objects:evidence_instance->lake_instance; 3.register-catalog:evidence_instance->lake_instance; 4.publish-current-pointer:evidence_instance->lake_instance; 5.verify-table-read:lake_instance->evidence_instance
+  trust: edge, authority_boundary, recovery_state; failure: edge, evidence_instance, lake_instance
+- CF-RESTORE-ANALYTICS; deployment=DEP-AWS; environment=aws_conceptual
+  placements: awsConcept.bi=bi_instance, awsConcept.compute=compute_instance, awsConcept.evidenceStore=evidence_instance, operator=edge
+  edges: 1.restore-clickhouse-authority:evidence_instance->compute_instance; 2.hydrate-query-state:evidence_instance->compute_instance; 3.restore-bi-metadata:evidence_instance->bi_instance; 4.run-equivalence:bi_instance->evidence_instance; 5.record-rto-rpo:evidence_instance->edge
+  trust: edge, authority_boundary, recovery_state; failure: bi_instance, compute_instance, edge, evidence_instance
+- CF-RESTORE-GOVERNANCE; deployment=DEP-AWS; environment=aws_conceptual
+  placements: awsConcept.evidenceStore=evidence_instance, awsConcept.governance=governance_instance, awsConcept.lake=lake_instance
+  edges: 1.restore-db:evidence_instance->governance_instance; 2.restore-search:evidence_instance->governance_instance; 3.reconnect-openmetadata:evidence_instance->governance_instance; 4.reingest-lineage:lake_instance->governance_instance; 5.verify-owner-classification:governance_instance->evidence_instance
+  trust: edge, authority_boundary, recovery_state; failure: evidence_instance, governance_instance, lake_instance
+- CF-RESTORE-EVIDENCE; deployment=DEP-AWS; environment=aws_conceptual
+  placements: awsConcept.evidenceStore=evidence_instance, awsConcept.lake=lake_instance, operator=edge
+  edges: 1.restore-evidence-index:edge->evidence_instance; 2.verify-payload-hashes:evidence_instance->evidence_instance; 3.reconcile-current-state:evidence_instance->lake_instance; 4.reject-stale-completion:evidence_instance->edge; 5.record-recovery-result:evidence_instance->edge
+  trust: edge, authority_boundary, recovery_state; failure: edge, evidence_instance, lake_instance
+Bridge khái niệm (không phải bằng chứng runtime):
+- BR-ANALYTICS-01; claim=conceptual-only; relations=CF-RESTORE-ANALYTICS:run-equivalence; topology=retail_instance->compute_instance
+- BR-BI-01; claim=conceptual-only; relations=CF-OFFICE-READINESS:probe-bi-path; topology=retail_instance->bi_instance
+- BR-GOVERNANCE-01; claim=conceptual-only; relations=CF-CATALOG-INGEST-HANDOFF:ingest-physical; topology=progress_instance->governance_instance
+- BR-LAKE-01; claim=conceptual-only; relations=CF-PUBLISH-STAGE-COMMIT:write-object,CF-PUBLISH-STAGE-COMMIT:commit-catalog-pointer; topology=retail_instance->lake_instance
+- BR-COMPUTE-01; claim=conceptual-only; relations=CF-OFFICE-OPEN:start-compute,CF-OFFICE-CLOSE:stop-compute; topology=runner_instance->compute_instance
+- BR-STATE-01; claim=conceptual-only; relations=CF-RESTORE-EVIDENCE:reconcile-current-state; topology=workspace_evidence->recovery_state
+- BR-SECURITY-01; claim=conceptual-only; relations=CF-OFFICE-OPEN:admit-budget-capacity; topology=developer_host->edge
+- BR-COST-01; claim=conceptual-only; relations=CF-OFFICE-CLOSE:inventory-residual-state-cost; topology=developer_host->admission_instance

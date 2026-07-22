@@ -1,7 +1,19 @@
 Triển khai AWS — chỉ khái niệm và TBC (AWS deployment — conceptual only)
 Mã view: DEP-AWS
+Đối tượng: van-hanh-bao-mat
+Mối quan tâm: topology-authority-trust-recovery
+Phạm vi: aws-conceptual
 Giới hạn: thiết kế tĩnh; AWS chỉ khái niệm/TBC; không phải bằng chứng runtime hay triển khai.
 Phân cấp triển khai: aws_conceptual.
 Ranh giới truy cập: edge > admission_instance.
 Ranh giới tính toán: compute_boundary > compute_instance, bi_instance.
 Ranh giới authority: authority_boundary > lake_instance, governance_instance, recovery_state > evidence_instance.
+Bridge khái niệm (không phải bằng chứng runtime):
+- BR-ANALYTICS-01; claim=conceptual-only; relations=CF-RESTORE-ANALYTICS:run-equivalence; topology=retail_instance->compute_instance
+- BR-BI-01; claim=conceptual-only; relations=CF-OFFICE-READINESS:probe-bi-path; topology=retail_instance->bi_instance
+- BR-GOVERNANCE-01; claim=conceptual-only; relations=CF-CATALOG-INGEST-HANDOFF:ingest-physical; topology=progress_instance->governance_instance
+- BR-LAKE-01; claim=conceptual-only; relations=CF-PUBLISH-STAGE-COMMIT:write-object,CF-PUBLISH-STAGE-COMMIT:commit-catalog-pointer; topology=retail_instance->lake_instance
+- BR-COMPUTE-01; claim=conceptual-only; relations=CF-OFFICE-OPEN:start-compute,CF-OFFICE-CLOSE:stop-compute; topology=runner_instance->compute_instance
+- BR-STATE-01; claim=conceptual-only; relations=CF-RESTORE-EVIDENCE:reconcile-current-state; topology=workspace_evidence->recovery_state
+- BR-SECURITY-01; claim=conceptual-only; relations=CF-OFFICE-OPEN:admit-budget-capacity; topology=developer_host->edge
+- BR-COST-01; claim=conceptual-only; relations=CF-OFFICE-CLOSE:inventory-residual-state-cost; topology=developer_host->admission_instance
