@@ -125,7 +125,9 @@ may not imply a causal join, execute the failure, or relabel retained fixture ev
 - Any current evidence entry/hash/privacy/count/size/aggregate/binding fails; trace is missing,
   duplicated, source-bearing, oversized, stale-head, or unindexed; partial publication is current.
 - RED/GREEN browser identities differ, browser admission falls back from exact Chromium/Chrome
-  channel, or author-generated evidence is mislabeled as independent/human-approved.
+  channel, differs from Chrome `150.0.7871.181` / executable SHA-256
+  `b724a4c5603cfc8b9d9f27a5153c8a39e7133e53666ced7f2a8b03bf49484f85`, or author-generated
+  evidence is mislabeled as independent/human-approved.
 - A required test/tool/measurement is absent; audit has High/Critical; axe has Critical/Serious;
   S3, cleanup, protected hash, private-locator/PII/raw-record/source-map/remote-import scan, or
   exact-head review fails.

@@ -34,7 +34,7 @@ mutations are exact:
 | Lifecycle | One test-owned scaffold child and authentic private control record | tampered endpoint/nonce/capability, owner/mode/type/link/containment drift, stale record, benign foreign-process sentinel fail without any PID signal |
 | Blocked result | Released `fitness-result-v2` schema and exact Stage B invocation | missing/extra field, `unavailable` status, wrong code/exit/stream, empty bindings/artifacts, bad argv/payload hash, any runner action fail |
 | Evidence | One fresh private pending generation with valid payloads | missing/extra/duplicate entry, stale log, hash/count/size/aggregate/privacy/type/link/source/tree/tool drift, recursive hash, interrupted publish, second/missing trace fail |
-| Browser/a11y | Playwright 1.61.1 with exact Chromium/Chrome-channel admission, one same measured browser identity across RED/GREEN, current released registry, two fixed viewports | browser identity/channel/fallback drift, missing Vietnamese semantics, focus/order/live region, overflow, reduced motion, axe, no-JS, request/storage/console/CSP invariant fail |
+| Browser/a11y | Playwright 1.61.1 with exact Chromium/Chrome-channel admission, Chrome 150.0.7871.181 and executable SHA-256 `b724a4c5603cfc8b9d9f27a5153c8a39e7133e53666ced7f2a8b03bf49484f85` across RED/GREEN, current released registry, two fixed viewports | browser identity/channel/fallback drift, missing Vietnamese semantics, focus/order/live region, overflow, reduced motion, axe, no-JS, request/storage/console/CSP invariant fail |
 | S3 | PTP-S3-01..14 valid absence/control cases | one exact canary per row must fail closed; no row passes by skip or predicate copy |
 
 Mutations use in-memory clones or private `mkdtemp` roots created from the valid control. They are
@@ -159,11 +159,13 @@ Locale is `vi-VN`; timezone is `Asia/Ho_Chi_Minh`; color scheme and reduced moti
 same test uses `1280x800`, then `360x800`, and creates a JavaScript-disabled context for static
 parity.
 
-Admission is exactly Playwright `1.61.1`, `browserName: chromium`, and `channel: chrome`. Record the
-measured Chrome product/version and executable SHA-256 in local-private evidence and require the
-same tuple for RED and GREEN. Reject a bundled-browser fallback, alternate channel/browser,
-download, changed executable identity, worker/retry drift, or public disclosure of the absolute
-executable path.
+Admission is exactly Playwright `1.61.1`, `browserName: chromium`, `channel: chrome`, Chrome
+`150.0.7871.181`, and executable SHA-256
+`b724a4c5603cfc8b9d9f27a5153c8a39e7133e53666ced7f2a8b03bf49484f85`. Record the measured
+tuple in local-private evidence and require it identically for RED and GREEN. Reject a
+bundled-browser fallback, alternate channel/browser, download, changed product/version/digest,
+worker/retry drift, or public disclosure of the absolute executable path. Any readiness-to-cook
+browser identity drift requires a new exact-browser amendment and fresh readiness audit.
 
 The test covers catalog → module → lesson → every released step, direct links, reload,
 back/forward, unknown routes, keyboard order, visible focus, live status, reduced motion, no
