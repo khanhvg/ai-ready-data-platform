@@ -1,0 +1,337 @@
+{
+  "schemaVersion": "runner-red-manifest-v1",
+  "redCount": 52,
+  "s3Count": 14,
+  "rows": [
+    {
+      "id": "RED-TRN-001",
+      "fixture": "tests/fixtures/browser-requests.json",
+      "oracle": "red_trn_001"
+    },
+    {
+      "id": "RED-TRN-002",
+      "fixture": "tests/fixtures/browser-requests.json",
+      "oracle": "red_trn_002"
+    },
+    {
+      "id": "RED-TRN-003",
+      "fixture": "tests/fixtures/browser-requests.json",
+      "oracle": "red_trn_003"
+    },
+    {
+      "id": "RED-TRN-004",
+      "fixture": "tests/fixtures/browser-requests.json",
+      "oracle": "red_trn_004"
+    },
+    {
+      "id": "RED-TRN-005",
+      "fixture": "tests/fixtures/browser-requests.json",
+      "oracle": "red_trn_005"
+    },
+    {
+      "id": "RED-CMD-001",
+      "fixture": "tests/fixtures/argv_probe.py",
+      "oracle": "red_cmd_001"
+    },
+    {
+      "id": "RED-CMD-002",
+      "fixture": "tests/fixtures/argv_probe.py",
+      "oracle": "red_cmd_002"
+    },
+    {
+      "id": "RED-CMD-003",
+      "fixture": "tests/fixtures/argv_probe.py",
+      "oracle": "red_cmd_003"
+    },
+    {
+      "id": "RED-ENG-001",
+      "fixture": "tests/fixtures/import_probe.py",
+      "oracle": "red_eng_001"
+    },
+    {
+      "id": "RED-ENG-002",
+      "fixture": "tests/fixtures/import_probe.py",
+      "oracle": "red_eng_002"
+    },
+    {
+      "id": "RED-ENG-003",
+      "fixture": "tests/fixtures/import_probe.py",
+      "oracle": "red_eng_003"
+    },
+    {
+      "id": "RED-IMG-001",
+      "fixture": "tests/fixtures/import_probe.py",
+      "oracle": "red_img_001"
+    },
+    {
+      "id": "RED-IMG-002",
+      "fixture": "tests/fixtures/import_probe.py",
+      "oracle": "red_img_002"
+    },
+    {
+      "id": "RED-IMG-003",
+      "fixture": "tests/fixtures/import_probe.py",
+      "oracle": "red_img_003"
+    },
+    {
+      "id": "RED-PID-001",
+      "fixture": "tests/fixtures/rapid_double_fork.py",
+      "oracle": "red_pid_001"
+    },
+    {
+      "id": "RED-PID-002",
+      "fixture": "tests/fixtures/reparent_setsess_daemon.py",
+      "oracle": "red_pid_002"
+    },
+    {
+      "id": "RED-PID-003",
+      "fixture": "tests/fixtures/main_crash.py",
+      "oracle": "red_pid_003"
+    },
+    {
+      "id": "RED-PID-004",
+      "fixture": "tests/fixtures/process_tree_probe.py",
+      "oracle": "red_pid_004"
+    },
+    {
+      "id": "RED-PID-005",
+      "fixture": "tests/fixtures/fork_bomb.py",
+      "oracle": "red_pid_005"
+    },
+    {
+      "id": "RED-PID-006",
+      "fixture": "tests/fixtures/process_tree_probe.py",
+      "oracle": "red_pid_006"
+    },
+    {
+      "id": "RED-TIM-001",
+      "fixture": "tests/fixtures/process_tree_probe.py",
+      "oracle": "red_tim_001"
+    },
+    {
+      "id": "RED-NET-001",
+      "fixture": "tests/fixtures/network_probe.py",
+      "oracle": "red_net_001"
+    },
+    {
+      "id": "RED-NET-002",
+      "fixture": "tests/fixtures/network_probe.py",
+      "oracle": "red_net_002"
+    },
+    {
+      "id": "RED-NET-003",
+      "fixture": "tests/fixtures/network_probe.py",
+      "oracle": "red_net_003"
+    },
+    {
+      "id": "RED-FS-001",
+      "fixture": "tests/fixtures/archive_attacks.py",
+      "oracle": "red_fs_001"
+    },
+    {
+      "id": "RED-FS-002",
+      "fixture": "tests/fixtures/archive_attacks.py",
+      "oracle": "red_fs_002"
+    },
+    {
+      "id": "RED-FS-003",
+      "fixture": "tests/fixtures/archive_attacks.py",
+      "oracle": "red_fs_003"
+    },
+    {
+      "id": "RED-FS-004",
+      "fixture": "tests/fixtures/archive_attacks.py",
+      "oracle": "red_fs_004"
+    },
+    {
+      "id": "RED-FS-005",
+      "fixture": "tests/fixtures/archive_attacks.py",
+      "oracle": "red_fs_005"
+    },
+    {
+      "id": "RED-ENV-001",
+      "fixture": "tests/fixtures/import_probe.py",
+      "oracle": "red_env_001"
+    },
+    {
+      "id": "RED-ENV-002",
+      "fixture": "tests/fixtures/import_probe.py",
+      "oracle": "red_env_002"
+    },
+    {
+      "id": "RED-OUT-001",
+      "fixture": "tests/fixtures/output_flood.py",
+      "oracle": "red_out_001"
+    },
+    {
+      "id": "RED-OUT-002",
+      "fixture": "tests/fixtures/output_flood.py",
+      "oracle": "red_out_002"
+    },
+    {
+      "id": "RED-RES-001",
+      "fixture": "tests/fixtures/resource_probe.py",
+      "oracle": "red_res_001"
+    },
+    {
+      "id": "RED-RES-002",
+      "fixture": "tests/fixtures/resource_probe.py",
+      "oracle": "red_res_002"
+    },
+    {
+      "id": "RED-RES-003",
+      "fixture": "tests/fixtures/resource_probe.py",
+      "oracle": "red_res_003"
+    },
+    {
+      "id": "RED-REC-001",
+      "fixture": "tests/fixtures/process_tree_probe.py",
+      "oracle": "red_rec_001"
+    },
+    {
+      "id": "RED-REC-002",
+      "fixture": "tests/fixtures/process_tree_probe.py",
+      "oracle": "red_rec_002"
+    },
+    {
+      "id": "RED-REC-003",
+      "fixture": "tests/fixtures/process_tree_probe.py",
+      "oracle": "red_rec_003"
+    },
+    {
+      "id": "RED-FEN-001",
+      "fixture": "tests/fixtures/process_tree_probe.py",
+      "oracle": "red_fen_001"
+    },
+    {
+      "id": "RED-FEN-002",
+      "fixture": "tests/fixtures/process_tree_probe.py",
+      "oracle": "red_fen_002"
+    },
+    {
+      "id": "RED-IDM-001",
+      "fixture": "tests/fixtures/process_tree_probe.py",
+      "oracle": "red_idm_001"
+    },
+    {
+      "id": "RED-IDM-002",
+      "fixture": "tests/fixtures/process_tree_probe.py",
+      "oracle": "red_idm_002"
+    },
+    {
+      "id": "RED-AUD-001",
+      "fixture": "tests/fixtures/fault-points.json",
+      "oracle": "red_aud_001"
+    },
+    {
+      "id": "RED-CRS-001",
+      "fixture": "tests/fixtures/main_crash.py",
+      "oracle": "red_crs_001"
+    },
+    {
+      "id": "RED-CRS-002",
+      "fixture": "tests/fixtures/main_crash.py",
+      "oracle": "red_crs_002"
+    },
+    {
+      "id": "RED-CRS-003",
+      "fixture": "tests/fixtures/main_crash.py",
+      "oracle": "red_crs_003"
+    },
+    {
+      "id": "RED-REL-001",
+      "fixture": "tests/fixtures/archive_attacks.py",
+      "oracle": "red_rel_001"
+    },
+    {
+      "id": "RED-REL-002",
+      "fixture": "tests/fixtures/archive_attacks.py",
+      "oracle": "red_rel_002"
+    },
+    {
+      "id": "RED-OPS-001",
+      "fixture": "tests/fixtures/fixture-manifest.json",
+      "oracle": "red_ops_001"
+    },
+    {
+      "id": "RED-OPS-002",
+      "fixture": "tests/fixtures/fixture-manifest.json",
+      "oracle": "red_ops_002"
+    },
+    {
+      "id": "RED-ROL-001",
+      "fixture": "tests/fixtures/process_tree_probe.py",
+      "oracle": "red_rol_001"
+    },
+    {
+      "id": "S3-SYN-001",
+      "fixture": "tests/fixtures/fixture-manifest.json",
+      "oracle": "s3_syn_001"
+    },
+    {
+      "id": "S3-CODE-001",
+      "fixture": "tests/fixtures/fixture-manifest.json",
+      "oracle": "s3_code_001"
+    },
+    {
+      "id": "S3-DEP-001",
+      "fixture": "tests/fixtures/fixture-manifest.json",
+      "oracle": "s3_dep_001"
+    },
+    {
+      "id": "S3-LIC-001",
+      "fixture": "tests/fixtures/fixture-manifest.json",
+      "oracle": "s3_lic_001"
+    },
+    {
+      "id": "S3-PROV-001",
+      "fixture": "tests/fixtures/fixture-manifest.json",
+      "oracle": "s3_prov_001"
+    },
+    {
+      "id": "S3-POL-001",
+      "fixture": "tests/fixtures/fixture-manifest.json",
+      "oracle": "s3_pol_001"
+    },
+    {
+      "id": "S3-CNT-001",
+      "fixture": "tests/fixtures/fixture-manifest.json",
+      "oracle": "s3_cnt_001"
+    },
+    {
+      "id": "S3-SRC-001",
+      "fixture": "tests/fixtures/fixture-manifest.json",
+      "oracle": "s3_src_001"
+    },
+    {
+      "id": "S3-SEC-001",
+      "fixture": "tests/fixtures/fixture-manifest.json",
+      "oracle": "s3_sec_001"
+    },
+    {
+      "id": "S3-EVD-001",
+      "fixture": "tests/fixtures/fixture-manifest.json",
+      "oracle": "s3_evd_001"
+    },
+    {
+      "id": "S3-OPS-001",
+      "fixture": "tests/fixtures/fixture-manifest.json",
+      "oracle": "s3_ops_001"
+    },
+    {
+      "id": "S3-RES-001",
+      "fixture": "tests/fixtures/resource_probe.py",
+      "oracle": "s3_res_001"
+    },
+    {
+      "id": "S3-RAC-001",
+      "fixture": "tests/fixtures/process_tree_probe.py",
+      "oracle": "s3_rac_001"
+    },
+    {
+      "id": "S3-CLOUD-001",
+      "fixture": "tests/fixtures/fixture-manifest.json",
+      "oracle": "s3_cloud_001"
+    }
+  ]
+}

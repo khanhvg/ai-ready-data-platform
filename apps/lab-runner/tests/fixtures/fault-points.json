@@ -1,0 +1,4 @@
+{
+  "schemaVersion": "runner-fault-points-v1",
+  "points": ["create", "start-awaiting-input", "copy", "verify", "execute", "inspect", "archive", "stop", "kill", "remove", "state-before-fsync", "state-after-fsync", "release-before-rename", "release-after-rename", "after-commit-before-ack"]
+}
