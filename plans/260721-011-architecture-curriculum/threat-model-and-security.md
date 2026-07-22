@@ -79,8 +79,8 @@ validated/readiness-authorized view lease.
   validated/audited plan-only diff. The current author output grants no cook authority.
 - Create only the exact seven generic public scaffold files first; they contain no target rules,
   fixture IDs, final content, hardcoded result, mock/skip, expected-value echo, or unconditional
-  not-implemented branch. Complete tests follow and must reach all four entrypoints before named
-  semantic RED.
+  not-implemented branch. Complete tests follow and must pass valid-control parse/reach through
+  all four exact `I11-EP-*` entrypoints before named exact-code semantic RED.
 - No portal renderer dependency read or portal path write.
 - No executable lab, privileged command, progress/completion mutation, workspace runner, or fresh
   learner evidence claim.

@@ -2,9 +2,10 @@
 
 ## Verification Boundary
 
-This post-review author correction runs plan/static/link/dependency/protected-hash and installed-
-tool availability checks only. It does not independently validate readiness and does not run new
-curriculum or expansion implementation, lab, portal, native GUI, cloud, or Terraform gates.
+This post-review author correction and fresh independent validation run plan/static/link/
+dependency/protected-hash and installed-tool availability checks only. They do not validate
+readiness and do not run new curriculum or expansion implementation, lab, portal, native GUI,
+cloud, or Terraform gates.
 
 Whole-product practical acceptance remains:
 
@@ -24,9 +25,9 @@ human inspection at fitted widths 1440/1024.
 
 | Check | Expected result |
 |---|---|
-| Branch/input/fresh remote | Required branch; clean local/upstream/fresh-live input `1c62b68159ffc48cc2f063c137cb9072d8ed741f` before correction writes |
-| Live Issue #11 | OPEN; exact body; `ready to cook` is stale and must transition to `ready for plan validation`; risk high/TDD/S3/architecture/curriculum |
-| Dependencies | #8 Stage A released at `fecf6bb8…` and read-only; #8 Stage B lease not consumed; #10 not released and Stage B empty |
+| Branch/input/fresh remote | Author correction began at clean `1c62b68159ffc48cc2f063c137cb9072d8ed741f`; independent validation began with required branch and clean local/upstream/fresh-live equality at `788ea45331a34e34b0d330e568a39ee6c6566e63` |
+| Live Issue #11 | Validation input was OPEN with `ready for plan validation`; a passing validator moves it to `ready for plan audit`; risk high/TDD/S3/architecture/curriculum |
+| Dependencies | #8 Stage A remains pinned at released `fecf6bb8…`; live PR #28 merge `5644f01b…` is non-overlapping and unconsumed pending its own release handoff; #10 not released and Stage B empty |
 | `ck plan status` | Seven pending phases, valid frontmatter/dependency DAG |
 | Markdown structure | One H1 per file; required sections; no empty placeholders |
 | Local links/anchors | All repo-relative plan links and anchors resolve |
@@ -50,7 +51,7 @@ and clean v3 base `c07c9a080be7be88447aac497bdf0a2b5fddd020`:
 | `architecture/likec4/model/local-deployment.c4` | `552e1af0dddb219f5c8fa0d7542678caf6ea1025` | `58e6fbc72e3ea41b826057a60f096f50a42b75550f1d35e0378edee59f0006ad` |
 | `architecture/likec4/view-manifest.yaml` | `ff8f59a76440561d0de17a08b3d79fc580d2e043` | `1659c51389718f2799581550ab17fd31c4dd30639723d5b443ac088944178169` |
 
-All source-closure bytes remain read-only. The proposed Stage A lease, if Gate A2 passes, adds
+All source-closure bytes remain read-only. The proposed Stage A lease, if fresh readiness passes, adds
 exact sources/rows only beneath the separate extension root; it may not normalize, reserialize,
 or append the protected files.
 
@@ -144,7 +145,7 @@ prove these logical records:
 | Record | Required content |
 |---|---|
 | Authority | Stage, exact input, branch/worktree, local/tracking/live equality, dependency release SHAs/hashes, lease |
-| RED | Plan input, seven-path scaffold commit, direct-child five-path tests commit, RED tree, all four entrypoint reach/preconditions, failing named semantic rules, first semantic commit |
+| RED | Plan input, seven-path scaffold commit, direct-child five-path tests commit, RED tree, exact four `I11-EP-*` reach/preconditions, valid-control results, mutation IDs, absent exact-code assertions, first semantic commit |
 | Commands | Exact command line, owner, tool/lock versions, start/end/status plus elapsed/RSS/process/output/file/PGID/TERM/KILL/wait measurements |
 | Contracts | Every consumed #8/#10/view schema/registry/renderer/fixture path, version, SHA-256 |
 | Renders | Source/projection/tool/SVG/text hashes, deterministic pair, exact visual metrics/inspection, protected-six result |

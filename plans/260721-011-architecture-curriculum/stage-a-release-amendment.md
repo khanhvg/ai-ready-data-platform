@@ -25,11 +25,17 @@ entrypoints. The initial validation, blocked readiness reports, prior Stage A re
 failed v1/v2 branches, PR #27, renders, and retained evidence remain immutable historical or
 negative evidence at their recorded SHAs. They are not current authority.
 
+Fresh independent validation of exact input `788ea45331a34e34b0d330e568a39ee6c6566e63`
+passed after bounded plan-only corrections documented in
+[the Stage A v3 validation report](./validation/260722-stage-a-v3-independent-validation-report.md).
+Implementation authority remains `none`; a fresh readiness audit of the exact pushed validation
+output is the next gate.
+
 ## Explicitly Superseded Rules
 
 | Superseded rule or claim | Replacement |
 |---|---|
-| Stage A is `ready to cook` from pristine `fecf6bb8…` | Stage A awaits fresh independent plan validation and readiness; v3 starts from clean `c07c9a0…` plus the eventual validated/audited plan-only diff |
+| Stage A is `ready to cook` from pristine `fecf6bb8…` | Stage A v3 starts from clean `c07c9a0…` plus the validated/audited plan-only diff; independent validation has passed and fresh readiness remains required |
 | Complete tests-only commit must run from the pristine input | One minimal public-path scaffold commit precedes the complete tests/fixture commit |
 | RED may fail because all Issue #11 behavior paths are absent | RED must parse and reach real scaffolded validator, trace, renderer, and evidence entrypoints, then fail named missing semantic rules |
 | `.artifacts/evidence/**` may be retained while `git status --short` exits 0 | Retained evidence uses the existing ignored app-owned `.claude/evidence/issue-11-stage-a/**` root or an explicitly approved external root; nonignored porcelain stdout must be empty and ignored bytes must be ownership-classified |
@@ -57,7 +63,7 @@ negative evidence at their recorded SHAs. They are not current authority.
 | Fresh v3 product base | `c07c9a080be7be88447aac497bdf0a2b5fddd020` | Descends from released integration; all 50 product/test paths absent; failed v1/v2 heads are not ancestors |
 | Issue #8 Stage A PR #23 merge | `5c2244c2c860234d0df49cf0a42ad950c6495717` | Parent 2 is reviewed Stage A head `8bdf8ec39c6f21423284a11f7a8ab38c75eeadfa` |
 | Composition PR #25 merge / released integration | `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` | Ordered parents `5c2244c2…`, `734cf637…`; tree `27fc3667ef37892dad5c3fbfd76769f65a0760be` |
-| Live integration ref | `refs/heads/integration/issue-5-local-learning` = `fecf6bb8…` | Fresh `git ls-remote` PASS |
+| Live integration ref | `refs/heads/integration/issue-5-local-learning` = `5644f01b4c0443a81f3af0bcce80f44c847cd986` | Advanced during validation by merged PR #28; `fecf6bb8…` is first parent and remains the pinned released Stage A authority |
 | Release evidence | [Issue #8 comment 5043195549](https://github.com/khanhvg/ai-ready-data-platform/issues/8#issuecomment-5043195549) | 56/56, 65/65 invalid fixtures, 16 operations, final 4/4, inherited 19/19 + 1/1 + 13/13; no CI-success invention |
 | Released tree | `27fc3667ef37892dad5c3fbfd76769f65a0760be` | Remote commit identity and local Git object agree |
 
@@ -65,8 +71,10 @@ The future v3 cook branch/worktree starts from exact clean `c07c9a080be7be88447a
 then receives only the exact plan-artifact diff whose source and output SHAs are passed by the
 fresh independent plan validation and readiness audit. The resulting implementation-input SHA is
 `null` until those gates complete and must never be guessed. Fresh preflight must re-prove
-`fecf6bb8…` as an ancestor, local/tracking/live equality, the absence of all 50 paths, and the
-non-ancestry of failed v1 `0f765d3…` and v2 `482591d…` before the scaffold commit.
+`fecf6bb8…` as an ancestor of clean `c07c9a0…`, plan-branch local/tracking/live equality, the
+absence of all 50 paths, and the non-ancestry of failed v1 `0f765d3…` and v2 `482591d…` before the
+scaffold commit. It also classifies any live integration delta after `fecf6bb8…` and rejects an
+overlap with the 50 paths, 33 protected identities, or 21 pinned contract paths.
 
 ## Released Read-Only Dependency Binding
 
@@ -185,15 +193,23 @@ registry adds `fitness-result-v2` as a readable family extension for I5-03 and e
 - `architecture-visual-review` and `architecture-lab-e2e` remain unactivated and non-runnable;
 - no compatibility object, schema copy, shared registry write, or guessed fallback is created.
 
-### Active Issue #8 Stage B lease is a non-authority
+### Merged Issue #8 Stage B change is a non-authority
 
-Issue #8 remains OPEN at `ready to cook` with the active exclusive shared-contract lease
-`promotion-trust-vite-identifier-binding-v1`, recorded in
+During validation, PR #28 head `12e17427076fb31de85534bfbbbedca7e901e76c` merged as
+`5644f01b4c0443a81f3af0bcce80f44c847cd986`, whose first parent is the pinned released Stage A
+authority `fecf6bb8…`. Issue #8 remains OPEN with `ready for human review`, and no pristine
+post-merge verification/release handoff was published at validation time. The 28-path delta from
+`fecf6bb8…` is confined to Issue #8 plan artifacts, the Vite binding/schema/validator, and its
+tests/fixtures. It overlaps none of Issue #11's 50 future paths, 33 protected identities, or 21
+pinned contract-set paths.
+
+The exclusive shared-contract lease originated in
 [comment 5043661272](https://github.com/khanhvg/ai-ready-data-platform/issues/8#issuecomment-5043661272).
-That lease owns only the unreleased Vite identifier alias binding. Issue #11 Stage A neither reads
-Vite source identifiers nor writes `learning/contracts/**`, `contracts/**`, OpenAPI, Vite, portal,
-runner, or shared registries. The lease is therefore non-overlapping and not consumed. Any later
-need for its output is a new dependency amendment, never an inferred alias.
+Its merged bytes remain unconsumed and non-authoritative for this plan. Issue #11 Stage A neither
+reads Vite source identifiers nor writes `learning/contracts/**`, `contracts/**`, OpenAPI, Vite,
+portal, runner, or shared registries. Any later need for the new binding/validator is a new exact
+dependency amendment, never an inferred alias. Fresh readiness must recheck live release state and
+delta overlap without changing the required clean `c07c9a0…` future base.
 
 ## Additions-Only Architecture View Lease
 
@@ -336,8 +352,8 @@ untracked run-owned state.
 
 ## Exact Command Allowlist
 
-Only these 16 command shapes may be run during Stage A. Runtime allocator values are measured
-run-owned values, not caller-selected paths or future release identities. The three
+Only these 16 top-level operator command shapes may be run during Stage A. Runtime allocator values
+are measured run-owned values, not caller-selected paths or future release identities. The three
 `architecture_expansion` controller commands are public Issue #11 entrypoints created in the
 scaffold commit; they own deadlines, process groups, output/RSS/file/process accounting, evidence,
 and truthful porcelain interpretation.
@@ -360,6 +376,23 @@ make architecture-render
 git diff --check
 "$I11_RUNTIME/bin/python" -m learning.curriculum.tools.architecture_expansion clean-handoff
 ```
+
+The 16-shape count is not permission for arbitrary controller children. `run-focused-tests`,
+`verify-expansions`, and `clean-handoff` may spawn only fixed argv from code, never shell text or a
+caller-provided executable. The closed child/tool admission is: exact admitted Python interpreter;
+`/bin/ps -axo pid=,ppid=,pgid=,rss=` for measurement only; Node archive
+`node-v22.22.3-darwin-arm64.tar.xz` from
+`https://nodejs.org/download/release/v22.22.3/node-v22.22.3-darwin-arm64.tar.xz` with SHA-256
+`753c1629e168cc788ccc46ab61e0b35549fce08c07f82fcd3bb0d41f7fb01e7b`; that archive's
+`node --version` and `npm --version`; `npm ci --ignore-scripts --no-audit --no-fund` against the
+protected package lock; locked `likec4 format --check`, `validate --json`, `export json
+--skip-layout --pretty`, and `gen dot`; the admitted Node interpreter plus the I5-06 adapter; and
+the admitted Python interpreter plus I5-06-owned validators. Node/npm/package/archive versions,
+argv, executable hashes, and network start/stop state are evidence fields. Both installs are
+sequential inside the one 180-second controller; network closes after the second locked install.
+Any alternate executable, flag, registry, resolver, shell, native Graphviz, browser, or missing
+tool fails admission. Internal child invocations do not add top-level operator command shapes;
+the two protected architecture commands retain their separately frozen released child contract.
 
 Commands run in this order at each applicable tree: clean/release/lease preflight; scaffold
 inspection; complete tests/fixtures; contemporaneous semantic RED; semantic implementation;
@@ -633,12 +666,68 @@ rule assertion, exit status, bounded output hash, and protected 33/33 pre-state.
 adds `firstSemanticCommitSha` and `finalSemanticHeadSha`. It must say
 `scaffold-plus-tests semantic RED`; any claim of `tests-only-from-pristine-input` fails.
 
+### Exact public RED entrypoints
+
+`run-focused-tests` is the bounded harness controller, not one of the four behaviors under test.
+The scaffold exports exactly these four callable entrypoint IDs; the final CLI/Make wrappers route
+to the same callable and cannot substitute a test-only implementation:
+
+| Entrypoint ID | Scaffold callable | Final public wrapper | RED input |
+|---|---|---|---|
+| `I11-EP-CURRICULUM` | `check_curriculum.run(request)` | `make curriculum-check` | Parsed bounded curriculum/template/promotion request |
+| `I11-EP-TRACE` | `check_traceability.run(request)` | `make traceability-check` | Parsed bounded trace/flow/topology/bridge request |
+| `I11-EP-EXPANSION` | `architecture_expansion.verify_expansions(request)` | `architecture_expansion verify-expansions` | Allocator-owned source/render/visual/resource request |
+| `I11-EP-HANDOFF` | `architecture_expansion.clean_handoff(request)` | `architecture_expansion clean-handoff` | Parsed bounded evidence/status/ownership/rollback request |
+
+Each callable accepts only a normalized request produced by `content_io`; it never receives a RED
+ID, `expectedCode`, fixture locator, test name, or assertion text. `mk/issue-5/i5-06.mk` and module
+`main` functions are thin routing only. At `C2`, each fixture entry contains a parseable
+`validControl` and one or more derived `mutations`. The harness strips fixture metadata, invokes the
+same callable once for the valid control and once per mutation, and records the entrypoint reach.
+The valid control must parse and reach without a precondition/tool/import/path failure. RED is the
+test assertion failure that a mutation was admitted or did not return its exact expected target
+code; a generic nonzero exit, generic guard, or echo of fixture metadata is not RED.
+
+### Exact stable outcome-code catalogue
+
+Every mutation declares one `expectedCode` from the closed set below. A final invalid case passes
+only when the reached public entrypoint returns that exact code; a generic failure or a different
+code fails. The scaffold contains none of these target codes. Tests own the expectations and never
+pass them to implementation.
+
+| RED family | Allowed exact `expectedCode` values |
+|---|---|
+| `I11-RED-REF-001` | `I11_REF_MISSING`, `I11_REF_STALE`, `I11_REF_NONRECIPROCAL` |
+| `I11-RED-PREQ-001` | `I11_PREQ_UNKNOWN`, `I11_PREQ_SELF`, `I11_PREQ_CYCLE`, `I11_PREQ_UNREACHABLE`, `I11_PREQ_FORGED_SKIP` |
+| `I11-RED-VIEW-001` | `I11_VIEW_DUPLICATE`, `I11_VIEW_DECORATIVE`, `I11_VIEW_CONCERN_MISSING`, `I11_VIEW_ABSTRACTION_MIXED` |
+| `I11-RED-ADR-001` | `I11_ADR_INCOMPLETE` |
+| `I11-RED-PATTERN-001` | `I11_PATTERN_FAILURE_MISSING`, `I11_PATTERN_VERIFIER_MISSING` |
+| `I11-RED-TRACE-001` | `I11_TRACE_GAP`, `I11_TRACE_NONRECIPROCAL` |
+| `I11-RED-RENDER-001` | `I11_RENDER_STALE`, `I11_RENDER_NONDETERMINISTIC`, `I11_RENDER_UNSAFE`, `I11_RENDER_SEMANTIC_ERASURE` |
+| `I11-RED-READONLY-001` | `I11_PROTECTED_IDENTITY_DRIFT` |
+| `I11-RED-API-001` | `I11_API_OPERATION_UNRELEASED`, `I11_ASYNC_CHANNEL_UNRELEASED` |
+| `I11-RED-S3-001` | `I11_S3_SECRET`, `I11_S3_PRIVATE_PATH`, `I11_S3_EXTERNAL_URL`, `I11_S3_CLOUD_ACTION` |
+| `I11-RED-TEMPLATE-001` | `I11_TEMPLATE_SCHEMA_TOKEN_INVALID`, `I11_TEMPLATE_COMPATIBILITY_INVALID`, `I11_TEMPLATE_UNREGISTERED`, `I11_TEMPLATE_HASH_DRIFT`, `I11_TEMPLATE_NONRECIPROCAL`, `I11_TEMPLATE_SUPERSESSION_INVALID`, `I11_TEMPLATE_REMOVAL_INVALID` |
+| `I11-RED-CRITICAL-FLOW-001` | `I11_CRITICAL_FLOW_COVERAGE_MISSING`, `I11_CRITICAL_FLOW_GENERIC_STEPS` |
+| `I11-RED-ASSESSMENT-001` | `I11_STAGE_BOUNDARY_RUNTIME_FORGERY` |
+| `I11-RED-BOUND-001` | `I11_BOUND_SIZE`, `I11_BOUND_DEPTH`, `I11_BOUND_DUPLICATE_KEY`, `I11_BOUND_SPECIAL_FILE` |
+| `I11-RED-EVIDENCE-001` | `I11_EVIDENCE_MISSING`, `I11_EVIDENCE_DUPLICATE`, `I11_EVIDENCE_ORPHAN`, `I11_EVIDENCE_STALE`, `I11_EVIDENCE_TAMPERED`, `I11_EVIDENCE_PRIVACY` |
+| `I11-RED-PROMOTION-001` | `I11_PROMOTION_DECISION_DRIFT`, `I11_PROMOTION_REASON_DRIFT` |
+| `I11-RED-BRIDGE-001` | `I11_BRIDGE_MISSING`, `I11_BRIDGE_DIVERGENCE_MISSING`, `I11_BRIDGE_RUNTIME_CLAIM` |
+| `I11-RED-RESOURCE-001` | `I11_RESOURCE_DEADLINE`, `I11_RESOURCE_RSS`, `I11_RESOURCE_PROCESS_COUNT`, `I11_RESOURCE_OUTPUT`, `I11_RESOURCE_FILE_COUNT`, `I11_RESOURCE_FILE_BYTES`, `I11_RESOURCE_OWNERSHIP`, `I11_RESOURCE_TERM`, `I11_RESOURCE_KILL`, `I11_RESOURCE_REAP`, `I11_RESOURCE_MEASUREMENT_MISSING` |
+| `I11-RED-VISUAL-001` | `I11_VISUAL_LANGUAGE`, `I11_VISUAL_NUMBERING`, `I11_VISUAL_FIT_FONT`, `I11_VISUAL_ASPECT`, `I11_VISUAL_CANVAS`, `I11_VISUAL_OVERLAP`, `I11_VISUAL_CLIPPING`, `I11_VISUAL_CONTRAST`, `I11_VISUAL_ACCESSIBILITY`, `I11_VISUAL_TEXT_PARITY`, `I11_VISUAL_HUMAN_REVIEW_MISSING` |
+| `I11-RED-CLEANUP-001` | `I11_CLEAN_NONIGNORED_DIRTY`, `I11_CLEAN_IGNORED_UNOWNED`, `I11_CLEAN_PORCELAIN_NONEMPTY`, `I11_CLEAN_OWNERSHIP_DRIFT`, `I11_CLEAN_ROLLBACK_SCOPE` |
+| `I11-RED-RELATION-ORDER-001` | `I11_RELATION_ORDER_MISMATCH` |
+| `I11-RED-TOPOLOGY-001` | `I11_TOPOLOGY_BINDING_MISMATCH` |
+
 ## TDD RED Catalogue
 
-All 22 cases live in `tests/fixtures/learning/curriculum/invalid-cases-v1.json`; tests select a case
-by stable ID and pass it through the real validator/graph/trace/renderer/evidence path at `C2`.
-RED must fail for the intended named semantic rule, never a missing file/tool/import, unconditional
-assertion/not-implemented return, expected-value echo, mock, skip, or common behavior-absent guard.
+All 22 case families live in `tests/fixtures/learning/curriculum/invalid-cases-v1.json`; each has
+one valid control and one or more mutations with an exact `expectedCode`. Tests select by stable ID,
+strip the ID/code metadata from the normalized request, and pass only the control or mutated input
+through the exact mapped public entrypoint at `C2`. RED must fail for the intended named semantic
+rule, never a missing file/tool/import, unconditional assertion/not-implemented return,
+expected-value echo, mock, skip, or common behavior-absent guard.
 
 | RED ID | Required first failure |
 |---|---|
@@ -732,11 +821,12 @@ a new exact amendment, validation, and readiness audit.
 
 ## Hard STOP Conditions
 
-- Live integration is no longer exactly `fecf6bb8…`, `c07c9a0…` no longer has the required
-  ancestry/tree, the future v3 input is not clean `c07c9a0…` plus the exact independently
-  validated/audited plan-only diff, or any release object/hash differs.
+- Pinned released authority `fecf6bb8…` is missing or no longer an ancestor of clean `c07c9a0…`,
+  the future v3 input is not clean `c07c9a0…` plus the exact independently validated/audited
+  plan-only diff, a live post-`fecf6bb8…` integration delta overlaps or becomes required, or any
+  pinned release object/hash differs.
 - Any one of the 50 create paths exists at input, any extra path appears, or a modify/delete occurs.
-- The active Issue #8 Stage B lease overlaps, is consumed, or becomes necessary.
+- The merged Issue #8 Stage B change overlaps, is consumed, or becomes necessary.
 - Any protected architecture source/render/manifest/tool/blob changes.
 - `C1` is not exactly the seven semantics-free scaffold creates, `C2` is not exactly the five
   complete test/fixture creates, tests change before the first semantic pass, or RED fails before
@@ -755,9 +845,10 @@ a new exact amendment, validation, and readiness audit.
 
 ## Blocked Future v3 Implementation Handoff
 
-Do not cook from this author output. A fresh xhigh independent plan validator must first validate
-the exact pushed correction head, followed by a fresh readiness audit at its resulting exact head.
-Only a PASS may define the plan-only diff applied to clean `c07c9a0…` and the resulting exact v3
-implementation input. The future cook then follows the 7-path scaffold → 5-path complete tests →
-recorded public-path semantic RED → 38-path semantic complement protocol, creates exactly the 50
-final paths, and stops for independent implementation review. Do not begin Stage B.
+Do not cook from the validation output. Fresh xhigh independent plan validation has passed; a
+separate fresh readiness audit must now bind its exact pushed head, released inputs, and plan-only
+diff. Only that later PASS may define the plan-only diff applied to clean `c07c9a0…` and the
+resulting exact v3 implementation input. The future cook then follows the 7-path scaffold → 5-path
+complete tests → recorded public-path semantic RED → 38-path semantic complement protocol,
+creates exactly the 50 final paths, and stops for independent implementation review. Do not begin
+Stage B.
