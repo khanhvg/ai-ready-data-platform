@@ -100,14 +100,14 @@ def apply_mutation(base: pathlib.Path, mutation: dict[str, object]) -> None:
         raise AssertionError(f"I11_FIXTURE_KIND_UNKNOWN:{kind}")
 
 
-def run_public(module: str, root: pathlib.Path, *arguments: str) -> subprocess.CompletedProcess[str]:
+def run_public(module: str, root: pathlib.Path, *arguments: str, timeout: int = 60) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, "-m", module, "--root", str(root), *arguments],
         cwd=ROOT,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        timeout=180,
+        timeout=timeout,
     )
 
 

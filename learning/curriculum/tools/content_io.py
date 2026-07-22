@@ -264,7 +264,7 @@ def launch_admitted(command: str) -> int:
         output = runtime.run_bounded(
             [str(interpreter), "-m", modules[command]],
             cwd=ROOT,
-            timeout=120,
+            timeout=60,
             output_limit=1024 * 1024,
             max_rss_bytes=512 * 1024 * 1024,
         )

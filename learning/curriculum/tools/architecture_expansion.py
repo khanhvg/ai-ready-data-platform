@@ -176,7 +176,7 @@ def _tool_environment(tool: pathlib.Path, node: pathlib.Path, npm_cache: pathlib
         "LC_ALL": "C.UTF-8", "LANG": "C.UTF-8", "npm_config_cache": str(npm_cache),
         "npm_config_audit": "false", "npm_config_fund": "false", "npm_config_ignore_scripts": "true",
     }
-    _run([str(node / "bin/npm"), "ci", "--ignore-scripts", "--no-audit", "--no-fund"], tool, env, 300)
+    _run([str(node / "bin/npm"), "ci", "--ignore-scripts", "--no-audit", "--no-fund"], tool, env, 180)
     return env
 
 

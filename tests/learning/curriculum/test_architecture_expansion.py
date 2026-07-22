@@ -22,8 +22,8 @@ class ArchitectureExpansionTests(unittest.TestCase):
     def test_public_renderer_is_two_run_deterministic(self) -> None:
         require_stage_a_behavior()
         with tempfile.TemporaryDirectory(prefix="i11-render-a-") as first, tempfile.TemporaryDirectory(prefix="i11-render-b-") as second:
-            a = run_public("learning.curriculum.tools.architecture_expansion", ROOT, "render", "--output", first)
-            b = run_public("learning.curriculum.tools.architecture_expansion", ROOT, "render", "--output", second)
+            a = run_public("learning.curriculum.tools.architecture_expansion", ROOT, "render", "--output", first, timeout=180)
+            b = run_public("learning.curriculum.tools.architecture_expansion", ROOT, "render", "--output", second, timeout=180)
             self.assertEqual(a.returncode, 0, a.stdout)
             self.assertEqual(b.returncode, 0, b.stdout)
             self.assertEqual(tree_hash(pathlib.Path(first)), tree_hash(pathlib.Path(second)))
@@ -35,11 +35,11 @@ class ArchitectureExpansionTests(unittest.TestCase):
                 root = pathlib.Path(temporary)
                 if case["mutation"]["kind"] == "render-source-set":
                     with tempfile.TemporaryDirectory(prefix="i11-stale-render-") as output, tempfile.TemporaryDirectory(prefix="i11-mutated-render-") as mutated_output:
-                        rendered = run_public("learning.curriculum.tools.architecture_expansion", root, "render", "--output", output)
+                        rendered = run_public("learning.curriculum.tools.architecture_expansion", root, "render", "--output", output, timeout=180)
                         self.assertEqual(rendered.returncode, 0, rendered.stdout)
                         apply_mutation(root, case["mutation"])
                         result = run_public("learning.curriculum.tools.architecture_expansion", root, "check", "--rendered", output)
-                        mutated = run_public("learning.curriculum.tools.architecture_expansion", root, "render", "--output", mutated_output)
+                        mutated = run_public("learning.curriculum.tools.architecture_expansion", root, "render", "--output", mutated_output, timeout=180)
                         self.assertEqual(mutated.returncode, 0, mutated.stdout)
                         original_manifest = json.loads((pathlib.Path(output) / "render-manifest.json").read_text())
                         mutated_manifest = json.loads((pathlib.Path(mutated_output) / "render-manifest.json").read_text())
