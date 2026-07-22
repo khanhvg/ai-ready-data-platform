@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "urn:i5-06:architecture-view-extension-v1",
+  "type": "object", "additionalProperties": false, "required": ["schemaVersion", "leaseId", "owner", "baseManifest", "baseRenderManifest", "views"],
+  "properties": {
+    "schemaVersion": {"const": "architecture-view-extension-v1"}, "leaseId": {"const": "i5-06-stage-a-architecture-expansion-v1"}, "owner": {"const": "I5-06"},
+    "baseManifest": {"$ref": "#/$defs/protected"}, "baseRenderManifest": {"$ref": "#/$defs/protected"},
+    "views": {"type": "array", "minItems": 5, "maxItems": 5, "items": {"type": "object", "additionalProperties": false, "required": ["id", "key", "type", "audienceVi", "concernId", "scope", "source", "outputSvg", "outputText", "traceIds"], "properties": {"id": {"enum": ["C4-L2-AWS", "DEP-AWS", "DYN-OFFICE", "DYN-PUBLISH", "DYN-RESTORE"]}, "key": {"pattern": "^[a-z][a-z0-9_]+$"}, "type": {"enum": ["container", "deployment", "dynamic"]}, "audienceVi": {"type": "string", "minLength": 8}, "concernId": {"type": "string", "minLength": 3}, "scope": {"type": "string", "minLength": 3}, "source": {"pattern": "^architecture/expansions/i5-06/likec4/views/[A-Z0-9-]+\\.c4$"}, "outputSvg": {"pattern": "^architecture/expansions/i5-06/rendered/[A-Z0-9-]+\\.svg$"}, "outputText": {"pattern": "^architecture/expansions/i5-06/rendered/[A-Z0-9-]+\\.txt$"}, "traceIds": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"pattern": "^trace-[FJDM][0-9]{2}$"}}}}}
+  },
+  "$defs": {"protected": {"type": "object", "additionalProperties": false, "required": ["path", "gitBlob", "sha256"], "properties": {"path": {"type": "string"}, "gitBlob": {"pattern": "^[0-9a-f]{40}$"}, "sha256": {"pattern": "^[0-9a-f]{64}$"}}}}
+}

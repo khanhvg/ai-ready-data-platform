@@ -1,0 +1,11 @@
+views {
+  dynamic view dyn_publish {
+    title 'Publication with authorization, idempotency, and evidence'
+    architecture_reviewer -> curriculum_registry '1. Select a released operation and grain'
+    curriculum_registry -> conceptual_aws.conceptual_edge '2. Check conceptual authority boundary'
+    conceptual_aws.conceptual_edge -> conceptual_aws.conceptual_compute '3. Admit one bounded request'
+    conceptual_aws.conceptual_compute -> conceptual_aws.conceptual_state '4. Publish idempotently or reject'
+    conceptual_aws.conceptual_compute -> conceptual_aws.conceptual_metadata '5. Record owner and lineage intent'
+    conceptual_aws.conceptual_metadata -> architecture_reviewer '6. Return bounded static evidence'
+  }
+}

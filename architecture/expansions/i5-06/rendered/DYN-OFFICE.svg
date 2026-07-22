@@ -1,0 +1,90 @@
+<!-- Pages: 1 -->
+<svg width="1741pt" height="509pt"
+ viewBox="0.00 0.00 1741.00 541.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-labelledby="title desc"><title id="title">Office-hours wake and verified readiness sequence</title><desc id="desc">dynamic view for Người vận hành và chủ sở hữu readiness: concern-office-readiness</desc>
+<g transform="translate(0 32)"><g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(15.05 494.05)">
+<!-- architecture_reviewer -->
+<g id="node1" class="node">
+<title>architecture_reviewer</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="321.89,-325 0,-325 0,-145 321.89,-145 321.89,-325"/>
+<text xml:space="preserve" text-anchor="start" x="67.02" y="-247" font-family="Arial" font-size="20.00" fill="#eff6ff">Architecture reviewer</text>
+<text xml:space="preserve" text-anchor="start" x="20.06" y="-224" font-family="Arial" font-size="15.00" fill="#bfdbfe">Reviews concern&#45;driven static architecture</text>
+<text xml:space="preserve" text-anchor="start" x="130.92" y="-206" font-family="Arial" font-size="15.00" fill="#bfdbfe">evidence</text>
+</g>
+<!-- local_operator -->
+<g id="node2" class="node">
+<title>local_operator</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="1029.71,-325 709.67,-325 709.67,-145 1029.71,-145 1029.71,-325"/>
+<text xml:space="preserve" text-anchor="start" x="775.74" y="-247" font-family="Arial" font-size="20.00" fill="#eff6ff">Local operating cycle</text>
+<text xml:space="preserve" text-anchor="start" x="732.97" y="-224" font-family="Arial" font-size="15.00" fill="#bfdbfe">Office&#45;hours wake, hydrate, verify, ready,</text>
+<text xml:space="preserve" text-anchor="start" x="791.3" y="-206" font-family="Arial" font-size="15.00" fill="#bfdbfe">stop, and retained state</text>
+</g>
+<!-- conceptual_compute -->
+<g id="node3" class="node">
+<title>conceptual_compute</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="1710.58,-479 1389.48,-479 1389.48,-299 1710.58,-299 1710.58,-479"/>
+<text xml:space="preserve" text-anchor="start" x="1413.84" y="-410.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Conceptual analytical compute</text>
+<text xml:space="preserve" text-anchor="start" x="1512.09" y="-389.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">Concept only</text>
+<text xml:space="preserve" text-anchor="start" x="1409.54" y="-368.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Represents future query and orchestration</text>
+<text xml:space="preserve" text-anchor="start" x="1522.52" y="-350.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">capacity</text>
+</g>
+<!-- conceptual_state -->
+<g id="node4" class="node">
+<title>conceptual_state</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="1710.05,-180 1390.01,-180 1390.01,0 1710.05,0 1710.05,-180"/>
+<text xml:space="preserve" text-anchor="start" x="1417.73" y="-111.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Conceptual authoritative state</text>
+<text xml:space="preserve" text-anchor="start" x="1512.09" y="-90.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">Concept only</text>
+<text xml:space="preserve" text-anchor="start" x="1410.78" y="-69.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Represents future object storage, catalog,</text>
+<text xml:space="preserve" text-anchor="start" x="1487.07" y="-51.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">and evidence state</text>
+</g>
+<!-- architecture_reviewer&#45;&gt;local_operator -->
+<g id="edge1" class="edge">
+<title>architecture_reviewer&#45;&gt;local_operator</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M321.87,-235C434.43,-235 584.82,-235 699.4,-235"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="699.14,-237.63 706.64,-235 699.14,-232.38 699.14,-237.63"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="411.33,-238 411.33,-270.8 435.33,-270.8 435.33,-238 411.33,-238"/>
+<text xml:space="preserve" text-anchor="start" x="419.44" y="-251.2" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">0</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="438.33,-238 438.33,-270.8 620.22,-270.8 620.22,-238 438.33,-238"/>
+<text xml:space="preserve" text-anchor="start" x="441.33" y="-248.8" font-family="Arial" font-size="14.00" fill="#c9c9c9">1. Request conceptual wake</text>
+</g>
+<!-- architecture_reviewer&#45;&gt;local_operator -->
+<g id="edge5" class="edge">
+<title>architecture_reviewer&#45;&gt;local_operator</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M331.59,-178.96C348.44,-174.99 365.41,-171.61 381.89,-169.2 499.65,-151.96 531.92,-151.89 649.67,-169.2 669.41,-172.1 689.84,-176.4 709.92,-181.43"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="331.3,-176.33 324.63,-180.64 332.54,-181.43 331.3,-176.33"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="384.89,-172.2 384.89,-205 408.89,-205 408.89,-172.2 384.89,-172.2"/>
+<text xml:space="preserve" text-anchor="start" x="393" y="-185.4" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">4</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="411.89,-172.2 411.89,-205 646.67,-205 646.67,-172.2 411.89,-172.2"/>
+<text xml:space="preserve" text-anchor="start" x="414.89" y="-183" font-family="Arial" font-size="14.00" fill="#c9c9c9">5. Report ready only after verification</text>
+</g>
+<!-- local_operator&#45;&gt;conceptual_compute -->
+<g id="edge2" class="edge">
+<title>local_operator&#45;&gt;conceptual_compute</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M1029.3,-271.01C1134.48,-294.89 1272.35,-326.19 1379.66,-350.55"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="1378.77,-353.04 1386.66,-352.14 1379.93,-347.92 1378.77,-353.04"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1105.93,-337.79 1105.93,-370.59 1129.93,-370.59 1129.93,-337.79 1105.93,-337.79"/>
+<text xml:space="preserve" text-anchor="start" x="1114.04" y="-350.99" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">1</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1132.93,-337.79 1132.93,-370.59 1313.26,-370.59 1313.26,-337.79 1132.93,-337.79"/>
+<text xml:space="preserve" text-anchor="start" x="1135.93" y="-348.59" font-family="Arial" font-size="14.00" fill="#c9c9c9">2. Start conceptual compute</text>
+</g>
+<!-- local_operator&#45;&gt;conceptual_state -->
+<g id="edge3" class="edge">
+<title>local_operator&#45;&gt;conceptual_state</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M1029.3,-201.1C1134.56,-178.6 1272.57,-149.1 1379.91,-126.15"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="1380.46,-128.72 1387.24,-124.58 1379.36,-123.58 1380.46,-128.72"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1116.44,-191.1 1116.44,-223.9 1140.44,-223.9 1140.44,-191.1 1116.44,-191.1"/>
+<text xml:space="preserve" text-anchor="start" x="1124.55" y="-204.3" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">2</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1143.44,-191.1 1143.44,-223.9 1302.75,-223.9 1302.75,-191.1 1143.44,-191.1"/>
+<text xml:space="preserve" text-anchor="start" x="1146.44" y="-201.9" font-family="Arial" font-size="14.00" fill="#c9c9c9">3. Hydrate retained state</text>
+</g>
+<!-- local_operator&#45;&gt;conceptual_state -->
+<g id="edge4" class="edge">
+<title>local_operator&#45;&gt;conceptual_state</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M974.36,-138.9C1008.57,-113.1 1048.49,-88.64 1089.71,-75.2 1186.04,-43.79 1299.84,-47.19 1390.06,-58.59"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="973,-136.64 968.65,-143.29 976.2,-140.81 973,-136.64"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1092.71,-78.2 1092.71,-111 1116.71,-111 1116.71,-78.2 1092.71,-78.2"/>
+<text xml:space="preserve" text-anchor="start" x="1100.81" y="-91.4" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">3</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1119.71,-78.2 1119.71,-111 1326.48,-111 1326.48,-78.2 1119.71,-78.2"/>
+<text xml:space="preserve" text-anchor="start" x="1122.71" y="-89" font-family="Arial" font-size="14.00" fill="#c9c9c9">4. Verify authority and freshness</text>
+</g>
+</g>
+</g><g id="legend"><text x="8" y="20" font-family="Arial" font-size="12">Legend: boxes are elements; arrows are ordered relations</text></g></svg>

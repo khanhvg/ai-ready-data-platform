@@ -1,0 +1,27 @@
+ID: C4-L2-AWS
+Title: Conceptual AWS containers and authority boundaries
+Type: container
+Audience: Kiến trúc sư và chủ sở hữu nền tảng
+Concern: concern-conceptual-authority
+Scope: conceptual-containers
+Owner: I5-06
+Legend: elements are boxes; labelled arrows are directed relations; numbers preserve dynamic order.
+
+Elements:
+- architecture_reviewer | person | Architecture reviewer | Reviews concern-driven static architecture evidence | parent=none
+- conceptual_aws.conceptual_compute | container | Conceptual analytical compute | Represents future query and orchestration capacity | parent=none
+- conceptual_aws.conceptual_edge | container | Conceptual access boundary | Represents future object authorization and network policy | parent=none
+- conceptual_aws.conceptual_metadata | container | Conceptual governance service | Represents owner, lineage, classification, and retention | parent=none
+- conceptual_aws.conceptual_state | container | Conceptual authoritative state | Represents future object storage, catalog, and evidence state | parent=none
+- curriculum_registry | softwareSystem | Curriculum Registry | Static Vietnamese-first modules, templates, trace, and assessment metadata | parent=none
+- retail | softwareSystem | Retail data platform | Synthetic retail source, transformation, BI, orchestration, lake, and catalog tools | parent=none
+
+Relations:
+- Reviews modules, trace, and deterministic views: architecture_reviewer -> curriculum_registry | Static files
+- Publishes lineage and ownership intent: conceptual_aws.conceptual_compute -> conceptual_aws.conceptual_metadata | Conceptual flow
+- Reads or publishes authority-bound data: conceptual_aws.conceptual_compute -> conceptual_aws.conceptual_state | Conceptual flow
+- Routes an admitted request after future authorization: conceptual_aws.conceptual_edge -> conceptual_aws.conceptual_compute | Conceptual flow
+- References local data platform capabilities: curriculum_registry -> retail | Conceptual mapping
+
+Limitations: descriptive Stage A architecture only; no portal, executable lab, deployment, account, endpoint, or provider action.
+TBCs: hosted identity, tenant isolation, measured capacity, RTO, RPO, and current cost require later owner evidence.

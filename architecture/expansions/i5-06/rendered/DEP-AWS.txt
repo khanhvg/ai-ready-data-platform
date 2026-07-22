@@ -1,0 +1,34 @@
+ID: DEP-AWS
+Title: Conceptual AWS deployment, trust, state, and residual cost
+Type: deployment
+Audience: Kiến trúc sư vận hành và bảo mật
+Concern: concern-topology-state-cost
+Scope: conceptual-deployment
+Owner: I5-06
+Legend: elements are boxes; labelled arrows are directed relations; numbers preserve dynamic order.
+
+Elements:
+- aws_conceptual.conceptual_boundary_node | host | Conceptual access and trust boundary |  | parent=none
+- aws_conceptual.conceptual_boundary_node.conceptual_edge_instance | instance | Conceptual access boundary | Represents future object authorization and network policy | parent=aws_conceptual.conceptual_boundary_node
+- aws_conceptual.conceptual_compute_node | host | Conceptual capacity boundary |  | parent=none
+- aws_conceptual.conceptual_compute_node.conceptual_compute_instance | instance | Conceptual analytical compute | Represents future query and orchestration capacity | parent=aws_conceptual.conceptual_compute_node
+- aws_conceptual.conceptual_state_node | privateStorage | Conceptual retained state and residual cost |  | parent=none
+- aws_conceptual.conceptual_state_node.conceptual_metadata_instance | instance | Conceptual governance service | Represents owner, lineage, classification, and retention | parent=aws_conceptual.conceptual_state_node
+- aws_conceptual.conceptual_state_node.conceptual_state_instance | instance | Conceptual authoritative state | Represents future object storage, catalog, and evidence state | parent=aws_conceptual.conceptual_state_node
+
+Relations:
+- Routes an admitted request after future authorization: aws_conceptual.conceptual_boundary_node.conceptual_edge_instance -> aws_conceptual.conceptual_compute_node.conceptual_compute_instance | Conceptual flow
+- Publishes lineage and ownership intent: aws_conceptual.conceptual_compute_node.conceptual_compute_instance -> aws_conceptual.conceptual_state_node.conceptual_metadata_instance | Conceptual flow
+- Reads or publishes authority-bound data: aws_conceptual.conceptual_compute_node.conceptual_compute_instance -> aws_conceptual.conceptual_state_node.conceptual_state_instance | Conceptual flow
+
+Deployment hierarchy:
+- aws_conceptual.conceptual_boundary_node parent=environment-root
+- aws_conceptual.conceptual_compute_node parent=environment-root
+- aws_conceptual.conceptual_state_node parent=environment-root
+- aws_conceptual.conceptual_boundary_node.conceptual_edge_instance parent=aws_conceptual.conceptual_boundary_node
+- aws_conceptual.conceptual_compute_node.conceptual_compute_instance parent=aws_conceptual.conceptual_compute_node
+- aws_conceptual.conceptual_state_node.conceptual_metadata_instance parent=aws_conceptual.conceptual_state_node
+- aws_conceptual.conceptual_state_node.conceptual_state_instance parent=aws_conceptual.conceptual_state_node
+
+Limitations: descriptive Stage A architecture only; no portal, executable lab, deployment, account, endpoint, or provider action.
+TBCs: hosted identity, tenant isolation, measured capacity, RTO, RPO, and current cost require later owner evidence.

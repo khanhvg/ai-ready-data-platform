@@ -1,0 +1,24 @@
+ID: DYN-OFFICE
+Title: Office-hours wake and verified readiness sequence
+Type: dynamic
+Audience: Người vận hành và chủ sở hữu readiness
+Concern: concern-office-readiness
+Scope: conceptual-office-cycle
+Owner: I5-06
+Legend: elements are boxes; labelled arrows are directed relations; numbers preserve dynamic order.
+
+Elements:
+- architecture_reviewer | person | Architecture reviewer | Reviews concern-driven static architecture evidence | parent=none
+- conceptual_aws.conceptual_compute | container | Conceptual analytical compute | Represents future query and orchestration capacity | parent=none
+- conceptual_aws.conceptual_state | container | Conceptual authoritative state | Represents future object storage, catalog, and evidence state | parent=none
+- local_operator | softwareSystem | Local operating cycle | Office-hours wake, hydrate, verify, ready, stop, and retained state | parent=none
+
+Relations:
+1. 1. Request conceptual wake: architecture_reviewer -> local_operator | not-specified
+2. 2. Start conceptual compute: local_operator -> conceptual_aws.conceptual_compute | Office-hours sequence
+3. 3. Hydrate retained state: local_operator -> conceptual_aws.conceptual_state | Recovery sequence
+4. 4. Verify authority and freshness: conceptual_aws.conceptual_state -> local_operator | not-specified
+5. 5. Report ready only after verification: local_operator -> architecture_reviewer | not-specified
+
+Limitations: descriptive Stage A architecture only; no portal, executable lab, deployment, account, endpoint, or provider action.
+TBCs: hosted identity, tenant isolation, measured capacity, RTO, RPO, and current cost require later owner evidence.

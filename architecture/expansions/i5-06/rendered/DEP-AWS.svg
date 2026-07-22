@@ -1,0 +1,82 @@
+<!-- Pages: 1 -->
+<svg width="916pt" height="1026pt"
+ viewBox="0.00 0.00 916.00 1058.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-labelledby="title desc"><title id="title">Conceptual AWS deployment, trust, state, and residual cost</title><desc id="desc">deployment view for Kiến trúc sư vận hành và bảo mật: concern-topology-state-cost</desc>
+<g transform="translate(0 32)"><g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(15.05 1010.85)">
+<g id="clust1" class="cluster">
+<title>cluster_conceptual_boundary_node</title>
+<polygon fill="#194b9e" stroke="#1b3d88" points="256,-722.6 256,-987.8 642,-987.8 642,-722.6 256,-722.6"/>
+<text xml:space="preserve" text-anchor="start" x="264" y="-974.9" font-family="Arial" font-weight="bold" font-size="11.00" fill="#bfdbfe" fill-opacity="0.701961">CONCEPTUAL ACCESS AND TRUST BOUNDARY</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_conceptual_compute_node</title>
+<polygon fill="#194b9e" stroke="#1b3d88" points="256,-373 256,-638.2 642,-638.2 642,-373 256,-373"/>
+<text xml:space="preserve" text-anchor="start" x="264" y="-625.3" font-family="Arial" font-weight="bold" font-size="11.00" fill="#bfdbfe" fill-opacity="0.701961">CONCEPTUAL CAPACITY BOUNDARY</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_conceptual_state_node</title>
+<polygon fill="#194b9e" stroke="#1b3d88" points="8,-8 8,-309.2 878,-309.2 878,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="start" x="16" y="-296.3" font-family="Arial" font-weight="bold" font-size="11.00" fill="#bfdbfe" fill-opacity="0.701961">CONCEPTUAL RETAINED STATE AND RESIDUAL COST</text>
+</g>
+<!-- conceptual_edge_instance -->
+<g id="node1" class="node">
+<title>conceptual_edge_instance</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="610.4,-934.6 287.6,-934.6 287.6,-754.6 610.4,-754.6 610.4,-934.6"/>
+<text xml:space="preserve" text-anchor="start" x="320.03" y="-866.4" font-family="Arial" font-size="20.00" fill="#eff6ff">Conceptual access boundary</text>
+<text xml:space="preserve" text-anchor="start" x="411.06" y="-845.4" font-family="Arial" font-size="13.00" fill="#bfdbfe">Concept only</text>
+<text xml:space="preserve" text-anchor="start" x="307.66" y="-823.8" font-family="Arial" font-size="15.00" fill="#bfdbfe">Represents future object authorization and</text>
+<text xml:space="preserve" text-anchor="start" x="401.48" y="-805.8" font-family="Arial" font-size="15.00" fill="#bfdbfe">network policy</text>
+</g>
+<!-- conceptual_compute_instance -->
+<g id="node2" class="node">
+<title>conceptual_compute_instance</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="609.55,-585 288.45,-585 288.45,-405 609.55,-405 609.55,-585"/>
+<text xml:space="preserve" text-anchor="start" x="312.81" y="-516.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Conceptual analytical compute</text>
+<text xml:space="preserve" text-anchor="start" x="411.06" y="-495.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">Concept only</text>
+<text xml:space="preserve" text-anchor="start" x="308.5" y="-474.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Represents future query and orchestration</text>
+<text xml:space="preserve" text-anchor="start" x="421.49" y="-456.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">capacity</text>
+</g>
+<!-- conceptual_state_instance -->
+<g id="node3" class="node">
+<title>conceptual_state_instance</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="378.02,-238 57.98,-238 57.98,-58 378.02,-58 378.02,-238"/>
+<text xml:space="preserve" text-anchor="start" x="85.7" y="-169.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Conceptual authoritative state</text>
+<text xml:space="preserve" text-anchor="start" x="180.06" y="-148.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">Concept only</text>
+<text xml:space="preserve" text-anchor="start" x="78.75" y="-127.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Represents future object storage, catalog,</text>
+<text xml:space="preserve" text-anchor="start" x="155.04" y="-109.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">and evidence state</text>
+</g>
+<!-- conceptual_metadata_instance -->
+<g id="node4" class="node">
+<title>conceptual_metadata_instance</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="828.14,-238 507.86,-238 507.86,-58 828.14,-58 828.14,-238"/>
+<text xml:space="preserve" text-anchor="start" x="527.92" y="-169.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Conceptual governance service</text>
+<text xml:space="preserve" text-anchor="start" x="630.06" y="-148.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">Concept only</text>
+<text xml:space="preserve" text-anchor="start" x="530.01" y="-127.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Represents owner, lineage, classification,</text>
+<text xml:space="preserve" text-anchor="start" x="624.22" y="-109.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">and retention</text>
+</g>
+<!-- conceptual_edge_instance&#45;&gt;conceptual_compute_instance -->
+<g id="edge1" class="edge">
+<title>conceptual_edge_instance&#45;&gt;conceptual_compute_instance</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M449,-754.99C449,-706.15 449,-645.4 449,-595.01"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="451.63,-595.28 449,-587.78 446.38,-595.28 451.63,-595.28"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="449,-650 449,-689.6 698.58,-689.6 698.58,-650 449,-650"/>
+<text xml:space="preserve" text-anchor="start" x="452" y="-672.6" font-family="Arial" font-size="14.00" fill="#c9c9c9">Routes an admitted request after future</text>
+<text xml:space="preserve" text-anchor="start" x="452" y="-655.8" font-family="Arial" font-size="14.00" fill="#c9c9c9">authorization</text>
+</g>
+<!-- conceptual_compute_instance&#45;&gt;conceptual_state_instance -->
+<g id="edge2" class="edge">
+<title>conceptual_compute_instance&#45;&gt;conceptual_state_instance</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M317.84,-405.33C296.56,-385.95 276.67,-363.98 261.84,-340 244.8,-312.46 234.37,-278.98 227.99,-247.8"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="230.63,-247.61 226.63,-240.74 225.47,-248.6 230.63,-247.61"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="261.84,-317.2 261.84,-340 520,-340 520,-317.2 261.84,-317.2"/>
+<text xml:space="preserve" text-anchor="start" x="264.84" y="-323" font-family="Arial" font-size="14.00" fill="#c9c9c9">Reads or publishes authority&#45;bound data</text>
+</g>
+<!-- conceptual_compute_instance&#45;&gt;conceptual_metadata_instance -->
+<g id="edge3" class="edge">
+<title>conceptual_compute_instance&#45;&gt;conceptual_metadata_instance</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M505.4,-405.15C536.18,-356.66 574.36,-296.52 605.98,-246.7"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="608.18,-248.14 609.98,-240.4 603.75,-245.33 608.18,-248.14"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="558.5,-317.2 558.5,-340 807.33,-340 807.33,-317.2 558.5,-317.2"/>
+<text xml:space="preserve" text-anchor="start" x="561.5" y="-323" font-family="Arial" font-size="14.00" fill="#c9c9c9">Publishes lineage and ownership intent</text>
+</g>
+</g>
+</g><g id="legend"><text x="8" y="20" font-family="Arial" font-size="12">Legend: boxes are elements; arrows are ordered relations</text></g></svg>

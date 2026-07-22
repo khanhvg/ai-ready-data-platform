@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "urn:i5-06:architecture-release-binding-v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "inputSha", "releasedStageASha", "releasedTreeSha", "contractSet", "protected", "lease", "stageA", "stageB"],
+  "properties": {
+    "schemaVersion": {"const": "architecture-release-binding-v1"}, "inputSha": {"pattern": "^[0-9a-f]{40}$"}, "releasedStageASha": {"pattern": "^[0-9a-f]{40}$"}, "releasedTreeSha": {"pattern": "^[0-9a-f]{40}$"},
+    "contractSet": {"type": "object", "additionalProperties": false, "required": ["path", "sha256", "entries"], "properties": {"path": {"const": "learning/contracts/learning-contract-set-v1.json"}, "sha256": {"pattern": "^[0-9a-f]{64}$"}, "entries": {"const": 21}}},
+    "protected": {"type": "object", "additionalProperties": false, "required": ["identityCount", "status"], "properties": {"identityCount": {"const": 33}, "status": {"const": "byte-identical-required"}}},
+    "lease": {"type": "object", "additionalProperties": false, "required": ["id", "root", "mode"], "properties": {"id": {"const": "i5-06-stage-a-architecture-expansion-v1"}, "root": {"const": "architecture/expansions/i5-06"}, "mode": {"const": "additions-only"}}},
+    "stageA": {"type": "object", "additionalProperties": false, "required": ["status", "createPaths", "claims"], "properties": {"status": {"const": "static-candidate"}, "createPaths": {"const": 50}, "claims": {"const": "curriculum-template-trace-static-render-only"}}},
+    "stageB": {"type": "object", "additionalProperties": false, "required": ["status", "fileAllowList", "commandAllowList", "dependencyReleaseShas", "portalRendererPaths"], "properties": {"status": {"const": "blocked-on-issue10"}, "fileAllowList": {"type": "array", "maxItems": 0}, "commandAllowList": {"type": "array", "maxItems": 0}, "dependencyReleaseShas": {"type": "array", "maxItems": 0}, "portalRendererPaths": {"type": "array", "maxItems": 0}}}
+  }
+}

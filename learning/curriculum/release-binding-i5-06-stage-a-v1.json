@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "architecture-release-binding-v1",
+  "inputSha": "c07c9a080be7be88447aac497bdf0a2b5fddd020",
+  "releasedStageASha": "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9",
+  "releasedTreeSha": "27fc3667ef37892dad5c3fbfd76769f65a0760be",
+  "contractSet": {"path": "learning/contracts/learning-contract-set-v1.json", "sha256": "92aaf9a573f5d23b5bf5d8d7db1e68150d4b0944f0e6ab6e651b1a3d34408638", "entries": 21},
+  "protected": {"identityCount": 33, "status": "byte-identical-required"},
+  "lease": {"id": "i5-06-stage-a-architecture-expansion-v1", "root": "architecture/expansions/i5-06", "mode": "additions-only"},
+  "stageA": {"status": "static-candidate", "createPaths": 50, "claims": "curriculum-template-trace-static-render-only"},
+  "stageB": {"status": "blocked-on-issue10", "fileAllowList": [], "commandAllowList": [], "dependencyReleaseShas": [], "portalRendererPaths": []}
+}

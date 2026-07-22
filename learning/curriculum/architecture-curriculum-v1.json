@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "architecture-curriculum-v1",
+  "id": "architecture-foundation-mid-v1",
+  "locale": "vi-VN",
+  "inputSha": "c07c9a080be7be88447aac497bdf0a2b5fddd020",
+  "releasedStageASha": "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9",
+  "runtimeStatus": "not-executed-static-only",
+  "moduleCollections": ["learning/curriculum/modules/foundation-v1.json", "learning/curriculum/modules/junior-v1.json", "learning/curriculum/modules/data-v1.json", "learning/curriculum/modules/mid-v1.json"],
+  "templateRegistry": "learning/curriculum/templates/architecture-templates-v1.json",
+  "trace": "learning/curriculum/traces/architecture-trace-v1.json",
+  "assessment": "learning/curriculum/assessments/architecture-assessment-v1.json",
+  "patterns": "learning/curriculum/patterns/system-design-patterns-v1.json",
+  "mapping": "learning/curriculum/mappings/local-aws-conceptual-v1.json",
+  "example": "learning/curriculum/examples/promotion-publication-architecture-v1.json",
+  "claims": {"staticContent": true, "portal": false, "executableLab": false, "reset": false, "progress": false, "completion": false, "learnerEvidence": false, "cloudDeployment": false},
+  "openApiOperationIds": ["listLessons", "getLesson", "getProgress", "getLessonProgress", "createWorkspace", "getWorkspace", "startWorkspaceOperation", "getOperation", "resetWorkspace", "verifyWorkspace", "getEvidence", "listTools", "getTool", "queryDataProduct", "getLiveness", "getReadiness"],
+  "asyncApiAdmission": {"status": "not-admitted", "reason": "no-released-channel", "channelIds": []}
+}

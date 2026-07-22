@@ -1,0 +1,118 @@
+<!-- Pages: 1 -->
+<svg width="3180pt" height="517pt"
+ viewBox="0.00 0.00 3180.00 549.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-labelledby="title desc"><title id="title">Publication with authorization, idempotency, and evidence</title><desc id="desc">dynamic view for Chủ sở hữu publication và evidence: concern-publication-recovery</desc>
+<g transform="translate(0 32)"><g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(15.05 502.05)">
+<!-- architecture_reviewer -->
+<g id="node1" class="node">
+<title>architecture_reviewer</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="321.89,-247 0,-247 0,-67 321.89,-67 321.89,-247"/>
+<text xml:space="preserve" text-anchor="start" x="67.02" y="-169" font-family="Arial" font-size="20.00" fill="#eff6ff">Architecture reviewer</text>
+<text xml:space="preserve" text-anchor="start" x="20.06" y="-146" font-family="Arial" font-size="15.00" fill="#bfdbfe">Reviews concern&#45;driven static architecture</text>
+<text xml:space="preserve" text-anchor="start" x="130.92" y="-128" font-family="Arial" font-size="15.00" fill="#bfdbfe">evidence</text>
+</g>
+<!-- curriculum_registry -->
+<g id="node2" class="node">
+<title>curriculum_registry</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="1057.73,-418 729.17,-418 729.17,-238 1057.73,-238 1057.73,-418"/>
+<text xml:space="preserve" text-anchor="start" x="805.66" y="-340" font-family="Arial" font-size="20.00" fill="#eff6ff">Curriculum Registry</text>
+<text xml:space="preserve" text-anchor="start" x="749.23" y="-317" font-family="Arial" font-size="15.00" fill="#bfdbfe">Static Vietnamese&#45;first modules, templates,</text>
+<text xml:space="preserve" text-anchor="start" x="784.64" y="-299" font-family="Arial" font-size="15.00" fill="#bfdbfe">trace, and assessment metadata</text>
+</g>
+<!-- conceptual_edge -->
+<g id="node3" class="node">
+<title>conceptual_edge</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="1786.23,-418 1463.44,-418 1463.44,-238 1786.23,-238 1786.23,-418"/>
+<text xml:space="preserve" text-anchor="start" x="1495.87" y="-349.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Conceptual access boundary</text>
+<text xml:space="preserve" text-anchor="start" x="1586.9" y="-328.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">Concept only</text>
+<text xml:space="preserve" text-anchor="start" x="1483.5" y="-307.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Represents future object authorization and</text>
+<text xml:space="preserve" text-anchor="start" x="1577.32" y="-289.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">network policy</text>
+</g>
+<!-- conceptual_compute -->
+<g id="node4" class="node">
+<title>conceptual_compute</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="2453.92,-418 2132.81,-418 2132.81,-238 2453.92,-238 2453.92,-418"/>
+<text xml:space="preserve" text-anchor="start" x="2157.17" y="-349.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Conceptual analytical compute</text>
+<text xml:space="preserve" text-anchor="start" x="2255.42" y="-328.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">Concept only</text>
+<text xml:space="preserve" text-anchor="start" x="2152.87" y="-307.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Represents future query and orchestration</text>
+<text xml:space="preserve" text-anchor="start" x="2265.85" y="-289.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">capacity</text>
+</g>
+<!-- conceptual_state -->
+<g id="node5" class="node">
+<title>conceptual_state</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="3150.22,-487 2830.18,-487 2830.18,-307 3150.22,-307 3150.22,-487"/>
+<text xml:space="preserve" text-anchor="start" x="2857.89" y="-418.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Conceptual authoritative state</text>
+<text xml:space="preserve" text-anchor="start" x="2952.26" y="-397.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">Concept only</text>
+<text xml:space="preserve" text-anchor="start" x="2850.95" y="-376.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Represents future object storage, catalog,</text>
+<text xml:space="preserve" text-anchor="start" x="2927.24" y="-358.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">and evidence state</text>
+</g>
+<!-- conceptual_metadata -->
+<g id="node6" class="node">
+<title>conceptual_metadata</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="3150.34,-180 2830.06,-180 2830.06,0 3150.34,0 3150.34,-180"/>
+<text xml:space="preserve" text-anchor="start" x="2850.11" y="-111.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Conceptual governance service</text>
+<text xml:space="preserve" text-anchor="start" x="2952.26" y="-90.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">Concept only</text>
+<text xml:space="preserve" text-anchor="start" x="2852.21" y="-69.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Represents owner, lineage, classification,</text>
+<text xml:space="preserve" text-anchor="start" x="2946.41" y="-51.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">and retention</text>
+</g>
+<!-- architecture_reviewer&#45;&gt;curriculum_registry -->
+<g id="edge1" class="edge">
+<title>architecture_reviewer&#45;&gt;curriculum_registry</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M321.81,-194.42C439.33,-221.93 598.89,-259.28 719.4,-287.49"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="718.62,-290.01 726.53,-289.16 719.82,-284.89 718.62,-290.01"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="384.89,-275.69 384.89,-308.49 408.89,-308.49 408.89,-275.69 384.89,-275.69"/>
+<text xml:space="preserve" text-anchor="start" x="393" y="-288.89" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">0</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="411.89,-275.69 411.89,-308.49 666.17,-308.49 666.17,-275.69 411.89,-275.69"/>
+<text xml:space="preserve" text-anchor="start" x="414.89" y="-286.49" font-family="Arial" font-size="14.00" fill="#c9c9c9">1. Select a released operation and grain</text>
+</g>
+<!-- architecture_reviewer&#45;&gt;conceptual_metadata -->
+<g id="edge6" class="edge">
+<title>architecture_reviewer&#45;&gt;conceptual_metadata</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M331.71,-125.96C479.35,-101.68 699.3,-72 892.45,-72 892.45,-72 892.45,-72 2294.36,-72 2478.24,-72 2689.39,-78.38 2830.2,-83.54"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="331.6,-123.32 324.63,-127.13 332.46,-128.5 331.6,-123.32"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1502.1,-75 1502.1,-107.8 1526.1,-107.8 1526.1,-75 1502.1,-75"/>
+<text xml:space="preserve" text-anchor="start" x="1510.21" y="-88.2" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">5</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1529.1,-75 1529.1,-107.8 1747.57,-107.8 1747.57,-75 1529.1,-75"/>
+<text xml:space="preserve" text-anchor="start" x="1532.1" y="-85.8" font-family="Arial" font-size="14.00" fill="#c9c9c9">6. Return bounded static evidence</text>
+</g>
+<!-- curriculum_registry&#45;&gt;conceptual_edge -->
+<g id="edge2" class="edge">
+<title>curriculum_registry&#45;&gt;conceptual_edge</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M1057.69,-328C1175.41,-328 1333.94,-328 1453.3,-328"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="1453.11,-330.63 1460.61,-328 1453.11,-325.38 1453.11,-330.63"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1120.73,-331 1120.73,-363.8 1144.73,-363.8 1144.73,-331 1120.73,-331"/>
+<text xml:space="preserve" text-anchor="start" x="1128.84" y="-344.2" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">1</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1147.73,-331 1147.73,-363.8 1400.44,-363.8 1400.44,-331 1147.73,-331"/>
+<text xml:space="preserve" text-anchor="start" x="1150.73" y="-341.8" font-family="Arial" font-size="14.00" fill="#c9c9c9">2. Check conceptual authority boundary</text>
+</g>
+<!-- conceptual_edge&#45;&gt;conceptual_compute -->
+<g id="edge3" class="edge">
+<title>conceptual_edge&#45;&gt;conceptual_compute</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M1785.91,-328C1887.67,-328 2019.27,-328 2122.81,-328"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="2122.53,-330.63 2130.03,-328 2122.53,-325.38 2122.53,-330.63"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1849.23,-331 1849.23,-363.8 1873.23,-363.8 1873.23,-331 1849.23,-331"/>
+<text xml:space="preserve" text-anchor="start" x="1857.34" y="-344.2" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">2</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1876.23,-331 1876.23,-363.8 2069.81,-363.8 2069.81,-331 1876.23,-331"/>
+<text xml:space="preserve" text-anchor="start" x="1879.23" y="-341.8" font-family="Arial" font-size="14.00" fill="#c9c9c9">3. Admit one bounded request</text>
+</g>
+<!-- conceptual_compute&#45;&gt;conceptual_state -->
+<g id="edge4" class="edge">
+<title>conceptual_compute&#45;&gt;conceptual_state</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M2453.77,-343.83C2563.24,-354.7 2708.35,-369.11 2819.88,-380.19"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="2819.5,-382.79 2827.22,-380.91 2820.01,-377.56 2819.5,-382.79"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="2525.88,-377.68 2525.88,-410.48 2549.88,-410.48 2549.88,-377.68 2525.88,-377.68"/>
+<text xml:space="preserve" text-anchor="start" x="2533.99" y="-390.88" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">3</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="2552.88,-377.68 2552.88,-410.48 2758.09,-410.48 2758.09,-377.68 2552.88,-377.68"/>
+<text xml:space="preserve" text-anchor="start" x="2555.88" y="-388.48" font-family="Arial" font-size="14.00" fill="#c9c9c9">4. Publish idempotently or reject</text>
+</g>
+<!-- conceptual_compute&#45;&gt;conceptual_metadata -->
+<g id="edge5" class="edge">
+<title>conceptual_compute&#45;&gt;conceptual_metadata</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M2453.77,-273.4C2563.46,-235.83 2708.93,-186 2820.56,-147.76"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="2821.12,-150.35 2827.37,-145.43 2819.42,-145.38 2821.12,-150.35"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="2516.92,-254.02 2516.92,-286.82 2540.92,-286.82 2540.92,-254.02 2516.92,-254.02"/>
+<text xml:space="preserve" text-anchor="start" x="2525.02" y="-267.22" font-family="Arial" font-weight="bold" font-size="14.00" fill="#c9c9c9">4</text>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="2543.92,-254.02 2543.92,-286.82 2767.06,-286.82 2767.06,-254.02 2543.92,-254.02"/>
+<text xml:space="preserve" text-anchor="start" x="2546.92" y="-264.82" font-family="Arial" font-size="14.00" fill="#c9c9c9">5. Record owner and lineage intent</text>
+</g>
+</g>
+</g><g id="legend"><text x="8" y="20" font-family="Arial" font-size="12">Legend: boxes are elements; arrows are ordered relations</text></g></svg>

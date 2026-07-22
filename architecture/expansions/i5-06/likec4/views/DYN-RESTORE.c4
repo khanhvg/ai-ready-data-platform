@@ -1,0 +1,10 @@
+views {
+  dynamic view dyn_restore {
+    title 'Empty restore and readiness verification sequence'
+    architecture_reviewer -> local_operator '1. Declare an empty conceptual target'
+    local_operator -> conceptual_aws.conceptual_state '2. Restore authority and pointer state'
+    conceptual_aws.conceptual_state -> conceptual_aws.conceptual_metadata '3. Reconcile catalog and ownership'
+    conceptual_aws.conceptual_metadata -> local_operator '4. Verify grain, lineage, RTO, and RPO TBCs'
+    local_operator -> architecture_reviewer '5. Report verified or keep not ready'
+  }
+}

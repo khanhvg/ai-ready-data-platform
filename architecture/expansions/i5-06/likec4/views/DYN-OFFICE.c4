@@ -1,0 +1,10 @@
+views {
+  dynamic view dyn_office {
+    title 'Office-hours wake and verified readiness sequence'
+    architecture_reviewer -> local_operator '1. Request conceptual wake'
+    local_operator -> conceptual_aws.conceptual_compute '2. Start conceptual compute'
+    local_operator -> conceptual_aws.conceptual_state '3. Hydrate retained state'
+    conceptual_aws.conceptual_state -> local_operator '4. Verify authority and freshness'
+    local_operator -> architecture_reviewer '5. Report ready only after verification'
+  }
+}

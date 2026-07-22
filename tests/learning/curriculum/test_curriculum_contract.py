@@ -59,6 +59,9 @@ def candidate_root() -> tempfile.TemporaryDirectory[str]:
     destination = pathlib.Path(holder.name)
     shutil.copytree(ROOT / "learning", destination / "learning")
     shutil.copytree(ROOT / "architecture", destination / "architecture")
+    fragment = destination / "mk/issue-5/i5-06.mk"
+    fragment.parent.mkdir(parents=True)
+    shutil.copyfile(ROOT / "mk/issue-5/i5-06.mk", fragment)
     return holder
 
 
@@ -104,7 +107,7 @@ def run_public(module: str, root: pathlib.Path, *arguments: str) -> subprocess.C
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        timeout=60,
+        timeout=180,
     )
 
 

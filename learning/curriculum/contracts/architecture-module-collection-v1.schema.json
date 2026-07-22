@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:i5-06:architecture-module-collection-v1",
+  "type": "object", "additionalProperties": false, "required": ["schemaVersion", "level", "modules"],
+  "properties": {
+    "schemaVersion": {"const": "architecture-module-collection-v1"},
+    "level": {"enum": ["foundation", "junior", "data", "mid"]},
+    "modules": {"type": "array", "minItems": 4, "maxItems": 6, "items": {"$ref": "#/$defs/module"}}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,127}$"},
+    "vi": {"type": "string", "minLength": 8, "maxLength": 8192},
+    "ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "requirement": {
+      "type": "object", "additionalProperties": false, "required": ["id", "statementVi", "metric", "thresholdOrTbc", "ownerId", "verifierId"],
+      "properties": {"id": {"$ref": "#/$defs/id"}, "statementVi": {"$ref": "#/$defs/vi"}, "metric": {"type": "string", "minLength": 2}, "thresholdOrTbc": {"type": "string", "minLength": 1}, "ownerId": {"$ref": "#/$defs/id"}, "verifierId": {"$ref": "#/$defs/id"}}
+    },
+    "module": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "sequence", "level", "title", "instructions", "remediation", "reflection", "prerequisites", "probe", "business", "requirements", "options", "views", "decision", "implementation", "exercise", "assessment", "evidence", "consequences", "traceId", "runtimeStatus", "nextPath"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[FJDM][0-9]{2}$"}, "sequence": {"type": "integer", "minimum": 1, "maximum": 20}, "level": {"enum": ["foundation", "junior", "data", "mid"]},
+        "title": {"type": "object", "additionalProperties": false, "required": ["vi", "machine"], "properties": {"vi": {"$ref": "#/$defs/vi"}, "machine": {"$ref": "#/$defs/id"}}},
+        "instructions": {"type": "array", "minItems": 2, "maxItems": 6, "items": {"type": "object", "additionalProperties": false, "required": ["id", "textVi"], "properties": {"id": {"$ref": "#/$defs/id"}, "textVi": {"$ref": "#/$defs/vi"}}}},
+        "remediation": {"type": "object", "additionalProperties": false, "required": ["trigger", "textVi"], "properties": {"trigger": {"type": "string", "minLength": 3}, "textVi": {"$ref": "#/$defs/vi"}}},
+        "reflection": {"type": "object", "additionalProperties": false, "required": ["promptVi", "recordAuthority"], "properties": {"promptVi": {"$ref": "#/$defs/vi"}, "recordAuthority": {"const": "reflection-only-no-progress"}}},
+        "prerequisites": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[FJDM][0-9]{2}$"}},
+        "probe": {"type": "object", "additionalProperties": false, "required": ["mode", "status", "checks", "remediationVi"], "properties": {"mode": {"const": "non-mutating"}, "status": {"const": "not-executed-static-only"}, "checks": {"$ref": "#/$defs/ids"}, "remediationVi": {"$ref": "#/$defs/vi"}}},
+        "business": {"type": "object", "additionalProperties": false, "required": ["outcomeId", "capabilityId", "valueStreamId", "stakeholderId", "concernId"], "properties": {"outcomeId": {"$ref": "#/$defs/id"}, "capabilityId": {"$ref": "#/$defs/id"}, "valueStreamId": {"$ref": "#/$defs/id"}, "stakeholderId": {"$ref": "#/$defs/id"}, "concernId": {"$ref": "#/$defs/id"}}},
+        "requirements": {"type": "object", "additionalProperties": false, "required": ["fr", "nfr", "asr"], "properties": {"fr": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/requirement"}}, "nfr": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/requirement"}}, "asr": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/requirement"}}}},
+        "options": {"type": "array", "minItems": 2, "items": {"type": "object", "additionalProperties": false, "required": ["id", "forceIds", "tradeOffsVi", "rejectionRuleVi"], "properties": {"id": {"$ref": "#/$defs/id"}, "forceIds": {"$ref": "#/$defs/ids"}, "tradeOffsVi": {"$ref": "#/$defs/vi"}, "rejectionRuleVi": {"$ref": "#/$defs/vi"}}}},
+        "views": {"type": "object", "additionalProperties": false, "required": ["c4Ids", "dataIds", "integrationIds", "securityIds", "deploymentIds", "dynamicIds", "criticalFlow"], "properties": {"c4Ids": {"$ref": "#/$defs/ids"}, "dataIds": {"$ref": "#/$defs/ids"}, "integrationIds": {"$ref": "#/$defs/ids"}, "securityIds": {"$ref": "#/$defs/ids"}, "deploymentIds": {"$ref": "#/$defs/ids"}, "dynamicIds": {"$ref": "#/$defs/ids"}, "criticalFlow": {"type": "boolean"}}},
+        "decision": {"type": "object", "additionalProperties": false, "required": ["adrId", "patternIds", "alternativesVi", "consequencesVi"], "properties": {"adrId": {"$ref": "#/$defs/id"}, "patternIds": {"$ref": "#/$defs/ids"}, "alternativesVi": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/vi"}}, "consequencesVi": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/vi"}}}},
+        "implementation": {"type": "object", "additionalProperties": false, "required": ["intentId", "boundaryVi", "tbcIds"], "properties": {"intentId": {"$ref": "#/$defs/id"}, "boundaryVi": {"$ref": "#/$defs/vi"}, "tbcIds": {"$ref": "#/$defs/ids"}}},
+        "exercise": {"type": "object", "additionalProperties": false, "required": ["taskVi", "inputs", "controlledFailureVi", "hintsVi", "resetAuthority"], "properties": {"taskVi": {"$ref": "#/$defs/vi"}, "inputs": {"$ref": "#/$defs/ids"}, "controlledFailureVi": {"$ref": "#/$defs/vi"}, "hintsVi": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/vi"}}, "resetAuthority": {"const": "described-not-executed"}}},
+        "assessment": {"type": "object", "additionalProperties": false, "required": ["rubricIds", "authoritative", "completionMutation"], "properties": {"rubricIds": {"$ref": "#/$defs/ids"}, "authoritative": {"const": false}, "completionMutation": {"const": false}}},
+        "evidence": {"type": "object", "additionalProperties": false, "required": ["expectationIds", "fitnessCommandIds", "learnerEvidence"], "properties": {"expectationIds": {"$ref": "#/$defs/ids"}, "fitnessCommandIds": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["curriculum-check", "traceability-check", "architecture-check", "architecture-render"]}}, "learnerEvidence": {"const": false}}},
+        "consequences": {"type": "object", "additionalProperties": false, "required": ["operationId", "resilienceId", "securityId", "costId", "governanceId", "detailsVi"], "properties": {"operationId": {"$ref": "#/$defs/id"}, "resilienceId": {"$ref": "#/$defs/id"}, "securityId": {"$ref": "#/$defs/id"}, "costId": {"$ref": "#/$defs/id"}, "governanceId": {"$ref": "#/$defs/id"}, "detailsVi": {"$ref": "#/$defs/vi"}}},
+        "traceId": {"type": "string", "pattern": "^trace-[FJDM][0-9]{2}$"}, "runtimeStatus": {"const": "not-executed-static-only"}, "nextPath": {"type": ["string", "null"], "pattern": "^[FJDM][0-9]{2}$"}
+      }
+    }
+  }
+}

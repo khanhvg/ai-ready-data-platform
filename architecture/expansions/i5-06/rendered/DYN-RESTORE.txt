@@ -1,0 +1,24 @@
+ID: DYN-RESTORE
+Title: Empty restore and readiness verification sequence
+Type: dynamic
+Audience: Chủ sở hữu dữ liệu và phục hồi
+Concern: concern-empty-restore
+Scope: conceptual-recovery
+Owner: I5-06
+Legend: elements are boxes; labelled arrows are directed relations; numbers preserve dynamic order.
+
+Elements:
+- architecture_reviewer | person | Architecture reviewer | Reviews concern-driven static architecture evidence | parent=none
+- conceptual_aws.conceptual_metadata | container | Conceptual governance service | Represents owner, lineage, classification, and retention | parent=none
+- conceptual_aws.conceptual_state | container | Conceptual authoritative state | Represents future object storage, catalog, and evidence state | parent=none
+- local_operator | softwareSystem | Local operating cycle | Office-hours wake, hydrate, verify, ready, stop, and retained state | parent=none
+
+Relations:
+1. 1. Declare an empty conceptual target: architecture_reviewer -> local_operator | not-specified
+2. 2. Restore authority and pointer state: local_operator -> conceptual_aws.conceptual_state | Recovery sequence
+3. 3. Reconcile catalog and ownership: conceptual_aws.conceptual_state -> conceptual_aws.conceptual_metadata | not-specified
+4. 4. Verify grain, lineage, RTO, and RPO TBCs: conceptual_aws.conceptual_metadata -> local_operator | not-specified
+5. 5. Report verified or keep not ready: local_operator -> architecture_reviewer | not-specified
+
+Limitations: descriptive Stage A architecture only; no portal, executable lab, deployment, account, endpoint, or provider action.
+TBCs: hosted identity, tenant isolation, measured capacity, RTO, RPO, and current cost require later owner evidence.

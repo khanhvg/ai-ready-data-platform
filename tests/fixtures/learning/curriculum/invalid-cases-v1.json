@@ -1,7 +1,7 @@
 {
   "schemaVersion": "architecture-curriculum-invalid-cases-v1",
   "cases": [
-    {"id":"I11-RED-REF-001","validator":"curriculum","mutation":{"kind":"json-set","target":"learning/curriculum/modules/foundation-v1.json","pointer":"/modules/0/traceId","value":"trace-missing"},"expectedCode":"CURRICULUM_REFERENCE_INVALID"},
+    {"id":"I11-RED-REF-001","validator":"curriculum","mutation":{"kind":"json-set","target":"learning/curriculum/modules/foundation-v1.json","pointer":"/modules/0/traceId","value":"trace-F99"},"expectedCode":"CURRICULUM_REFERENCE_INVALID"},
     {"id":"I11-RED-PREQ-001","validator":"curriculum","mutation":{"kind":"json-set","target":"learning/curriculum/modules/foundation-v1.json","pointer":"/modules/1/prerequisites","value":["F02"]},"expectedCode":"CURRICULUM_PREREQUISITE_INVALID"},
     {"id":"I11-RED-VIEW-001","validator":"architecture","mutation":{"kind":"json-set","target":"architecture/expansions/i5-06/likec4/view-manifest.yaml","pointer":"/views/0/concernId","value":""},"expectedCode":"ARCH_VIEW_INVALID"},
     {"id":"I11-RED-ADR-001","validator":"trace","mutation":{"kind":"json-set","target":"learning/curriculum/traces/architecture-trace-v1.json","pointer":"/nodes/decisions/0/consequenceIds","value":[]},"expectedCode":"TRACE_DECISION_INVALID"},

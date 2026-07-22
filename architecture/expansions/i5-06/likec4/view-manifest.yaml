@@ -1,0 +1,14 @@
+{
+  "schemaVersion":"architecture-view-extension-v1",
+  "leaseId":"i5-06-stage-a-architecture-expansion-v1",
+  "owner":"I5-06",
+  "baseManifest":{"path":"architecture/likec4/view-manifest.yaml","gitBlob":"ff8f59a76440561d0de17a08b3d79fc580d2e043","sha256":"1659c51389718f2799581550ab17fd31c4dd30639723d5b443ac088944178169"},
+  "baseRenderManifest":{"path":"architecture/rendered/render-manifest.json","gitBlob":"c116d89ab5d1768894fce101e2eb1d1b9896e97c","sha256":"7934c00f9f7bd772f0f2eec4730332b6b6a8b5907f2d7547673fbef9718a04e6"},
+  "views":[
+    {"id":"C4-L2-AWS","key":"c4_l2_aws","type":"container","audienceVi":"Kiến trúc sư và chủ sở hữu nền tảng","concernId":"concern-conceptual-authority","scope":"conceptual-containers","source":"architecture/expansions/i5-06/likec4/views/C4-L2-AWS.c4","outputSvg":"architecture/expansions/i5-06/rendered/C4-L2-AWS.svg","outputText":"architecture/expansions/i5-06/rendered/C4-L2-AWS.txt","traceIds":["trace-J02","trace-J03","trace-J06","trace-D04","trace-D06","trace-M01","trace-M03","trace-M04"]},
+    {"id":"DEP-AWS","key":"dep_aws","type":"deployment","audienceVi":"Kiến trúc sư vận hành và bảo mật","concernId":"concern-topology-state-cost","scope":"conceptual-deployment","source":"architecture/expansions/i5-06/likec4/views/DEP-AWS.c4","outputSvg":"architecture/expansions/i5-06/rendered/DEP-AWS.svg","outputText":"architecture/expansions/i5-06/rendered/DEP-AWS.txt","traceIds":["trace-J01","trace-J02","trace-J04","trace-J05","trace-J06","trace-D05","trace-M01","trace-M02","trace-M03","trace-M04"]},
+    {"id":"DYN-OFFICE","key":"dyn_office","type":"dynamic","audienceVi":"Người vận hành và chủ sở hữu readiness","concernId":"concern-office-readiness","scope":"conceptual-office-cycle","source":"architecture/expansions/i5-06/likec4/views/DYN-OFFICE.c4","outputSvg":"architecture/expansions/i5-06/rendered/DYN-OFFICE.svg","outputText":"architecture/expansions/i5-06/rendered/DYN-OFFICE.txt","traceIds":["trace-M01","trace-M02"]},
+    {"id":"DYN-PUBLISH","key":"dyn_publish","type":"dynamic","audienceVi":"Chủ sở hữu publication và evidence","concernId":"concern-publication-recovery","scope":"conceptual-publication","source":"architecture/expansions/i5-06/likec4/views/DYN-PUBLISH.c4","outputSvg":"architecture/expansions/i5-06/rendered/DYN-PUBLISH.svg","outputText":"architecture/expansions/i5-06/rendered/DYN-PUBLISH.txt","traceIds":["trace-J01","trace-J04","trace-D01","trace-D03","trace-D05"]},
+    {"id":"DYN-RESTORE","key":"dyn_restore","type":"dynamic","audienceVi":"Chủ sở hữu dữ liệu và phục hồi","concernId":"concern-empty-restore","scope":"conceptual-recovery","source":"architecture/expansions/i5-06/likec4/views/DYN-RESTORE.c4","outputSvg":"architecture/expansions/i5-06/rendered/DYN-RESTORE.svg","outputText":"architecture/expansions/i5-06/rendered/DYN-RESTORE.txt","traceIds":["trace-D05","trace-M02"]}
+  ]
+}

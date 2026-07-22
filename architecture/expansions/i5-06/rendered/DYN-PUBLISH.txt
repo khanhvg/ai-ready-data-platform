@@ -1,0 +1,27 @@
+ID: DYN-PUBLISH
+Title: Publication with authorization, idempotency, and evidence
+Type: dynamic
+Audience: Chủ sở hữu publication và evidence
+Concern: concern-publication-recovery
+Scope: conceptual-publication
+Owner: I5-06
+Legend: elements are boxes; labelled arrows are directed relations; numbers preserve dynamic order.
+
+Elements:
+- architecture_reviewer | person | Architecture reviewer | Reviews concern-driven static architecture evidence | parent=none
+- conceptual_aws.conceptual_compute | container | Conceptual analytical compute | Represents future query and orchestration capacity | parent=none
+- conceptual_aws.conceptual_edge | container | Conceptual access boundary | Represents future object authorization and network policy | parent=none
+- conceptual_aws.conceptual_metadata | container | Conceptual governance service | Represents owner, lineage, classification, and retention | parent=none
+- conceptual_aws.conceptual_state | container | Conceptual authoritative state | Represents future object storage, catalog, and evidence state | parent=none
+- curriculum_registry | softwareSystem | Curriculum Registry | Static Vietnamese-first modules, templates, trace, and assessment metadata | parent=none
+
+Relations:
+1. 1. Select a released operation and grain: architecture_reviewer -> curriculum_registry | Static files
+2. 2. Check conceptual authority boundary: curriculum_registry -> conceptual_aws.conceptual_edge | not-specified
+3. 3. Admit one bounded request: conceptual_aws.conceptual_edge -> conceptual_aws.conceptual_compute | Conceptual flow
+4. 4. Publish idempotently or reject: conceptual_aws.conceptual_compute -> conceptual_aws.conceptual_state | Conceptual flow
+5. 5. Record owner and lineage intent: conceptual_aws.conceptual_compute -> conceptual_aws.conceptual_metadata | Conceptual flow
+6. 6. Return bounded static evidence: conceptual_aws.conceptual_metadata -> architecture_reviewer | not-specified
+
+Limitations: descriptive Stage A architecture only; no portal, executable lab, deployment, account, endpoint, or provider action.
+TBCs: hosted identity, tenant isolation, measured capacity, RTO, RPO, and current cost require later owner evidence.
