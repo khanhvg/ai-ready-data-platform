@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "learning-evidence-v1",
+  "evidenceId": "vector-evidence-v1",
+  "lesson": {
+    "id": "promotion-trust",
+    "version": "1.0.0"
+  },
+  "lab": {
+    "id": "promotion-trust-v1",
+    "version": "1.0.0"
+  },
+  "actor": {
+    "subjectId": "learner-vector",
+    "authContextSha256": "1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "workspaceId": "workspace-vector",
+  "runId": "run-vector",
+  "operationId": "verifyWorkspace",
+  "inputGitSha": "c23106ad89d45370b06c3329f7d8963b2c62a064",
+  "officialGoldenMainSha": "24be3b34c6b0fcdbd07c5800dcab349054e34713",
+  "dependencyMergeShas": [
+    "24be3b34c6b0fcdbd07c5800dcab349054e34713"
+  ],
+  "contractHashes": [
+    {
+      "path": "learning/contracts/lesson-v1.schema.json",
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+    }
+  ],
+  "fixtureHashes": [
+    {
+      "path": "tests/fixtures/learning/contracts/valid/promotion-trust-v1.json",
+      "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+    }
+  ],
+  "verifier": {
+    "id": "learning-contracts-v1",
+    "sha256": "4444444444444444444444444444444444444444444444444444444444444444"
+  },
+  "environment": {
+    "python": "3.12.3",
+    "platform": "darwin-arm64",
+    "offline": true
+  },
+  "parameters": [],
+  "transitions": [
+    {
+      "from": "in-progress",
+      "to": "verified",
+      "revision": 2
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "make",
+        "lesson-check",
+        "LESSON=promotion-trust"
+      ],
+      "rc": 0
+    }
+  ],
+  "assertions": [
+    {
+      "id": "four-independent-grains",
+      "status": "pass"
+    }
+  ],
+  "artifacts": [
+    {
+      "locator": "result.json",
+      "mediaType": "application/json",
+      "size": 18,
+      "sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+    }
+  ],
+  "timing": {
+    "startedAt": "2026-07-22T00:00:00Z",
+    "finishedAt": "2026-07-22T00:00:01Z",
+    "durationMs": 1000
+  },
+  "redactionClass": "public-contract-evidence",
+  "retentionClass": "review-bundle",
+  "rollback": {
+    "supported": true,
+    "preserveEvidence": true
+  },
+  "integrity": {
+    "algorithm": "sha-256+jcs",
+    "payloadSha256": "6403db9062ae88362aa1a69cb1fe583fddca7a597fa5b59cb995d98486a5086a"
+  }
+}

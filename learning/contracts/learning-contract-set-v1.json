@@ -1,0 +1,157 @@
+{
+  "schemaVersion": "learning-contract-set-v1",
+  "setId": "issue-8-stage-a-v1",
+  "registry": {
+    "path": "learning/contracts/learning-contract-version-registry-v1.json",
+    "sha256": "a34c907e8870e89a182a180250a284f1a3c2ab3b6f1c4217c087cbc57775f9cb"
+  },
+  "contracts": [
+    {
+      "path": "contracts/openapi/learning-platform-openapi-profile-v1.schema.json",
+      "family": "learning-platform-openapi-profile",
+      "version": "learning-platform-openapi-profile-v1",
+      "schemaSha256": "208fa1686caf9685483ba889e38974fb696c1d0015721bd639ad6d27fe6439bd",
+      "contentSha256": "208fa1686caf9685483ba889e38974fb696c1d0015721bd639ad6d27fe6439bd"
+    },
+    {
+      "path": "contracts/openapi/learning-platform-problem-details-v1.schema.json",
+      "family": "learning-platform-problem-details",
+      "version": "learning-platform-problem-details-v1",
+      "schemaSha256": "1af9440068c722732784d6c8a606da436de333ea8a77c12b4e545530ea11a1e9",
+      "contentSha256": "1af9440068c722732784d6c8a606da436de333ea8a77c12b4e545530ea11a1e9"
+    },
+    {
+      "path": "contracts/openapi/learning-platform-v1.yaml",
+      "family": "learning-platform-api",
+      "version": "learning-platform-v1",
+      "schemaSha256": "208fa1686caf9685483ba889e38974fb696c1d0015721bd639ad6d27fe6439bd",
+      "contentSha256": "f82434b815decd5f200aac08650e3d2cd7f572a600d0a0d7e5a4e8d2f09efe87"
+    },
+    {
+      "path": "learning/contracts/command-owner-activation-i5-03-v1.json",
+      "family": "command-owner-activation",
+      "version": "command-owner-activation-v1",
+      "schemaSha256": "8fe337b7646fddc2dff4d1fc30e4a9120d0edec3f7eb293e8ead0e5d82f7a1f0",
+      "contentSha256": "d20c5db284c4528106a0943a1970e665c6dbcc33dfc3dd05f2a9b01570ae8941"
+    },
+    {
+      "path": "learning/contracts/command-owner-activation-v1.schema.json",
+      "family": "command-owner-activation",
+      "version": "command-owner-activation-v1",
+      "schemaSha256": "8fe337b7646fddc2dff4d1fc30e4a9120d0edec3f7eb293e8ead0e5d82f7a1f0",
+      "contentSha256": "8fe337b7646fddc2dff4d1fc30e4a9120d0edec3f7eb293e8ead0e5d82f7a1f0"
+    },
+    {
+      "path": "learning/contracts/completion-reconciliation-v1.json",
+      "family": "completion-reconciliation",
+      "version": "completion-reconciliation-v1",
+      "schemaSha256": "64fed79f088cff1d0d548448c7d40fdbc4b8e60b6d4e57c0f08cdfbcd0c2f769",
+      "contentSha256": "8fd50ced7a068c81f9868c23842ce680a46aba94a211bb932afef2beecc2d9ff"
+    },
+    {
+      "path": "learning/contracts/completion-reconciliation-v1.schema.json",
+      "family": "completion-reconciliation",
+      "version": "completion-reconciliation-v1",
+      "schemaSha256": "64fed79f088cff1d0d548448c7d40fdbc4b8e60b6d4e57c0f08cdfbcd0c2f769",
+      "contentSha256": "64fed79f088cff1d0d548448c7d40fdbc4b8e60b6d4e57c0f08cdfbcd0c2f769"
+    },
+    {
+      "path": "learning/contracts/fitness-result-v2.schema.json",
+      "family": "fitness-result",
+      "version": "fitness-result-v2",
+      "schemaSha256": "d53f9b7b68b9f313bf0b9259fe5042bfb8cdbca0001570c18cd937de4971d6c6",
+      "contentSha256": "d53f9b7b68b9f313bf0b9259fe5042bfb8cdbca0001570c18cd937de4971d6c6"
+    },
+    {
+      "path": "learning/contracts/lab-v1.schema.json",
+      "family": "lab",
+      "version": "lab-v1",
+      "schemaSha256": "891c41100a28548e603ca1714aeaf5be2d541cd1780ab2ef72e3ef0740c6c16d",
+      "contentSha256": "891c41100a28548e603ca1714aeaf5be2d541cd1780ab2ef72e3ef0740c6c16d"
+    },
+    {
+      "path": "learning/contracts/learning-contract-set-v1.schema.json",
+      "family": "learning-contract-set",
+      "version": "learning-contract-set-v1",
+      "schemaSha256": "1cf55a7eeeff3d4a08340ae903d5f4e1812deb34849d99600296be507dd19648",
+      "contentSha256": "1cf55a7eeeff3d4a08340ae903d5f4e1812deb34849d99600296be507dd19648"
+    },
+    {
+      "path": "learning/contracts/learning-contract-version-registry-v1.json",
+      "family": "learning-contract-version-registry",
+      "version": "learning-contract-version-registry-v1",
+      "schemaSha256": "d8c1881982e39e727a95f7491e6efeb288335bbef4a80d76efa891c3a8009ab8",
+      "contentSha256": "a34c907e8870e89a182a180250a284f1a3c2ab3b6f1c4217c087cbc57775f9cb"
+    },
+    {
+      "path": "learning/contracts/learning-contract-version-registry-v1.schema.json",
+      "family": "learning-contract-version-registry",
+      "version": "learning-contract-version-registry-v1",
+      "schemaSha256": "d8c1881982e39e727a95f7491e6efeb288335bbef4a80d76efa891c3a8009ab8",
+      "contentSha256": "d8c1881982e39e727a95f7491e6efeb288335bbef4a80d76efa891c3a8009ab8"
+    },
+    {
+      "path": "learning/contracts/learning-evidence-v1.schema.json",
+      "family": "learning-evidence",
+      "version": "learning-evidence-v1",
+      "schemaSha256": "52a68529b72ecb7f24c59ebe52e16e4ee5f21660164b1d20570827b18be3fe47",
+      "contentSha256": "52a68529b72ecb7f24c59ebe52e16e4ee5f21660164b1d20570827b18be3fe47"
+    },
+    {
+      "path": "learning/contracts/lesson-v1.schema.json",
+      "family": "lesson",
+      "version": "lesson-v1",
+      "schemaSha256": "9ece4e9cf5bf2a4dc375da13ce33ac7a696a374a225b0a7f9d1b9e089e7ea505",
+      "contentSha256": "9ece4e9cf5bf2a4dc375da13ce33ac7a696a374a225b0a7f9d1b9e089e7ea505"
+    },
+    {
+      "path": "learning/contracts/operation-matrix-v1.json",
+      "family": "operation-matrix",
+      "version": "operation-matrix-v1",
+      "schemaSha256": "98d77f883da45c47c6e277956ad31614003410ff43fea585fcdb432c4a12a128",
+      "contentSha256": "ffabcc11ca3943e3e520cd7b98c535032be439b1e2d1b920fe9ee17806180b1e"
+    },
+    {
+      "path": "learning/contracts/operation-matrix-v1.schema.json",
+      "family": "operation-matrix",
+      "version": "operation-matrix-v1",
+      "schemaSha256": "98d77f883da45c47c6e277956ad31614003410ff43fea585fcdb432c4a12a128",
+      "contentSha256": "98d77f883da45c47c6e277956ad31614003410ff43fea585fcdb432c4a12a128"
+    },
+    {
+      "path": "learning/contracts/progress-v1.schema.json",
+      "family": "progress",
+      "version": "progress-v1",
+      "schemaSha256": "a24c27b0c9abf0d553f1005c6ff4b19506fa2b9be3888b5315356b91cdc30767",
+      "contentSha256": "a24c27b0c9abf0d553f1005c6ff4b19506fa2b9be3888b5315356b91cdc30767"
+    },
+    {
+      "path": "learning/contracts/promotion-trust-learning-manifest-v1.schema.json",
+      "family": "promotion-trust-learning-manifest",
+      "version": "promotion-trust-learning-manifest-v1",
+      "schemaSha256": "6b04b9acdc6097c43ede39f22d048b1b3095b96563e568ec6e2bc52527bd0255",
+      "contentSha256": "6b04b9acdc6097c43ede39f22d048b1b3095b96563e568ec6e2bc52527bd0255"
+    },
+    {
+      "path": "learning/labs/promotion-trust/lab-v1.json",
+      "family": "lab",
+      "version": "lab-v1",
+      "schemaSha256": "891c41100a28548e603ca1714aeaf5be2d541cd1780ab2ef72e3ef0740c6c16d",
+      "contentSha256": "89ece51f41a17821d3266d2ba1fb7680cb70b07c2e9c5566d473aac9978d42d8"
+    },
+    {
+      "path": "learning/lessons/promotion-trust/lesson-v1.json",
+      "family": "lesson",
+      "version": "lesson-v1",
+      "schemaSha256": "9ece4e9cf5bf2a4dc375da13ce33ac7a696a374a225b0a7f9d1b9e089e7ea505",
+      "contentSha256": "758c6fb1ad75b283c313536d61bee61655bba6d27a2e685825ca20a28c838675"
+    },
+    {
+      "path": "learning/manifests/promotion-trust-v1.json",
+      "family": "promotion-trust-learning-manifest",
+      "version": "promotion-trust-learning-manifest-v1",
+      "schemaSha256": "6b04b9acdc6097c43ede39f22d048b1b3095b96563e568ec6e2bc52527bd0255",
+      "contentSha256": "553b97ed5dc44b77564ae50b1a2211205cbd1a759f3578e5e4dfcefef99044ac"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "promotion-trust-learning-manifest-v1",
+  "manifestId": "promotion-trust-v1",
+  "lesson": { "path": "learning/lessons/promotion-trust/lesson-v1.json", "sha256": "758c6fb1ad75b283c313536d61bee61655bba6d27a2e685825ca20a28c838675" },
+  "lab": { "path": "learning/labs/promotion-trust/lab-v1.json", "sha256": "89ece51f41a17821d3266d2ba1fb7680cb70b07c2e9c5566d473aac9978d42d8" },
+  "evidenceSchema": { "path": "learning/contracts/learning-evidence-v1.schema.json", "sha256": "52a68529b72ecb7f24c59ebe52e16e4ee5f21660164b1d20570827b18be3fe47" },
+  "dataContract": { "path": "contracts/data/retail-golden-v1.json", "sha256": "f303282e3b524e1273e702c9b8b24b500aaa01afdd3c3b623ac997afba8840cc" },
+  "fixture": { "path": "tests/fixtures/learning/promotion-trust/manifest.json", "sha256": "0a1dcd4023648f52009bfd4dc5d529c00ce66f42cd0e725732b972b0b78df341" },
+  "fixtureSha256": "0a1dcd4023648f52009bfd4dc5d529c00ce66f42cd0e725732b972b0b78df341",
+  "sources": [
+    { "grain": "promotion", "keys": ["promo_name", "channel"], "document": { "path": "contracts/data/retail-golden-v1.json", "sha256": "f303282e3b524e1273e702c9b8b24b500aaa01afdd3c3b623ac997afba8840cc" } },
+    { "grain": "fulfillment", "keys": ["carrier", "region"], "document": { "path": "contracts/data/retail-golden-v1.json", "sha256": "f303282e3b524e1273e702c9b8b24b500aaa01afdd3c3b623ac997afba8840cc" } },
+    { "grain": "returns", "keys": ["reason", "category", "region"], "document": { "path": "contracts/data/retail-golden-v1.json", "sha256": "f303282e3b524e1273e702c9b8b24b500aaa01afdd3c3b623ac997afba8840cc" } },
+    { "grain": "dq", "keys": ["scenario"], "document": { "path": "contracts/data/retail-golden-v1.json", "sha256": "f303282e3b524e1273e702c9b8b24b500aaa01afdd3c3b623ac997afba8840cc" } }
+  ],
+  "decision": "insufficient-evidence/no-common-grain",
+  "limitations": [
+    { "id": "no-common-grain", "statement": "no campaign/order/time common grain" },
+    { "id": "no-causal-attribution", "statement": "no cross-grain causal attribution" }
+  ],
+  "contractSetSha256": "cccfb62f00304d103d1824372cf8e4b28f808c2390638ba6750c475e2f26c90b"
+}

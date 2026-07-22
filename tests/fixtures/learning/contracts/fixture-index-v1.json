@@ -1,0 +1,395 @@
+{
+  "schemaVersion": "learning-contract-invalid-fixture-index-v1",
+  "fixtures": [
+    {
+      "rowId": "invalid-001",
+      "path": "invalid/canonicalization/bom.json",
+      "target": "canonical",
+      "expectedCode": "JSON_BOM_REFUSED"
+    },
+    {
+      "rowId": "invalid-002",
+      "path": "invalid/canonicalization/duplicate-name.json",
+      "target": "canonical",
+      "expectedCode": "JSON_DUPLICATE_NAME"
+    },
+    {
+      "rowId": "invalid-003",
+      "path": "invalid/canonicalization/invalid-utf8.json",
+      "target": "canonical",
+      "expectedCode": "JSON_UTF8_INVALID"
+    },
+    {
+      "rowId": "invalid-004",
+      "path": "invalid/canonicalization/lone-surrogate.json",
+      "target": "canonical",
+      "expectedCode": "JSON_LONE_SURROGATE"
+    },
+    {
+      "rowId": "invalid-005",
+      "path": "invalid/canonicalization/nan.json",
+      "target": "canonical",
+      "expectedCode": "JSON_NON_IJSON_NUMBER"
+    },
+    {
+      "rowId": "invalid-006",
+      "path": "invalid/canonicalization/negative-infinity.json",
+      "target": "canonical",
+      "expectedCode": "JSON_NON_IJSON_NUMBER"
+    },
+    {
+      "rowId": "invalid-007",
+      "path": "invalid/canonicalization/positive-infinity.json",
+      "target": "canonical",
+      "expectedCode": "JSON_NON_IJSON_NUMBER"
+    },
+    {
+      "rowId": "invalid-008",
+      "path": "invalid/canonicalization/trailing-document.json",
+      "target": "canonical",
+      "expectedCode": "JSON_TRAILING_CONTENT"
+    },
+    {
+      "rowId": "invalid-009",
+      "path": "invalid/canonicalization/unsafe-integer.json",
+      "target": "canonical",
+      "expectedCode": "JSON_INTEGER_UNSAFE"
+    },
+    {
+      "rowId": "invalid-010",
+      "path": "invalid/command/base-command-registry-hash-mismatch.json",
+      "target": "activation",
+      "expectedCode": "COMMAND_ACTIVATION_BASE_MISMATCH"
+    },
+    {
+      "rowId": "invalid-011",
+      "path": "invalid/completion/evidence-presence-completes.json",
+      "target": "completion",
+      "expectedCode": "COMPLETION_DUAL_TRUTH"
+    },
+    {
+      "rowId": "invalid-012",
+      "path": "invalid/completion/forged-browser-completion.json",
+      "target": "completion",
+      "expectedCode": "COMPLETION_AUTHORITY_REQUIRED"
+    },
+    {
+      "rowId": "invalid-013",
+      "path": "invalid/completion/operation-result-direct-write.json",
+      "target": "completion",
+      "expectedCode": "COMPLETION_DUAL_TRUTH"
+    },
+    {
+      "rowId": "invalid-014",
+      "path": "invalid/completion/orphan-hash-mismatch.json",
+      "target": "completion",
+      "expectedCode": "RECONCILIATION_HASH_MISMATCH"
+    },
+    {
+      "rowId": "invalid-015",
+      "path": "invalid/completion/orphan-self-completion.json",
+      "target": "completion",
+      "expectedCode": "RECONCILIATION_ORPHAN_CANNOT_COMPLETE"
+    },
+    {
+      "rowId": "invalid-016",
+      "path": "invalid/evidence/artifact-hash.json",
+      "target": "evidence",
+      "expectedCode": "EVIDENCE_ARTIFACT_HASH_MISMATCH"
+    },
+    {
+      "rowId": "invalid-017",
+      "path": "invalid/evidence/evidence-payload.json",
+      "target": "evidence",
+      "expectedCode": "EVIDENCE_PAYLOAD_HASH_MISMATCH"
+    },
+    {
+      "rowId": "invalid-018",
+      "path": "invalid/evidence/locator-traversal.json",
+      "target": "evidence",
+      "expectedCode": "EVIDENCE_LOCATOR_INVALID"
+    },
+    {
+      "rowId": "invalid-019",
+      "path": "invalid/evidence/missing-dependency-sha.json",
+      "target": "evidence",
+      "expectedCode": "EVIDENCE_PROVENANCE_INCOMPLETE"
+    },
+    {
+      "rowId": "invalid-020",
+      "path": "invalid/evidence/recursive-identity.json",
+      "target": "evidence",
+      "expectedCode": "EVIDENCE_RECURSIVE_IDENTITY"
+    },
+    {
+      "rowId": "invalid-021",
+      "path": "invalid/evidence/replayed-run-identity.json",
+      "target": "evidence",
+      "expectedCode": "EVIDENCE_REPLAY_CONFLICT"
+    },
+    {
+      "rowId": "invalid-022",
+      "path": "invalid/evidence/stale-verifier-hash.json",
+      "target": "evidence",
+      "expectedCode": "EVIDENCE_VERIFIER_HASH_MISMATCH"
+    },
+    {
+      "rowId": "invalid-023",
+      "path": "invalid/guidance/hint-completes.json",
+      "target": "guidance",
+      "expectedCode": "HINT_COMPLETION_FORBIDDEN"
+    },
+    {
+      "rowId": "invalid-024",
+      "path": "invalid/guidance/mutating-probe.json",
+      "target": "guidance",
+      "expectedCode": "PROBE_MUTATION_FORBIDDEN"
+    },
+    {
+      "rowId": "invalid-025",
+      "path": "invalid/guidance/optional-unavailable-passes.json",
+      "target": "guidance",
+      "expectedCode": "PROBE_OPTIONAL_FALSE_PASS"
+    },
+    {
+      "rowId": "invalid-026",
+      "path": "invalid/guidance/out-of-order-hint.json",
+      "target": "guidance",
+      "expectedCode": "HINT_ORDER_INVALID"
+    },
+    {
+      "rowId": "invalid-027",
+      "path": "invalid/guidance/required-unavailable-passes.json",
+      "target": "guidance",
+      "expectedCode": "PROBE_REQUIRED_UNAVAILABLE"
+    },
+    {
+      "rowId": "invalid-028",
+      "path": "invalid/guidance/unauthorized-reveal.json",
+      "target": "guidance",
+      "expectedCode": "HINT_REVEAL_FORBIDDEN"
+    },
+    {
+      "rowId": "invalid-029",
+      "path": "invalid/migration/base-registry-hash-mismatch.json",
+      "target": "migration",
+      "expectedCode": "BASE_REGISTRY_HASH_MISMATCH"
+    },
+    {
+      "rowId": "invalid-030",
+      "path": "invalid/migration/cycle.json",
+      "target": "migration",
+      "expectedCode": "MIGRATION_CYCLE"
+    },
+    {
+      "rowId": "invalid-031",
+      "path": "invalid/migration/family-collision.json",
+      "target": "migration",
+      "expectedCode": "SCHEMA_FAMILY_COLLISION"
+    },
+    {
+      "rowId": "invalid-032",
+      "path": "invalid/migration/lossy-edge.json",
+      "target": "migration",
+      "expectedCode": "MIGRATION_LOSSY_FORBIDDEN"
+    },
+    {
+      "rowId": "invalid-033",
+      "path": "invalid/migration/unknown-version.json",
+      "target": "migration",
+      "expectedCode": "SCHEMA_VERSION_UNREADABLE"
+    },
+    {
+      "rowId": "invalid-034",
+      "path": "invalid/openapi/duplicate-key.yaml",
+      "target": "openapi",
+      "expectedCode": "OPENAPI_YAML_DUPLICATE_KEY"
+    },
+    {
+      "rowId": "invalid-035",
+      "path": "invalid/openapi/error-set-drift.json",
+      "target": "openapi",
+      "expectedCode": "OPENAPI_ERROR_CONTRACT_MISMATCH"
+    },
+    {
+      "rowId": "invalid-036",
+      "path": "invalid/openapi/missing-authority.json",
+      "target": "openapi",
+      "expectedCode": "OPERATION_AUTHORITY_MISSING"
+    },
+    {
+      "rowId": "invalid-037",
+      "path": "invalid/openapi/missing-idempotency.json",
+      "target": "openapi",
+      "expectedCode": "OPERATION_IDEMPOTENCY_MISSING"
+    },
+    {
+      "rowId": "invalid-038",
+      "path": "invalid/openapi/missing-version-response.json",
+      "target": "openapi",
+      "expectedCode": "OPENAPI_VERSION_NEGOTIATION_INCOMPLETE"
+    },
+    {
+      "rowId": "invalid-039",
+      "path": "invalid/openapi/orphan-asyncapi.json",
+      "target": "openapi",
+      "expectedCode": "ASYNCAPI_WITHOUT_CHANNEL"
+    },
+    {
+      "rowId": "invalid-040",
+      "path": "invalid/openapi/orphan-operation.json",
+      "target": "openapi",
+      "expectedCode": "OPENAPI_OPERATION_SET_MISMATCH"
+    },
+    {
+      "rowId": "invalid-041",
+      "path": "invalid/openapi/raw-sql-query.json",
+      "target": "openapi",
+      "expectedCode": "OPENAPI_RAW_QUERY_FORBIDDEN"
+    },
+    {
+      "rowId": "invalid-042",
+      "path": "invalid/openapi/remote-ref.json",
+      "target": "openapi",
+      "expectedCode": "OPENAPI_REF_FORBIDDEN"
+    },
+    {
+      "rowId": "invalid-043",
+      "path": "invalid/openapi/request-shape-drift.json",
+      "target": "openapi",
+      "expectedCode": "OPENAPI_REQUEST_CONTRACT_MISMATCH"
+    },
+    {
+      "rowId": "invalid-044",
+      "path": "invalid/openapi/response-shape-drift.json",
+      "target": "openapi",
+      "expectedCode": "OPENAPI_RESPONSE_CONTRACT_MISMATCH"
+    },
+    {
+      "rowId": "invalid-045",
+      "path": "invalid/operation/duplicate-method-path.json",
+      "target": "operation",
+      "expectedCode": "OPERATION_DUPLICATE"
+    },
+    {
+      "rowId": "invalid-046",
+      "path": "invalid/operation/missing-authorization.json",
+      "target": "operation",
+      "expectedCode": "OPERATION_AUTHORIZATION_INCOMPLETE"
+    },
+    {
+      "rowId": "invalid-047",
+      "path": "invalid/operation/missing-evidence-rule.json",
+      "target": "operation",
+      "expectedCode": "OPERATION_EVIDENCE_INCOMPLETE"
+    },
+    {
+      "rowId": "invalid-048",
+      "path": "invalid/operation/missing-taxonomy.json",
+      "target": "operation",
+      "expectedCode": "OPERATION_TAXONOMY_INCOMPLETE"
+    },
+    {
+      "rowId": "invalid-049",
+      "path": "invalid/operation/physical-module-role.json",
+      "target": "operation",
+      "expectedCode": "OPERATION_ROLE_NOT_NEUTRAL"
+    },
+    {
+      "rowId": "invalid-050",
+      "path": "invalid/promotion-trust/fixture-hash-drift.json",
+      "target": "promotion",
+      "expectedCode": "PROMOTION_FIXTURE_HASH_MISMATCH"
+    },
+    {
+      "rowId": "invalid-051",
+      "path": "invalid/promotion-trust/hidden-common-grain.json",
+      "target": "promotion",
+      "expectedCode": "PROMOTION_COMMON_GRAIN_FORBIDDEN"
+    },
+    {
+      "rowId": "invalid-052",
+      "path": "invalid/promotion-trust/missing-limitation.json",
+      "target": "promotion",
+      "expectedCode": "PROMOTION_LIMITATION_REQUIRED"
+    },
+    {
+      "rowId": "invalid-053",
+      "path": "invalid/ref/missing-verifier.json",
+      "target": "reference",
+      "expectedCode": "REF_TARGET_MISSING"
+    },
+    {
+      "rowId": "invalid-054",
+      "path": "invalid/ref/path-traversal.json",
+      "target": "reference",
+      "expectedCode": "REF_TRAVERSAL_FORBIDDEN"
+    },
+    {
+      "rowId": "invalid-055",
+      "path": "invalid/ref/prerequisite-cycle.json",
+      "target": "reference",
+      "expectedCode": "REF_CYCLE"
+    },
+    {
+      "rowId": "invalid-056",
+      "path": "invalid/ref/remote-ref.json",
+      "target": "reference",
+      "expectedCode": "REF_REMOTE_FORBIDDEN"
+    },
+    {
+      "rowId": "invalid-057",
+      "path": "invalid/ref/schema-hash-mismatch.json",
+      "target": "reference",
+      "expectedCode": "REF_SCHEMA_HASH_MISMATCH"
+    },
+    {
+      "rowId": "invalid-058",
+      "path": "invalid/schema/missing-required.json",
+      "target": "schema",
+      "expectedCode": "SCHEMA_REQUIRED_PROPERTY"
+    },
+    {
+      "rowId": "invalid-059",
+      "path": "invalid/schema/unknown-field.json",
+      "target": "schema",
+      "expectedCode": "SCHEMA_UNKNOWN_PROPERTY"
+    },
+    {
+      "rowId": "invalid-060",
+      "path": "invalid/schema/wrong-type.json",
+      "target": "schema",
+      "expectedCode": "SCHEMA_TYPE_MISMATCH"
+    },
+    {
+      "rowId": "invalid-061",
+      "path": "invalid/security/injection-field.json",
+      "target": "evidence",
+      "expectedCode": "CONTRACT_INJECTION_FIELD_FORBIDDEN"
+    },
+    {
+      "rowId": "invalid-062",
+      "path": "invalid/state/duplicate-effect.json",
+      "target": "state",
+      "expectedCode": "IDEMPOTENCY_DUPLICATE_EFFECT"
+    },
+    {
+      "rowId": "invalid-063",
+      "path": "invalid/state/idempotency-payload-conflict.json",
+      "target": "state",
+      "expectedCode": "IDEMPOTENCY_KEY_REUSE"
+    },
+    {
+      "rowId": "invalid-064",
+      "path": "invalid/state/illegal-transition.json",
+      "target": "state",
+      "expectedCode": "STATE_TRANSITION_FORBIDDEN"
+    },
+    {
+      "rowId": "invalid-065",
+      "path": "invalid/state/stale-version.json",
+      "target": "state",
+      "expectedCode": "PROGRESS_VERSION_CONFLICT"
+    }
+  ]
+}
