@@ -25,12 +25,17 @@ pipeline seams read-only and turn the corresponding Phase 3 security RED familie
 
 - Python 3.12.3, Darwin/arm64/macOS-build and hash-complete runtime lock preflight.
 - UDS owner-only default; explicit 127.0.0.1 ephemeral fallback; strict admission before parsing.
-- Released Issue #8 typed operation/command inputs only.
+- Released API/operation/request schema versions and the exact eight zero-argument lab commands
+  only; no synthetic command-version or generated binding.
 - Pinned read-only entrypoints, Python `-I`, generated workspace dbt configuration.
 - Descriptor-owned workspace paths, Seatbelt write/read/network policy and fail-closed probe.
 - Complete bounded process-tree execution and sanitized output.
 - Phase 1-admitted Darwin descendant control; no aggregate quota or cleanup claim based only on
   periodic ancestry polling.
+- Released per-command ceilings are 120 seconds and 536,870,912 bytes; released workspace quota is
+  268,435,456 bytes. The runner may be stricter but never wider.
+- Keep service not-ready unless the exact I5-04 activation path validates with measured
+  registry/fragment/instance hashes and the 16,384-byte private request ceiling is active.
 
 ## Architecture
 
@@ -48,12 +53,15 @@ BFF-only request
 
 ## Related Code Files
 
-- Create: `apps/lab-runner/pyproject.toml`
-- Create: `apps/lab-runner/requirements/runner-py312-macos-arm64.{in,lock,metadata.json}`
-- Create: `apps/lab-runner/config/runtime-policy-v1.toml`
+- Extend only if behavior packaging requires it: `apps/lab-runner/pyproject.toml`; any change
+  invalidates the Phase 3 RED attestation and requires a fresh pre-behavior RED commit
+- Consume/verify: `apps/lab-runner/requirements/runner-py312-macos-arm64.{in,lock,metadata.json}`
+- Extend only with re-attested RED: `apps/lab-runner/config/runtime-policy-v1.toml`
+- Consume/rehash: `apps/lab-runner/config/command-owner-activation-i5-04-v1.json`
 - Create: `apps/lab-runner/src/lab_runner/{__init__,__main__,contract,registry,transport,containment,launcher,workspace,process,service}.py`
 - Create: `apps/lab-runner/tests/integration/test_bounded_pipeline.py`
-- Modify: `orchestration/airflow/callables/pipeline.py` only to add the characterized runner-reserved path refusal before `_run`
+- Conditional modify: `orchestration/airflow/callables/pipeline.py` only if Phase 1 still proves
+  the characterized runner-reserved path refusal is necessary before `_run`
 - Consume read-only: Phase 1 seams, Issue #6 release schema, Issue #8 release contracts
 - Delete: none
 
@@ -65,30 +73,38 @@ then quotas/output/descendants. A later class cannot be used to hide an earlier 
 
 ## Implementation Steps
 
-1. Compile a wheel-only hash-complete app lock and metadata from the exact supported host/runtime;
-   bootstrap below an app-owned private tool root keyed by lock hash. No runtime install/network.
-2. Parse `runtime-policy-v1.toml` with strict unknown-field rejection and verify its own hash from
-   the released-contract lock.
-3. Implement contract/registry loading. Resolve only the exact eight commands and construct fixed
+1. Verify the Phase 3 wheel-only hash-complete app lock and metadata on the exact supported
+   host/runtime; bootstrap below an app-owned private tool root keyed by lock hash. No runtime
+   install/network. Any lock or gate-scaffold change requires a new contemporaneous RED commit
+   before behavior resumes.
+2. Parse `runtime-policy-v1.toml` with strict unknown-field rejection, enforce exactly
+   `RUNNER_REQUEST_BODY_LIMIT_BYTES=16384`, and verify its own hash from the released-contract lock.
+3. Implement contract/registry loading through the released readers. Resolve only the exact eight
+   zero-argument commands and construct fixed
    descriptors with absolute interpreter/entrypoint/hash, argv template, env keys, CWD role,
    resource class, write set and network deny.
 4. Implement workspace allocation through directory FDs, exclusive marker/nonce, private modes,
    type/link/device/inode checks, relative safe operations and marker-verified cleanup refusal.
-5. Implement UDS service and explicit loopback fallback. Enforce exact request admission before
-   body read or audit/operation allocation; bind secrets to launch only and exclude them from child
-   and evidence roots.
+5. Implement UDS service and explicit loopback fallback. Enforce the 16,384-byte request policy
+   by rejecting invalid framing or an excessive declared length before body read, stopping a
+   bounded streaming read at the ceiling, then validating the released request schema before
+   audit/operation allocation; bind secrets to launch only and exclude them from child/evidence
+   roots.
 6. Implement the separate launcher: inherit only approved descriptors, `fchdir`, apply rlimits,
    close other FDs, start session/process group, and `execve` Seatbelt + pinned command.
 7. Generate minimal Seatbelt profiles from fixed policy paths. Startup functional probes prove
    base read-only, workspace write, home/secret/network denial, required imports and child cleanup.
 8. Implement the Phase 1-admitted fork/reparent control, PID/start tracking, ≤100 ms aggregate
    CPU/RSS/disk/process monitoring, output limits, secret/private-path detection, TERM/KILL/reap
-   and typed failure results. Fail readiness if any descendant becomes unaccounted.
+   and typed failure results. Enforce the released memory/workspace ceilings and fail readiness if
+   any descendant becomes unaccounted.
 9. Add adapters that invoke current generator/loader/dbt/export with workspace paths only. Generate
    a dbt profile below the generation; never write base profiles/targets/logs/packages.
-10. Add the characterized Airflow callable guard for every explicit mutable/config path. Reject
-    lexical or resolved runner-reserved paths before `_run`; preserve expert defaults and DAG
-    import/task order. Turn the learner-targeted direct-call RED test GREEN.
+10. If Phase 1 still proves the Airflow seam necessary, add the characterized guard for every
+    explicit mutable/config path. Reject lexical or resolved runner-reserved paths before `_run`;
+    preserve expert defaults and DAG import/task order. Otherwise leave the file byte-identical.
+    In either case, turn the learner-targeted direct-call RED test GREEN through the narrowest
+    already-admitted behavior.
 11. Turn transport/registry/path/env/network/quota/output/descendant/base RED suites GREEN.
 
 ## Refactor

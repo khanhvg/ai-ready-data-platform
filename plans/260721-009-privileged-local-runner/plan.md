@@ -14,14 +14,24 @@ source: skill
 planningMode: "workflow-equivalent-deep-tdd-planner-only"
 planningModel: "gpt-5.6-sol"
 modelReasoningEffort: "xhigh"
-integrationBaseSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
+originalPlanningBaseSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
+amendmentInputSha: "5cea5ce248b49ff8741af1b1e65f8ac2eb64698f"
 issue6ReleaseSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
-issue8ReleasedStageASha: null
-implementationBlockedBy: "issue-8-released-stage-a-sha"
-validationInputSha: "de66ad3da6a4f6ed49059e547689462f8269bca5"
-validationStatus: "INDEPENDENT_VALIDATION_PASS_NOT_READINESS"
-validationReport: "validation/independent-validation-report.md"
-implementationReadiness: "BLOCKED_FOR_COOK"
+issue8Pr23MergeSha: "5c2244c2c860234d0df49cf0a42ad950c6495717"
+issue8ReleasedStageASha: "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9"
+issue8ReleaseTree: "27fc3667ef37892dad5c3fbfd76769f65a0760be"
+requiredImplementationAncestorSha: "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9"
+dependencyCompatibility: "PASS"
+runnerActivationInstancePath: "apps/lab-runner/config/command-owner-activation-i5-04-v1.json"
+runnerRequestBodyLimitBytes: 16384
+implementationHeadPolicy: "record-the-actual-clean-remote-equal-descendant-after-it-exists"
+priorValidationInputSha: "de66ad3da6a4f6ed49059e547689462f8269bca5"
+validationStatus: "PASS"
+validationReport: "validation/release-amendment-validation-report.md"
+readinessAuditReport: "audit/release-readiness-audit-2026-07-22.md"
+implementationReadiness: "READY_TO_COOK"
+cookScope: "whole-plan"
+sharedContractLease: "NO_WRITE_OVERLAP_READ_ONLY_STAGE_A_CONSUMPTION"
 ---
 
 # I5-04 — Build isolated privileged local runner
@@ -35,11 +45,12 @@ entrypoints, confines children with a functional macOS Seatbelt (`sandbox-exec`)
 all mutation below an owned private workspace. Unsupported containment means disabled runner,
 never a weaker fallback.
 
-This is an independently validated planning artifact, not a readiness or implementation
-authorization. No phase authorizes implementation. Even dependency-independent
-characterization/fixture work may not enter `$ck:cook` until Issue #8 publishes an exact
-merged/released Stage A SHA and this issue subsequently passes a fresh dependency-aware readiness
-audit.
+This dependency-release amendment and fresh independent readiness audit are planning/audit only.
+The prior validation and blocked readiness reports remain immutable historical evidence. The
+amended plan now passes strict validation and is ready to cook as one six-phase sequence from an
+implementation base that contains exact released Stage A. Readiness does not implement behavior,
+waive RED-first ordering, authorize a shared-contract write, or approve a future implementation
+head.
 
 ## Phases
 
@@ -55,11 +66,23 @@ audit.
 ## Dependencies
 
 - **Satisfied:** Issue #6/I5-01 is shipped and verified at exact merge
-  `24be3b34c6b0fcdbd07c5800dcab349054e34713`, which is this plan's immutable input.
-- **Hard implementation block:** Issue #8/I5-03 is OPEN and has no released Stage A SHA. Phase 2
-  must bind its exact merge SHA, contract paths/versions/hashes, generated-type procedure,
-  operation/command matrix, evidence schema, and command-registry activation seam. Missing or
-  incompatible release data is `RUNNER_DEPENDENCY_NOT_RELEASED`; do not create a local substitute.
+  `24be3b34c6b0fcdbd07c5800dcab349054e34713`.
+- **Released:** Issue #8/I5-03 Stage A is released at integration SHA
+  `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`, tree
+  `27fc3667ef37892dad5c3fbfd76769f65a0760be`. Its ordered parents are PR #23 merge
+  `5c2244c2c860234d0df49cf0a42ad950c6495717` and PR #25 approved head
+  `734cf637a20ae186597e23d96a194ed4e30220ea`; the live integration branch points to the release.
+- **Dependency compatibility:** PASS for read-only command-owner activation, version, operation,
+  completion, lab, OpenAPI, and evidence seams. `fitness-result-v2` is reusable by I5-04 through an
+  I5-04-owned activation instance; no shared-contract write or generated binding is required.
+- **Runner-local bindings:** the activation instance is exactly
+  `apps/lab-runner/config/command-owner-activation-i5-04-v1.json`; it binds the released registry
+  hash to the actual I5-04 fragment hash only after that fragment exists. The private transport
+  rejects any body over exactly 16,384 bytes before JSON parsing or operation/audit allocation.
+  These are stricter Issue #9-owned policies, not shared-contract changes or invented future SHAs.
+- **Lease:** Issue #8 Stage B planning ended blocked without a commit or write. Issue #9 consumes
+  released Stage A read-only and writes only its own runner paths. There is no real write overlap;
+  any later overlapping write lease is a fresh STOP.
 - **Planning authority only:** owner comment
   <https://github.com/khanhvg/ai-ready-data-platform/issues/5#issuecomment-5036142770> permits
   parallel planning but not dependency bypass.
@@ -72,16 +95,20 @@ audit.
 - [Requirements, risks, and threat traceability](./requirements-risk-threat-traceability.md)
 - [Verification, evidence, and rollback](./verification-evidence-and-rollback.md)
 - [Exact planned paths and admission gates](./planned-paths-and-admissions.md)
+- [Dependency-release amendment](./release-amendment.md)
 - [Independent validation report](./validation/independent-validation-report.md)
+- [Release-amendment validation](./validation/release-amendment-validation-report.md)
+- [Fresh release readiness audit](./audit/release-readiness-audit-2026-07-22.md)
 
 ## Phase Split and Cook Gate
 
-- Phase 1 is dependency-independent characterization and malicious-fixture design in this plan.
-  It defines tests and proves existing seams; it does not change behavior. Validation does not
-  authorize cooking it while the Issue #8 release is absent.
-- Phases 2-6 are hard-blocked on the exact released Issue #8 Stage A SHA.
-- Readiness must report **BLOCKED_FOR_COOK** while that SHA is absent, even if planning and
-  independent validation pass.
+- `COOK_SCOPE=whole-plan`: all six phases may proceed in order from an exact clean implementation
+  base containing `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`.
+- Phase 1 must first prove the host containment and non-poll-only descendant-control admissions.
+  Phase 2 then locks released bytes plus the two exact runner-local policy decisions above.
+- Phase 3 must commit contemporaneous RED assertions through the real public runner paths before
+  any Phase 4/5 behavior. Every later phase remains gated by its predecessor; readiness is not
+  permission to skip, parallelize, or weaken those gates.
 
 ## Success Criteria
 
@@ -91,7 +118,8 @@ audit.
 - Exact future gate is
   `make runner-test runner-security-test runner-race-test data-contracts-check` plus the S3 scans
   and evidence checks defined in the verification companion.
-- Human approval remains bound to the exact independently reviewed head before merge.
+- Two fresh independent exact-head reviews and separate human approval of that same exact head are
+  mandatory before merge; any byte change invalidates all three attestations.
 
 ## Validation Log
 
@@ -105,9 +133,9 @@ audit.
 - **Verification tier:** Full (six phases; Fact Checker, Flow Tracer, Scope Auditor, Contract
   Verifier).
 - **Claims checked:** 96; **verified after fixes:** 96; **failed:** 0; **unverified:** 0.
-- **Decision:** Plan validation passes with objective fixes. This is
-  `INDEPENDENT_VALIDATION_PASS_NOT_READINESS`; Issue #8's exact released Stage A SHA remains null
-  and implementation remains `BLOCKED_FOR_COOK`.
+- **Decision at that historical input:** Plan validation passed with objective fixes and recorded
+  the then-unreleased dependency state. The dependency-release amendment supersedes that external
+  fact and invalidates the prior validation for the amended bytes.
 - **Phase propagation:** Phases 1-4 and the design/verification companions now carry exact
   dependency, transport, version, descendant-control, RED-ID, evidence-redaction, path, and tool
   admissions. Phases 5-6 retain the existing fencing/release/rollback boundary and consume the
@@ -120,5 +148,28 @@ audit.
 - Reconciled stale or ambiguous references: validator/base provenance, secret layout, version
   negotiation, raw-vs-canonical argv evidence, and descendant accounting admission.
 - Unresolved contradictions: 0.
-- External implementation dependency: intentionally unresolved and machine-blocking;
-  `issue-8-released-stage-a-sha`.
+- Historical external dependency finding: unresolved at the 2026-07-21 validation input; superseded
+  by the exact Stage A release pin below.
+
+### Dependency-Release Amendment — 2026-07-22
+
+- **Input:** exact clean plan/audit head `5cea5ce248b49ff8741af1b1e65f8ac2eb64698f`.
+- **Released dependency:** Issue #8 Stage A integration
+  `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`; PR #23 merge
+  `5c2244c2c860234d0df49cf0a42ad950c6495717`; composition-fix PR #25 merge and
+  release tree `27fc3667ef37892dad5c3fbfd76769f65a0760be`.
+- **Compatibility:** PASS for the released generic activation/version/evidence seam without a
+  shared-contract write. The exact read-only files, versions, schema IDs, hashes, commands and
+  boundaries are pinned in Phase 2 and the design companion.
+- **Resolved runner policy:** activation path
+  `apps/lab-runner/config/command-owner-activation-i5-04-v1.json`; private body ceiling 16,384
+  bytes. Its content hash and the fragment hash are recorded from actual future bytes, never
+  fabricated in advance. Stage A contains no generated-binding procedure or output list, so no
+  generated path is allowed.
+- **Historical reports:** `validation/independent-validation-report.md` and
+  `audit/readiness-audit-report.md` describe their exact earlier inputs and are not rewritten.
+- **Validation/readiness:** strict amendment validation and a fresh dependency-aware audit PASS;
+  the whole ordered plan is ready to cook. See the two current reports linked above.
+- **Boundary:** plan/audit only; implementation, product tests, PR/merge, credentials, and
+  cloud/AWS/Terraform actions were not performed.
+- **Next:** `$ck:cook` Phase 1 from a clean exact Stage A-containing implementation base.

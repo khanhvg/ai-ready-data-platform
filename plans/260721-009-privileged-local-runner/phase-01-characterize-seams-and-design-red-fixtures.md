@@ -12,9 +12,9 @@ effort: "1 implementation day"
 ## Overview
 
 Dependency-independent pre-implementation work. Freeze current expert behavior and design harmless
-malicious fixtures before any runner behavior exists. This phase is fully plan-able now, but the
-issue pipeline must not authorize even this phase for cook until the exact Issue #8 Stage A release,
-independent validation, and readiness gates clear.
+malicious fixtures before any runner behavior exists. The release amendment has passed fresh
+strict validation and dependency-aware readiness; this phase is the mandatory first whole-plan
+cook step and still must satisfy its own fail-closed host capability admissions.
 
 ## Context Links
 
@@ -116,5 +116,6 @@ unbounded descendant is itself a security defect and blocks the phase.
 
 ## Next Steps
 
-Proceed only to Phase 2 after the exact released Issue #8 Stage A SHA exists and is freshly
-verified. Planning/validation may complete while it is absent; cook may not start.
+Proceed only to Phase 2 after freshly verifying released Stage A integration SHA
+`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` and completing every characterization/capability
+criterion above. Readiness does not allow bypassing this phase.

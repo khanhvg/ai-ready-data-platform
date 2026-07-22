@@ -4,9 +4,9 @@
 
 This file expands every brace/glob shorthand used elsewhere in the plan. It is the exact future
 tracked-path allow-list for Issue #9. A path not listed here requires a new independently validated
-plan/readiness decision. This is planning only: none of the future-create paths exists at validation
-input `de66ad3da6a4f6ed49059e547689462f8269bca5`, and none may be created before the exact released
-Issue #8 Stage A SHA and fresh readiness authority exist.
+plan/readiness decision. This is planning only: none of the future-create paths exists at amendment
+input `5cea5ce248b49ff8741af1b1e65f8ac2eb64698f`. The current validation/readiness audit authorizes
+the whole ordered plan, subject to every phase-local RED, containment, evidence, and review gate.
 
 ## Exact Future Create Paths
 
@@ -18,6 +18,7 @@ Issue #8 Stage A SHA and fresh readiness authority exist.
 - `apps/lab-runner/requirements/runner-py312-macos-arm64.metadata.json`
 - `apps/lab-runner/config/runtime-policy-v1.toml`
 - `apps/lab-runner/config/released-contract-lock.json`
+- `apps/lab-runner/config/command-owner-activation-i5-04-v1.json`
 - `apps/lab-runner/src/lab_runner/__init__.py`
 - `apps/lab-runner/src/lab_runner/__main__.py`
 - `apps/lab-runner/src/lab_runner/contract.py`
@@ -56,7 +57,6 @@ Issue #8 Stage A SHA and fresh readiness authority exist.
 ### Unit, security, race and integration tests
 
 - `apps/lab-runner/tests/unit/test_released_contract_lock.py`
-- `apps/lab-runner/tests/unit/test_generated_types.py`
 - `apps/lab-runner/tests/unit/test_transport_policy.py`
 - `apps/lab-runner/tests/unit/test_runtime_policy.py`
 - `apps/lab-runner/tests/unit/test_workspace_policy.py`
@@ -85,20 +85,25 @@ Issue #8 Stage A SHA and fresh readiness authority exist.
 - `apps/lab-runner/tests/integration/test_rollback.py`
 - `apps/lab-runner/tests/integration/test_full_runner_flow.py`
 
-## Conditional Generated Binding Admission
+## No Generated Binding Admission
 
-No generated binding path is pre-authorized by a guessed contract. If and only if the released
-Issue #8 Stage A handoff mandates generation, Phase 2 must record the exact generator command,
-input schemas/hashes, output file list and output hashes in `released-contract-lock.json` before
-any file is created below `apps/lab-runner/src/lab_runner/generated/`. A wildcard directory is not
-write authority. Any output not named by that released deterministic procedure is refused and
-requires revalidation.
+Released Stage A contains no generated-binding command, output list, output hashes, or generator
+path. Therefore no file below `apps/lab-runner/src/lab_runner/generated/` and no generated-type
+test is authorized. The runner consumes the exact released schemas/readers directly. Any future
+proposal to generate bindings requires a new exact released authority and fresh validation; a
+wildcard directory never grants write authority.
 
-## Exact Existing Modify Path
+The released generic activation seam is compatible. The only admitted I5-04 instance is
+`apps/lab-runner/config/command-owner-activation-i5-04-v1.json`. Its base-registry hash is the
+released pin; its fragment and instance hashes are computed from actual future bytes and locked
+then. It is not copied to or registered in any shared-contract path.
+
+## Exact Existing Conditional Modify Path
 
 - `orchestration/airflow/callables/pipeline.py` — only the characterized pre-`_run` refusal for
   explicit runner-reserved learner paths. Default signatures, expert paths, command lists, env
-  behavior, DAG import/order and every other callable remain unchanged.
+  behavior, DAG import/order and every other callable remain unchanged. If Phase 1 proves the
+  refusal is unnecessary, this file remains byte-identical.
 
 No other tracked existing path may be modified.
 
@@ -119,8 +124,46 @@ No other tracked existing path may be modified.
 - `learning/contracts/command-owner-registry-v1.json`
 - `learning/contracts/schema-version-registry.json`
 - `learning/contracts/fitness-result-v1.schema.json`
-- Exact additional Issue #8 contract paths only after its owner-published released Stage A handoff
-  binds their paths, versions and hashes.
+
+The following read-only inputs exist in exact Stage A Git tree
+`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`; the future implementation head must contain those
+exact bytes by ancestry before any Issue #9 write:
+
+- `versions.md`
+- `learning/contracts/learning-contract-set-v1.json`
+- `learning/contracts/learning-contract-set-v1.schema.json`
+- `learning/contracts/learning-contract-version-registry-v1.json`
+- `learning/contracts/learning-contract-version-registry-v1.schema.json`
+- `learning/contracts/canonicalization-v1.json`
+- `learning/contracts/make-input-contract-v1.json`
+- `learning/contracts/command-owner-activation-v1.schema.json`
+- `learning/contracts/command-owner-activation-i5-03-v1.json`
+- `learning/contracts/operation-matrix-v1.json`
+- `learning/contracts/operation-matrix-v1.schema.json`
+- `learning/contracts/completion-reconciliation-v1.json`
+- `learning/contracts/completion-reconciliation-v1.schema.json`
+- `learning/contracts/fitness-result-v2.schema.json`
+- `learning/contracts/learning-evidence-v1.schema.json`
+- `learning/contracts/lab-v1.schema.json`
+- `learning/contracts/lesson-v1.schema.json`
+- `learning/contracts/progress-v1.schema.json`
+- `learning/contracts/promotion-trust-learning-manifest-v1.schema.json`
+- `learning/labs/promotion-trust/lab-v1.json`
+- `learning/lessons/promotion-trust/lesson-v1.json`
+- `learning/manifests/promotion-trust-v1.json`
+- `contracts/openapi/learning-platform-v1.yaml`
+- `contracts/openapi/learning-platform-openapi-profile-v1.schema.json`
+- `contracts/openapi/learning-platform-problem-details-v1.schema.json`
+- `scripts/learning_contracts/schema.py`
+- `scripts/learning_contracts/registry.py`
+- `scripts/learning_contracts/openapi.py`
+- `scripts/learning_contracts/state.py`
+- `scripts/learning_contracts/completion.py`
+- `scripts/learning_contracts/check.py`
+- `scripts/learning_contracts/fitness.py`
+- `scripts/learning_contracts/evidence.py`
+- `scripts/learning_contracts/canonical.py`
+- `mk/issue-5/i5-03.mk`
 
 Shared-contract inputs remain read-only. In particular, no Issue #9 change may write
 `learning/contracts/`, `contracts/`, `scripts/golden/`, another `mk/issue-5/` fragment, root
@@ -137,13 +180,13 @@ make runner-race-test
 make data-contracts-check
 ```
 
-Current admission at validation input:
+Released admission at Stage A SHA:
 
 | Command | Current proof | Future admission |
 |---|---|---|
-| `make runner-test` | Intentionally absent; registry row is I5-04 `future-owner` | Issue #8 released registry activation plus exact `mk/issue-5/i5-04.mk` recipe |
-| `make runner-security-test` | Intentionally absent; registry row is I5-04 `future-owner` | Same release gate; includes every stable RED family and S3 matrix row |
-| `make runner-race-test` | Intentionally absent; registry row is I5-04 `future-owner` | Same release gate; deterministic barriers, no timing-only correctness |
+| `make runner-test` | Recipe absent; exact base row is I5-04 `future-owner`, `runner-test`, S3 | Exact I5-04 fragment plus the admitted activation instance selecting `fitness-result-v2` |
+| `make runner-security-test` | Recipe absent; exact base row is I5-04 `future-owner`, `runner-security`, S3 | Same activation gate; includes every stable RED family and S3 matrix row |
+| `make runner-race-test` | Recipe absent; exact base row is I5-04 `future-owner`, `runner-race`, S3 | Same activation gate; deterministic barriers, no timing-only correctness |
 | `make data-contracts-check` | Exists in `mk/issue-5/i5-01.mk` and is included by root `Makefile` | Remains read-only and unchanged |
 
 ## Host and Tool Admission
@@ -167,6 +210,6 @@ descriptor identities, private modes, live fence epochs and the rollback rules i
 
 ## Unresolved Questions
 
-None for plan validation. The exact Issue #8 released Stage A SHA, released contract path set and
-conditional generated binding list remain explicit external readiness blockers, not placeholders
-that Issue #9 may fill.
+None for readiness. The activation path is exact, the private request ceiling is 16,384 bytes,
+and generated output is denied. Actual future file/head hashes are measured after the bytes exist;
+they are not placeholders or authority to predict a SHA.

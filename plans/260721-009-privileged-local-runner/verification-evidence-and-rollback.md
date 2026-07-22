@@ -2,12 +2,15 @@
 
 ## TDD Order
 
-1. Record exact implementation input, Issue #6 release, Issue #8 released Stage A SHA, contract
-   versions/hashes, tested host tuple, and protected-path hashes.
+1. Record exact implementation input, Issue #6 release, Stage A release
+   `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`, release tree, contract versions/hashes, tested host
+   tuple, and protected-path hashes.
 2. Commit Phase 1 characterization and test fixtures before behavior.
-3. Commit all Phase 3 security/race/crash/idempotency assertions RED with stable IDs. A test is
-   valid RED only when it reaches the intended missing/refusing behavior and cannot pass because a
-   tool, fixture, command, contract, or setup silently skipped.
+3. Invoke all Phase 3 security/race/crash/idempotency assertions through the real public
+   `make runner-test`, `make runner-security-test`, or `make runner-race-test` path and commit the
+   test-only RED tree/evidence before runner behavior. A valid RED reaches its intended fixture
+   marker and missing/refusing behavior; a helper-only invocation or missing tool, fixture,
+   command, contract, setup, skip, or early failure cannot count.
 4. Implement the smallest Phase 4/5 behavior to turn each class GREEN. Do not weaken expectations,
    mark required tests optional, or use a fake local Issue #8 contract.
 5. Run Phase 6 focused gates, then the exact aggregate gate and S3 scans. Preserve failures.
@@ -61,7 +64,7 @@ fixture/setup failure, skip, xfail, or failure before the named marker is not va
 | `RED-OUT-001` | stdout/stderr flood | Crossing either 2 MiB stream cap terminates the operation; retained preview is at most 128 KiB per stream |
 | `RED-OUT-002` | Binary, secret and private-path output canaries | Publication refuses raw content; only permitted digest/count/typed reason can remain |
 | `RED-DESC-001` | TERM-ignore grandchild | TERM then KILL reaps every admitted descendant; postcheck finds none |
-| `RED-DESC-002` | Rapid double-fork/reparent plus `setsid` barrier | Phase 1-admitted mechanism accounts for and reaps it without a lucky poll; otherwise readiness fails |
+| `RED-DESC-002` | Fast-exit parent plus rapid double-fork/reparent and `setsid` barrier | Phase 1-admitted mechanism accounts for and reaps it without a lucky poll; otherwise readiness fails |
 | `RED-BASE-001` | Create/modify/chmod/delete/rename against Git base | Containment denies every mutation and protected hashes remain exact |
 | `RED-BASE-002` | Hardlink/symlink from workspace to base/protected file | Link operation/use refuses and both source and target identities/hashes remain exact |
 | `RED-BROWSER-001` | Forged/missing/duplicate Host and DNS-rebinding host | Request is rejected before body read and operation/audit allocation |
@@ -101,7 +104,7 @@ target. All are required and non-interactive; missing tools or dependencies are 
 
 ### Gate contents
 
-- `runner-test`: released-contract pin/type generation check, registry/unit/state/idempotency,
+- `runner-test`: released-contract pin/direct-reader/activation check, registry/unit/state/idempotency,
   existing seam characterization, one bounded real `small`/`42`
   prepare→generate→load→dbt→export→verify→reset integration, and final no-child/no-base-diff.
 - `runner-security-test`: all interpreter/import/startup/argv/path/env/network/quota/output/
@@ -164,20 +167,27 @@ Each public gate generates a collision-resistant run ID and writes only below:
   artifacts/{junit,red-manifest,s3-scan,resource,process-tree,transport,race,crash,release,rollback}/**
 ```
 
-The Issue #8 released evidence schema is authoritative. Phase 2 must prove it supports I5-04 and
-the issue body; otherwise STOP. At minimum the manifest must carry:
+The released evidence contracts are authoritative and compatible without a shared write:
 
-- `schemaVersion: fitness-result-v1`, command ID, owner, status/failure code/remediation;
-- exact public gate command; canonical child argv expressed only with released typed values,
-  repository-relative entrypoint/runtime IDs and workspace-role locators; digest of the actual
-  executed argv; UTC start/finish/duration; tool/runtime/OS/architecture/memory versions;
-- immutable issue input, Issue #6 release, Issue #8 Stage A release, tested-tree/output and future
-  attestation/merge identities without recursive containing-commit claim;
-- contract/schema/registry/entrypoint/runtime-lock/fixture/config hashes;
-- generated run/workspace/operation/release IDs and sanitized parameters;
-- assertion IDs/results, process/resource quota summary, current/previous release digests;
-- artifacts with repository-relative or evidence-root-relative locator, media type, size, SHA-256;
-- redaction/retention class, secret/private-path scan result, rollback result, and residual risks.
+- Each public runner gate emits a closed `fitness-result-v2` envelope with owner `I5-04`, an exact
+  activated command ID, requested subject/parameters, pass/fail code/remediation, `inputSha`,
+  `testedTreeSha`, Stage A/Issue #6 `dependencyMergeShas`, sorted contract/fixture/schema hashes,
+  toolchain, lock hash, exact public argv, canonical role-based child argv, actual-child-argv digest,
+  timestamps/duration, artifact locators, redaction/retention, rollback, RFC 8785 and payload hash.
+- The I5-04 activation instance at
+  `apps/lab-runner/config/command-owner-activation-i5-04-v1.json` must validate against
+  `command-owner-activation-v1`, bind base registry SHA-256
+  `a94ac86bda0b70643edef9f144a59d8753d91f963b83d22cd510adbc31970e80`, owner `I5-04`, the exact
+  measured fragment hash, only the three reserved commands, and `fitness-result-v2`. Its own hash
+  is measured from actual bytes and included in the lock/evidence.
+- The envelope's `durationMs` is at most `120000`; each referenced artifact is at most
+  `10485760` bytes. A gate that exceeds the released bounds fails rather than widening the schema.
+- Runner-specific assertion IDs, process/resource summaries, release/current-pointer digests,
+  S3 results, cleanup details and residual risks live in bounded hashed artifacts such as
+  `gates/<command-id>/result.json`; they are not invented top-level fitness fields.
+- A verified learning run additionally emits `learning-evidence-v1` with exact lesson/lab/actor/
+  workspace/run/operation/provenance/transitions/commands/assertions/artifacts/timing/integrity
+  fields and the released 120-second timing boundary.
 
 Canonicalization follows the released contract. Unknown security-sensitive fields, duplicate JSON
 names, non-finite values, invalid UTF-8, absolute host paths, private URLs, credentials, raw env,
@@ -185,13 +195,12 @@ raw customer/order rows, and unbounded output fail publication. Store a digest a
 not the rejected secret/content.
 
 The raw executed child argv is never persisted because it contains absolute private runtime and
-workspace paths. Phase 2 must prove the released evidence contract can carry the canonical argv,
-role locators and actual-argv digest above without a local extension; otherwise the dependency is
-incompatible and cook remains blocked.
+workspace paths. `fitness-result-v2` provides `canonicalChildArgv` plus
+`actualChildArgvSha256`, so this requirement is satisfied without a local extension.
 
-Logical command-owner `evidenceRoot` values may remain registry identifiers, but the physical
-canonical root is the issue-authorized `runner/<run-id>/`; Phase 2 must confirm the released
-mapping rather than editing the shared registry locally.
+The immutable base registry retains logical identifiers `runner-test`, `runner-security`, and
+`runner-race`. The verifier accepts an explicit artifact root, so physical evidence remains below
+the Issue #9-owned `runner/<run-id>/` and uses relative locators; no shared registry edit is needed.
 
 ## Evidence Acceptance
 
@@ -199,11 +208,14 @@ mapping rather than editing the shared registry locally.
   artifacts exist with matching hashes/sizes.
 - The tested tree is clean except allow-listed untracked `.artifacts/`; protected hashes and
   absent/present state match preflight.
-- RED manifest proves every required family ran before implementation and reports no skip.
+- RED manifest proves every required family ran through a real public Make target before
+  implementation, at an exact retained RED commit, and reports no skip.
 - S3 scans, no-network/base-write/browser/cross-entrypoint/process-leak tests all pass.
 - Release evidence proves an old complete pointer or new complete eleven-asset pointer at every
   injected failure; never a mixed/partial current release.
 - Rollback rehearsal passes twice and does not delete evidence or expert/unrelated state.
+- The full gate is reproduced from a fresh clean checkout at the exact candidate head with no
+  borrowed `.venv`, ignored fixture, generated runtime state, or historical worktree artifact.
 
 ## Rollback Procedure
 
@@ -227,11 +239,13 @@ Rollback is a future implementation/review operation, not authorization in this 
 
 ## Pre-Merge Handoff Gate
 
-- Fresh independent plan validation and readiness audit completed after this planner artifact.
-- Readiness stays `BLOCKED_FOR_COOK` until exact Issue #8 Stage A release is merged and pinned.
+- The release amendment has passed fresh strict validation and dependency-aware readiness audit;
+  any later plan-byte change requires both gates again.
 - Implementation RED/GREEN evidence and all exact commands pass on a clean exact tested tree.
-- Fresh independent code/security review reports zero unresolved Critical/High findings.
-- Remote PR head equals reviewed head; available checks/mergeability are green.
+- Two fresh independent reviews in separate contexts/checkouts—correctness/contracts/TDD/recovery
+  and S3/containment/race/evidence/rollback—each report zero unresolved Critical/High findings at
+  the same exact remote head.
+- Remote PR head equals both reviewed heads; available checks/mergeability are green.
 - A human explicitly approves that exact head. Any subsequent change requires fresh review and
   re-attestation before merge.
 - No AWS/cloud/Terraform, container privilege, sudo, destructive host action, shared-contract
@@ -239,4 +253,6 @@ Rollback is a future implementation/review operation, not authorization in this 
 
 ## Unresolved Questions
 
-None. Issue #8 release data is an explicit implementation dependency and may not be guessed.
+None for plan readiness. The activation path and 16,384-byte private request ceiling are exact;
+future content/head hashes are measured only after the bytes exist. No generated binding or
+shared-contract change is authorized.
