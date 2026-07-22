@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "architecture-curriculum-invalid-cases-v1",
+  "cases": [
+    {"id":"I11-RED-REF-001","validator":"curriculum","mutation":{"kind":"json-set","target":"learning/curriculum/modules/foundation-v1.json","pointer":"/modules/0/traceId","value":"trace-missing"},"expectedCode":"CURRICULUM_REFERENCE_INVALID"},
+    {"id":"I11-RED-PREQ-001","validator":"curriculum","mutation":{"kind":"json-set","target":"learning/curriculum/modules/foundation-v1.json","pointer":"/modules/1/prerequisites","value":["F02"]},"expectedCode":"CURRICULUM_PREREQUISITE_INVALID"},
+    {"id":"I11-RED-VIEW-001","validator":"architecture","mutation":{"kind":"json-set","target":"architecture/expansions/i5-06/likec4/view-manifest.yaml","pointer":"/views/0/concernId","value":""},"expectedCode":"ARCH_VIEW_INVALID"},
+    {"id":"I11-RED-ADR-001","validator":"trace","mutation":{"kind":"json-set","target":"learning/curriculum/traces/architecture-trace-v1.json","pointer":"/nodes/decisions/0/consequenceIds","value":[]},"expectedCode":"TRACE_DECISION_INVALID"},
+    {"id":"I11-RED-PATTERN-001","validator":"curriculum","mutation":{"kind":"json-set","target":"learning/curriculum/patterns/system-design-patterns-v1.json","pointer":"/patterns/0/failureModes","value":[]},"expectedCode":"CURRICULUM_PATTERN_INVALID"},
+    {"id":"I11-RED-TRACE-001","validator":"trace","mutation":{"kind":"json-remove","target":"learning/curriculum/traces/architecture-trace-v1.json","pointer":"/edges/0/reciprocalEdgeId"},"expectedCode":"TRACE_RECIPROCITY_INVALID"},
+    {"id":"I11-RED-RENDER-001","validator":"architecture","mutation":{"kind":"render-source-set","target":"architecture/expansions/i5-06/likec4/model/architecture-curriculum.c4","needle":"Curriculum Registry","value":"Curriculum Registry Mutated"},"expectedCode":"ARCH_OUTPUT_STALE"},
+    {"id":"I11-RED-READONLY-001","validator":"architecture","mutation":{"kind":"text-set","target":"architecture/likec4/specification.c4","needle":"specification","value":"specification-mutated"},"expectedCode":"PROTECTED_BYTES_CHANGED"},
+    {"id":"I11-RED-API-001","validator":"curriculum","mutation":{"kind":"json-set","target":"learning/curriculum/architecture-curriculum-v1.json","pointer":"/openApiOperationIds/0","value":"inventedOperation"},"expectedCode":"CURRICULUM_API_INVALID"},
+    {"id":"I11-RED-S3-001","validator":"security","mutation":{"kind":"json-set","target":"learning/curriculum/mappings/local-aws-conceptual-v1.json","pointer":"/limitations/0","value":"https://external.invalid/private"},"expectedCode":"CURRICULUM_SECURITY_INVALID"},
+    {"id":"I11-RED-TEMPLATE-001","validator":"curriculum","mutation":{"kind":"json-set","target":"learning/curriculum/templates/architecture-templates-v1.json","pointer":"/templates/0/version","value":"9.9.9"},"expectedCode":"CURRICULUM_TEMPLATE_INVALID"},
+    {"id":"I11-RED-CRITICAL-FLOW-001","validator":"trace","mutation":{"kind":"json-set","target":"learning/curriculum/traces/architecture-trace-v1.json","pointer":"/criticalFlows/0/deploymentViewIds","value":[]},"expectedCode":"TRACE_CRITICAL_FLOW_INVALID"},
+    {"id":"I11-RED-ASSESSMENT-001","validator":"curriculum","mutation":{"kind":"json-set","target":"learning/curriculum/assessments/architecture-assessment-v1.json","pointer":"/authority/completionMutation","value":true},"expectedCode":"CURRICULUM_AUTHORITY_INVALID"},
+    {"id":"I11-RED-BOUND-001","validator":"security","mutation":{"kind":"json-set","target":"learning/curriculum/modules/foundation-v1.json","pointer":"/modules/0/instructions/0/textVi","valueRepeat":{"text":"á","count":8193}},"expectedCode":"CURRICULUM_BOUNDS_INVALID"},
+    {"id":"I11-RED-EVIDENCE-001","validator":"evidence","mutation":{"kind":"evidence-add-orphan","target":"orphan.json","value":{"unindexed":true}},"expectedCode":"EVIDENCE_INDEX_INVALID"}
+  ]
+}
