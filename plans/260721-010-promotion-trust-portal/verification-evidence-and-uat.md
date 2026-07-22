@@ -34,7 +34,7 @@ mutations are exact:
 | Lifecycle | One test-owned scaffold child and authentic private control record | tampered endpoint/nonce/capability, owner/mode/type/link/containment drift, stale record, benign foreign-process sentinel fail without any PID signal |
 | Blocked result | Released `fitness-result-v2` schema and exact Stage B invocation | missing/extra field, `unavailable` status, wrong code/exit/stream, empty bindings/artifacts, bad argv/payload hash, any runner action fail |
 | Evidence | One fresh private pending generation with valid payloads | missing/extra/duplicate entry, stale log, hash/count/size/aggregate/privacy/type/link/source/tree/tool drift, recursive hash, interrupted publish, second/missing trace fail |
-| Browser/a11y | Real Chrome channel, current released registry, two fixed viewports | missing Vietnamese semantics, focus/order/live region, overflow, reduced motion, axe, no-JS, request/storage/console/CSP invariant fail |
+| Browser/a11y | Playwright 1.61.1 with exact Chromium/Chrome-channel admission, one same measured browser identity across RED/GREEN, current released registry, two fixed viewports | browser identity/channel/fallback drift, missing Vietnamese semantics, focus/order/live region, overflow, reduced motion, axe, no-JS, request/storage/console/CSP invariant fail |
 | S3 | PTP-S3-01..14 valid absence/control cases | one exact canary per row must fail closed; no row passes by skip or predicate copy |
 
 Mutations use in-memory clones or private `mkdtemp` roots created from the valid control. They are
@@ -159,6 +159,12 @@ Locale is `vi-VN`; timezone is `Asia/Ho_Chi_Minh`; color scheme and reduced moti
 same test uses `1280x800`, then `360x800`, and creates a JavaScript-disabled context for static
 parity.
 
+Admission is exactly Playwright `1.61.1`, `browserName: chromium`, and `channel: chrome`. Record the
+measured Chrome product/version and executable SHA-256 in local-private evidence and require the
+same tuple for RED and GREEN. Reject a bundled-browser fallback, alternate channel/browser,
+download, changed executable identity, worker/retry drift, or public disclosure of the absolute
+executable path.
+
 The test covers catalog → module → lesson → every released step, direct links, reload,
 back/forward, unknown routes, keyboard order, visible focus, live status, reduced motion, no
 horizontal overflow, axe zero Critical/Serious, no-JS parity, exact non-claim attributes, zero
@@ -207,6 +213,9 @@ The current generation must contain:
 - 85-input/protected/runtime/lock/tool/command/build inventories;
 - current resource, all-14-S3, lifecycle, blocked-result, cleanup, interruption, and rollback
   records;
+- a role-boundary record that labels the generation author/cook-produced with independent review
+  and human approval false; later independent review records bind the head/tree and generation
+  index externally without rewriting author evidence;
 - exact browser/axe/no-JS/console/CSP/request/storage records, at most eight fixed screenshots,
   and exactly one compliant Chromium trace;
 - `inventory.json`, `generation-index.json`, and an atomically published regular
@@ -243,11 +252,12 @@ Before any Stage A merge:
 - final diff is exact 33 creates; commands are 18/18; released inputs are 85/85;
 - tests-only blobs remain bound; all GREEN and current evidence match the final head/tree;
 - one trace, all current manifest entries, resource/S3/cleanup/rollback, build inventory, blocked
-  results, secret/private-path and ignored-inclusive scans pass;
+  results, author/independent role boundary, secret/private-locator/PII/raw-record/source-map/
+  remote-import and ignored-inclusive scans pass;
 - two fresh independent final-head implementation reviews have zero unresolved Critical/High;
 - one named human completes bounded keyboard/visual UAT and exact-head approval;
 - local, upstream, and fresh PR head match.
 
 This corrected plan satisfies none of those implementation gates. Fresh independent plan
-validation and fresh readiness audit must occur before v3 cook. Stage B remains blocked on Issue
-#9 and Issue #10 stays open.
+validation has passed, but the separate fresh readiness audit must occur before v3 cook. Stage B
+remains blocked on Issue #9 and Issue #10 stays open.

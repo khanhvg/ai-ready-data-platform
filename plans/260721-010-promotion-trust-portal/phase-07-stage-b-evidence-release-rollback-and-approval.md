@@ -52,9 +52,10 @@ pre-merge approval. No PR/merge is implied by this plan.
 The issue-local lifecycle boundary authorized by the later amendment owns only the portal process
 record and delegates runner lifecycle through the exact #9 API/launcher contract.
 `mk/issue-5/i5-05.mk` remains the only permitted Make fragment and must stay thin. All results
-write atomically under one run root and refer to artifacts by relative locator/hash. Status/down
-validate PID start identity/process group/namespace; rollback disables Stage B and verifies the
-Stage A static route before any code rollback.
+write atomically under one run root and refer to artifacts by relative locator/hash. Portal
+status/down retain child-authenticated self-shutdown; PID/start/process-group fields are
+informational only and never signal authority. Any later runner lifecycle remains exact #9-owned.
+Rollback disables Stage B and verifies the Stage A static route before any code rollback.
 
 ## Related Code Files
 

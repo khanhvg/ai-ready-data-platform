@@ -71,7 +71,7 @@ may not imply a causal join, execute the failure, or relabel retained fixture ev
 | PTP-NFR-04 | Semantic keyboard path, focus, 1280x800/360x800 reflow, reduced motion, axe zero Critical/Serious | A | one Chromium suite + unit checks |
 | PTP-NFR-05 | CSP/Host/path/XSS/storage/output/artifact/cleanup boundaries fail closed | A | S3 catalogue |
 | PTP-NFR-06 | Static and React modes share one safe view model and equivalent stable facts | A | parser/render/no-JS comparison |
-| PTP-NFR-07 | One process/worker and exact time/file/byte/artifact/current-generation/trace ceilings | A | lifecycle/build/evidence/trace/output-limit tests |
+| PTP-NFR-07 | One process/worker, exact same-run Playwright/Chrome identity, and exact time/file/byte/artifact/current-generation/trace ceilings | A | browser-admission/lifecycle/build/evidence/trace/output-limit tests |
 | PTP-NFR-09 | Scaffold/tests/RED/first-semantic/final commits and trees are contemporaneously bound | A | Git ancestry + raw/sanitized log manifests |
 | PTP-NFR-10 | One atomic current generation verifies all non-self hashes and classifies stale/interrupted generations as negative history | A | closure/interruption/ignored-inclusive tests |
 | PTP-NFR-08 | Human visual/keyboard review and exact-head approval remain release gates, not automated claims | Release | bounded checklist + GitHub record |
@@ -124,8 +124,11 @@ may not imply a causal join, execute the failure, or relabel retained fixture ev
   `fitness-result-v2`; build/request inventory is open; runtime/lock/env admission drifts.
 - Any current evidence entry/hash/privacy/count/size/aggregate/binding fails; trace is missing,
   duplicated, source-bearing, oversized, stale-head, or unindexed; partial publication is current.
+- RED/GREEN browser identities differ, browser admission falls back from exact Chromium/Chrome
+  channel, or author-generated evidence is mislabeled as independent/human-approved.
 - A required test/tool/measurement is absent; audit has High/Critical; axe has Critical/Serious;
-  S3, cleanup, protected hash, or exact-head review fails.
+  S3, cleanup, protected hash, private-locator/PII/raw-record/source-map/remote-import scan, or
+  exact-head review fails.
 - Controlled and environmental failure are conflated; four-grain/canonical-decision semantics or
   vertical-slice/course wording drifts.
 - Stage A claims run, reset, fresh evidence, progress, completion, full course, full WCAG, cloud,

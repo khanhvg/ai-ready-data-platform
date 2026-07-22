@@ -13,7 +13,7 @@ artifacts were not inputs.
 | Issue #7 | CLOSED/`shipped`; approved feature head `b219ba2d3843934c3bce2fbbec2a844b48b2dfa9`; PR #22 merge `1806b6d515f2f7a2ace2be7077af84a745ff221f` | Exact Vite/React toolchain is usable by Stage A; spike product architecture is not |
 | Issue #8 | CLOSED/`shipped`; final release merge `5644f01b4c0443a81f3af0bcce80f44c847cd986`; parents `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`, `12e17427076fb31de85534bfbbbedca7e901e76c`; handoff `5047964988` | Exact validators, contracts, binding, adapters, and fixtures are read-only Stage A authorities; shared-contract lease released |
 | Final integration | `5644f01b4c0443a81f3af0bcce80f44c847cd986`, tree `a38594d420fe7df2b30265a8a72bb5fad1698012` | Mandatory Stage A cook base |
-| Issue #9 | OPEN at plan head `308c736f8811ac9aeaf41ad5b27dea07d2e60b2e`; cook branch `9eb31075aeb0e7b974ad15645460ab4987570f20`; no reviewed/merged/pristine release | No Stage B runner authority; Stage B remains blocked |
+| Issue #9 | OPEN/`ready to cook`; remote plan head `308c736f8811ac9aeaf41ad5b27dea07d2e60b2e`; first cook stopped unchanged at `9eb31075aeb0e7b974ad15645460ab4987570f20`; no feature branch is published and no reviewed/merged/pristine release exists | No Stage B runner authority; Stage B remains blocked |
 
 The released integration has 921 tracked entries; the canonical `git ls-tree -r --full-tree`
 listing has SHA-256 `a6681b3e7ee932fbd29728bc3f649017e57e6980871a3de9def9cb3ac318d9fe`.
@@ -36,7 +36,7 @@ sampling, timer scorecards, and Gate-D framework comparison are historical and n
 
 | Stage | File authority | Command authority | Dependency authority | Cookable |
 |---|---|---|---|---|
-| A | Exactly 33 new tracked paths; no modifies/deletes | Exactly 18 release, install, test, build, audit, lifecycle, visual, and required-negative commands | Final integration plus 85 enumerated consumed paths | `false` pending fresh validation/readiness |
+| A | Exactly 33 new tracked paths; no modifies/deletes | Exactly 18 release, install, test, build, audit, lifecycle, visual, and required-negative commands | Final integration plus 85 enumerated consumed paths | `false` pending fresh readiness audit |
 | B | `[]` | `[]` | `[]` | `false` |
 
 The exact lists in the amendment are normative. A path, command, dependency, version, route,
@@ -59,8 +59,8 @@ ownership ceiling.
 
 ## Gate A — Static Portal Authority
 
-Gate A is not currently satisfied. A fresh independent validation and separate readiness audit
-must first accept this correction. A later v3 cook must begin from pristine
+Gate A is not currently satisfied. Fresh independent validation has accepted this correction, but
+the separate fresh readiness audit must still pass. A later v3 cook must begin from pristine
 `5644f01b4c0443a81f3af0bcce80f44c847cd986` and re-prove every row before the first product write.
 
 | ID | Required proof | Failure disposition |
@@ -138,7 +138,7 @@ approval. If Stage A later merges while Stage B is blocked, Issue #10 remains op
 
 ## Current Disposition
 
-`STAGE_A_CORRECTED_PENDING_INDEPENDENT_VALIDATION`: scope and released inputs remain exact, but the
-prior readiness was invalidated by failed PR #29 review. Cook scope is none until fresh independent
-validation and fresh readiness pass. `STAGE_B_BLOCKED_ON_ISSUE9`: Stage B authority is empty. No
+`STAGE_A_VALIDATED_PENDING_FRESH_READINESS`: scope and released inputs remain exact, but the prior
+readiness was invalidated by failed PR #29 review. Cook scope is none until fresh readiness passes
+at its exact output. `STAGE_B_BLOCKED_ON_ISSUE9`: Stage B authority is empty. No
 implementation, execution, review approval, merge, or release claim follows from this correction.

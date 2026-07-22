@@ -2,9 +2,10 @@
 
 ## Decision
 
-Issue #10 Stage A is corrected for a fresh independent plan validation only. It is not ready to
-cook. The independent review of failed PR #29 invalidated the prior readiness conclusion at exact
-plan head `2f278eb25aaff9e050314b01d1be155b76793f11` because RED provenance, generic authority, and
+Issue #10 Stage A has passed fresh independent plan validation with bounded plan-only corrections.
+It is not ready to cook: a separate fresh readiness audit is still required. The independent review
+of failed PR #29 invalidated the prior readiness conclusion at exact plan head
+`2f278eb25aaff9e050314b01d1be155b76793f11` because RED provenance, generic authority, and
 retained-evidence closure were incomplete.
 
 The recovery keeps the pristine released integration
@@ -410,7 +411,11 @@ manager. Direct ad hoc variants and root Make edits are denied.
 - Preserve the released #7 ceilings: install 300 seconds, build 180 seconds, Node/unit 120
   seconds, host readiness 15 seconds, Playwright 300 seconds, and audit 180 seconds.
 - One portal Node process; loopback `127.0.0.1`; runtime-selected port; no child after startup.
-  Test orchestration uses one Playwright worker and the existing Chrome channel only.
+  Browser admission is exactly Playwright `1.61.1`, `browserName: chromium`, `channel: chrome`, one
+  worker, and zero retries. The RED and GREEN records must use the same measured Chrome
+  product/version/executable SHA-256; any identity change, bundled-browser fallback, alternate
+  channel, or browser download is failure. The absolute executable path is local-private and never
+  appears in sanitized or public evidence.
 - Production output is a closed post-build inventory of regular single-link files only: at most
   128 files, 1 MiB per file, and 16 MiB total. Every path, media type, byte size, and SHA-256 is
   recorded before serving. The server can open only that exact inventory with no source map,
@@ -467,14 +472,22 @@ release/protected/build inventories, resource and S3 records, both schema-valid 
 axe/no-JS/console/CSP/request/storage records, eight-or-fewer fixed screenshots, exactly one
 Chromium trace, cleanup/rollback results, and an unapproved UAT checklist. Raw logs are classified
 `local-private`; sanitized logs replace private paths and ports and are the only logs eligible for
-GitHub summaries. Both classes reject credential/private-key/cloud-token canaries.
+GitHub summaries. Both classes reject credential/private-key/cloud-token canaries, private
+locators, PII values, raw fixture records, and remote-import/source-map disclosure.
+
+`records/role-boundary.json` truthfully identifies the current generation as produced by the
+implementation author/cook, with independent review and human approval both false. Later
+independent reviewers verify the exact final head/tree and generation-index digest in separate
+immutable review records; they never rewrite or relabel author-generated evidence. Human approval
+remains an external exact-head record.
 
 The closed relative layout is fixed: `red/raw/01.log` through `red/raw/18.log`, matching
 `red/sanitized/01.log` through `red/sanitized/18.log`; `green/raw/01.log` through
 `green/raw/18.log`, matching `green/sanitized/01.log` through `green/sanitized/18.log`;
 `records/command-bindings.json`, `release-inputs.json`, `build-inventory.json`,
 `resource-ceilings.json`, `s3-results.json`, `lifecycle.json`, `interruption.json`,
-`cleanup.json`, `rollback.json`, and two blocked-result JSON files; `browser/chromium-trace.zip`,
+`cleanup.json`, `rollback.json`, `role-boundary.json`, and two blocked-result JSON files;
+`browser/chromium-trace.zip`,
 `axe.json`, `no-js.json`, `console-csp-requests-storage.json`, and the fixed screenshot names;
 `uat-checklist.md`; then the two non-self manifest files. `command-bindings.json` maps ordinals
 01..18 bijectively to the exact command table and to each raw/sanitized RED/GREEN digest. Missing,
@@ -615,8 +628,8 @@ fixture rows are forbidden.
 
 ## Verification and Review Gate
 
-1. Before implementation, require a fresh independent validation of this correction and a
-   separate fresh readiness audit. Until both pass at their exact outputs, cook scope is none.
+1. Fresh independent validation of this correction has passed. Before implementation, require the
+   separate fresh readiness audit; until it passes at its exact output, cook scope is none.
 2. Prove a clean v3 branch whose start commit and fresh remote integration are exact
    `5644f01b4c0443a81f3af0bcce80f44c847cd986`; before Commit 1, its only delta is the audited
    v3 correction output plus its ensuing fresh independent validation and readiness plan commits.
@@ -625,15 +638,17 @@ fixture rows are forbidden.
 4. Bind the first semantic and every later semantic commit/tree. Run exact validators, frozen
    install, unchanged unit/contract/security tests, two deterministic production builds, audit,
    bundle scan, protected hashes, generic-seam metamorphic/negative gates, and all 18 commands.
-5. Run one real Chrome-channel Chromium journey at `1280x800` and `360x800`, axe zero
-   Critical/Serious, JavaScript-disabled navigation, explicit runner-unavailable state, and one
-   successful sources-excluded trace.
+5. Admit the exact Playwright/browser tuple, require identical measured Chrome identity across RED
+   and GREEN, and run one real Chrome-channel Chromium journey at `1280x800` and `360x800`, axe
+   zero Critical/Serious, JavaScript-disabled navigation, explicit runner-unavailable state, and
+   one successful sources-excluded trace.
 6. Prove authenticated child self-shutdown, valid blocked v2 results, closed build/request policy,
    exact runtime/lock/environment admission, bounded artifacts, all S3 negatives, atomic
    generation publication, interruption recovery, cleanup twice, and rollback.
 7. Re-run exact 33-path/18-command/85-input closure, root Make composition/direct-fragment
-   denial, Issue #9/#11/#12/#13 non-overlap, secret/private-path/cloud/source-map scans,
-   `git diff --check`, package-lock tracking, ignored-inclusive classification, and clean status.
+   denial, Issue #9/#11/#12/#13 non-overlap, secret/private-locator/PII/raw-record/cloud/source-map/
+   remote-import scans, `git diff --check`, package-lock tracking, ignored-inclusive
+   classification, and clean status.
 8. Require two fresh independent final-head implementation reviews and named human exact-head
    pre-merge approval. Any later commit invalidates GREEN evidence, reviews, and approval.
 
@@ -648,7 +663,7 @@ Preserve PR #29, `feature/issue-10-portal-stage-a-v2`, all v2 commits, and all v
 as failed audit history. Do not reuse, reset, rewrite, delete, amend, or retrofit evidence there.
 The earlier stopped pre-binding worktree is also non-authoritative.
 
-Only after this correction is independently validated and separately readiness-audited, create
+Only after this correction is separately readiness-audited, create
 `feature/issue-10-portal-stage-a-v3` in a new worktree directly from
 `5644f01b4c0443a81f3af0bcce80f44c847cd986`. Apply only this v3 correction output plus its ensuing
 fresh independent validation and readiness plan commits; the resulting plan directory must equal

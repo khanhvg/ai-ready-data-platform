@@ -16,7 +16,8 @@ Protected assets:
 - exact package lock, closed build inventory, released descriptor registry/binding, and safe view model;
 - loopback process ownership, child-held control capability/instance nonce, runtime marker, and
   evidence/review artifacts;
-- local environment, home/cloud credentials, private paths, process output, and network;
+- local environment, home/cloud credentials, private paths/locators, PII, raw fixture records,
+  process output, remote imports, and network;
 - lesson truth: four independent grains, canonical decision, and non-completion claim.
 
 In-scope adversaries/failures include DNS rebinding/foreign Host, traversal/ambiguous decoding,
@@ -107,6 +108,11 @@ Stage A uses no cookie, session, CSRF token, runner token/URL, browser storage, 
 cache, database, canonical progress, evidence bytes, raw logs, private locator, or ambient
 environment field. Static navigation remains useful when offline after page load.
 
+Browser admission is exact: Playwright `1.61.1`, `browserName: chromium`, `channel: chrome`, one
+worker, zero retries, and one measured Chrome product/version/executable SHA-256 shared by RED and
+GREEN. Bundled-browser fallback, alternate browser/channel, browser download, or identity drift
+fails; absolute executable paths remain local-private.
+
 No command or endpoint may invoke Issue #9, Docker, Rill, Airflow, Iceberg, OpenMetadata, MinIO,
 Lakekeeper, AWS, Terraform, cloud/model services, package installation at runtime, arbitrary host
 commands, or external content fetches. Dependency acquisition is the one locked developer step;
@@ -141,7 +147,8 @@ Stage A must pass:
   command ownership;
 - frozen install, exact transitive lock comparison, production build, and `npm audit` with zero
   High/Critical;
-- high-confidence secret/key/private-path and cloud/runner/import/source-map/bundle scans;
+- high-confidence secret/key/private-locator/PII/raw-record and cloud/runner/remote-import/
+  source-map/bundle scans;
 - Host/method/path/CSP/XSS/storage/network/output/special-file/alias negative tests;
 - all PTP-S3-01..14 assertions, including Stage B-capability absence;
 - exact process, time, file, byte, log, browser-artifact, current-generation hash/privacy/count/
@@ -159,7 +166,8 @@ assignment/signature/canary or be manually dispositioned.
 - Retain the one selected current generation containing source/tree-bound raw/sanitized RED/GREEN,
   dependency/build/unit/contract/S3/a11y/resource records, two-viewport screenshots, exactly one
   sources-excluded Chromium trace, axe/no-JS/console/CSP/request/storage reports, non-self closure,
-  cleanup/rollback/interruption results, and the unapproved checklist.
+  cleanup/rollback/interruption results, an author/cook-produced role record with independent and
+  human approval false, and the unapproved checklist.
 - Prior/stale/failed generations are explicitly negative history and cannot satisfy current
   evidence. Pending interrupted generations are never selected.
 - `learn-down` authenticates to the child, asks it to self-shutdown, is safe twice, preserves
