@@ -1061,12 +1061,18 @@ def _close_evidence(evidence_root: Path, head: str, cleanup: dict[str, object]) 
     provenance["firstSemanticCommitSha"] = "5f214b644642aedd27f9ffd91f7ce5e07af3aef2"
     provenance["finalSemanticHeadSha"] = head
     provenance_path.write_text(json.dumps(provenance, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    remote = _git("remote", "get-url", "origin").decode().strip()
+    canonical_repository = remote.removeprefix("https://").removeprefix("ssh://git@").removeprefix("git@").replace("github.com:", "github.com/").removesuffix(".git")
+    if canonical_repository != "github.com/khanhvg/ai-ready-data-platform" or Path(_git("rev-parse", "--show-toplevel").decode().strip()).resolve() != ROOT.resolve():
+        raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
+    repository_identity_sha = hashlib.sha256(canonical_repository.encode("utf-8")).hexdigest()
+    root_id_sha = hashlib.sha256(f"{repository_identity_sha}:repository-root:5f28f83bc2062e0bc7b8792d9aaa744a0b7e175b".encode("ascii")).hexdigest()
     owner = {
         "schemaVersion": "i11-stage-a-evidence-owner-v1", "owner": "I5-06",
         "issue": 11, "runId": "260722-cook-v3", "inputGitSha": "5f28f83bc2062e0bc7b8792d9aaa744a0b7e175b",
         "testedTreeSha": head, "stage": "A-static-only", "cloudAction": "none",
-        "repositoryIdentitySha256": "472e05cbb2d1d21c1868360fe2a76e51d8df8627bb889d47b1ab9f4b8579322f",
-        "rootIdSha256": "4c38bf19cc0e7cfc9342ece08722afc9bb751fd7fdd86038ef530ab25a009171",
+        "repositoryIdentitySha256": repository_identity_sha, "rootIdSha256": root_id_sha,
+        "identityDerivation": "sha256(canonical-origin); sha256(repository-hash:repository-root:cook-input)",
         "branch": "feature/issue-11-architecture-stage-a-v3", "rootLocator": "repository-root",
         "evidenceRootLocator": ".claude/evidence/issue-11-stage-a/260722-cook-v3",
         "createdAt": datetime.datetime.now(datetime.UTC).isoformat().replace("+00:00", "Z"),
