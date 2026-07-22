@@ -65,8 +65,8 @@
     {
       "path": "app/src/lab_runner/container_supervisor.py",
       "mode": "0644",
-      "size": 8882,
-      "sha256": "69505ddaf020496141ab5b91ea667dd268ef90f81be64292f0349dbed442b4f1"
+      "size": 8809,
+      "sha256": "d6c65bf5afbbc16dfd62ecc919e4d91cdac5d9e5c01e5b65380bfe405d1b3e14"
     },
     {
       "path": "app/src/lab_runner/contract.py",
@@ -215,8 +215,8 @@
     {
       "path": "app/tests/fixtures/resource_probe.py",
       "mode": "0644",
-      "size": 928,
-      "sha256": "ad5693cd62076c5d6bfa023bbc92c2054c008995b2614f4f9adc6eb3005fe12c"
+      "size": 874,
+      "sha256": "e5f2cd0f7cc6f2943bb0d6b69e958d0d1c62bdfdee1fb915f2521bbffc0c2dd5"
     },
     {
       "path": "project/contracts/data/curated-release-manifest.schema.json",

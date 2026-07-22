@@ -86,7 +86,6 @@ def _main(operation:str,fixture:tuple[str,tuple[str,...]]|None=None,execute_seco
             os.close(out_read);os.close(err_read);os.setsid();os.dup2(out_write,1);os.dup2(err_write,2);os.close(out_write);os.close(err_write)
             resource.setrlimit(resource.RLIMIT_FSIZE,(134217728,134217728))
             resource.setrlimit(resource.RLIMIT_NOFILE,(256,256))
-            resource.setrlimit(resource.RLIMIT_AS,(536870912,536870912))
             result=_fixture(*fixture) if fixture is not None else execute(operation)
             (RUN/"worker-result.json").write_text(json.dumps(result,sort_keys=True,separators=(",",":"))+"\n")
             os._exit(0)

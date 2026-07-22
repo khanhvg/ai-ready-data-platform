@@ -373,7 +373,7 @@ class Gate:
         self.record("RED-OUT-002", self._bounded_protocol_archive)
         effective = network["inspect"]["HostConfig"]
         memory=dict(protocol("resource_probe.py",("memory",)).get("result") or {}).get("observation") or {}
-        self.record("RED-RES-001", lambda: {"memory": effective["Memory"], "swap": effective["MemorySwap"], "pids": effective["PidsLimit"],"pressure":memory} if (effective["Memory"], effective["MemorySwap"], effective["PidsLimit"]) == (536870912, 536870912, 64) and memory.get("rlimitAs")==536870912 and memory.get("memoryMax")=="536870912" and memory.get("memorySwapMax")=="0" and 0<int(memory.get("memoryPeak",0))<=536870912 else (_ for _ in ()).throw(AssertionError("cgroup")))
+        self.record("RED-RES-001", lambda: {"memory": effective["Memory"], "swap": effective["MemorySwap"], "pids": effective["PidsLimit"],"pressure":memory,"authority":"aggregate-cgroup-v2"} if (effective["Memory"], effective["MemorySwap"], effective["PidsLimit"]) == (536870912, 536870912, 64) and memory.get("allocatedBytes")==268435456 and memory.get("memoryMax")=="536870912" and memory.get("memorySwapMax")=="0" and 268435456<int(memory.get("memoryPeak",0))<=536870912 and 268435456<int(memory.get("memoryCurrent",0))<=536870912 else (_ for _ in ()).throw(AssertionError("cgroup")))
         self.record("RED-RES-002", lambda: observations["resource_probe.py:cpu"] if protocol("resource_probe.py", ("cpu",)).get("failureCode") == "RUNNER_TIMEOUT" and effective["NanoCpus"] == 2000000000 else (_ for _ in ()).throw(AssertionError("cpu")))
         self.record("RED-RES-003", lambda: {"fds": observations["resource_probe.py:fds"], "files": observations["resource_probe.py:files"], "tmpfs": effective["Tmpfs"]})
 
