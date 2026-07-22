@@ -70,6 +70,8 @@ class ViteConsumerBindingTests(unittest.TestCase):
         return value
 
     def validate_binding_path(self, path: pathlib.Path) -> dict[str, object]:
+        value = schema.read_document(path)
+        schema.validate_document(value, family="vite-binding")
         validator = getattr(check, "validate_vite_binding_path", None)
         self.assertIsNotNone(validator, "VITE_BINDING_REQUIRED: public check path")
         return validator(path, root=ROOT)
@@ -136,10 +138,11 @@ class ViteConsumerBindingTests(unittest.TestCase):
             self.assertIn(token, vite_source)
 
     def test_i8b_binding_absent_011_public_check_requires_binding(self) -> None:
+        rows = check.validate_all_contracts()
+        self.assertEqual(65, len(rows))
         self.load_binding()
         value = self.validate_binding_path(BINDING)
         self.assertEqual("promotion-trust-vite-binding-v1", value["bindingId"])
-        self.assertEqual([], check.validate_all_contracts()[65:])
 
     def test_i8b_alias_020_through_boundary_027_exact_invalid_inventory(self) -> None:
         actual = {path.name for path in INVALID_ROOT.glob("*.json") if path.is_file()}
