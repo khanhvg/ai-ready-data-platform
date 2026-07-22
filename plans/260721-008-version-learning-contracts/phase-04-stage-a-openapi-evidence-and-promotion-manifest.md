@@ -1,15 +1,16 @@
 ---
 phase: 4
-title: "Stage A OpenAPI evidence and promotion manifest"
-status: pending
+title: Stage A OpenAPI evidence and promotion manifest
+status: completed
 priority: P1
-dependencies: [3]
-stage: "A"
+dependencies:
+  - 3
+stage: A
 ---
 
 # Phase 4: Stage A OpenAPI, Evidence, and Promotion Manifest
 
-<!-- Updated: Validation Session 1 - exact wire/version/error and descriptor-bound evidence contracts. -->
+<!-- Historical Stage A execution plan; released through PR #23 and PR #25, with current disposition in plan.md. -->
 
 ## Context Links
 
