@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "runner-image-release-v1",
+  "cookInputSha": "f6791555dc8b2ada6fa44747ca829a3d9cd87667",
+  "integrationReleaseSha": "5644f01b4c0443a81f3af0bcce80f44c847cd986",
+  "releasedStageASha": "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9",
+  "imageDigest": "sha256:ff49b94738953c9a2354f3f60474c4710335902e74900675ccf4e5f0ab2dd652",
+  "platform": "linux/arm64",
+  "user": "65532:65532",
+  "workdir": "/workspace",
+  "entrypoint": ["python3.12", "-I", "-m", "lab_runner.container_supervisor"],
+  "environmentNames": ["HOME", "LANG", "PATH", "PYTHONDONTWRITEBYTECODE", "PYTHONNOUSERSITE"],
+  "layerCount": 13,
+  "sbom": {
+    "format": "SPDX-2.3",
+    "packages": 61,
+    "sha256": "5b29e9c5c61bc36eb49be57a3bcc94b6b2ad6e8c4ff77d602c7b197288cc151d"
+  },
+  "vulnerability": {
+    "scanner": "grype@0.116.0",
+    "databaseSchema": "v6.1.9",
+    "databaseBuilt": "2026-07-22T07:06:24Z",
+    "scanSha256": "88b75c200b521e8dc389350c148917535a1272a0170b9616668c69488683b7e5",
+    "scannerCriticalHigh": 10,
+    "openVexNotAffected": 10,
+    "openVexSha256": "315073fdd38fb87ead7c930ce293f8222f26f2835343e616b3e22faf784405bb",
+    "unresolvedCriticalHigh": 0
+  },
+  "operations": ["workspace.prepare", "retail.generate", "retail.load", "retail.dbt-build", "retail.export", "promotion.configure", "promotion.verify", "workspace.reset"]
+}

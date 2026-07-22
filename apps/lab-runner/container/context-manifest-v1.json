@@ -3,14 +3,14 @@
   "implementationHead": "5735970d1ffbf13d36c1dd24708e613979ce9036",
   "releasedStageA": "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9",
   "platform": "linux/arm64",
-  "baseManifestDigest": "sha256:9bb659dc6d5218917236f3711e866a5634bb4c2f208de9d4533aa4863f57c1d3",
-  "fileCount": 218,
+  "baseManifestDigest": "sha256:55842c72c6b3584d06ec84c731fc516b30b8a53ad262ebd085e47ab568b3bfc1",
+  "fileCount": 232,
   "files": [
     {
       "mode": "0644",
       "path": "Dockerfile",
-      "sha256": "a98549bbdab8a4782a22651c5637d19355c79f80095fe1ad84f437ef80d6e194",
-      "size": 1316
+      "sha256": "0f790387a509ae0d0d43303b6f0baae5e71bcb92b42148f23e0e5be8cf75bde3",
+      "size": 1847
     },
     {
       "mode": "0644",
@@ -57,8 +57,8 @@
     {
       "mode": "0644",
       "path": "app/src/lab_runner/container_backend.py",
-      "sha256": "de922e3d9f829fe5e1ef8f60e8560b08a1e9f04073206f7a0a64ddba60acf0fc",
-      "size": 6800
+      "sha256": "a0ef0b74d902eaa569a3e48c47720617025bdffe415817c0fce927fc9a1dda4e",
+      "size": 7654
     },
     {
       "mode": "0644",
@@ -69,8 +69,8 @@
     {
       "mode": "0644",
       "path": "app/src/lab_runner/container_supervisor.py",
-      "sha256": "f790d64d6f4a59a5fdbe983880392d8e9ad27129846c8121671501596ab50845",
-      "size": 4825
+      "sha256": "3da38cee85806c55119427078e8eba528b476816be5820635bf1b098528c36c7",
+      "size": 7177
     },
     {
       "mode": "0644",
@@ -81,14 +81,14 @@
     {
       "mode": "0644",
       "path": "app/src/lab_runner/engine.py",
-      "sha256": "5c7c1412bbda4227dddf860722604ef8f9a52c7bafab100f809a82212535c059",
-      "size": 2339
+      "sha256": "7fd9cd4a8fbae4fe6cd51a1267bd4d1de547cedef062bd8949fbbc092e0c1a3f",
+      "size": 2987
     },
     {
       "mode": "0644",
       "path": "app/src/lab_runner/evidence.py",
-      "sha256": "9f81b142efab28d0e2f0140efd2e65555fa1a1172781988cd2683b11a6a47c9f",
-      "size": 1006
+      "sha256": "3770f9c911f3960226bc77487423369d83acec5229223a0208ed80e45c857bfb",
+      "size": 1490
     },
     {
       "mode": "0644",
@@ -99,8 +99,8 @@
     {
       "mode": "0644",
       "path": "app/src/lab_runner/operation_adapters.py",
-      "sha256": "a704b6e40e863c8dda3de77b74ae381ee12d4ba7f23052072d487ee824856056",
-      "size": 5967
+      "sha256": "0d56aa73b5bf5d27224881db869b9ee0ebcc0feb5b50b5f62f06f7436b10f209",
+      "size": 6304
     },
     {
       "mode": "0644",
@@ -117,14 +117,14 @@
     {
       "mode": "0644",
       "path": "app/src/lab_runner/service.py",
-      "sha256": "d19a7d2e7706dc04e91288dd8551c98e0d89e7721b43ec102c5462b3eaa4b93c",
-      "size": 3379
+      "sha256": "9959b900621d95ac8dfce03f2a0b530b22c983ba097c1c365ba30ae3a2909fbc",
+      "size": 3563
     },
     {
       "mode": "0644",
       "path": "app/src/lab_runner/state.py",
-      "sha256": "1f6d33ed3d66a0d95ad6dbed79f37fe71e99d0388f0e8d7ea47a7a857d032bfb",
-      "size": 6064
+      "sha256": "d33b3d7b4f8460262f590989f2615fcffc82927450ddec3c5acc9d4f1c220de1",
+      "size": 7013
     },
     {
       "mode": "0644",
@@ -135,8 +135,92 @@
     {
       "mode": "0644",
       "path": "app/src/lab_runner/workspace.py",
-      "sha256": "21c6b6082d6d7bc8233e8548962dfb8c066cd933e9ff0fd8143942da7ed74bfb",
-      "size": 1838
+      "sha256": "c34117a1be1872bde4eae20833fbf7e4209f7bdd87f51acb879da5b4ff131e6c",
+      "size": 2753
+    },
+    {
+      "mode": "0644",
+      "path": "app/tests/fixtures/archive_attacks.py",
+      "sha256": "7c06d0249f7b38dd4eb0ba04629aeaecf68943e3b6891588800910184283de9d",
+      "size": 725
+    },
+    {
+      "mode": "0644",
+      "path": "app/tests/fixtures/argv_probe.py",
+      "sha256": "6bec63c74050559785d4aacd02540492fd8e15000d32fc9b3cab17a6110613a7",
+      "size": 114
+    },
+    {
+      "mode": "0644",
+      "path": "app/tests/fixtures/browser-requests.json",
+      "sha256": "c8fc9128d6ca3c7c7e8a054cc6002ee69b708e607da50ba76ee56edec7d9ad99",
+      "size": 217
+    },
+    {
+      "mode": "0644",
+      "path": "app/tests/fixtures/fault-points.json",
+      "sha256": "ba9f1a9eb94ec7f10b5bbfa900ea5651ecc3887d49a4df8e91db49dac4cfb9f9",
+      "size": 292
+    },
+    {
+      "mode": "0644",
+      "path": "app/tests/fixtures/fixture-manifest.json",
+      "sha256": "946875820b7c671cf05131adc32c8f179b2fbc8ea18e3bd1a85406399d79cb62",
+      "size": 301
+    },
+    {
+      "mode": "0644",
+      "path": "app/tests/fixtures/fork_bomb.py",
+      "sha256": "f8e57c743bfa7da628f51a304b49502fd2cf4c49d38ddc17991e01c47100f3ef",
+      "size": 500
+    },
+    {
+      "mode": "0644",
+      "path": "app/tests/fixtures/import_probe.py",
+      "sha256": "5e133b40de6685418853f734c81338661fdd2eefd1ef172715ebceefd8e77530",
+      "size": 153
+    },
+    {
+      "mode": "0644",
+      "path": "app/tests/fixtures/main_crash.py",
+      "sha256": "5c49b9757827f732829b75c15586d6189b684fb44c4ffcd27830a7c0840753a7",
+      "size": 123
+    },
+    {
+      "mode": "0644",
+      "path": "app/tests/fixtures/network_probe.py",
+      "sha256": "491070f6337378a7ca6ced36045ab573bbca6294cbfc3b7d347230bc682fe19d",
+      "size": 529
+    },
+    {
+      "mode": "0644",
+      "path": "app/tests/fixtures/output_flood.py",
+      "sha256": "3f27d632e1d2727d454cdd969605596f3694824f5e1f2d67c35412745a598d44",
+      "size": 194
+    },
+    {
+      "mode": "0644",
+      "path": "app/tests/fixtures/process_tree_probe.py",
+      "sha256": "4405970591dd4049a915c2fb2a9a645dcff786de2513e3979bb8b4958ff05ce1",
+      "size": 192
+    },
+    {
+      "mode": "0644",
+      "path": "app/tests/fixtures/rapid_double_fork.py",
+      "sha256": "8179f454dfcbbaa41f11b170a91c41981c9fd397dfec4b053d6bfd149ca9968b",
+      "size": 131
+    },
+    {
+      "mode": "0644",
+      "path": "app/tests/fixtures/reparent_setsess_daemon.py",
+      "sha256": "fa8d649fd1456650806db73aef5631c8ce7d5420ff5bc092bc7ea7d5fc068f22",
+      "size": 221
+    },
+    {
+      "mode": "0644",
+      "path": "app/tests/fixtures/resource_probe.py",
+      "sha256": "ccb95e8cb804e60304df6c436f9955be7e05bfc8eb2a19b7c7e16abcf7151fa1",
+      "size": 469
     },
     {
       "mode": "0644",

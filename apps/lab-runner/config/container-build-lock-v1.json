@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "container-build-lock-v1",
+  "platform": "linux/arm64",
+  "baseManifestDigest": "sha256:55842c72c6b3584d06ec84c731fc516b30b8a53ad262ebd085e47ab568b3bfc1",
+  "contextManifestSha256": "f619c22d033eb134488952b7bb13c8bc55201ffafe82ea0cdfc22df3cb28341c",
+  "contextTarSha256": "62d82fe4e82f5d1dc021b465e2fe4aab860fe62bee5bf72ecebc3b858b41a6f5",
+  "wheelhouseManifestSha256": "6381419faa9d95f38f774eb0b6e61e65449b7bd829ebc514b6c73900301b2be3",
+  "requirementsLockSha256": "f41c727b39f99106f95b7937b2811e8d27db89d1d5106e9f1d9effd4403143d2",
+  "dockerClientVersion": "29.4.0",
+  "dockerServerVersion": "29.4.0",
+  "dockerApiVersion": "1.54",
+  "buildNetwork": "none",
+  "runtimePull": "never",
+  "sourceDateEpoch": 0,
+  "imageDigest": "sha256:ff49b94738953c9a2354f3f60474c4710335902e74900675ccf4e5f0ab2dd652",
+  "reproducibleBuilds": 2,
+  "reproducibleDigest": "sha256:ff49b94738953c9a2354f3f60474c4710335902e74900675ccf4e5f0ab2dd652"
+}

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Create the exact normalized context and build the local arm64 image."""
 from __future__ import annotations
-import argparse, hashlib, json, os, pathlib, shutil, subprocess, tarfile
+import argparse, hashlib, json, os, pathlib, pwd, shutil, subprocess, tarfile
 
 ROOT=pathlib.Path(__file__).resolve().parents[3]
 APP=ROOT/"apps/lab-runner"
@@ -34,7 +34,7 @@ def build_context()->dict[str,object]:
     CONTEXT.mkdir(mode=0o700,parents=True)
     copy_file(APP/"container/runner.Dockerfile",CONTEXT/"Dockerfile")
     app_paths=[APP/"pyproject.toml",APP/"requirements/runner-py312-linux-arm64.lock",APP/"config/runtime-policy-v2.toml"]
-    app_paths+=files_in("apps/lab-runner/src")
+    app_paths+=files_in("apps/lab-runner/src")+files_in("apps/lab-runner/tests/fixtures")
     for p in app_paths:copy_file(p,CONTEXT/"app"/p.relative_to(APP))
     families=["transform/dbt","scripts/golden","tests/fixtures/data"]
     project_paths=[ROOT/name for name in ("data-generator/generate.py","ingestion/load_raw.py","serving/export_marts_snapshot.py","lake/curated_assets.json","contracts/data/retail-golden-v1.json","contracts/data/curated-release-manifest.schema.json")]
@@ -72,8 +72,9 @@ def main()->int:
     parser=argparse.ArgumentParser(allow_abbrev=False);parser.add_argument("--build",action="store_true");a=parser.parse_args()
     observation=build_context();print(json.dumps(observation,sort_keys=True,separators=(",",":")))
     if a.build:
+        home=pathlib.Path(pwd.getpwuid(os.geteuid()).pw_dir);config=BUILD/"buildx-config";config.mkdir(mode=0o700,exist_ok=True)
         with TAR.open("rb") as stream:
-            subprocess.run(["/usr/local/bin/docker","--host",f"unix://{pathlib.Path.home()}/.orbstack/run/docker.sock","build","--platform","linux/arm64","--network","none","--pull=false","--tag","ai-ready-lab-runner:issue9","-"],stdin=stream,check=True,env={"PATH":"/usr/local/bin:/usr/bin:/bin","HOME":"/var/empty","DOCKER_CONFIG":"/var/empty"})
+            subprocess.run([str(home/".docker/cli-plugins/docker-buildx"),"build","--output","type=docker","--provenance=false","--sbom=false","--platform","linux/arm64","--network","none","--pull=false","--build-arg","SOURCE_DATE_EPOCH=0","--tag","ai-ready-lab-runner:issue9","-"],stdin=stream,check=True,env={"PATH":"/usr/local/bin:/usr/bin:/bin","HOME":str(BUILD),"DOCKER_CONFIG":str(config),"BUILDX_CONFIG":str(config),"DOCKER_HOST":f"unix://{home}/.orbstack/run/docker.sock"})
     return 0
 
 
