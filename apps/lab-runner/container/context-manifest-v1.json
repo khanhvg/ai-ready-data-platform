@@ -1,0 +1,1318 @@
+{
+  "schemaVersion": "context-manifest-v1",
+  "implementationHead": "5735970d1ffbf13d36c1dd24708e613979ce9036",
+  "releasedStageA": "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9",
+  "platform": "linux/arm64",
+  "baseManifestDigest": "sha256:9bb659dc6d5218917236f3711e866a5634bb4c2f208de9d4533aa4863f57c1d3",
+  "fileCount": 218,
+  "files": [
+    {
+      "mode": "0644",
+      "path": "Dockerfile",
+      "sha256": "35b5b5d3fce27a2acdebd26530bb7b638b64620993fe1a085a8ceaa35e2d561e",
+      "size": 1347
+    },
+    {
+      "mode": "0644",
+      "path": "app/config/runtime-policy-v2.toml",
+      "sha256": "49307b89f8097864ff08fa945522e88998a5501ddb4bca12a4e0effae5b970ad",
+      "size": 667
+    },
+    {
+      "mode": "0644",
+      "path": "app/pyproject.toml",
+      "sha256": "6f74e90b8e92537e6787dd8b89a2c28307c15b379df23e44b16dfc91ed5e28df",
+      "size": 301
+    },
+    {
+      "mode": "0644",
+      "path": "app/requirements/runner-py312-linux-arm64.lock",
+      "sha256": "f41c727b39f99106f95b7937b2811e8d27db89d1d5106e9f1d9effd4403143d2",
+      "size": 59389
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/__init__.py",
+      "sha256": "c2f5a944ff777abbc004784f9e0944141220619bd998f268efdb290cbaeea619",
+      "size": 152
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/__main__.py",
+      "sha256": "94f4b9308ad1bb5d93267c568102efbd20ccda39e455b6983a03a296eecf46a3",
+      "size": 1627
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/archive.py",
+      "sha256": "fe6311fdf50b934fe168d89ec3ab4ed009125718def0cd406f6fce0ca9d17593",
+      "size": 3196
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/audit.py",
+      "sha256": "696b43d6388968b26d062b95d6f3cc609da8aea447bcaf6636a14f8239934c05",
+      "size": 511
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/container_backend.py",
+      "sha256": "de922e3d9f829fe5e1ef8f60e8560b08a1e9f04073206f7a0a64ddba60acf0fc",
+      "size": 6800
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/container_protocol.py",
+      "sha256": "818f9423a434d267bb38c83107ecf581053c07c09024a9f11115cbfa67a0c0b9",
+      "size": 950
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/container_supervisor.py",
+      "sha256": "f790d64d6f4a59a5fdbe983880392d8e9ad27129846c8121671501596ab50845",
+      "size": 4825
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/contract.py",
+      "sha256": "06a956d3d220ccf487b0afbc799a8b84daad299e3cc779a6be5a997140292d91",
+      "size": 2488
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/engine.py",
+      "sha256": "5c7c1412bbda4227dddf860722604ef8f9a52c7bafab100f809a82212535c059",
+      "size": 2339
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/evidence.py",
+      "sha256": "9f81b142efab28d0e2f0140efd2e65555fa1a1172781988cd2683b11a6a47c9f",
+      "size": 1006
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/fence.py",
+      "sha256": "102849e040e3fbe662789610fd97c7b0efb90f44838fc721573e407f31fc978f",
+      "size": 1213
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/operation_adapters.py",
+      "sha256": "a704b6e40e863c8dda3de77b74ae381ee12d4ba7f23052072d487ee824856056",
+      "size": 5967
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/registry.py",
+      "sha256": "10bfecd3487f845a61193e29fccb26c1912abb69036cc10e856c3ffd09a5e872",
+      "size": 1603
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/release.py",
+      "sha256": "1400115a51ee5943601eda659410d64da1f06a0ecf24796a6213c8696590d058",
+      "size": 961
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/service.py",
+      "sha256": "d19a7d2e7706dc04e91288dd8551c98e0d89e7721b43ec102c5462b3eaa4b93c",
+      "size": 3379
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/state.py",
+      "sha256": "1f6d33ed3d66a0d95ad6dbed79f37fe71e99d0388f0e8d7ea47a7a857d032bfb",
+      "size": 6064
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/transport.py",
+      "sha256": "e226b834a604d3fa040fd05f290493845128f1289f5c29e50e9efe10832902f4",
+      "size": 4269
+    },
+    {
+      "mode": "0644",
+      "path": "app/src/lab_runner/workspace.py",
+      "sha256": "21c6b6082d6d7bc8233e8548962dfb8c066cd933e9ff0fd8143942da7ed74bfb",
+      "size": 1838
+    },
+    {
+      "mode": "0644",
+      "path": "project/contracts/data/curated-release-manifest.schema.json",
+      "sha256": "dcad3a4c04f44e207a26f985702db6926d4c85545d85ef5481faf036dded4e33",
+      "size": 3487
+    },
+    {
+      "mode": "0644",
+      "path": "project/contracts/data/retail-golden-v1.json",
+      "sha256": "f303282e3b524e1273e702c9b8b24b500aaa01afdd3c3b623ac997afba8840cc",
+      "size": 3031
+    },
+    {
+      "mode": "0644",
+      "path": "project/data-generator/generate.py",
+      "sha256": "f6ac5de8390750093a22c35f7e4057605b9f6512338b6974714fce8efeb0d683",
+      "size": 37366
+    },
+    {
+      "mode": "0644",
+      "path": "project/ingestion/load_raw.py",
+      "sha256": "2a94bf947dc6dd8c46b69833914c836e5b81efe6fb4e8143969e7fc3250c0406",
+      "size": 4206
+    },
+    {
+      "mode": "0644",
+      "path": "project/lake/curated_assets.json",
+      "sha256": "72a5f378799617075f27b517d75b1c3014554023a82de4069cc438de97eb51f1",
+      "size": 791
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/canonicalization-v1.json",
+      "sha256": "2b985ef9c28e78c05b192c105b7f9d15fd60516c3a2c698d7da1bc315c605fce",
+      "size": 403
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/command-owner-activation-i5-03-v1.json",
+      "sha256": "d20c5db284c4528106a0943a1970e665c6dbcc33dfc3dd05f2a9b01570ae8941",
+      "size": 939
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/command-owner-activation-v1.schema.json",
+      "sha256": "8fe337b7646fddc2dff4d1fc30e4a9120d0edec3f7eb293e8ead0e5d82f7a1f0",
+      "size": 1870
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/command-owner-registry-v1.json",
+      "sha256": "a94ac86bda0b70643edef9f144a59d8753d91f963b83d22cd510adbc31970e80",
+      "size": 13361
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/completion-reconciliation-v1.json",
+      "sha256": "8fd50ced7a068c81f9868c23842ce680a46aba94a211bb932afef2beecc2d9ff",
+      "size": 2413
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/completion-reconciliation-v1.schema.json",
+      "sha256": "64fed79f088cff1d0d548448c7d40fdbc4b8e60b6d4e57c0f08cdfbcd0c2f769",
+      "size": 5176
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/evidence-envelope-v1.schema.json",
+      "sha256": "5586e5fbfb7621a2c8a132068ac359f8b3ef6b13e62f8224916a9c8c0ece3e69",
+      "size": 721
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/fitness-result-v1.schema.json",
+      "sha256": "a104ad6330bcfc22bda0fb661fef96f067c09153da7dc2f306103e5f93a4ab6d",
+      "size": 1375
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/fitness-result-v2.schema.json",
+      "sha256": "d53f9b7b68b9f313bf0b9259fe5042bfb8cdbca0001570c18cd937de4971d6c6",
+      "size": 5094
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/golden-evidence-v1.schema.json",
+      "sha256": "cfb8e957abf2c624787e71e9ae6e2297b525f49d097bbb82e0d1c853c78fc068",
+      "size": 374
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/lab-v1.schema.json",
+      "sha256": "891c41100a28548e603ca1714aeaf5be2d541cd1780ab2ef72e3ef0740c6c16d",
+      "size": 11679
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/learning-contract-set-v1.json",
+      "sha256": "92aaf9a573f5d23b5bf5d8d7db1e68150d4b0944f0e6ab6e651b1a3d34408638",
+      "size": 7585
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/learning-contract-set-v1.schema.json",
+      "sha256": "1cf55a7eeeff3d4a08340ae903d5f4e1812deb34849d99600296be507dd19648",
+      "size": 1854
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/learning-contract-version-registry-v1.json",
+      "sha256": "a34c907e8870e89a182a180250a284f1a3c2ab3b6f1c4217c087cbc57775f9cb",
+      "size": 6676
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/learning-contract-version-registry-v1.schema.json",
+      "sha256": "d8c1881982e39e727a95f7491e6efeb288335bbef4a80d76efa891c3a8009ab8",
+      "size": 6301
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/learning-evidence-v1.schema.json",
+      "sha256": "52a68529b72ecb7f24c59ebe52e16e4ee5f21660164b1d20570827b18be3fe47",
+      "size": 5002
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/lesson-v1.schema.json",
+      "sha256": "9ece4e9cf5bf2a4dc375da13ce33ac7a696a374a225b0a7f9d1b9e089e7ea505",
+      "size": 10939
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/make-input-contract-v1.json",
+      "sha256": "9ed76af1fca630de17acfcb904680f53d5d99a9692c2b2e10751c93587ca85c1",
+      "size": 470
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/operation-matrix-v1.json",
+      "sha256": "ffabcc11ca3943e3e520cd7b98c535032be439b1e2d1b920fe9ee17806180b1e",
+      "size": 27271
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/operation-matrix-v1.schema.json",
+      "sha256": "98d77f883da45c47c6e277956ad31614003410ff43fea585fcdb432c4a12a128",
+      "size": 6560
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/progress-v1.schema.json",
+      "sha256": "a24c27b0c9abf0d553f1005c6ff4b19506fa2b9be3888b5315356b91cdc30767",
+      "size": 1883
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/promotion-trust-evidence-v1.schema.json",
+      "sha256": "aaf0777012fe2905d19ba7c0bc3cca1e72f9e67d448a4b4b6a8b33824db70dab",
+      "size": 932
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/promotion-trust-fixture-manifest-v1.schema.json",
+      "sha256": "82dc60e640b3f6d301bd739490b2928d88275926e26fb87e4457b7ff01a616bc",
+      "size": 1396
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/promotion-trust-fixture-manifest-v2.schema.json",
+      "sha256": "221957acf9d09d74070b3ec8d34a7d2d730c7de1e9f8e25e3a81b2f04d8ae3bf",
+      "size": 1520
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/promotion-trust-learning-manifest-v1.schema.json",
+      "sha256": "6b04b9acdc6097c43ede39f22d048b1b3095b96563e568ec6e2bc52527bd0255",
+      "size": 2551
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/promotion-trust-portable-run-attestation-v1.schema.json",
+      "sha256": "5cff300e93e806084fe9357c05b21174f75e755a0c0dab8d30c128a40ef594ef",
+      "size": 3425
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/promotion-trust-v1.schema.json",
+      "sha256": "43fc68833237ef5b522f82fbbd18caba0f11e16bf66e0ff26cf44f0238c39871",
+      "size": 664
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/retail-golden-v1.schema.json",
+      "sha256": "d741261816c25e4e04f767d5475eac335de2eb24f9f0c2d5005c4cde4415eed5",
+      "size": 826
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/contracts/schema-version-registry.json",
+      "sha256": "8e18588f63b5d99c0b60a229758575e8badf0f055bfcb4f89908f9fa2684a57e",
+      "size": 5816
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/labs/promotion-trust/lab-v1.json",
+      "sha256": "89ece51f41a17821d3266d2ba1fb7680cb70b07c2e9c5566d473aac9978d42d8",
+      "size": 4163
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/lessons/promotion-trust/lesson-v1.json",
+      "sha256": "758c6fb1ad75b283c313536d61bee61655bba6d27a2e685825ca20a28c838675",
+      "size": 4395
+    },
+    {
+      "mode": "0644",
+      "path": "project/learning/manifests/promotion-trust-v1.json",
+      "sha256": "553b97ed5dc44b77564ae50b1a2211205cbd1a759f3578e5e4dfcefef99044ac",
+      "size": 2130
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/architecture-render.mjs",
+      "sha256": "1af83f8481ee2b9d883706ad4cce45fe7b0c935a31fd1ae95b1570acdfc377e3",
+      "size": 1077
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/architecture_check.py",
+      "sha256": "0aef6edcb58e3237d685608e184f97a8710a2c94665aa427e59910964b094682",
+      "size": 3068
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/architecture_finalize.py",
+      "sha256": "bcecad086fb22496de715a9fe88c7de48b6c5d4a8d6b8636074d1cfde20e38fb",
+      "size": 3656
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/architecture_pipeline.py",
+      "sha256": "10b57a1c263684ae5bb47c83f8cbf5f08a06218c998dc75c708611d98021ebb0",
+      "size": 8390
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/architecture_render.py",
+      "sha256": "8932520bb10f561002951d5595da4fb643c6c4695e28841b393f547edc550f5a",
+      "size": 2071
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/canonical.py",
+      "sha256": "be2882777289afc15d964b45bf63cf4420bc5135fb86f162403aaf8004b2efda",
+      "size": 1869
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/command_registry.py",
+      "sha256": "fa5817224299385d6dbdd4511fca304782a43eb60921135c0f1b2574785852eb",
+      "size": 2122
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/contract_reader.py",
+      "sha256": "1a295688f2bd362b44e0cd0923d55752b5013de759deeee60d75615c775bbd7d",
+      "size": 480
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/dbt_capture.py",
+      "sha256": "6d84e679aa4150e161242b3e6de39e7c0bdee5c2ff9c96010b6eeb191bc71851",
+      "size": 1119
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/dependency_lock.py",
+      "sha256": "d53871e79f2176bbdb123d0736a46c77bae08ec8542cf2154881ddb615f6884e",
+      "size": 3710
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/evidence.py",
+      "sha256": "8fa7f3d6e129eb71f83f310423024368dbb845fd2e24e81ab8ccbaaf02078ed9",
+      "size": 2296
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/fitness.py",
+      "sha256": "94a1cc1c24b4ac1051f01c0ba258832079b589fc37689be92c9a6735c5dbf3e4",
+      "size": 1216
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/golden_run.py",
+      "sha256": "42d6db8b25da4eeb6b56160b264adb711abf5d01e295870317339abc565edbb6",
+      "size": 8633
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/golden_worker.py",
+      "sha256": "734a39ff95f13e57417b2d02e054b986bfa7243e2c4b497b77cf15708c4aad05",
+      "size": 15327
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/issue7_fixture.py",
+      "sha256": "1dbe66bb733701a9de9c963c02d5b24bfa07dcfb9b5ad47cb8187962c8524151",
+      "size": 11731
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/locked_test.py",
+      "sha256": "d78d0c2594f4eabff48a0e3d0cdee27899737e86981bee699ac2a528d36e20fa",
+      "size": 4286
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/process.py",
+      "sha256": "b897b11dce176d0bfafe97dc121b3194c37d8295c19930e5d9766c8dea6c9ff9",
+      "size": 3413
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/projection.py",
+      "sha256": "61a7db0265642d445f9f54657e365d2eabae3d51b6115a036386c1acc2d6bfee",
+      "size": 1175
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/promotion_trust.py",
+      "sha256": "aa6b34a641d0182e04d6fa7b4e7bc853a82ade0e6564a7af8dcdee5047488400",
+      "size": 1964
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/publish_issue7_fixture.py",
+      "sha256": "e0d7e775a84fce00a685a68b121a5a29c3786f02cf21ee3e340b726bc2cdf01f",
+      "size": 3352
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/release_contract.py",
+      "sha256": "56bf39382ad562040f5e150a4b9a1581512515a6c89057595e8574803879a17f",
+      "size": 3806
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/retail_contract.py",
+      "sha256": "b20fce655cd4dd548d9614647c524588536cdd0e5fe6cd0c125bf11360dfb678",
+      "size": 820
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/run_bundle.py",
+      "sha256": "976e7b6f854a0b29c59e76b37c56d7013c066df22f49ff328dbb0a4dfc1536bf",
+      "size": 8529
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/runtime.py",
+      "sha256": "9d6c9443cfb30020bb4e5e8bfdd279df681508ae66d8dd4d9c6f00a6365c1bb2",
+      "size": 4534
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/schema_reader.py",
+      "sha256": "0058bad5dee2b8d7df232c448b0779d25742aec85e6ca2a56bff2fc3529751bd",
+      "size": 2119
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/source_state.py",
+      "sha256": "8e7976ab5a63299dc3361b2c02f8a35a5f3929f580042b7851b635dc3a7aa70f",
+      "size": 1427
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/tdd-red-capture.py",
+      "sha256": "c430b61afea53652b1063de6730919940a03d356faf1cca12cf0a4b514e19335",
+      "size": 3826
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/verify_issue7_fixture.py",
+      "sha256": "7441576364b3f06bfa5b3fa116f42f2df7d9907741e30580db33bb846b12b640",
+      "size": 4362
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/golden/workspace.py",
+      "sha256": "75051474b92fffcfb4dec0cb25c9022c0db0c9e5d0e9ff018cffe40d1d740bf3",
+      "size": 8152
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/learning_contracts/__init__.py",
+      "sha256": "996e6079e073e5d4175a7ecb67ab5a393ac921bb0129414179e771afe1571f76",
+      "size": 596
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/learning_contracts/canonical.py",
+      "sha256": "8649585335007e4afebf113263901f7ed84a28163ff648db95c930bf42e59113",
+      "size": 2162
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/learning_contracts/check.py",
+      "sha256": "7734233a9d704ef5720f7a97f97ce822900c9c880021fc843cfd529b86b3c955",
+      "size": 29986
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/learning_contracts/completion.py",
+      "sha256": "ce557d4f03d574a902ea2d20c60b3f62e292e92fa6507c45ef8e393b6405f0ac",
+      "size": 4046
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/learning_contracts/evidence.py",
+      "sha256": "aae9633c26e3e210e5f5b294bb44534795bae7e6002b8acbf9ecf46232b4949b",
+      "size": 8499
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/learning_contracts/fitness.py",
+      "sha256": "63c9729ffaa09f85d95d798c622565e106a9a730234e9102e5b6f20e3b060c20",
+      "size": 7049
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/learning_contracts/guidance.py",
+      "sha256": "413af50bce69e66822e0d82b4debdd29e15fc6f528ee72e6319dc0f80972a141",
+      "size": 2399
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/learning_contracts/openapi.py",
+      "sha256": "792e9805b2fa0d98fdd30a5b266457597c9b1f19d317a26c130a87cecb43c2c6",
+      "size": 40995
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/learning_contracts/references.py",
+      "sha256": "5365c5ebf1fbf3e4d10d015fad3a216d15ea9bbb2327bc332166da561440ef54",
+      "size": 5924
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/learning_contracts/registry.py",
+      "sha256": "ca854421cef9880363929f3bea882f654cf3c8359ce3feecd3018febd1ce195d",
+      "size": 6540
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/learning_contracts/runtime.py",
+      "sha256": "6a8aaa88c4d38b85c8a889779be900d1d99d95f7bbca3977a03a3a4f2642808d",
+      "size": 31758
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/learning_contracts/schema.py",
+      "sha256": "caa137de02542a330a3621a057912eefce95c64775e423db6c61a8ef5f58d005",
+      "size": 5253
+    },
+    {
+      "mode": "0644",
+      "path": "project/scripts/learning_contracts/state.py",
+      "sha256": "8149c9e976e2460570932d11b706a384587f00485ac078c63203d076f7e5c6a8",
+      "size": 2855
+    },
+    {
+      "mode": "0644",
+      "path": "project/serving/export_marts_snapshot.py",
+      "sha256": "ec1f207fd720644c79ca0247d01eabe6f71c237c062beab991ba41af80af806d",
+      "size": 2325
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/dbt_project.yml",
+      "sha256": "d334730cb3caa6a5e80bd94aa1de0c1b1a7afd80a9df4bcf0fa33cafc9479a6c",
+      "size": 662
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/_core__models.yml",
+      "sha256": "a90b2aa82011acd3977512594f8fe762eabea769421b8843d393b665b6f6cc91",
+      "size": 7639
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/dim_customers.sql",
+      "sha256": "aebafd5169a7eb15383c6218d969edfe46c647144dd4107196f24325b64ae1a4",
+      "size": 172
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/dim_date.sql",
+      "sha256": "a56a4fce3ab8eb6b2dfd1992f3e77800298cce019f4fc6711cb119e67bae70cb",
+      "size": 1049
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/dim_products.sql",
+      "sha256": "bbfd7b9e094666e1e0f5558e00e1398db5b19a66f851f6a7e2f9a27d9c5e1250",
+      "size": 244
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/dim_promotions.sql",
+      "sha256": "418827861dfb3bca5d563c2810aa19dc8bacccb5b56b1bafc4c0d98dba473f2e",
+      "size": 134
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/dim_regions.sql",
+      "sha256": "11cb02aeb242bef27fd5ecf2c4a8dfcb95a9bceedc1566375e0b42eb85778230",
+      "size": 68
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/dim_stores.sql",
+      "sha256": "28205275509d6614b21b3b51ab027d57ccbedf35e3b086b446c298e3ceacaf83",
+      "size": 218
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/dim_suppliers.sql",
+      "sha256": "5c8e4ab01e4d997d68ba4ce3f0404a715489244008bffb9c4e9fc4ab2e4795cd",
+      "size": 229
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/fct_inventory_movements.sql",
+      "sha256": "a78d27c545ee0f62e32c98f13e8a9bdae4f2dcded8ca1069420def2b8bff59c5",
+      "size": 195
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/fct_order_items.sql",
+      "sha256": "27d361e03d8a6eaf30ca8e148b089b655c9646579ba9ac32dba4bb80be64c0b9",
+      "size": 200
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/fct_orders.sql",
+      "sha256": "e29e8780bb9ed2ee71561f92ed21af8bb11bb233d1a2b58039cc9cf1cab3ca48",
+      "size": 224
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/fct_payments.sql",
+      "sha256": "aefdda5d086430cc0da992a91ada0833ce9d13008a89f23ccfa51185c773f64c",
+      "size": 137
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/fct_purchase_order_items.sql",
+      "sha256": "a0813b1a36ecbf785c9b57d5ec0713a53e2048a1a212a3754d3e312801f2425a",
+      "size": 144
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/fct_purchase_orders.sql",
+      "sha256": "11699fc085a0c7b34cd8e0e921724ba56718f30aa0df4dffec6e676b841e1988",
+      "size": 217
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/fct_returns.sql",
+      "sha256": "0a96a105c1775822ecfa752825a301946659c9adc0ffd8a4712567b44a971638",
+      "size": 121
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/fct_shipments.sql",
+      "sha256": "ce8aa200710664e15e6bc827ec75ed1a0eed379648b19d6a94ce9e3c56a000d8",
+      "size": 224
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/core/fct_web_events.sql",
+      "sha256": "3ccdd88937ad11fad1fcda89dc1d0e1e5a29ff0686cb6b6a5c2d58af53d3f034",
+      "size": 129
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/intermediate/_intermediate__models.yml",
+      "sha256": "974345074117eb8db610cd71c3bb69b74fe2258800a3a879ba146e3f237ca17f",
+      "size": 1704
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/intermediate/int_fulfillment.sql",
+      "sha256": "09577b1c0e9790be07456d6a2968061aba42d278f2dc6a73556cb5905f5a33ba",
+      "size": 877
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/intermediate/int_inventory_position.sql",
+      "sha256": "f2739d490bb76b63fb82e496f9317b29e71b84bf663f85b0d42956197b907b91",
+      "size": 1058
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/intermediate/int_order_items_priced.sql",
+      "sha256": "67c904c44ba737adb0d483fbce8b9ed20e13a786c24980a8b2f103713ddb08a7",
+      "size": 735
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/intermediate/int_orders_enriched.sql",
+      "sha256": "bf6435aa0b0425b85483991240a6e78d8291157f263f59195767ae9f0f933f1a",
+      "size": 779
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/intermediate/int_purchasing.sql",
+      "sha256": "674de1a967799072d13bd5a5fe7a941c6c88fcc5d4452b09489d8122d1ce3a23",
+      "size": 961
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/intermediate/int_web_funnel.sql",
+      "sha256": "a9e94d635019f4e051335e8235f98742c45dd754f62d0d286d401c729ec28d2c",
+      "size": 1688
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/marts/_marts__models.yml",
+      "sha256": "c0448deb63f7db4b60efff9830755306166452e1524ae13491643b7573df1643",
+      "size": 3914
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/marts/mart_channel_geography.sql",
+      "sha256": "93bfc7cd85315383e9c408364c93d8baba708bc0adeee1b3eaca7d1083f3d495",
+      "size": 457
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/marts/mart_customer_cohorts.sql",
+      "sha256": "5e72d40262c0a94d825672b5dc9b29c81a47b51129e62232f8e4932b9eeddb0d",
+      "size": 1043
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/marts/mart_daily_revenue.sql",
+      "sha256": "ad993352e5b839cc57670441859b1c7a53c22b001eefbad23aa62febcc7bee31",
+      "size": 512
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/marts/mart_data_quality.sql",
+      "sha256": "e6c3441f2e31de302ef65ec3a3a9ea300b90d098127c2a7142865298a376ddcc",
+      "size": 1610
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/marts/mart_fulfillment_performance.sql",
+      "sha256": "2b82fd334aee3397d3e891fd9d5d39283c88fbfe2f0ec62d09b676b696a22107",
+      "size": 802
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/marts/mart_inventory_health.sql",
+      "sha256": "3c402e6146d3fbd318ce1afc15930cf5bdc68465fe05ebbd25d9427bb2aee949",
+      "size": 1582
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/marts/mart_promotion_effectiveness.sql",
+      "sha256": "feceb6277f9897d9aa6bc8abfa92fbc22fa16679e3887aa57abb6cbc6e895e5b",
+      "size": 1042
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/marts/mart_returns_analysis.sql",
+      "sha256": "9313a059846bb685c7c09f8440d679bc64f9315b87314f9f4ddd0769d3ba2f3c",
+      "size": 1288
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/marts/mart_supplier_purchasing.sql",
+      "sha256": "e637e956b6886f60d64a3946300ad865c7f646ab67026424a994b1951bec5c1c",
+      "size": 1540
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/marts/mart_top_products.sql",
+      "sha256": "f7acb93d8432a3a66c65226491c9d66a3e56e681b90cef29717da470cd7685f7",
+      "size": 670
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/marts/mart_web_funnel_conversion.sql",
+      "sha256": "84340cf26184561ba8f75f62c36ac16ea1b45a8b916683231abed68cb79a0dca",
+      "size": 921
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/_sources.yml",
+      "sha256": "c56c9f9fb62e52786c82a3fe16ce73dfa9780bf9e15fc1062b273b17656357a0",
+      "size": 2724
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/_staging__models.yml",
+      "sha256": "142ab1687f1f47770ea4141040a8484ac941969ddc66d08583b33733a69dae40",
+      "size": 7467
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_customers.sql",
+      "sha256": "bde0bfb8ed60443c7dbf77182bb413e4138acddea9b7a79ace41abc0ac84dfe9",
+      "size": 617
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_inventory_movements.sql",
+      "sha256": "d2033769f7b62376e0252141037e2babf1d9d2044bcbe0439f49b2eef5eed93c",
+      "size": 153
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_order_items.sql",
+      "sha256": "5c8854805d1f3d4811845fb834d939539ab17cea836d34b46a435351bfcd654e",
+      "size": 397
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_orders.sql",
+      "sha256": "f3eab9aa5ed7b12c622284c821c3267a3a0e7f7755d103e107c50ee443e48389",
+      "size": 751
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_payments.sql",
+      "sha256": "26be766b3d5d97d901dfac341d5b01a79b808d0f468beb4867b15a0de9888ae6",
+      "size": 143
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_product_categories.sql",
+      "sha256": "ba7a470ea4bc314d5d8eb6ac55dbe4a397eecce304119df1a82fc3ee18a0d894",
+      "size": 119
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_products.sql",
+      "sha256": "013f9083a95e0952db73f1372ae6fa8e5c44042395ec43af52cd8dad1b29aeec",
+      "size": 134
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_promotions.sql",
+      "sha256": "05e2017e47e1d6069a13bff4287bb305e578c8a7684ffe036fb23251669238f2",
+      "size": 140
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_purchase_order_items.sql",
+      "sha256": "d65da0563c5fbd317d161af84e8544a0e8c059105453ba769bec5e9e1fe158d6",
+      "size": 318
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_purchase_orders.sql",
+      "sha256": "201aa8f3fcbdc1f62e0625655d5b6a59c9406ad7ffaa85503d04553739e5ab21",
+      "size": 139
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_regions.sql",
+      "sha256": "08decb106960fc7f61c958519704c42fdf13d8f22ac05205cf5e2bcb3d08f125",
+      "size": 74
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_returns_refunds.sql",
+      "sha256": "49aca5861a1853652b414c30a075e8961a3b2005b72a832f0ab46ffd0504a2d9",
+      "size": 478
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_reviews.sql",
+      "sha256": "142d8c1790e2e197aedf1b863f16393c6d488b67076df96e8e017fc397c919ac",
+      "size": 136
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_shipments.sql",
+      "sha256": "80ea55ca4b9942eacde29c32b42731a733d963793812430ada15ceb7660150d5",
+      "size": 289
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_stores.sql",
+      "sha256": "f878015a979459f9851792bf67cd8fd0b6a4ef6a17f887b3733a5c260869076c",
+      "size": 125
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_suppliers.sql",
+      "sha256": "9a4adad38626ec582d9697972660df953614c7c5f8bf844cf16268e17bcb8034",
+      "size": 138
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_web_events.sql",
+      "sha256": "d8a52657c1505ae5b49ec7ad2167a9e98a1ad5bc6219be0c89452d3ae5e0247d",
+      "size": 326
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/models/staging/stg_web_sessions.sql",
+      "sha256": "7d03f9651f6ae8fef809ad429f56f8a4ff2fbdf74137e9946f021413bb59dfcf",
+      "size": 265
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/profiles.yml",
+      "sha256": "886a97e4362ee2944723bf062ce6537ded0d15bf64a6d4db99041f1436ddad6a",
+      "size": 425
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/requirements.txt",
+      "sha256": "f4ea4b6355a5ff3fd9a82a784b11252b8b2874fd344b9d5065a3af23f67f9bd5",
+      "size": 19
+    },
+    {
+      "mode": "0644",
+      "path": "project/transform/dbt/tests/assert_non_negative_shipment_lead_time.sql",
+      "sha256": "e952d8293af58edc9aeaccc3756ebac7e9d37aa08090c4ee8934fdefb2b12b07",
+      "size": 385
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/agate-1.9.1-py2.py3-none-any.whl",
+      "sha256": "1cf329510b3dde07c4ad1740b7587c9c679abc3dcd92bb1107eabc10c2e03c50",
+      "size": 95085
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/annotated_types-0.7.0-py3-none-any.whl",
+      "sha256": "1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53",
+      "size": 13643
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/attrs-26.1.0-py3-none-any.whl",
+      "sha256": "c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309",
+      "size": 67548
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/babel-2.18.0-py3-none-any.whl",
+      "sha256": "e2b422b277c2b9a9630c1d7903c2a00d0830c409c59ac8cae9081c92f1aeba35",
+      "size": 10196845
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/certifi-2026.6.17-py3-none-any.whl",
+      "sha256": "2227dcbaafe0d2f59279d1762ddddc37783ed4354594f194ffc31d20f41fc3db",
+      "size": 133289
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/charset_normalizer-3.4.9-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl",
+      "sha256": "9b2aff1c7b3884512b9512c3eaadd9bab39fb45042ffaaa1dd08ff2b9f8109d9",
+      "size": 215802
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/click-8.4.2-py3-none-any.whl",
+      "sha256": "e6f9f66136c816745b9d65817da91d61d957fb16e02e4dcd0552553c5a197b76",
+      "size": 119243
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/colorama-0.4.6-py2.py3-none-any.whl",
+      "sha256": "4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6",
+      "size": 25335
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/daff-1.4.2-py3-none-any.whl",
+      "sha256": "88981a21d065e4378b5c4bd40b975dbfdea9b7ff540071f3bb5e20cc8b3590b5",
+      "size": 144922
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/dbt_adapters-1.24.4-py3-none-any.whl",
+      "sha256": "a8a4bb380168dd632012e33e883433c65def9fadc4f30e365db313907b270b99",
+      "size": 176921
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/dbt_common-1.38.0-py3-none-any.whl",
+      "sha256": "1646e5384a8e317fa63890e60e41ca50dd4c5a89e02ad9a141c184d4b672b696",
+      "size": 88460
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/dbt_core-1.11.12-py3-none-any.whl",
+      "sha256": "3b7760a3760a6db8a14a6ef38fb86532b2c2b150d49beaa1feb0f50170baa86e",
+      "size": 1062483
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/dbt_duckdb-1.10.1-py3-none-any.whl",
+      "sha256": "90658ecb367082786c5ea2ffbf9e35bb4116fa5ad1bc2f287c4dc1f3984bafa1",
+      "size": 85089
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/dbt_extractor-0.6.0-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl",
+      "sha256": "af451633390ac19669d3bde6c79822e657d32f5d903b3388bb00d56333fd52d5",
+      "size": 435109
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/dbt_protos-1.0.541-py3-none-any.whl",
+      "sha256": "4e03f88e6b5c13a8cac68c6aa78267d8eb4396e6341a807112d619ab938318d5",
+      "size": 241824
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/dbt_semantic_interfaces-0.9.0-py3-none-any.whl",
+      "sha256": "1b54c06ba89190a47a7f0563360930a0cce869e55b484ca09d261ade0e319155",
+      "size": 147008
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/deepdiff-8.6.2-py3-none-any.whl",
+      "sha256": "4d22034a866c3928303a9332c279362f714192d9305bac17c498720d095fd1b4",
+      "size": 91979
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/duckdb-1.5.4-cp312-cp312-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl",
+      "sha256": "8f935ef210ab00bc94bb1e3052697adaa36bb0ce7bdfeda8b0f34e2ff1643870",
+      "size": 19367895
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/faker-40.28.1-py3-none-any.whl",
+      "sha256": "e8d3f5c469100a553d246dce7937c291308068a5ec6c9c3a228d7878b50720be",
+      "size": 2061052
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/idna-3.18-py3-none-any.whl",
+      "sha256": "7f952cbe720b688055e3f87de14f5c3e5fdaa8bc3928985c4077ca689de849a2",
+      "size": 65455
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/importlib_metadata-8.9.0-py3-none-any.whl",
+      "sha256": "e0f761b6ea91ced3b0844c14c9d955224d538105921f8e6754c00f6ca79fba7f",
+      "size": 27220
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/isodate-0.7.2-py3-none-any.whl",
+      "sha256": "28009937d8031054830160fce6d409ed342816b543597cece116d966c6d99e15",
+      "size": 22320
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/jinja2-3.1.6-py3-none-any.whl",
+      "sha256": "85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67",
+      "size": 134899
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/jsonschema-4.26.0-py3-none-any.whl",
+      "sha256": "d489f15263b8d200f8387e64b4c3a75f06629559fb73deb8fdfb525f2dab50ce",
+      "size": 90630
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/jsonschema_specifications-2025.9.1-py3-none-any.whl",
+      "sha256": "98802fee3a11ee76ecaca44429fda8a41bff98b00a0f2838151b113f210cc6fe",
+      "size": 18437
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/leather-0.4.1-py3-none-any.whl",
+      "sha256": "ec61cba1ca3ccb96ed90e38b116fc58757d97d352171006b3288c47ce3fbd183",
+      "size": 30340
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/markupsafe-3.0.3-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl",
+      "sha256": "3a7e8ae81ae39e62a41ec302f972ba6ae23a5c5396c8e60113e9066ef893da0d",
+      "size": 24332
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/mashumaro-3.14-py3-none-any.whl",
+      "sha256": "c12a649599a8f7b1a0b35d18f12e678423c3066189f7bc7bd8dd431c5c8132c3",
+      "size": 92183
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/more_itertools-10.8.0-py3-none-any.whl",
+      "sha256": "52d4362373dcf7c52546bc4af9a86ee7c4579df9a8dc268be0a2f949d376cc9b",
+      "size": 69667
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/msgpack-1.2.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl",
+      "sha256": "60926b75d00c8e816ef98f3034f484a8bc64242d66839cef4cf7e503142316a0",
+      "size": 410634
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/networkx-3.6.1-py3-none-any.whl",
+      "sha256": "d47fbf302e7d9cbbb9e2555a0d267983d2aa476bac30e90dfbe5669bd57f3762",
+      "size": 2068504
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/orderly_set-5.5.0-py3-none-any.whl",
+      "sha256": "46f0b801948e98f427b412fcabb831677194c05c3b699b80de260374baa0b1e7",
+      "size": 13068
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/packaging-26.2-py3-none-any.whl",
+      "sha256": "5fc45236b9446107ff2415ce77c807cee2862cb6fac22b8a73826d0693b0980e",
+      "size": 100195
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/parsedatetime-2.6-py3-none-any.whl",
+      "sha256": "cb96edd7016872f58479e35879294258c71437195760746faffedb692aef000b",
+      "size": 42548
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/pathspec-0.12.1-py3-none-any.whl",
+      "sha256": "a0d503e138a4c123b27490a4f7beda6a01c6f288df0e4a8b79c7eb0dc7b4cc08",
+      "size": 31191
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/pip-26.1.1-py3-none-any.whl",
+      "sha256": "99cb1c2899893b075ff56e4ed0af55669a955b49ad7fb8d8603ecdaf4ed653fb",
+      "size": 1812777
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/protobuf-6.33.6-cp39-abi3-manylinux2014_aarch64.whl",
+      "sha256": "e2afbae9b8e1825e3529f88d514754e094278bb95eadc0e199751cdd9a2e82a2",
+      "size": 324610
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/pydantic-2.13.4-py3-none-any.whl",
+      "sha256": "45a282cde31d808236fd7ea9d919b128653c8b38b393d1c4ab335c62924d9aba",
+      "size": 472262
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/pydantic_core-2.46.4-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl",
+      "sha256": "8233f2947cf85404441fd7e0085f53b10c93e0ee78611099b5c7237e36aacbf7",
+      "size": 1975742
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/python_dateutil-2.9.0.post0-py2.py3-none-any.whl",
+      "sha256": "a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427",
+      "size": 229892
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/python_slugify-8.0.4-py2.py3-none-any.whl",
+      "sha256": "276540b79961052b66b7d116620b36518847f52d5fd9e3a70164fc8c50faa6b8",
+      "size": 10051
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/pytimeparse-1.1.8-py2.py3-none-any.whl",
+      "sha256": "04b7be6cc8bd9f5647a6325444926c3ac34ee6bc7e69da4367ba282f076036bd",
+      "size": 9969
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/pytz-2026.2-py2.py3-none-any.whl",
+      "sha256": "04156e608bee23d3792fd45c94ae47fae1036688e75032eea2e3bf0323d1f126",
+      "size": 510141
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/pyyaml-6.0.3-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl",
+      "sha256": "9149cad251584d5fb4981be1ecde53a1ca46c891a79788c0df828d2f166bda28",
+      "size": 775116
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/referencing-0.37.0-py3-none-any.whl",
+      "sha256": "381329a9f99628c9069361716891d34ad94af76e461dcb0335825aecc7692231",
+      "size": 26766
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/requests-2.34.2-py3-none-any.whl",
+      "sha256": "2a0d60c172f83ac6ab31e4554906c0f3b3588d37b5cb939b1c061f4907e278e0",
+      "size": 73075
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/rfc8785-0.1.4-py3-none-any.whl",
+      "sha256": "520d690b448ecf0703691c76e1a34a24ddcd4fc5bc41d589cb7c58ec651bcd48",
+      "size": 9240
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/rpds_py-2026.6.3-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl",
+      "sha256": "55927d532399c2c646100ff7feb48eaa940ad70f42cd68e1328f3ded9f81ca24",
+      "size": 368180
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/six-1.17.0-py2.py3-none-any.whl",
+      "sha256": "4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274",
+      "size": 11050
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/snowplow_tracker-1.1.0-py3-none-any.whl",
+      "sha256": "24ea32ddac9cca547421bf9ab162f5f33c00711c6ef118ad5f78093cee962224",
+      "size": 44128
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/sqlparse-0.5.5-py3-none-any.whl",
+      "sha256": "12a08b3bf3eec877c519589833aed092e2444e68240a3577e8e26148acc7b1ba",
+      "size": 46138
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/text_unidecode-1.3-py2.py3-none-any.whl",
+      "sha256": "1311f10e8b895935241623731c2ba64f4c455287888b18189350b67134a822e8",
+      "size": 78154
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/typing_extensions-4.16.0-py3-none-any.whl",
+      "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+      "size": 45571
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/typing_inspection-0.4.2-py3-none-any.whl",
+      "sha256": "4ed1cacbdc298c220f1bd249ed5287caa16f34d44ef4e9c3d0cbad5b521545e7",
+      "size": 14611
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/urllib3-2.7.0-py3-none-any.whl",
+      "sha256": "9fb4c81ebbb1ce9531cce37674bbc6f1360472bc18ca9a553ede278ef7276897",
+      "size": 131087
+    },
+    {
+      "mode": "0644",
+      "path": "wheelhouse/zipp-4.1.0-py3-none-any.whl",
+      "sha256": "25ad4e16390cd314347dd8f1de67a2ac538ae658ed4ab9db16029c07c188e97f",
+      "size": 10238
+    }
+  ]
+}

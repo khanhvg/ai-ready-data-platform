@@ -25,7 +25,8 @@ def copy_file(source:pathlib.Path,target:pathlib.Path)->None:
 
 
 def files_in(family:str)->list[pathlib.Path]:
-    return sorted(p for p in (ROOT/family).rglob("*") if p.is_file() and not p.is_symlink())
+    names=subprocess.run(["git","ls-files",family],cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE).stdout.splitlines()
+    return [ROOT/name for name in names]
 
 
 def build_context()->dict[str,object]:
@@ -35,8 +36,8 @@ def build_context()->dict[str,object]:
     app_paths=[APP/"pyproject.toml",APP/"requirements/runner-py312-linux-arm64.lock",APP/"config/runtime-policy-v2.toml"]
     app_paths+=files_in("apps/lab-runner/src")
     for p in app_paths:copy_file(p,CONTEXT/"app"/p.relative_to(APP))
-    families=["data-generator","ingestion","transform/dbt","serving","lake","scripts/golden","contracts/data","tests/fixtures/data"]
-    project_paths=[]
+    families=["transform/dbt","scripts/golden","tests/fixtures/data"]
+    project_paths=[ROOT/name for name in ("data-generator/generate.py","ingestion/load_raw.py","serving/export_marts_snapshot.py","lake/curated_assets.json","contracts/data/retail-golden-v1.json","contracts/data/curated-release-manifest.schema.json")]
     for family in families:project_paths+=files_in(family)
     for p in project_paths:copy_file(p,CONTEXT/"project"/p.relative_to(ROOT))
     stage_families=["scripts/learning_contracts","learning/contracts","learning/labs/promotion-trust","learning/lessons/promotion-trust","learning/manifests"]
@@ -55,7 +56,10 @@ def build_context()->dict[str,object]:
     rows=[]
     for p in sorted(x for x in CONTEXT.rglob("*") if x.is_file()):
         rows.append({"path":p.relative_to(CONTEXT).as_posix(),"mode":"0644","size":p.stat().st_size,"sha256":sha(p)})
-    with tarfile.open(TAR,"w",format=tarfile.PAX_FORMAT) as tf:
+    declared=json.loads((APP/"container/context-manifest-v1.json").read_text())
+    if declared.get("files") != rows or declared.get("fileCount") != len(rows):
+        raise SystemExit("CONTEXT_MANIFEST_HASH_MISMATCH")
+    with tarfile.open(TAR,"w",format=tarfile.GNU_FORMAT) as tf:
         for p in sorted(CONTEXT.rglob("*")):
             info=tf.gettarinfo(str(p),p.relative_to(CONTEXT).as_posix());info.uid=0;info.gid=0;info.uname="";info.gname="";info.mtime=0
             if info.isfile():
