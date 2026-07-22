@@ -25,6 +25,11 @@ import jsonschema
 from .canonical import canonical_bytes, parse_json
 from .schema import LearningContractError, read_document, validate_document
 from .references import resolve_reference
+from .vite_binding import (
+    validate_shipped_vite_binding,
+    validate_vite_binding_document,
+    validate_vite_binding_path,
+)
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -377,6 +382,7 @@ def validate_all_contracts() -> list[dict[str, str]]:
     invalid_rows = validate_invalid_corpus()
     validate_shipped_openapi()
     _verify_release_hashes()
+    validate_shipped_vite_binding()
     return invalid_rows
 
 
@@ -389,6 +395,20 @@ def _fitness_provenance() -> dict[str, Any]:
         {"name": path.name.replace(".schema.json", "").replace(".json", ""), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
         for path in sorted((ROOT / "learning/contracts").glob("*.schema.json"))
     ]
+    contract_hashes.extend(
+        {"name": name, "sha256": hashlib.sha256((ROOT / relative).read_bytes()).hexdigest()}
+        for name, relative in (
+            ("promotion-trust-vite-binding-document-v1", "learning/bindings/vite/promotion-trust-v1.json"),
+            ("stage-a-contract-set-v1", "learning/contracts/learning-contract-set-v1.json"),
+            ("stage-a-promotion-manifest-v1", "learning/manifests/promotion-trust-v1.json"),
+            ("stage-a-completion-authority-v1", "learning/contracts/completion-reconciliation-v1.json"),
+            ("issue-7-vite-adr", "docs/decisions/0005-web-stack.md"),
+            ("issue-7-vite-package", "spikes/web/candidates/vite/package.json"),
+            ("issue-7-vite-lock", "spikes/web/candidates/vite/package-lock.json"),
+            ("issue-7-vite-lesson-contract", "spikes/web/candidates/vite/src/lesson-contract.mjs"),
+        )
+    )
+    contract_hashes.sort(key=lambda item: (item["name"], item["sha256"]))
     fixture_hashes = [
         {
             "name": path.relative_to(FIXTURE_ROOT).as_posix().replace("/", "."),
@@ -396,10 +416,23 @@ def _fitness_provenance() -> dict[str, Any]:
         }
         for path in sorted(FIXTURE_ROOT.rglob("*")) if path.is_file()
     ]
+    fixture_hashes.extend(
+        {"name": name, "sha256": hashlib.sha256((ROOT / relative).read_bytes()).hexdigest()}
+        for name, relative in (
+            ("promotion-trust-evidence-v1", "tests/fixtures/learning/promotion-trust/evidence-v1.json"),
+            ("promotion-trust-fixture-manifest-v2", "tests/fixtures/learning/promotion-trust/manifest.json"),
+        )
+    )
+    fixture_hashes.sort(key=lambda item: (item["name"], item["sha256"]))
     return {
         "inputSha": _git_value("rev-parse", "HEAD"),
         "testedTreeSha": _git_value("rev-parse", "HEAD^{tree}"),
-        "dependencyMergeShas": ["24be3b34c6b0fcdbd07c5800dcab349054e34713"],
+        "dependencyMergeShas": [
+            "24be3b34c6b0fcdbd07c5800dcab349054e34713",
+            "1806b6d515f2f7a2ace2be7077af84a745ff221f",
+            "5c2244c2c860234d0df49cf0a42ad950c6495717",
+            "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9",
+        ],
         "contractHashes": contract_hashes,
         "fixtureHashes": fixture_hashes,
         "schemaHashes": contract_hashes,
@@ -492,6 +525,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if lesson != "promotion-trust":
             raise LearningContractError("LESSON_UNKNOWN")
         validate_valid_corpus()
+        validate_shipped_vite_binding()
         evidence_path = _emit_fitness("lesson-check", "lesson", lesson, started)
         print(json.dumps({"result": "pass", "lesson": lesson, "evidence": evidence_path.relative_to(ROOT).as_posix()}, sort_keys=True))
     elif command == "evidence":

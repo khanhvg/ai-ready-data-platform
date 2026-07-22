@@ -1,0 +1,254 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "promotion-trust-vite-binding-v1.schema.json",
+  "title": "Promotion trust Vite identifier binding v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "bindingId",
+    "mode",
+    "stageA",
+    "issue7",
+    "fixture",
+    "grainBindings",
+    "decision",
+    "trustBoundary"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "promotion-trust-vite-binding-v1"
+    },
+    "bindingId": {
+      "const": "promotion-trust-vite-binding-v1"
+    },
+    "mode": {
+      "const": "lossless-identifier-alias-v1"
+    },
+    "stageA": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "releaseSha",
+        "contractSet",
+        "promotionManifest"
+      ],
+      "properties": {
+        "releaseSha": {
+          "$ref": "#/$defs/gitSha"
+        },
+        "contractSet": {
+          "$ref": "#/$defs/reference"
+        },
+        "promotionManifest": {
+          "$ref": "#/$defs/reference"
+        }
+      }
+    },
+    "issue7": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mergeSha",
+        "adr",
+        "package",
+        "lock",
+        "lessonContract"
+      ],
+      "properties": {
+        "mergeSha": {
+          "$ref": "#/$defs/gitSha"
+        },
+        "adr": {
+          "$ref": "#/$defs/reference"
+        },
+        "package": {
+          "$ref": "#/$defs/reference"
+        },
+        "lock": {
+          "$ref": "#/$defs/reference"
+        },
+        "lessonContract": {
+          "$ref": "#/$defs/reference"
+        }
+      }
+    },
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "use",
+        "evidence",
+        "manifest"
+      ],
+      "properties": {
+        "use": {
+          "const": "build-time-validation-only"
+        },
+        "evidence": {
+          "$ref": "#/$defs/reference"
+        },
+        "manifest": {
+          "$ref": "#/$defs/reference"
+        }
+      }
+    },
+    "grainBindings": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stageAGrain",
+          "viteGrain",
+          "stageAKeys",
+          "viteKeys",
+          "aliases"
+        ],
+        "properties": {
+          "stageAGrain": {
+            "$ref": "#/$defs/id"
+          },
+          "viteGrain": {
+            "$ref": "#/$defs/id"
+          },
+          "stageAKeys": {
+            "$ref": "#/$defs/keys"
+          },
+          "viteKeys": {
+            "$ref": "#/$defs/keys"
+          },
+          "aliases": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 8,
+            "items": {
+              "$ref": "#/$defs/alias"
+            }
+          }
+        }
+      }
+    },
+    "decision": {
+      "const": "insufficient-evidence/no-common-grain"
+    },
+    "trustBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "browserRole",
+        "serverValidationAuthority",
+        "completionAuthority",
+        "authorize",
+        "mutate",
+        "validate",
+        "complete",
+        "emitEvidence"
+      ],
+      "properties": {
+        "browserRole": {
+          "const": "projection-only"
+        },
+        "serverValidationAuthority": {
+          "const": "stage-a-learning-contracts"
+        },
+        "completionAuthority": {
+          "const": "learning-progress-authority-v1"
+        },
+        "authorize": {
+          "type": "boolean"
+        },
+        "mutate": {
+          "type": "boolean"
+        },
+        "validate": {
+          "type": "boolean"
+        },
+        "complete": {
+          "type": "boolean"
+        },
+        "emitEvidence": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitSha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._/-]+$"
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "keys": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/key"
+      }
+    },
+    "alias": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "to",
+        "kind"
+      ],
+      "properties": {
+        "from": {
+          "$ref": "#/$defs/key"
+        },
+        "to": {
+          "$ref": "#/$defs/key"
+        },
+        "kind": {
+          "enum": [
+            "identity",
+            "identifier-alias"
+          ]
+        }
+      }
+    }
+  }
+}

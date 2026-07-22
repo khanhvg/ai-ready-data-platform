@@ -70,8 +70,6 @@ class ViteConsumerBindingTests(unittest.TestCase):
         return value
 
     def validate_binding_path(self, path: pathlib.Path) -> dict[str, object]:
-        value = schema.read_document(path)
-        schema.validate_document(value, family="vite-binding")
         validator = getattr(check, "validate_vite_binding_path", None)
         self.assertIsNotNone(validator, "VITE_BINDING_REQUIRED: public check path")
         return validator(path, root=ROOT)
