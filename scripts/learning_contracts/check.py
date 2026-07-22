@@ -25,6 +25,14 @@ import jsonschema
 from .canonical import canonical_bytes, parse_json
 from .schema import LearningContractError, read_document, validate_document
 from .references import resolve_reference
+from .vite_binding import (
+    BINDING_DOCUMENT_PATH,
+    BINDING_SCHEMA_PATH,
+    ValidatedViteBinding,
+    validate_shipped_vite_binding,
+    validate_vite_binding_document,
+    validate_vite_binding_path,
+)
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -371,12 +379,17 @@ def _verify_release_hashes() -> None:
             raise LearningContractError(f"CONTRACT_SET_HASH_MISMATCH:{item['path']}")
 
 
-def validate_all_contracts() -> list[dict[str, str]]:
+def _validate_all_contracts_with_snapshot() -> tuple[list[dict[str, str]], ValidatedViteBinding]:
     from .openapi import validate_shipped_openapi
     validate_valid_corpus()
     invalid_rows = validate_invalid_corpus()
     validate_shipped_openapi()
     _verify_release_hashes()
+    return invalid_rows, validate_shipped_vite_binding()
+
+
+def validate_all_contracts() -> list[dict[str, str]]:
+    invalid_rows, _ = _validate_all_contracts_with_snapshot()
     return invalid_rows
 
 
@@ -384,10 +397,14 @@ def _git_value(*arguments: str) -> str:
     return subprocess.check_output(["git", *arguments], cwd=ROOT, text=True).strip()
 
 
-def _fitness_provenance() -> dict[str, Any]:
+def _fitness_provenance(
+    binding_snapshot: ValidatedViteBinding | None = None,
+) -> dict[str, Any]:
+    snapshot = binding_snapshot or validate_shipped_vite_binding()
     contract_hashes = [
         {"name": path.name.replace(".schema.json", "").replace(".json", ""), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
         for path in sorted((ROOT / "learning/contracts").glob("*.schema.json"))
+        if path.relative_to(ROOT).as_posix() != BINDING_SCHEMA_PATH
     ]
     fixture_hashes = [
         {
@@ -396,13 +413,20 @@ def _fitness_provenance() -> dict[str, Any]:
         }
         for path in sorted(FIXTURE_ROOT.rglob("*")) if path.is_file()
     ]
+    binding_hashes = [
+        {"name": path.replace("/", "."), "sha256": digest}
+        for path, digest in snapshot.hashes.items()
+    ]
+    contract_hashes.extend(binding_hashes)
+    contract_hashes.sort(key=lambda item: (item["name"], item["sha256"]))
+    schema_hashes = [*contract_hashes]
     return {
         "inputSha": _git_value("rev-parse", "HEAD"),
         "testedTreeSha": _git_value("rev-parse", "HEAD^{tree}"),
         "dependencyMergeShas": ["24be3b34c6b0fcdbd07c5800dcab349054e34713"],
         "contractHashes": contract_hashes,
         "fixtureHashes": fixture_hashes,
-        "schemaHashes": contract_hashes,
+        "schemaHashes": schema_hashes,
         "lockSha256": hashlib.sha256((ROOT / "requirements/golden-py312-macos-arm64.lock").read_bytes()).hexdigest(),
     }
 
@@ -414,6 +438,7 @@ def _emit_fitness(
     started: float,
     *,
     invalid_rows: list[dict[str, str]] | None = None,
+    binding_snapshot: ValidatedViteBinding | None = None,
 ) -> pathlib.Path:
     from scripts.golden.workspace import allocate_family, atomic_write
     from .fitness import verify_fitness
@@ -423,7 +448,7 @@ def _emit_fitness(
         atomic_write(workspace.run_fd, "result.json", result_raw)
         invalid_raw = json.dumps(invalid_rows or [], sort_keys=True, separators=(",", ":")).encode() + b"\n"
         atomic_write(workspace.run_fd, "invalid-fixture-results.json", invalid_raw)
-        provenance = _fitness_provenance()
+        provenance = _fitness_provenance(binding_snapshot)
         now = datetime.datetime.now(datetime.UTC)
         argv = [sys.executable, "-m", "scripts.learning_contracts.check", command_id]
         value: dict[str, Any] = {
@@ -478,8 +503,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         validate_public_value("EVIDENCE", arguments.evidence)
     command = arguments.command or "check"
     if command == "check":
-        rows = validate_all_contracts()
-        evidence_path = _emit_fitness("learning-contracts-check", "contract-set", "issue-8-stage-a-v1", started, invalid_rows=rows)
+        rows, binding_snapshot = _validate_all_contracts_with_snapshot()
+        evidence_path = _emit_fitness(
+            "learning-contracts-check", "contract-set", "issue-8-stage-a-v1", started,
+            invalid_rows=rows, binding_snapshot=binding_snapshot,
+        )
         print(json.dumps({"result": "pass", "invalidFixtures": len(rows), "evidence": evidence_path.relative_to(ROOT).as_posix()}, sort_keys=True))
     elif command == "api":
         from .openapi import validate_shipped_openapi

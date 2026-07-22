@@ -1,188 +1,104 @@
 ---
 phase: 6
-title: "Stage B Vite binding and final handoff"
-status: pending
+title: "Post-release Stage B dependency decision"
+status: completed
 priority: P1
 dependencies: [5]
-stage: "B"
-blockedOn: "exact merged Issue #7 Vite ADR/handoff SHA"
-gateStatus: "blocked-on-issue-7-merged-sha"
+stage: "post-release-audit"
+gateStatus: "stage-b-required"
 cookable: false
+implementationAllowList: []
+stageBPlan: "../260722-008-stage-b-release/plan.md"
+requirementAudit: "../260722-008-stage-b-release/audit/post-stage-a-requirement-audit.md"
 ---
 
-# Phase 6: Stage B Vite Binding and Final Handoff
-
-<!-- Updated: Validation Session 1 - non-cookable gate with zero pre-handoff file/tool/adapter authority. -->
+# Phase 6: Post-Release Stage B Dependency Decision
 
 ## Context Links
 
-- [Stage A release conditions](./phase-05-stage-a-compatibility-release-and-staged-handoff.md#stage-a-independent-merge-decision-record)
-- [Owner Vite decision](https://github.com/khanhvg/ai-ready-data-platform/issues/7#issuecomment-5036142177)
+- [Current stage decision](./plan.md#stage-decision)
+- [Fresh Stage B release plan](../260722-008-stage-b-release/plan.md)
+- [Post-Stage-A requirement audit](../260722-008-stage-b-release/audit/post-stage-a-requirement-audit.md)
+- [Issue #7 Accepted Vite ADR](../../docs/decisions/0005-web-stack.md)
+- [Stage A release evidence](https://github.com/khanhvg/ai-ready-data-platform/issues/8#issuecomment-5043195549)
 
 ## Overview
 
-After the hard gate is cleared and this phase is amended/revalidated, bind immutable Stage A
-contract IDs, operation IDs and hashes to the exact selected Vite/React consumer boundary, prove
-lossless compatibility with the merged Issue #7 handoff, and publish the final I5-03 contract
-handoff. This current phase is deliberately empty of guessed dependency identity, file path, tool,
-command, adapter shape or consumer format: Issue #7 is OPEN/unmerged at validation time.
+This phase was a conditional dependency checkpoint. Issue #7 and Stage A now coexist at exact
+release integration `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`, so the condition was evaluated
+against real released bytes rather than historical prose.
 
-## Hard Entry Gate
+The result is **Stage B required**. Stage A manifest
+`learning/manifests/promotion-trust-v1.json` names fulfillment/returns keys as `region` and
+`category`; the hash-pinned Issue #6 evidence and released Issue #7 Vite contract use
+`region_name` and `category_name`. Stage A uses grain ID `dq`; Vite presents `data-quality`.
+Neither release defines those aliases. The released Node contract suite passes its own exact
+fixture/Vite identities, proving this is a cross-release seam rather than drift inside Issue #7.
 
-All conditions are mandatory:
+## Decision and Scope Handoff
 
-1. Stage A has an accepted contract release SHA recorded externally and is present in tested
-   ancestry, whether through an authorized staged merge or one full implementation branch.
-2. Fresh fetch proves Issue #7 is merged and its exact merge SHA is in tested ancestry.
-3. The merged handoff contains an accepted Vite ADR, exact read-only Vite/common source and lock
-   paths/hashes, exact install/test/build/smoke/security commands, accepted residual risks and a
-   downstream contract handoff.
-4. The Issue #7 merge passed its own required reviews/checks and exact-head human approval. The
-   owner comment alone, an unmerged branch head or proposed ADR cannot satisfy this.
-5. After the dependency exists, amend this phase with the exact merged input paths/hashes/commands
-   and any actually required mapping, then run fresh independent validation and Stage B readiness.
-   This current phase cannot be cooked merely because the dependency later appears.
-6. Local = tracking = freshly fetched live remote at the authorized Stage B input; tree clean; the
-   Issue #8 shared-contract lease remains exclusive.
+This completed phase authorizes no product change itself. It closes the old placeholder by handing
+the concrete mismatch to the fresh [Stage B plan](../260722-008-stage-b-release/plan.md), whose
+allow-list is exact and independently validated by CK.
 
-Until every condition passes and the amended phase is revalidated/readiness-authorized, Phase 6
-status is `blocked-on-issue-7-merged-sha` and `cookable: false`; it has an empty implementation
-allow-list. No binding file, placeholder adapter, guessed path/hash/command, copied preview
-contract or framework workaround is permitted.
+The bounded resolution is one additive, closed, hash-bound Vite consumer binding plus its v1
+reader/check/tests. It maps only:
 
-## Requirements
+- `promotion` → `promotion`, `promo_name` → `promo_name`, `channel` → `channel`;
+- `fulfillment` → `fulfillment`, `carrier` → `carrier`, `region` → `region_name`;
+- `returns` → `returns`, `reason` → `reason`, `category` → `category_name`,
+  `region` → `region_name`;
+- `dq` → `data-quality`, `scenario` → `scenario`.
 
-- Functional: read exact merged Issue #7 Vite ADR/handoff, Vite manifest/lock and common-contract
-  source as read-only inputs; record their real hashes and merge SHA in the binding handoff.
-- Functional after amendment: derive only the minimum consumer representation actually required
-  by the accepted handoff for Stage A contract IDs, versions, operation IDs and content hashes.
-- Functional after amendment: if a binding manifest is actually required, map each selected-stack
-  view/field/action to one Stage A schema/ref/operation without changing semantics or canonical
-  bytes; direct consumption is preferred and requires no adapter artifact.
-- Functional: no adapter is planned in advance. If the exact merged handoff cannot consume Stage A
-  IDs/hashes directly, stop and amend/revalidate a concrete lossless mapping or additive Stage A
-  version; do not infer one from provisional preview bytes.
-- Non-functional: no runtime validator fork, alternate canonicalizer, copied schema/default,
-  second completion rule, package workspace or invented dependency/tool. Use only the exact
-  runtime/lock/tool surface named by the accepted handoff after revalidation.
+The mapping is total, ordered, one-to-one, and value-preserving. It is derived from the exact
+Stage A source order and the exact Issue #6/Vite order; it performs no coercion, defaulting,
+aggregation, row/value transformation, or semantic join.
 
-## Architecture
+## Protected Boundary
 
-If the accepted handoff requires a generated consumer binding, it is not a contract version:
+- Stage A schemas, manifest, set, registry, OpenAPI, operation matrix, completion reconciliation,
+  command activation, evidence, and Make fragment remain immutable.
+- Issue #6 fixtures/data contracts and all Issue #7 ADR/Vite source/lock/Make bytes are read-only.
+- Root Make, portal, runner, data pipeline, AWS, Terraform, and cloud paths are excluded.
+- No TypeScript, portal module, runner adapter, generated data, browser bundle, or new public
+  command is Issue #8-owned.
+- Browser use is projection-only. Server-side Stage A validation and
+  `learning-progress-authority-v1` remain the only validation/completion authority.
 
-```text
-Stage A contract set (source of truth)
-    ├── schema IDs / versions / hashes
-    ├── OpenAPI operation IDs / paths
-    └── completion/evidence canonical rules
-             |
-             v
-  dependency-defined read-only consumer representation
-             |
-             v
-  binding manifest with exact Issue #7 merge/lock/source hashes
-```
+## Audit Assertions
 
-Any generated representation may contain immutable IDs/hashes only. Its exact format is not chosen
-here. Runtime boundary validation remains the Stage A validator and future portal/runner adapters.
-A browser hint, cache state or preview view cannot mutate completion. If the Vite consumer needs
-different fields or canonical behavior, the future compatibility check fails and a separately
-planned additive Stage A version is required.
-
-## Related Code Files
-
-Current implementation allow-list: **empty**. No Stage B create/modify/read path is authorized.
-After the exact merged handoff exists, an amendment must name every Issue #8-owned output/test path,
-every read-only Issue #7 input, and any Stage A checker integration separately. A released
-`learning-contract-set-v1.json` remains immutable; any final handoff must hash the Stage A set and
-any separately released binding without rewriting Stage A. Current unmerged Issue #7 implementation
-and ADR paths are non-authoritative and must not be read or edited by Issue #8.
-
-## Tests Before
-
-Write/freeze these failures after the real dependency handoff is available and before binding:
-
-- missing/unmerged/wrong Issue #7 merge SHA or ancestry;
-- ADR not Accepted/Vite, dependency path/hash/lock/tool/command mismatch;
-- missing/extra/renamed schema ID, version, operation ID, field/action mapping;
-- copied/divergent schema/default/canonicalizer/completion authority;
-- stale Stage A contract set or binding regenerated from dirty/uncommitted bytes;
-- selected runtime, lock or tool not exactly manifest-admitted.
-
-Retain the expected failures with exact Stage A and Issue #7 identities before generating binding
-bytes. No test may hard-code a guessed future SHA.
-
-## Refactor
-
-After amendment, any generation must be deterministic from sorted Stage A IDs/hashes and the
-operation matrix, with no hand-authored contract semantics. Keep dependency provenance outside
-schema IDs and do not alter released Stage A files. The exact output format remains unset now.
-
-## Tests After and Final Blast Radius
-
-No Stage B command is authorized by this version of the phase. The amendment must repeat all
-Stage A primary/blast-radius commands and copy the exact required Vite install/test/build/smoke/
-security commands from the accepted merged Issue #7 handoff. It must not invent a Node, browser,
-accessibility or package-manager command. Evidence will record each admitted command and exit
-status; any missing handoff-required runtime/tool/artifact is `fail`, not skip.
-
-Re-run:
-
-- Stage A canonical hashes and results byte-for-byte;
-- any amended generation twice in separate temp roots;
-- the amended Vite direct-consumption or binding mapping against only the exact merged handoff;
-- no-network/no-cloud-credential and S3 secret/private-path scans;
-- changed-path/protected hash/Issue #7 read-only checks;
-- rollback removing only the binding selection while Stage A stays readable.
+- [x] `I8B-AUDIT-ANCESTRY-001`: PR #22 and PR #23 merge SHAs are ancestors of the exact input.
+- [x] `I8B-AUDIT-MISMATCH-002`: the exact two key aliases and one grain-ID alias are absent from
+  both released contract sets.
+- [x] `I8B-AUDIT-OWNER-003`: Issue #8 owns the shared first-manifest seam; Issue #10 cannot repair
+  it in portal-owned paths.
+- [x] `I8B-AUDIT-BOUNDARY-004`: additive binding is sufficient; no Stage A rewrite, OpenAPI change,
+  registry mutation, Make change, UI, or runner behavior is needed.
+- [x] `I8B-AUDIT-S3-005`: the plan carries only public identifiers/hashes and no record values,
+  credentials, private paths, cloud action, or destructive migration.
 
 ## Implementation Steps
 
-1. Fresh-fetch and verify the hard entry gate, real merge/ADR/handoff/lock/tool/command identities
-   and exclusive lease.
-2. Add binding RED tests tied to the real dependency identity.
-3. Amend and revalidate the exact Issue #8 output format/paths, read-only dependency paths, tests,
-   tools and commands; direct consumption may make an adapter unnecessary.
-4. Only after fresh readiness, generate any authorized representation from the Stage A contract set
-   and operation matrix and validate it without changing Stage A output.
-5. Close the amended binding tests and run the complete Issue #8 + Issue #6 + accepted Vite blast
+1. Verify exact input, live refs, issue/PR/comment state, released hashes, ancestry, clean tree, and
+   exclusive shared-contract lease.
+2. Reproduce and freeze the real-path mismatch and all security/compatibility negatives before
+   adding a binding reader or document.
+3. Cook only the new Stage B plan in its serialized order and exact allow-list.
+4. Preserve Stage A/readers and run the full Issue #8, Issue #6, and focused Issue #7 Node blast
    radius at one exact clean committed head.
-6. Rehearse binding-only rollback and prove Stage A remains usable/readable.
-7. Require fresh independent exact-head read-only review, repository checks and separate human
-   exact-head approval; then publish non-recursive final evidence and the external final contract
-   release SHA. No tracked file claims its own commit.
-8. Hand downstream owners the exact Stage A set hash, binding hash, Issue #7 merge SHA, final
-   contract release SHA, commands, compatibility/rollback result and remaining residual risks.
+5. Require fresh exact-head independent implementation review, repository checks, and separate
+   human exact-head approval before merge/release; then publish the binding hash and remote release
+   SHA externally.
 
 ## Success Criteria
 
-- [ ] Exact accepted merged Issue #7 Vite handoff—not owner direction/provisional bytes—is consumed.
-- [ ] Direct consumption or any dependency-required binding maps every Stage A
-  schema/version/operation/hash exactly and losslessly.
-- [ ] Any dependency-required generated output is deterministic and contains no parallel
-  schema/state logic.
-- [ ] Stage A canonical bytes, operation matrix, completion authority and migration rules do not drift.
-- [ ] Issue #8, Issue #6 and accepted Vite blast-radius commands pass at one exact head.
-- [ ] Binding rollback leaves Stage A and retained evidence intact.
-- [ ] Final external contract release SHA and exact-head human approval are recorded truthfully.
-
-## Risk Assessment
-
-- The future Issue #7 handoff may use different paths/commands than today’s unmerged branch.
-  Mitigation: do not freeze them here; readiness compares and amends/revalidates before cook.
-- A generated consumer representation can imply runtime validation. Mitigation: immutable IDs/
-  hashes only; boundary validation remains the Stage A source contract.
-- Updating the Stage A release set after staged merge would rewrite a released artifact. Mitigation:
-  hash Stage A set and binding as two immutable components in external final handoff.
-
-## Security and Rollback
-
-Issue #7 paths are strictly read-only. Stage B evidence is scanned for dependency secrets, local
-paths, bundle/source-map leakage and recursive identities. Rollback deselects/removes only the
-Stage B consumer selection through a reviewed additive change; never rewrites Stage A schemas/evidence,
-Issue #7 sources, old readers or fixtures.
+- [x] The dependency is evaluated from released authority rather than presumed.
+- [x] The incompatibility is concrete, bounded, and reproducible.
+- [x] Exact ownership proves the binding is Issue #8 work and portal/runner work is excluded.
+- [x] A fresh tests-first Stage B plan names every output/input path, command, hash, boundary,
+  rollback rule, and human gate without inventing a future SHA.
 
 ## Next Steps
 
-After final release, downstream issues consume the exact externally attested contract release SHA
-read-only. No downstream cook or merge is authorized by this phase; each issue retains its own
-dependency, validation, readiness and human gates.
+Proceed only through `plans/260722-008-stage-b-release/plan.md`. The old Phase 6 has no independent
+implementation allow-list and is not a competing cook authority.

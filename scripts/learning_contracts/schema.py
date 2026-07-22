@@ -104,6 +104,7 @@ def validate_document(value: Any, *, family: str) -> None:
         "version-registry": ROOT / "learning/contracts/learning-contract-version-registry-v1.schema.json",
         "command-activation": ROOT / "learning/contracts/command-owner-activation-v1.schema.json",
         "contract-set": ROOT / "learning/contracts/learning-contract-set-v1.schema.json",
+        "vite-binding": ROOT / "learning/contracts/promotion-trust-vite-binding-v1.schema.json",
         "problem-details": ROOT / "contracts/openapi/learning-platform-problem-details-v1.schema.json",
     }
     path = schemas.get(family)
