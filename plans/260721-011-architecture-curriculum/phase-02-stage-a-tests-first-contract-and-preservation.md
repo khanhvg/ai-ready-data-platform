@@ -25,8 +25,10 @@ tests/fixture corpus, then record a genuine semantic RED before any target curri
 final content. Prove the exact released Issue #8 consumer boundary and freeze Issue #6 local
 architecture bytes, rows, IDs, semantics, and renders.
 
-This phase is blocked. A future cook may enter only from clean `c07c9a0…` plus the exact passed
-plan-only diff and only within the amendment's 7/5/38 chronology.
+This phase is ready after Phase 1 records the exact derived input from clean `c07c9a0…`, the exact
+`-x` plan applications, and the one `5644f01b…` integration reconciliation. It remains blocked
+until that Phase 1 preflight completes and may proceed only within the amendment's 7/5/38
+chronology.
 
 ## Requirements
 

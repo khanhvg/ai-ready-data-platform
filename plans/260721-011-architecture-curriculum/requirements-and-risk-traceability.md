@@ -5,9 +5,9 @@
 - A requirement is implementation-ready only after it has an owner, stage, exact dependency
   release, closed file/command allow-list, architecture/ADR link, test, evidence, rollback, and
   clearing authority.
-- Every requirement below is a plan obligation. Current Stage A implementation authority is
-  `none`; the corrected amendment passed fresh independent validation and awaits a separate fresh
-  readiness audit. Stage B remains empty.
+- Every requirement below is a plan obligation. Current authority is one whole Stage A cook after
+  the exact derived-input handoff; the corrected amendment passed fresh independent validation and
+  readiness. Stage B remains empty.
 - Stable IDs are reciprocal: curriculum content, views, ADRs, tests, and evidence must point to
   each other. Filename or heading similarity is insufficient.
 - Stage A can prove static/schema/render/trace behavior only. Stage B alone can prove runtime
@@ -21,8 +21,8 @@
 |---|---|---|---|
 | I11-AUTH-01 | Pin exact clean input, branch, remote/body, ancestry, dependency and lease state before each amendment/cook | A/B | Fresh preflight and authority evidence |
 | I11-AUTH-02 | Keep Stage A authority closed to the exact amendment and all Stage B implementation/dependency/renderer authorities empty | Plan | Static authority and overlap scan |
-| I11-AUTH-03 | Derive Stage A only from exact released #8; derive Stage B only from exact passing merged #10 plus #8 | A/B | Release SHA/blob/evidence verification |
-| I11-TDD-01 | Start future v3 from clean `c07c9a0…` plus exact validated/audited plan diff; create exact 7-path semantics-free scaffold, then direct-child complete 5-path tests/fixture commit, record four-entrypoint named semantic RED, then add the 38-path semantic complement | A | Commit/path/AST inspection, reach records, RED/semantic SHA provenance |
+| I11-AUTH-03 | Derive Stage A from exact #8 Stage A contract authority plus current released integration ancestry without consuming the Stage B binding; derive Stage B only from exact passing merged #10 plus released Stage A | A/B | Release SHA/topology/tree/blob/evidence verification |
+| I11-TDD-01 | Start future v3 from clean `c07c9a0…`, exact recorded `-x` correction/validation/readiness plan applications and one `5644f01b…` no-ff reconciliation; create exact 7-path semantics-free scaffold, then direct-child complete 5-path tests/fixture commit, record four-entrypoint named semantic RED, then add the 38-path semantic complement | A | Commit/parent/path/AST inspection, reach records, RED/semantic SHA provenance |
 | I11-PROMO-01 | Freeze promotion `decision=insufficient-evidence`, `reason=no-common-grain`; reject independent or combined drift against exact released schema | A | Schema constants and decision/reason mutations |
 | I11-CUR-01 | Vietnamese-first foundation-to-mid competency graph; reachable, acyclic, remediation-aware | A | Prerequisite/locale/coverage failures |
 | I11-CUR-02 | Every module supplies prerequisite check, starter, task, controlled failure, verify, evidence, reset, hints, solution, reflection | A structure; B runtime | Schema/static then E2E lifecycle evidence |

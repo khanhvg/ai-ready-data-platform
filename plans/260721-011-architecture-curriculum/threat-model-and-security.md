@@ -3,11 +3,11 @@
 ## Security Disposition
 
 Issue #11 is `security:S3`. Here “S3” is the security tier, not authorization to use Amazon S3.
-This plan authorizes no implementation yet and no runtime, credential, cloud, AWS, Terraform,
-portal, shared-contract, or protected architecture-toolchain change. The proposed Stage A scope
-covers only structured curriculum and isolated generated static architecture expansions after
-fresh independent validation/readiness. Future Stage B adds one local architecture lab only
-through exact released Issue #8/#10 seams.
+This plan authorizes one whole Stage A cook only after the exact derived-input handoff and no
+runtime, credential, cloud, AWS, Terraform, portal, shared-contract, or protected architecture-
+toolchain change. The Stage A scope covers only structured curriculum and isolated generated
+static architecture expansions after fresh independent validation/readiness. Future Stage B adds
+one local architecture lab only through exact released Issue #8/#10 seams.
 
 The protected assets are dependency contract truth, completion/evidence authority, the released
 portal renderer, the six Issue #6 local views and toolchain, repository/user files, learner
@@ -75,8 +75,9 @@ Trust boundaries:
 Future Stage A is content/static only under the exact released #8 binding and the independently
 validated/readiness-authorized view lease.
 
-- Future implementation begins only from clean `c07c9a0…` plus the exact independently
-  validated/audited plan-only diff. The current author output grants no cook authority.
+- Future implementation begins only from clean `c07c9a0…`, exact recorded `-x` application of the
+  correction/validation/readiness plan commits, and the one no-ff merge of released integration
+  `5644f01b…`. The Stage B binding present in that ancestry remains read-only and unconsumed.
 - Create only the exact seven generic public scaffold files first; they contain no target rules,
   fixture IDs, final content, hardcoded result, mock/skip, expected-value echo, or unconditional
   not-implemented branch. Complete tests follow and must pass valid-control parse/reach through

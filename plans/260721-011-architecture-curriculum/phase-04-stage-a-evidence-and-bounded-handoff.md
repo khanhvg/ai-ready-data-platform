@@ -24,8 +24,8 @@ deterministic, evidence-backed, rollback-safe, and restricted to static claims. 
 reviewed or later merged only under its exact readiness and human gates; it does not unlock Stage B
 automatically.
 
-This phase remains blocked; it becomes eligible only after fresh plan validation/readiness and
-Phases 1–3 pass at the exact future candidate tree.
+Fresh plan validation/readiness are complete. This phase remains blocked only until Phases 1–3
+pass at the exact derived candidate tree.
 
 ## Requirements
 
