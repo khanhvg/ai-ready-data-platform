@@ -23,7 +23,15 @@ const model = await loadReleasedLearning({ root: repo });
 if (process.argv.includes("--local-only")) { console.log(JSON.stringify({ status: "pass", releasePaths: rows.length, bindingId: model.bindingId })); process.exit(0); }
 
 const runtimeRoot = path.join(repo, ".artifacts/workspaces/golden");
-await fs.mkdir(runtimeRoot, { recursive: true });
+async function ensurePrivateDirectory(directory) {
+  await fs.mkdir(directory, { recursive: true, mode: 0o700 });
+  const stat = await fs.lstat(directory);
+  if (!stat.isDirectory() || stat.isSymbolicLink() || stat.uid !== process.getuid()) throw new Error(`ARTIFACT_ROOT_UNSAFE:${directory}`);
+  await fs.chmod(directory, 0o700);
+  const secured = await fs.lstat(directory);
+  if ((secured.mode & 0o777) !== 0o700) throw new Error(`ARTIFACT_PERMISSIONS_UNSAFE:${directory}`);
+}
+for (const directory of [path.join(repo, ".artifacts"), path.join(repo, ".artifacts/evidence"), path.join(repo, ".artifacts/workspaces"), runtimeRoot]) await ensurePrivateDirectory(directory);
 const candidate = await fs.mkdtemp(path.join(runtimeRoot, "i5-05-stage-a-"));
 const venv = path.join(candidate, "venv");
 const run = (command, args, options = {}) => { const result = spawnSync(command, args, { cwd: repo, stdio: "inherit", timeout: options.timeout ?? 300000, env: { ...process.env, ...options.env } }); if (result.status !== 0) throw new Error(`COMMAND_FAILED:${command}:${result.status}`); };
