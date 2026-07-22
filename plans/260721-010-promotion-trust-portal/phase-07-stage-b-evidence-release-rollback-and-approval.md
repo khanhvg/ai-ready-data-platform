@@ -10,6 +10,8 @@ effort: "L"
 # Phase 7: Stage B evidence release rollback and approval
 
 > Blocked: Issue #9 is unreleased. Stage B file, command, and dependency allowlists are empty.
+> No runner-backed command, action, evidence, reset, completion, fake execution, synthetic
+> success, browser-to-host/engine control, or local-shell fallback is authorized.
 
 ## Overview
 
@@ -41,7 +43,8 @@ pre-merge approval. No PR/merge is implied by this plan.
 
 - Required missing tool/evidence is fail; no skipped required gate.
 - One Chromium desktop+narrow and axe Critical/Serious only; no broad native/browser matrix.
-- No cloud/AWS/Terraform/Docker/optional-profile action.
+- At this planning input, no cloud/AWS/Terraform/container/engine/optional-profile action; a later
+  exact Issue #9 release alone defines any required local runtime, never browser authority.
 - Exact-head human approval is separate, mandatory, and cannot be synthesized.
 
 ## Architecture
@@ -60,8 +63,8 @@ Stage A static route before any code rollback.
 - Consumable Stage B dependency SHAs now: `[]`.
 - The later amendment must explicitly authorize the smallest portal/test subset and
   `mk/issue-5/i5-05.mk`; the root Makefile remains denied.
-- Future runtime evidence may use only the issue-body root
-  `.artifacts/evidence/local-journey/{run-id}/**` after an exact #8 schema is pinned.
+- Future runtime evidence may use only a marker-owned per-run subdirectory beneath the issue-body
+  root `.artifacts/evidence/local-journey/` after an exact #8 schema is pinned.
 
 ## Tests Before
 
@@ -112,7 +115,8 @@ clean/local=tracking=fresh-live checks.
 1. Stop until the later amendment pins real dependencies and exact Stage B paths/commands, then
    retain failing lifecycle/command/evidence/cleanup/rollback assertions at the exact head.
 2. Complete thin I5-05 Make delegates and scoped portal/runner lifecycle orchestration.
-3. Start from a clean namespace with Docker unavailable and no cloud/model credentials.
+3. Start only through the exact released #9 lifecycle in a clean namespace with no ambient
+   cloud/model credentials; never substitute host shell or direct browser control.
 4. Run the exact real journey, fault/retry/idempotency, accessibility, no-JS, and download checks.
 5. Generate deterministic visual artifacts and the bounded unapproved UAT checklist.
 6. Run `learn-status`, `learn-down` twice, stale/foreign PID negatives, evidence retention, and
@@ -130,7 +134,7 @@ clean/local=tracking=fresh-live checks.
 ## Success Criteria
 
 - [ ] Every exact Issue #10 Verify command passes at one exact clean head.
-- [ ] Complete Docker-free, credential-free local journey evidence is retained.
+- [ ] Complete released-runner, credential-isolated local journey evidence is retained.
 - [ ] One #8 completion authority and private #9 runner boundary remain intact.
 - [ ] S3, accessibility, Chromium desktop/narrow, axe, no-JS/static, failure/recovery, and
   evidence-integrity gates pass.

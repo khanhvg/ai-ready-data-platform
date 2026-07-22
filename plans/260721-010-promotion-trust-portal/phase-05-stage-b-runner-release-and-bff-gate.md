@@ -9,6 +9,10 @@ effort: "L"
 
 # Phase 5: Stage B runner release and BFF gate
 
+> Blocked: Issue #9 plan head `308c736f8811ac9aeaf41ad5b27dea07d2e60b2e` and cook head
+> `9eb31075aeb0e7b974ad15645460ab4987570f20` are non-release provenance. Stage B path, command,
+> dependency, transport, execution, evidence, reset, and completion authorities are all `[]`.
+
 ## Overview
 
 Fail closed on the exact released Issue #9 runner, then establish the server-only client,
@@ -37,6 +41,8 @@ This phase is hard-blocked today and never edits runner/shared-contract source.
 ### Non-functional
 
 - No invented endpoint, command, registry entry, state transition, artifact path, or fallback.
+- No fake execution, synthetic success/evidence, browser-to-host command, browser-to-engine
+  authority, raw shell, or local-shell fallback.
 - Unknown/stale/mismatched API/version/status/evidence fails closed.
 - Crash, duplicate, response loss, reset/verify conflict, orphan evidence, and restart are
   deterministic and idempotent.
@@ -92,7 +98,8 @@ typecheck/build/audit/bundle scans, and `git diff --check`. Do not yet claim ful
 
 ## Implementation Steps
 
-1. Stop unless a later amendment pins accepted Stage A, released #9, and exact Stage B
+1. Stop unless a later amendment pins accepted Stage A, an exact reviewed/merged/pristine #9
+   release, and exact Stage B
    file/command allow-lists, then passes fresh independent revalidation and Stage B readiness.
 2. Prove GB-01..GB-05, exact #8 compatibility, protected hashes, clean state, and lease ownership.
 3. Retain RED failures before creating any runner client or completion binding.

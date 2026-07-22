@@ -12,10 +12,10 @@ effort: "M"
 ## Overview
 
 Start a cook branch from pristine released integration
-`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` and fail closed before portal rendering. Re-prove
+`5644f01b4c0443a81f3af0bcce80f44c847cd986` and fail closed before portal rendering. Re-prove
 remote release ancestry, every admitted dependency byte, exact toolchain/lock, protected hashes,
-command ownership, and the released #8 validators. Build the closed release binding and safe
-contract adapter through real RED tests.
+command ownership, and the released #8 validators. Consume the shared Vite binding directly and
+build only the safe contract projection through real RED tests.
 
 ## Context Links
 
@@ -28,21 +28,25 @@ contract adapter through real RED tests.
 
 ### Functional
 
-- Re-prove GA-01..GA-05 from the cook tree and fresh remote release refs.
+- Re-prove GA-01..GA-05 from the cook tree and fresh remote release refs, including the 921-entry
+  tree and 85-path consumed release catalogue.
 - Through `verify-stage-a-release.mjs`, prepare/admit one exact-lock CPython 3.12.3 runtime, run
   `learning-contracts-check`, `lesson-check LESSON=promotion-trust`, and `api-contracts-check`,
   then remove only that runtime; require the released lesson/lab/manifest/registry and 16
   operations.
+- Validate the exact shared `promotion-trust-vite-binding-v1` document through released public
+  `check.validate_shipped_vite_binding`, `validate_vite_binding_path`, and
+  `validate_vite_binding_document` surfaces.
 - Bind only exact current released #7/#8 paths, versions, blobs, bytes, hashes, operations, and
-  package graph.
-- Map released safe fields through the released validators; no schema/content copy.
+  package graph; map released safe fields by iterating the accepted shared binding.
 
 ### Non-functional
 
 - Local/upstream/fresh integration equality, clean input, no conflicting writer.
 - Frozen Node `22.22.3`/npm `10.9.8` lock v3 dependency graph; no install scripts or fallback.
 - Any missing/mismatched release/tool/field/path/version/hash fails before rendering.
-- No #9 value, BFF/API, browser state, or future identity.
+- No portal-local binding/alias map/schema/generated type, #9 value, BFF/API, browser state, or
+  future identity.
 
 ## Authorized Files
 
@@ -51,7 +55,6 @@ Create only:
 ```text
 apps/learning-portal/package.json
 apps/learning-portal/package-lock.json
-apps/learning-portal/release-binding.stage-a.json
 apps/learning-portal/scripts/verify-stage-a-release.mjs
 apps/learning-portal/src/contracts/released-learning-adapter.mjs
 apps/learning-portal/src/contracts/safe-view-model.mjs
@@ -65,15 +68,19 @@ No modify/delete is authorized. Exact release sources are read-only.
 
 1. Retain PTP-RED-A-001 for wrong commit/tree/ancestry/blob/byte/hash/version/operation/lock.
 2. Retain PTP-RED-A-002 for every protected identity mutation.
-3. Retain PTP-RED-A-020 for unknown family/path/hash/version/field.
-4. Make failures traverse the real release verifier and adapter, not an unavailable import.
+3. Retain PTP-RED-A-020 for all eight released invalid-binding fixtures plus missing/extra grain,
+   lossy/cyclic alias, wrong version/type/field, contract/fixture substitution, special-file,
+   path, and state-authority cases.
+4. Make failures traverse the released public binding validators and the real portal adapter,
+   not a copied predicate, unavailable import, or generated fixture.
 
 ## Tests After and Regression
 
-- Exact release input generates byte-stable bindings twice.
+- Exact release input validates the same tracked shared binding snapshot twice.
 - One-at-a-time mutations fail with stable closed codes.
 - Adapter output contains only safe released fields and rejects attribution/unknowns.
-- Binding contains two read compatibility operation identities and no HTTP/runner capability.
+- Shared binding stays projection-only and non-authorizing; the portal exposes no HTTP/runner
+  capability and creates no alias/mapping authority.
 - Frozen install, released #8 checks, protected/ownership checks, audit input, and
   `git diff --check` pass within amendment ceilings.
 
@@ -82,11 +89,11 @@ No modify/delete is authorized. Exact release sources are read-only.
 1. Create branch from the exact integration and record equality/clean/lease evidence.
 2. Write RED tests and retain valid failure records.
 3. Add exact app package/lock derived from the released #7 graph; only root name/scripts differ.
-4. Add the closed release binding and verifier over cook-tree bytes, exact lock/freeze, admitted
-   runtime lifecycle, and released validator commands.
-5. Add the released validator adapter and closed safe model.
+4. Add the verifier over cook-tree bytes, exact lock/freeze, admitted runtime lifecycle, released
+   validator commands, shared binding, binding schema, adapter, and invalid fixtures.
+5. Add the released validator consumer and closed safe model without copying binding mappings.
 6. Run mutation, determinism, protected-hash, command-owner, frozen-install, and audit gates.
-7. Confirm the phase diff equals these eight creates and no generated output is tracked.
+7. Confirm the phase diff equals these seven creates and no generated output is tracked.
 
 ## Success Criteria
 
@@ -94,18 +101,18 @@ No modify/delete is authorized. Exact release sources are read-only.
 - [ ] PTP-RED-A-001/002/020 have valid RED then GREEN evidence.
 - [ ] Frozen lock/toolchain and released validators pass without copied contract truth.
 - [ ] No Issue #9, API, mutation, progress, evidence, or completion authority exists.
-- [ ] Only the eight authorized files are added.
+- [ ] Only the seven authorized files are added.
 
 ## Risks and Rollback
 
 | Risk | Mitigation |
 |---|---|
 | Feature/worktree bytes mistaken for release | Remote merge/tree proof plus cook-tree digest catalogue |
-| App binding becomes a second schema | Closed identity index and safe projection only |
+| Portal source becomes a second alias/schema truth | Direct shared binding consumption and released public validation; reject any local map/schema/generated type |
 | Ignored app lock omitted | Inspect then force-add only the exact app lock |
 | Dependency acquisition drifts | Exact graph/integrity comparison, no scripts, audit |
 
-Rollback removes only these eight unmerged additions. Any released/protected drift is a STOP.
+Rollback removes only these seven unmerged additions. Any released/protected drift is a STOP.
 
 ## Next Steps
 

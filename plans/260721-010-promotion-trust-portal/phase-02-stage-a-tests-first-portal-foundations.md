@@ -27,9 +27,12 @@ There is no BFF/API, runner mock, storage, mutation, or completion path.
 ### Functional
 
 - Build with the exact frozen #7 Vite/React graph.
-- Render semantic catalog/module/lesson placeholders from the validated model, not hard-coded
-  contract copies.
-- Present Vietnamese-first status and explicit runner-unavailable/completion-disabled language.
+- Render the semantic catalog/module/lesson foundation from the validated model, not hard-coded
+  contract copies or invented module identifiers.
+- Present Vietnamese-first status and explicit static-slice, not-full-product,
+  runner-unavailable, execution/progress/completion-disabled language.
+- Emit the exact machine-readable non-claim `data-*` attributes on every static and enhanced
+  route; they are assertions only, never a state contract or store.
 - Serve strict production documents over loopback with no API surface.
 
 ### Non-functional
@@ -54,7 +57,8 @@ apps/learning-portal/tests/unit/security.test.mjs
 
 ## Tests Before
 
-1. Retain PTP-RED-A-010/012/015/016 through the real shell/status render.
+1. Retain PTP-RED-A-010/012/015/016 through the real shell/status render and exact `/`, `/module`,
+   and `/lesson/promotion-trust` public routes.
 2. Retain PTP-RED-A-021/022 for renderer escaping/import/bundle/storage/cloud boundaries.
 3. Retain applicable PTP-RED-S3-01..14 negatives before enabling serving.
 4. Prove missing shell semantics and unsafe mutations fail for the intended reason.
@@ -62,7 +66,8 @@ apps/learning-portal/tests/unit/security.test.mjs
 ## Tests After and Regression
 
 - Frozen production build succeeds with no source maps and bounded regular output.
-- Semantic shell/status is useful in Vietnamese and distinguishes canonical English values.
+- Semantic shell/status is useful in Vietnamese, distinguishes canonical English values, and
+  cannot be mistaken for the complete learning product.
 - Exact static headers/CSP, Host, methods, paths, XSS, storage, network, secret, cloud, and #9
   absence tests pass.
 - Missing runner never blocks render and never becomes the controlled failure.
@@ -81,7 +86,7 @@ apps/learning-portal/tests/unit/security.test.mjs
 ## Success Criteria
 
 - [ ] Exact Vite graph builds reproducibly.
-- [ ] Vietnamese-first shell and runner-unavailable state render from validated data.
+- [ ] Vietnamese-first static-slice and runner-unavailable state render from validated data.
 - [ ] Stage A exposes no BFF/API/runner/mutation/storage/completion capability.
 - [ ] CSP/XSS/Host/path/bundle/storage/cloud security foundation is green.
 - [ ] Only the seven authorized files are added.

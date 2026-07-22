@@ -27,16 +27,19 @@ explicit non-execution/non-completion semantics.
 
 ### Functional
 
-- Derive one module/lesson entry from released `promotion-trust-v1`; never call it the full course.
+- Derive one presentation-only module view and one lesson entry from released
+  `promotion-trust-v1`; never invent a module ID or call it the full course/product.
 - Render the stakeholder question, four independent grains/limitations, released controlled
   failure, and `insufficient-evidence / no-common-grain` without causal attribution.
-- Provide semantic catalog/module/lesson/step navigation with back/forward/reload view-only state.
+- Provide the exact 13-route public catalog/module/lesson/step navigation set with
+  back/forward/reload view-only state.
 - Render explanation-only run/reset/verify narrative steps with runner unavailable.
 - Generate all admitted static routes from the same safe model.
 
 ### Non-functional
 
-- No hand-maintained duplicate lesson, raw HTML/MDX, copied #7 lesson contract, or copied fixture.
+- No hand-maintained duplicate lesson, raw HTML/MDX, copied #7 lesson contract, copied fixture,
+  local binding/alias map, or generated binding type.
 - Semantic landmarks/headings/lists, visible focus, 360px reflow, reduced motion, live status.
 - #11/#12 can later add released manifests through provider/catalog seams without redesign;
   no future content is invented now.
@@ -61,17 +64,21 @@ apps/learning-portal/tests/unit/render.test.mjs
 
 ## Tests Before
 
-1. Retain PTP-RED-A-010..016 through the real provider/catalog/router/render paths.
-2. Retain PTP-RED-A-020/021 for unknown descriptors and static/React disagreement.
+1. Retain PTP-RED-A-010..016 through the real provider/catalog/router/render paths and canonical
+   public route set.
+2. Retain PTP-RED-A-020/021 for released invalid bindings, unknown descriptors, invented route
+   identifiers, invalid path/state, and static/React disagreement.
 3. Mutate a fifth source, grain, causal wording, decision, raw field, false fresh-evidence label,
    enabled action, missing static fact, and route/history behavior.
 4. Start built-output parser and JavaScript-disabled browser assertions before output exists.
 
 ## Tests After and Regression
 
-- Provider/catalog accept exact registered released descriptors only.
+- Provider/catalog accept exact registered released descriptors and the released shared binding
+  only.
 - Promotion-trust is visibly one vertical slice in a reusable foundation-to-mid shell.
-- Static and React stable fact IDs, values, ordering, routes, and escaping agree.
+- Static and React stable fact IDs, values, ordering, 13 routes, non-claim attributes, and
+  escaping agree.
 - Back/forward/reload make zero mutation/network/storage effects.
 - Four grains/limitations and canonical decision are honest in every admitted route.
 - Unit/adapter/render/router/build/no-JS/axe/diff checks stay green.
@@ -79,7 +86,8 @@ apps/learning-portal/tests/unit/render.test.mjs
 ## Implementation Steps
 
 1. Write provider/catalog/router/render RED cases and mutation fixtures in memory.
-2. Implement released module provider and ordered catalog over the closed safe model.
+2. Implement released module provider and ordered catalog over the closed safe model and shared
+   binding; iterate aliases instead of restating them.
 3. Implement generic module/lesson navigation and read-only router.
 4. Implement promotion-trust presentation as a feature renderer, not a portal-wide switch.
 5. Implement deterministic static document and route generation from the same model.
@@ -88,7 +96,8 @@ apps/learning-portal/tests/unit/render.test.mjs
 
 ## Success Criteria
 
-- [ ] One honest promotion-trust vertical slice is useful with runner absent.
+- [ ] One honest promotion-trust vertical slice is useful with runner absent and explicitly not
+  the complete learning product.
 - [ ] Shell/provider/router seams admit later released content without redesign.
 - [ ] Static and React modes expose equivalent released facts and navigation.
 - [ ] Navigation cannot execute, reset, verify, progress, evidence, or complete.

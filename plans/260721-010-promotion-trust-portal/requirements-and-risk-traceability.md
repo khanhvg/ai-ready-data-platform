@@ -4,14 +4,16 @@
 
 | Input | Exact identity | Use |
 |---|---|---|
-| Current planning start | `4a36bab4f8a8c9f393060cf7337b2e5ca45cd9b7` | Clean exact amendment/readiness input |
+| Current planning start | `d79bcd0c3894c2b8477f1188faadc08f77480087` | Clean exact post-binding readiness input |
 | Issue #6 integration merge | `24be3b34c6b0fcdbd07c5800dcab349054e34713` | Read-only protected data truth |
 | Issue #7 approved feature head | `b219ba2d3843934c3bce2fbbec2a844b48b2dfa9` | Human-approved Vite release content |
 | Issue #7 PR #22 merge | `1806b6d515f2f7a2ace2be7077af84a745ff221f` | Released Vite/React authority |
 | Issue #8 Stage A PR #23 merge | `5c2244c2c860234d0df49cf0a42ad950c6495717` | Released learning-contract authority |
-| Composition PR #25 / integration | `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` | Pristine Stage A cook base |
-| Released integration tree | `27fc3667ef37892dad5c3fbfd76769f65a0760be` | Exact 903-entry tree authority |
-| Issue #8 release evidence | https://github.com/khanhvg/ai-ready-data-platform/issues/8#issuecomment-5043195549 | Released validation/evidence statement |
+| Embedded Stage A / final release parent 1 | `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` | Shared binding's exact `stageA.releaseSha`; ancestry only, no longer cook base |
+| Issue #8 final integration release | `5644f01b4c0443a81f3af0bcce80f44c847cd986` | Pristine Stage A cook base; Issue #8 CLOSED/`shipped` |
+| Released integration tree | `a38594d420fe7df2b30265a8a72bb5fad1698012` | Exact 921-entry tree authority |
+| Shared Vite binding | `promotion-trust-vite-binding-v1`; SHA-256 `03d2aa6bd9fa178e6075865364a8ae8b83ce548c42b450d1858b451b45d0d1d0` | Exact read-only alias authority; schema SHA-256 `74035baee08b378e46421466333d6933d1bad820337acd1b80a633d236173a43` |
+| Issue #8 release evidence | https://github.com/khanhvg/ai-ready-data-platform/issues/10#issuecomment-5047964988 | Final merge/topology/binding/pristine evidence handoff |
 | Master readiness report | `e440c5855732d5d8f5d634e3cc1359c010cc5ed3` | Issue fan-out authority only |
 | Prior independent validation | `e2bba33deff76985eb3bdae361d494d162c854f8` | Immutable historical validation output |
 | Live Issue #10 at current audit | OPEN with `ready for plan audit`, `risk:high`, `tdd`, `security:S3`, `frontend`, `accessibility`, `vertical-slice` | Scope and pre-promotion state |
@@ -24,7 +26,7 @@ the later released dependency facts.
 ## Protected Data and Contract Truth
 
 These identities were recomputed from pristine integration
-`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` and remain read-only:
+`5644f01b4c0443a81f3af0bcce80f44c847cd986` and remain read-only:
 
 | Path | Contract/version | Bytes | SHA-256 | Git blob |
 |---|---|---:|---|---|
@@ -58,10 +60,10 @@ may not imply a causal join, execute the failure, or relabel retained fixture ev
 | PTP-FR-05 | Show only `insufficient-evidence / no-common-grain` for released v1 evidence | A read-only; B deferred mutation | released validator + view tests |
 | PTP-FR-06 | Read-only navigation, back/forward/reload, and no-JS pages never mutate or progress | A | router + browser/network/storage tests |
 | PTP-FR-07 | Runner is explicitly unavailable; run/reset/verify are explanatory and completion impossible | A | DOM/bundle/import/request negatives |
-| PTP-FR-08 | Later released #11/#12 manifests enter through provider/catalog seams without shell/router redesign | A seam only | in-memory registered-descriptor unit test |
+| PTP-FR-08 | Later released #11/#12 manifests enter through provider/catalog seams without shell/router redesign | A seam only | provider interface test using only empty and exact released descriptor sets; no synthetic identifier |
 | PTP-FR-09 | Execute/reset/fresh-verify/evidence/completion journey only through released #9 | B | blocked; no Stage A implementation |
 | PTP-FR-10 | Start/status/down control only the Stage A static process and preserve review artifacts | A | lifecycle/PID/path/cleanup tests |
-| PTP-NFR-01 | Exact #7 Vite/React lock and exact #8 validators/contracts; no duplicated truth | A | release binding + mutation tests |
+| PTP-NFR-01 | Exact #7 Vite/React lock and exact #8 validators/contracts/shared binding; no duplicated truth | A | shared binding + released-adapter mutation tests |
 | PTP-NFR-02 | One loopback GET/HEAD static process; no BFF/API/database/runner/service worker | A | server/import/process inspection |
 | PTP-NFR-03 | No cloud/model credentials, AWS/Terraform/Docker/optional-profile action | A/B | call/environment/bundle scans |
 | PTP-NFR-04 | Semantic keyboard path, focus, 1280x800/360x800 reflow, reduced motion, axe zero Critical/Serious | A | one Chromium suite + unit checks |
@@ -100,12 +102,14 @@ may not imply a causal join, execute the failure, or relabel retained fixture ev
 
 ## Hard STOP Conditions
 
-- Cook does not start from clean exact `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`, or local,
+- Cook does not start from clean exact `5644f01b4c0443a81f3af0bcce80f44c847cd986`, or local,
   upstream, and fresh integration disagree.
 - Any release ancestry/tree/path/blob/byte/hash/version/registry/operation/lock/protected identity
   differs from the amendment.
-- Any change falls outside the 34 Stage A paths, modifies/deletes a released path, or overlaps an
+- Any change falls outside the 33 Stage A paths, modifies/deletes a released path, or overlaps an
   active owner.
+- A portal-local binding, alias/mapping table, copied binding schema, generated binding type, or
+  invented module/identifier truth appears.
 - Any Stage A runner/BFF/API/mutation/storage/credential/cloud/host-command capability appears.
 - A required test/tool/measurement is absent; audit has High/Critical; axe has Critical/Serious;
   S3, cleanup, protected hash, or exact-head review fails.

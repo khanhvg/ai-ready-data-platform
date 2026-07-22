@@ -3,16 +3,18 @@
 ## Decision
 
 Issue #10 Stage A is ready to cook from the pristine released integration commit
-`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`, subject to the exact scope and gates in this
-amendment. Stage A is a runner-independent, static/read-only portal slice. It provides a
+`5644f01b4c0443a81f3af0bcce80f44c847cd986`, subject to the exact scope and gates in this
+post-binding amendment. Stage A is a runner-independent, static/read-only portal slice. It provides a
 Vietnamese-first learning shell, catalog/module/lesson/step navigation, the released
 promotion-trust lesson, deterministic no-JavaScript output, and an explicit runner-unavailable
 state. It cannot execute a lab, reset a workspace, create fresh evidence, persist progress, or
 complete a lesson.
 
 This amendment supersedes the empty Stage A authority in the original validation and blocked
-readiness snapshots. Those reports remain immutable historical evidence at their recorded input
-SHAs. Stage B authority remains empty and blocked on a released Issue #9 runner.
+readiness snapshots and the pre-binding Stage A authority at plan head
+`d79bcd0c3894c2b8477f1188faadc08f77480087`. Those reports remain immutable historical evidence
+at their recorded input SHAs. Stage B authority remains empty and blocked on a released Issue #9
+runner.
 
 ## Exact Release Authority
 
@@ -21,13 +23,17 @@ SHAs. Stage B authority remains empty and blocked on a released Issue #9 runner.
 | Issue #7 approved feature head | `b219ba2d3843934c3bce2fbbec2a844b48b2dfa9` | Owner exact-head approval comment `5041125607`; tree `8ebd0f9a8ead8a6f3c382088cf172f28742a9c0b` |
 | Issue #7 PR #22 merge | `1806b6d515f2f7a2ace2be7077af84a745ff221f` | Ordered parents are prior integration then approved head; merge tree equals approved-head tree |
 | Issue #8 Stage A PR #23 merge | `5c2244c2c860234d0df49cf0a42ad950c6495717` | Ordered parent 1 contains Issue #7; parent 2 is approved Stage A head `8bdf8ec39c6f21423284a11f7a8ab38c75eeadfa` |
-| Composition PR #25 merge and released integration | `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` | Ordered parents are PR #23 merge then approved composition head `734cf637a20ae186597e23d96a194ed4e30220ea`; tree equality proved |
-| Released integration tree | `27fc3667ef37892dad5c3fbfd76769f65a0760be` | 903 tracked entries; `git ls-tree -r --full-tree` SHA-256 `4b95afd87ee7702f74df4a4b09198e13b8fa7ba45434c8a6a511a3ff1c580018` |
-| Issue #8 Stage A release evidence | comment `5043195549` | `56/56`, invalid fixtures `65/65`, API 16 operations, final gate `4/4`, inherited gates `19/19`, `1/1`, `13/13`; no CI success claim |
+| Composition PR #25 merge / embedded Stage A release | `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` | First parent of the final release and exact `stageA.releaseSha` inside the shared binding; not the new cook base |
+| Issue #8 Stage B v2 approved head | `12e17427076fb31de85534bfbbbedca7e901e76c` | PR #28 approved head; tree `a38594d420fe7df2b30265a8a72bb5fad1698012` |
+| Final Issue #8 release / mandatory cook base | `5644f01b4c0443a81f3af0bcce80f44c847cd986` | Ordered parents `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` then `12e17427076fb31de85534bfbbbedca7e901e76c`; release handoff comment `5047964988` |
+| Released integration tree | `a38594d420fe7df2b30265a8a72bb5fad1698012` | 921 tracked entries; `git ls-tree -r --full-tree` SHA-256 `a6681b3e7ee932fbd29728bc3f649017e57e6980871a3de9def9cb3ac318d9fe` |
+| Shared Vite binding | `learning/bindings/vite/promotion-trust-v1.json` | `promotion-trust-vite-binding-v1`; SHA-256 `03d2aa6bd9fa178e6075865364a8ae8b83ce548c42b450d1858b451b45d0d1d0`; schema SHA-256 `74035baee08b378e46421466333d6933d1bad820337acd1b80a633d236173a43` |
+| Issue #8 pristine release evidence | comments `5047954510`, `5047954805`, `5047964988` | Focused `11/11`, invalid binding `8/8`, full learning `67/67`, Stage A invalid `65/65`, final public behaviors `4/4`, Vite `5/5`, API `16`, evidence `13/13`, data `19/19`, migration `1/1`; no configured-check success claim |
 
-Fresh remote proof must still show `refs/heads/integration/issue-5-local-learning` exactly at the
-released integration SHA immediately before the cook branch is created. The cook branch starts
-from that commit, not from this plan branch and not from a dependency feature worktree.
+Fresh remote proof must still show `refs/heads/integration/issue-5-local-learning` exactly at
+`5644f01b4c0443a81f3af0bcce80f44c847cd986` immediately before the cook branch is created. The
+cook branch starts from that commit, not from this plan branch and not from a dependency or the
+stopped pre-binding feature worktree.
 
 ## Released Read-Only Dependency Binding
 
@@ -103,7 +109,7 @@ fixture adapter, score/timer harness, retained evidence, or product architecture
 | `learning/manifests/promotion-trust-v1.json` | `1aa66a371aa2775213d3d9ef52c95eabd5f72600` | 2130 | `553b97ed5dc44b77564ae50b1a2211205cbd1a759f3578e5e4dfcefef99044ac` |
 | `scripts/learning_contracts/__init__.py` | `9b47c17bff6ff9545086d6692de250ddc654feb5` | 596 | `996e6079e073e5d4175a7ecb67ab5a393ac921bb0129414179e771afe1571f76` |
 | `scripts/learning_contracts/canonical.py` | `e8e1d12a13ede2ce0d3db33deac27c5f82e06a0f` | 2162 | `8649585335007e4afebf113263901f7ed84a28163ff648db95c930bf42e59113` |
-| `scripts/learning_contracts/check.py` | `0b5067d3a909b69b43520b093dd47204c7b8a914` | 29986 | `7734233a9d704ef5720f7a97f97ce822900c9c880021fc843cfd529b86b3c955` |
+| `scripts/learning_contracts/check.py` | `16582e433378574501fb703c35636dbe3d845a5e` | 31081 | `e1d564a155508b40606802925cd55ae860ff82fd2bfe8f8fc928f60f660e3993` |
 | `scripts/learning_contracts/completion.py` | `5b385faf8a818b8e0c28ad358fec1b64d97db3ea` | 4046 | `ce557d4f03d574a902ea2d20c60b3f62e292e92fa6507c45ef8e393b6405f0ac` |
 | `scripts/learning_contracts/evidence.py` | `b1bd673e8cdd72eec171f3ac371086cef2901b53` | 8499 | `aae9633c26e3e210e5f5b294bb44534795bae7e6002b8acbf9ecf46232b4949b` |
 | `scripts/learning_contracts/fitness.py` | `854752fcb52d330ba0df70dc4477d571efc61466` | 7049 | `63c9729ffaa09f85d95d798c622565e106a9a730234e9102e5b6f20e3b060c20` |
@@ -112,7 +118,7 @@ fixture adapter, score/timer harness, retained evidence, or product architecture
 | `scripts/learning_contracts/references.py` | `9c9ccc930a8e86fe631b81661ab933761c0060c0` | 5924 | `5365c5ebf1fbf3e4d10d015fad3a216d15ea9bbb2327bc332166da561440ef54` |
 | `scripts/learning_contracts/registry.py` | `adcd803fef2e219859db6c3349ffca84d7ed9cfb` | 6540 | `ca854421cef9880363929f3bea882f654cf3c8359ce3feecd3018febd1ce195d` |
 | `scripts/learning_contracts/runtime.py` | `021a549bd8bf3049152f74b62ff5d6cc63069fd0` | 31758 | `6a8aaa88c4d38b85c8a889779be900d1d99d95f7bbca3977a03a3a4f2642808d` |
-| `scripts/learning_contracts/schema.py` | `89193411c92e0695afe95accb128d729fcdce26b` | 5253 | `caa137de02542a330a3621a057912eefce95c64775e423db6c61a8ef5f58d005` |
+| `scripts/learning_contracts/schema.py` | `2b3b20c3207fb91ee200f8ad75f95d7569288838` | 5350 | `dc312202f637b589010881cb9f5760027a5f956cf24022cd46e6a0d33267a61a` |
 | `scripts/learning_contracts/state.py` | `92a2a804c87b139fce1ef478877209a9a9ccdfa8` | 2855 | `8149c9e976e2460570932d11b706a384587f00485ac078c63203d076f7e5c6a8` |
 
 ### Repository integration and protected bytes
@@ -128,9 +134,28 @@ fixture adapter, score/timer harness, retained evidence, or product architecture
 | `tests/fixtures/learning/promotion-trust/manifest.json` | `a4b32032962f5f787d733f7de8cf657491944e37` | 4364 | `0a1dcd4023648f52009bfd4dc5d529c00ce66f42cd0e725732b972b0b78df341` |
 | `release-manifest.json` | `b27d231c5ee6d48fd7932b06807ef6a9a2220e21` | 366321 | `f9037b5d946d14f7b1b9c020939f1a44961011f2ad933db9f2b69054abbf9539` |
 | `requirements/golden-py312-macos-arm64.lock` | `3afac7a4cc678cd68d2fe419c5b7b33561b9f93d` | 59389 | `f41c727b39f99106f95b7937b2811e8d27db89d1d5106e9f1d9effd4403143d2` |
-| `plans/260721-008-version-learning-contracts/phase-05-stage-a-compatibility-release-and-staged-handoff.md` | `01ffbc5b7a58b79db27e840a6581514babb99c45` | 14863 | `b4fe608d10ae9c0e9211de4dcf16372ca06128fe631c6a388428639fe828b282` |
+| `plans/260721-008-version-learning-contracts/phase-05-stage-a-compatibility-release-and-staged-handoff.md` | `256779fef27990a79aca058fe76a080ae5aad2ca` | 15574 | `5ab9e91b888ab9fdfc20a59497fd7796f24d0ea19cc66ed794a9ad095fcac3fa` |
 
-The root Make bytes prove the sorted `mk/issue-5/*.mk` include seam; `i5-03.mk` proves exact
+### Issue #8 Stage B binding, public adapter, and invalid fixtures
+
+| Released path | Git blob | Bytes | SHA-256 |
+|---|---|---:|---|
+| `learning/bindings/vite/promotion-trust-v1.json` | `bf29b296c35e415e0f32668627db826a192f3b65` | 3994 | `03d2aa6bd9fa178e6075865364a8ae8b83ce548c42b450d1858b451b45d0d1d0` |
+| `learning/contracts/promotion-trust-vite-binding-v1.schema.json` | `359f93be1df26a98f844fd3381a33f1b71a390f9` | 8893 | `74035baee08b378e46421466333d6933d1bad820337acd1b80a633d236173a43` |
+| `scripts/learning_contracts/vite_binding.py` | `f7c61ca28201f9c282028dcf4db9447068fb8bc7` | 13485 | `14a74306eb79f1ade64593f26f286f394177150f913115142a76cc16501895ec` |
+| `tests/contracts/learning/test_vite_consumer_binding.py` | `d8e4a69ef6a5a4534ae9e1e799cd9333be01e379` | 14142 | `8c357f6d9c0b2815f355c73227701fe04a6d7ffe38c2d8c6e1dde512138cec8e` |
+| `tests/fixtures/learning/bindings/vite/invalid/absolute-path.json` | `c5a42cee304c98d5a5036389ea684b586f4fd4d7` | 3984 | `095d8be66a21de15e1c29bc9ec72357f16eecb98eac552a0c449d0f5322b11f3` |
+| `tests/fixtures/learning/bindings/vite/invalid/completion-authority-override.json` | `42b4cf68e906ec34fcc18fb6360c137f913de062` | 3993 | `5f6fc3f0cf50368d2354b551453e57d6472b2b863fc932bd2e7fa44e9f4a411d` |
+| `tests/fixtures/learning/bindings/vite/invalid/contract-key-drift.json` | `3b5ef46003daea8b22c27c4860442e106b1dac54` | 4004 | `a89af8d65e50430afe45b160e5a77f7a8d5ca428694e912797951f15a041eef4` |
+| `tests/fixtures/learning/bindings/vite/invalid/dependency-hash-drift.json` | `af01939ea0750de1692d3990cec3c2ef133903a7` | 3994 | `3230d9848f002280cf1a0c287099d03f487dc4e0fc01701d3ada161c69c00617` |
+| `tests/fixtures/learning/bindings/vite/invalid/duplicate-target-key.json` | `aa7bf75faa9e4620682e52050878e520ba462c70` | 3992 | `77f4b4e62c5d21321b448b7eabf9ca03ad7da1efb3f57202c0ace057401ca9fd` |
+| `tests/fixtures/learning/bindings/vite/invalid/fixture-key-drift.json` | `87d37b6d3b17c690cba993388710fb39375e21c5` | 3984 | `a650734d1377b8000b95da67a6e760d04d5b6530961031b07d5d93299b010d10` |
+| `tests/fixtures/learning/bindings/vite/invalid/grain-id-drift.json` | `7821b77f1d0280615b3c79653c4294a241be5fc9` | 3989 | `b78ea9216c9a4c07d2b52a8e60acd1604d0997d3cecae3639db42ed93d1f880a` |
+| `tests/fixtures/learning/bindings/vite/invalid/raw-record-leak.json` | `a4c03a09e916987f7553d697f89108ec5b134bf4` | 4011 | `ce09ba6ea119266eff109d1f7791a13b5c80157d365b8cee3a6caf3a855f71b3` |
+
+The full consumed release catalogue is 85 unique paths: the prior 73-path closure, with the three
+changed rows above recomputed at the final tree, plus the 12 shared binding/adapter/invalid-fixture
+paths. The root Make bytes prove the sorted `mk/issue-5/*.mk` include seam; `i5-03.mk` proves exact
 validator command ownership and admitted-runtime invocation. The registry bytes prove all
 nine I5-05 public commands are reserved to `mk/issue-5/i5-05.mk` as
 `future-owner/not-runnable` with `fitness-result-v1` evidence ownership before Stage A activation.
@@ -147,8 +172,8 @@ negative-boundary tests; Stage A exposes none of them.
 
 ## Exact Stage A Tracked Write Allowlist
 
-Only these new tracked files may be created. There are no Stage A modifies or deletes because the
-released tree contains neither the portal directory nor the Issue #10 Make fragment.
+Only these 33 new tracked files may be created. There are no Stage A modifies or deletes because
+the released tree contains neither the portal directory nor the Issue #10 Make fragment.
 
 ```text
 apps/learning-portal/index.html
@@ -156,7 +181,6 @@ apps/learning-portal/package.json
 apps/learning-portal/package-lock.json
 apps/learning-portal/playwright.config.mjs
 apps/learning-portal/command-owner-activation.stage-a.json
-apps/learning-portal/release-binding.stage-a.json
 apps/learning-portal/vite.config.mjs
 apps/learning-portal/scripts/generate-static-routes.mjs
 apps/learning-portal/scripts/portal-lifecycle.mjs
@@ -201,10 +225,17 @@ a truthful non-zero `STAGE_B_DEPENDENCY_UNAVAILABLE` fitness result. The activat
 only after the Make fragment bytes stabilize, and its schema/base/fragment identities are
 validated without editing the shared registry.
 
+There is deliberately no portal-local binding, alias map, mapping table, copied binding schema,
+generated binding type, or duplicate identifier authority. `release-binding.test.mjs` tests the
+released shared path directly. The build reads
+`learning/bindings/vite/promotion-trust-v1.json` only after the released public validators accept
+it and iterates its ordered `grainBindings`; portal source must not restate the
+`region→region_name`, `category→category_name`, or `dq→data-quality` mappings.
+
 ## Portal Architecture and Extension Seams
 
 ```text
-released contract set + manifest + validators
+released contract set + manifest + shared Vite binding + validators
                    |
                    v
 released-module-provider -> safe PortalCatalog view model
@@ -306,7 +337,7 @@ manager. Direct ad hoc variants and root Make edits are denied.
 
 | ID | Stage A requirement | Proof |
 |---|---|---|
-| SA-R01 | Exact #7/#8/integration identities and all admitted bytes match | Release-binding unit/mutation tests |
+| SA-R01 | Exact #7/#8/final-integration identities and all 85 admitted bytes match | Shared-binding unit/mutation tests |
 | SA-R02 | Frozen Vite dependency graph and exact tool versions | Lock comparison, `npm ci`, build, audit |
 | SA-R03 | Vietnamese-first reusable catalog/module/lesson/step shell | Server render + Chromium semantics |
 | SA-R04 | Promotion-trust is one vertical slice, not the complete course | Catalog and copy assertions |
@@ -316,7 +347,7 @@ manager. Direct ad hoc variants and root Make edits are denied.
 | SA-R08 | No-JavaScript and React modes expose equivalent released facts | Built HTML parser + JS-disabled Chromium |
 | SA-R09 | CSP/XSS/Host/path/storage/cloud boundaries fail closed | S3 unit/browser/scanner tests |
 | SA-R10 | Lifecycle, artifacts, cleanup, and rollback stay bounded | Process/path/limit/cleanup tests |
-| SA-R11 | #11/#12 can supply later released manifests through the provider seam | Synthetic contract-shape unit test using in-memory registered descriptors only |
+| SA-R11 | #11/#12 can supply later released manifests through the provider seam | Provider empty/exact-set/duplicate-rejection tests using only the current released descriptor; no synthetic identifier |
 
 | ID | Scenario | Expected result |
 |---|---|---|
@@ -380,7 +411,7 @@ fixture rows are forbidden.
 ## Verification and Review Gate
 
 1. Prove a clean cook branch whose start commit, tracking base, and fresh remote integration are
-   the released integration SHA; prove Issue #7/#8 ancestry and tree identities.
+   `5644f01b4c0443a81f3af0bcce80f44c847cd986`; prove Issue #7/#8 ancestry and tree identities.
 2. Retain RED evidence, implement only the exact tracked write allowlist, and keep all dependency
    paths read-only.
 3. Run the exact #8 validator commands, frozen install, unit/contract/security tests, production
@@ -397,7 +428,25 @@ fixture rows are forbidden.
 
 Stage A review evidence may state that rendering, navigation, accessibility, security, build,
 cleanup, and rollback passed. It must state `runner: unavailable`, `execution: disabled`,
-`reset: not-run`, `freshEvidence: false`, and `completion: disabled`. It cannot close Issue #10.
+`reset: not-run`, `freshEvidence: false`, `progress: disabled`, and `completion: disabled`. It
+cannot close Issue #10.
+
+## Fresh Implementation Worktree Strategy
+
+Do not reuse, reset, rewrite, delete, or treat the stopped
+`feature/issue-10-portal-stage-a` worktree as authority. It is clean at
+`515bd919da243dd9f30395d3deef02f7819cd0a1` but was created from the pre-binding release.
+
+After this readiness output is published, create a new branch such as
+`feature/issue-10-portal-stage-a-v2` in a new worktree directly from
+`5644f01b4c0443a81f3af0bcce80f44c847cd986`. Cherry-pick the five Issue #10 plan-only commits in
+order—`ad87c3f6090129dd30cfb626c6f396567f567a42`,
+`e2bba33deff76985eb3bdae361d494d162c854f8`,
+`4a36bab4f8a8c9f393060cf7337b2e5ca45cd9b7`,
+`d79bcd0c3894c2b8477f1188faadc08f77480087`, then the published readiness commit identified in
+the Issue #10 handoff—then prove
+the resulting Issue #10 plan-directory tree equals the published readiness output and that no
+product path changed. Only then may RED begin. Any conflict or non-plan delta is a STOP.
 
 ## Stage B
 
@@ -408,7 +457,7 @@ fresh independent validation/readiness.
 
 ## Rollback
 
-Before merge, rollback is normal deletion of only the exact new Stage A tracked files plus
+Before merge, rollback is normal deletion of only the exact 33 new Stage A tracked files plus
 run-owned generated state; protected and dependency bytes remain untouched. After an accepted
 Stage A merge, use a reviewed revert of that exact Stage A commit/PR. In both cases retain review
 evidence, stop only the owned static process, and re-prove the pristine released integration

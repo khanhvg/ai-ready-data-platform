@@ -53,7 +53,7 @@ apps/learning-portal/tests/e2e/visual-review.spec.mjs
 mk/issue-5/i5-05.mk
 ```
 
-Across Phases 1–4 the total must equal the amendment's 34 creates, no modifies/deletes.
+Across Phases 1–4 the total must equal the amendment's 33 creates, no modifies/deletes.
 
 ## Tests Before
 
@@ -85,7 +85,7 @@ Across Phases 1–4 the total must equal the amendment's 34 creates, no modifies
    fragment hash.
 6. Run exact released validators, frozen install, unit/build, Stage A browser/visual/audit/public
    targets, both Stage B negatives, cleanup twice, and rollback rehearsal.
-7. Verify the final diff is exactly 34 creates, protected hashes unchanged, generated state
+7. Verify the final diff is exactly 33 creates, protected hashes unchanged, generated state
    untracked/cleaned, and no cloud action.
 8. Obtain two fresh exact-head implementation reviews, bounded human UAT, and human exact-head
    approval before any human merge.
@@ -95,7 +95,7 @@ Across Phases 1–4 the total must equal the amendment's 34 creates, no modifies
 - [ ] Stage A portal is useful with JS enabled or disabled and runner absent.
 - [ ] Exact commands, Chromium/axe, S3, output, audit, cleanup, and rollback gates pass.
 - [ ] Claims remain static/read-only, runner unavailable, completion disabled.
-- [ ] Final tracked diff is exactly 34 creates and no other product/config/data path.
+- [ ] Final tracked diff is exactly 33 creates and no other product/config/data path.
 - [ ] Stage B remains blocked and Issue #10 remains open after any Stage A partial release.
 
 ## Risks and Rollback
@@ -107,7 +107,7 @@ Across Phases 1–4 the total must equal the amendment's 34 creates, no modifies
 | Visual gate becomes flaky ceremony | one Chromium, two fixed viewports, bounded named artifacts |
 | Cleanup kills foreign PID or evidence | PID/start identity, nonce/marker, path/alias negatives, retain review root |
 
-Rollback removes only the exact 34 Stage A additions at a reviewed Git point; no released or
+Rollback removes only the exact 33 Stage A additions at a reviewed Git point; no released or
 retained evidence byte is deleted.
 
 ## Next Steps

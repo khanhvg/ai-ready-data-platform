@@ -10,6 +10,8 @@ effort: "L"
 # Phase 6: Stage B real journey and completion integration
 
 > Blocked: Issue #9 is unreleased. Stage B file, command, and dependency allowlists are empty.
+> Planning/cook heads are not adapters; no fake execution, synthetic success/evidence,
+> browser-to-host/engine command, raw shell, or local-shell fallback is allowed.
 
 ## Overview
 
@@ -42,8 +44,8 @@ released #8/#9 interfaces; no fake/ignored fixture or browser-direct privilege.
 
 - Keyboard, desktop/narrow, reduced-motion/static, and status/live-region paths remain complete.
 - Browser history never replays a mutation and browser storage is not authoritative.
-- Core path uses no Docker/optional service/cloud credential and stays within the local process
-  shape.
+- No runtime/engine/process shape is assumed before the exact Issue #9 release; the browser never
+  receives host, engine, shell, or cloud authority.
 - Evidence/local hashes are described as corruption detection only.
 
 ## Architecture
@@ -97,7 +99,8 @@ evidence download digest. The final exact Make aggregate remains Phase 7.
 
 ## Implementation Steps
 
-1. Stop until the later amendment pins real #9 and exact Stage B paths/commands, then allocate a
+1. Stop until the later amendment pins an exact reviewed/merged/pristine #9 release and exact
+   Stage B paths/commands, then allocate a
    clean namespaced real workspace and retain failing full-journey evidence.
 2. Enable the released start/operation controls through the same-origin BFF only.
 3. Render real controlled-failure evidence and distinct environmental error/remediation states.

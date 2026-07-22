@@ -13,7 +13,7 @@ skip. Stage B must be re-threat-modelled after an exact Issue #9 release.
 Protected assets:
 
 - repository, released #7/#8 bytes, Issue #6 fixtures/contracts, and protected manifest;
-- exact package lock, build output, release binding, and closed safe view model;
+- exact package lock, build output, released shared binding, and closed safe view model;
 - loopback process ownership, PID/start identity, runtime marker, evidence/review artifacts;
 - local environment, home/cloud credentials, private paths, process output, and network;
 - lesson truth: four independent grains, canonical decision, and non-completion claim.
@@ -31,7 +31,7 @@ full WCAG claim.
 
 | Boundary | Allowed | Denied |
 |---|---|---|
-| Released tree → build | exact hash-bound #7 packages and validated #8 files | feature worktree, ignored copy, unknown field/version/path/hash |
+| Released tree → build | exact hash-bound #7 packages and validated #8 files/shared binding | feature worktree, ignored copy, portal-local map/schema, unknown field/version/path/hash |
 | Released content → view model | closed escaped safe fields | raw HTML/MDX, script, event, executable URL, raw fixture rows |
 | Browser → static server | exact loopback Host, GET/HEAD, admitted route/file | body, mutation, API, proxy, upload, traversal, ambiguous route |
 | Browser state | current read-only route/view | cookie, session, local/session storage, IndexedDB, cache, service worker |
@@ -82,6 +82,8 @@ same-origin compiled assets only.
 ## XSS and Rendering Rules
 
 - Run exact released validators before mapping a closed safe view model.
+- Iterate the released shared binding directly; forbid portal-local alias/mapping tables, copied
+  binding schemas, generated binding types, or fallback identifier rules.
 - React interpolation and static templates escape every field consistently.
 - Forbid `dangerouslySetInnerHTML`, raw HTML/MDX, runtime eval/code generation, inline handlers,
   executable/untrusted URLs, artifact previews, and unknown released fields.
@@ -145,7 +147,7 @@ assignment/signature/canary or be manually dispositioned.
   twice, preserves review artifacts, and proves no owned process remains.
 - It never deletes repository content, the Issue #6 fixture, dependency bytes, other worktrees,
   home/private paths, other processes, optional-profile volumes, or review evidence.
-- Rollback is an exact reviewed Git revert/removal of only the 34 Stage A additions. No release
+- Rollback is an exact reviewed Git revert/removal of only the 33 Stage A additions. No release
   byte, contract, root file, fixture, or retained review artifact is mutated by cleanup.
 
 ## Residual Human Gate

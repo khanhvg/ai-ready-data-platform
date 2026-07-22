@@ -3,7 +3,7 @@
 ## Current Exact-Release State
 
 Rechecked on 2026-07-22 from clean plan head
-`4a36bab4f8a8c9f393060cf7337b2e5ca45cd9b7` using fetched remote Git objects and live GitHub
+`d79bcd0c3894c2b8477f1188faadc08f77480087` using fetched remote Git objects and live GitHub
 issue, pull-request, review, and release-evidence records. Dependency worktrees and ignored
 artifacts were not inputs.
 
@@ -11,12 +11,12 @@ artifacts were not inputs.
 |---|---|---|
 | Issue #6 | CLOSED/`shipped`; merge `24be3b34c6b0fcdbd07c5800dcab349054e34713` | Seven protected data/contract identities remain read-only |
 | Issue #7 | CLOSED/`shipped`; approved feature head `b219ba2d3843934c3bce2fbbec2a844b48b2dfa9`; PR #22 merge `1806b6d515f2f7a2ace2be7077af84a745ff221f` | Exact Vite/React toolchain is usable by Stage A; spike product architecture is not |
-| Issue #8 | Stage A PR #23 merge `5c2244c2c860234d0df49cf0a42ad950c6495717`; release evidence comment `5043195549` | Exact validators, registries, lesson/lab/manifest, OpenAPI, progress/completion/evidence contracts are read-only Stage A authorities |
-| Composition | PR #25 merge and pristine released integration `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`, tree `27fc3667ef37892dad5c3fbfd76769f65a0760be` | Mandatory Stage A cook base |
-| Issue #9 | OPEN and unreleased | No Stage B runner authority; Stage B remains blocked |
+| Issue #8 | CLOSED/`shipped`; final release merge `5644f01b4c0443a81f3af0bcce80f44c847cd986`; parents `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`, `12e17427076fb31de85534bfbbbedca7e901e76c`; handoff `5047964988` | Exact validators, contracts, binding, adapters, and fixtures are read-only Stage A authorities; shared-contract lease released |
+| Final integration | `5644f01b4c0443a81f3af0bcce80f44c847cd986`, tree `a38594d420fe7df2b30265a8a72bb5fad1698012` | Mandatory Stage A cook base |
+| Issue #9 | OPEN at plan head `308c736f8811ac9aeaf41ad5b27dea07d2e60b2e`; cook branch `9eb31075aeb0e7b974ad15645460ab4987570f20`; no reviewed/merged/pristine release | No Stage B runner authority; Stage B remains blocked |
 
-The released integration has 903 tracked entries; the canonical `git ls-tree -r --full-tree`
-listing has SHA-256 `4b95afd87ee7702f74df4a4b09198e13b8fa7ba45434c8a6a511a3ff1c580018`.
+The released integration has 921 tracked entries; the canonical `git ls-tree -r --full-tree`
+listing has SHA-256 `a6681b3e7ee932fbd29728bc3f649017e57e6980871a3de9def9cb3ac318d9fe`.
 The exact per-file blob, byte, and SHA-256 catalogue is in the
 [Stage A release amendment](./stage-a-release-amendment.md#released-read-only-dependency-binding).
 
@@ -36,7 +36,7 @@ sampling, timer scorecards, and Gate-D framework comparison are historical and n
 
 | Stage | File authority | Command authority | Dependency authority | Cookable |
 |---|---|---|---|---|
-| A | Exactly 34 new tracked paths; no modifies/deletes | Exactly the release, install, test, build, audit, lifecycle, visual, and required-negative commands in the amendment | #7/#8/#25 identities above and their enumerated bytes | `true` |
+| A | Exactly 33 new tracked paths; no modifies/deletes | Exactly 18 release, install, test, build, audit, lifecycle, visual, and required-negative commands | Final integration plus 85 enumerated consumed paths | `true` |
 | B | `[]` | `[]` | `[]` | `false` |
 
 The exact lists in the amendment are normative. A path, command, dependency, version, route,
@@ -51,23 +51,24 @@ ownership ceiling.
   Make, runner source, `README.md`, `docs/**`, CI, cloud, AWS, Terraform, and other issue files are
   read-only or denied.
 - The app consumes released #8 validators and maps a closed safe view model. It does not copy,
-  reinterpret, fork, or become a second owner of shared contract truth.
+  reinterpret, fork, or become a second owner of shared contract truth. It consumes the shared
+  Vite binding directly and creates no portal-local alias/mapping/schema authority.
 - A conflicting active lease, changed path, release drift, or protected-hash drift is a hard
   STOP. No concurrency is assumed for shared surfaces.
 
 ## Gate A — Static Portal Authority
 
 Gate A is satisfied for planning/cook readiness only when the cook begins from pristine
-`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` and re-proves every row before the first product
+`5644f01b4c0443a81f3af0bcce80f44c847cd986` and re-proves every row before the first product
 write.
 
 | ID | Required proof | Failure disposition |
 |---|---|---|
 | GA-01 | #7 approval/head/merge ancestry and tree equality; exact released toolchain and lock | Stop on any identity, lock, integrity, tool, or ancestry mismatch |
-| GA-02 | #8 PR #23 plus PR #25 composition; exact release comment, schemas, registry, lesson/lab/manifest, validators, OpenAPI 16-operation matrix | Stop rather than create a local schema, type, route, or operation truth |
+| GA-02 | #8 final release; exact shared binding/schema/adapter/invalid fixtures; contract set, registry, lesson/lab/manifest, validators, OpenAPI 16-operation matrix | Stop rather than create a local alias, mapping, schema, type, route, or operation truth |
 | GA-03 | Cook HEAD, upstream, and fresh integration ref equal the pristine integration; clean tree; no overlap | Stop on wrong base, dirty input, or lease/path conflict |
 | GA-04 | Seven Issue #6/protected identities match `requirements-and-risk-traceability.md` | Stop on byte, blob, or digest drift |
-| GA-05 | Planned and final changed paths are exactly within the 34-path allowlist | Stop on additions, modifications, deletions, generated tracked output, or root changes |
+| GA-05 | Planned and final changed paths are exactly within the 33-path allowlist | Stop on additions, modifications, deletions, generated tracked output, or root changes |
 
 ### Gate A Claim Boundary
 
@@ -105,10 +106,10 @@ without importing or acting on a runner.
 
 From a fresh checkout at the released integration, Stage A must:
 
-1. recompute release ancestry, tree, per-path blob/bytes/SHA-256, protected identities, command
-   ownership, and the exact lock graph;
-2. run the released #8 `learning-contracts-check`, promotion lesson check, and 16-operation API
-   check through their admitted runtime;
+1. recompute release ancestry, 921-entry tree, all 85 per-path blob/bytes/SHA-256 identities,
+   protected identities, command ownership, and the exact lock graph;
+2. run the released #8 `learning-contracts-check` including focused binding `11/11` and invalid
+   family `8/8`, promotion lesson check, and 16-operation API check through the admitted runtime;
 3. use frozen `npm ci --ignore-scripts --no-audit --no-fund`; after acquisition, run build and
    focused checks without undeclared network access or package/runtime fallback;
 4. record the implementation input, dependency identities, paths, versions, tools, checks,
@@ -120,8 +121,10 @@ failure, or alternate package manager is `fail`.
 
 ## Stage and Branch Strategy
 
-Stage A cooks on a new branch from the pristine released integration, never from this planning
-branch or a feature worktree. Its exact implementation head requires focused tests, S3, two fresh
+Stage A cooks in a fresh branch/worktree from the final integration, with the four named
+Issue #10 plan-only commits followed by the published readiness commit from the Issue #10 handoff.
+It never reuses, resets, rewrites, or deletes the clean stopped pre-binding
+`feature/issue-10-portal-stage-a` worktree. Its exact implementation head requires focused tests, S3, two fresh
 independent reviews, bounded human visual/keyboard UAT, and human exact-head approval before a
 human merge. If Stage A merges while Stage B remains blocked, Issue #10 stays open and the portal
 retains its non-executing/non-completing claim.
