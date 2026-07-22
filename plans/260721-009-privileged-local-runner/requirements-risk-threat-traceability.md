@@ -14,23 +14,23 @@
 
 | ID | Requirement and acceptance | Test/evidence | Master trace | Dependency / rollback |
 |---|---|---|---|---|
-| RUN-DEP-01 | Implementation base contains exact reviewed/released Issue #8 Stage A SHA and recorded contract/type/registry/evidence hashes; runtime refuses drift | dependency preflight JSON, Git ancestry, contract mutation negatives | I5-03→I5-04; PH-C06; SC-20 | Hard block; return to Issue #8 owner; never create local contract |
+| RUN-DEP-01 | Future implementation base descends from released Stage A `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` and locks the Phase 2 contract/registry/operation/evidence hashes; runtime refuses drift | dependency preflight JSON, Git ancestry/tree, contract mutation negatives | I5-03→I5-04; PH-C06; SC-20 | Hard block on mismatch; never create a local shared contract or generated binding |
 | RUN-BND-01 | Writes remain inside `apps/lab-runner/**`, runner tests, app-owned runtime config, `mk/issue-5/i5-04.mk`, and the one characterized Airflow callable guard | changed-path manifest, protected-path hashes, default/DAG compatibility, `git diff --check` | OWN-01; ADR-001; issue #9 authority | Revert issue-owned paths/guard; preserve unrelated/user files |
-| RUN-TRN-01 | UDS default with same-effective-UID peer credential, or explicit random loopback fallback; exact Host, empty Origin allow-list, bearer, CSRF, content-type, Fetch Metadata and no-CORS policy apply before body/operation allocation | peer UID, Host/origin/CSRF/rebinding/preflight/cookie/duplicate-header/browser negatives; transport evidence | PH-C05; ADR-002/006; SC-02/08 | Disable transport/runner; no weaker loopback mode |
+| RUN-TRN-01 | UDS default with same-effective-UID peer credential, or explicit random loopback fallback; exact Host, empty Origin allow-list, bearer, CSRF, content-type, Fetch Metadata, no-CORS policy, and 16,384-byte body ceiling apply before parse/operation allocation | peer UID, Host/origin/CSRF/rebinding/preflight/cookie/duplicate-header/oversize/browser negatives; transport evidence | PH-C05; ADR-002/006; SC-02/08 | Disable transport/runner; no weaker loopback mode |
 | RUN-TRN-02 | Browser never receives runner credentials and cannot request privileged execution directly | real HTTP browser-shaped requests prove zero operation/audit allocation; secret/output scans | ADR-002; PH-C05; SC-08 | Keep future portal static/direct-expert fallback |
-| RUN-CMD-01 | Exactly eight typed command IDs and the exact released readable/current version matrix resolve from Issue #8; unknown/retired/malformed/duplicated versions and any raw command/argv/env/cwd/path/URL override fail with no implicit default/range/downgrade | registry/type/version/unknown-field/property tests; lock/hash artifact | PH-C05; SC-02; lesson command contract | Dependency STOP; disable runner on mismatch |
+| RUN-CMD-01 | Exactly eight released zero-argument lab command IDs resolve; API `learning-platform-v1`, operation `v1`, request `*-request-v1`, lab `1.0.0`, and fitness v2 are exact. No command-version field exists. Unknown schema/API/command or any raw argv/env/cwd/path/URL override fails with no implicit default/range/downgrade | registry/schema/version/unknown-field/property tests; lock/hash artifact | PH-C05; SC-02; released lab/operation contract | Dependency STOP; disable runner on mismatch |
 | RUN-CMD-02 | Python/dbt entrypoints, interpreter, runtime lock, Git blob and file digest are pinned; isolated imports/startup hooks cannot alter execution | interpreter/import/sitecustomize/usercustomize/plugin/hash-swap negatives | PH-C05; PH-H02; SC-02 | Refuse readiness; restore exact reviewed runtime |
 | RUN-FS-01 | Private per-run workspace, read-only base, descriptor/no-follow containment, type/link/identity checks and use-time revalidation prevent path/symlink/hardlink/TOCTOU escape | path fuzz, parent/symlink swap, hardlink, FIFO/device/socket, base-write and cleanup races | PH-C05; PH-H13; SC-02 | Quarantine owned state; disable runner; never delete foreign target |
 | RUN-ENV-01 | Child env starts empty and contains only fixed policy values; no ambient credentials, home config, proxy, plugin, Docker, cloud, or trace variables | canary/env-dump/import tests and persisted-output scan | PH-C05; SC-06/11 | Kill operation; retain only typed hash/reason |
 | RUN-NET-01 | Child process tree has no outbound/listen network; runner itself exposes only UDS or explicit 127.0.0.1 ephemeral fallback | DNS/TCP/UDP/listen/network inheritance negatives; containment probe | PH-C05; SC-06 | `RUNNER_CONTAINMENT_UNAVAILABLE`; static/direct mode only |
-| RUN-RES-01 | 16 GiB policy enforces wall/CPU/RSS/disk/file/FD/process/output caps and complete descendant cleanup only after a non-poll-only Darwin fork/reparent mechanism is admitted | CPU spin, memory, sparse/disk, file-size, FD, output flood, TERM-ignore, rapid double-fork/reparent/setsid tests | PH-H01; PH-C05; SC-04 | Admission STOP or TERM/KILL/reap; no state/pointer advancement |
+| RUN-RES-01 | 16 GiB host policy enforces the released 120-second, 536,870,912-byte command-memory and 268,435,456-byte workspace ceilings plus runner CPU/file/FD/process/output caps; complete descendant cleanup requires a non-poll-only Darwin fork/reparent mechanism | CPU spin, memory, sparse/disk, file-size, FD, output flood, TERM-ignore, fast-exit-parent/double-fork/reparent/setsid tests | PH-H01; PH-C05; SC-04 | Admission STOP or TERM/KILL/reap; no state/pointer advancement |
 | RUN-FEN-01 | One per-workspace and runner-wide mutation uses OS lock + monotonic fence epoch; stale owner cannot commit | two-runner barriers, stale epoch, lock swap, crash/restart | PH-C06; SC-03/14 | Typed conflict/reconcile; prior state remains current |
 | RUN-FEN-02 | Direct Make/Airflow expert namespace cannot overlap learner namespace; any learner-targeted direct callable lacks the inherited fence capability and refuses before write | runner-vs-Make non-overlap, runner-vs-callable denial, DuckDB/current-pointer oracles | PH-C06; PH-H13; SC-03 | Preserve direct expert tools; disable runner integration |
 | RUN-STA-01 | Released state transitions and idempotency survive duplicate, conflicting, crash and restart paths; runner never writes portal completion | request digest replay/conflict, kill at transactions, startup reconciliation | ADR-007; PH-C06; SC-03/14/16 | Recover last commit or reset; no fabricated completion |
 | RUN-AUD-01 | Audit events are insert-only, hash-chained, fsync-backed, redacted and sequence-complete | UPDATE/DELETE denial, chain tamper/truncation, crash and secret-canary tests | ADR-018; PH-H11; SC-11/16 | Quarantine corrupt log; live re-verification; no non-repudiation claim |
 | RUN-REL-01 | `retail.export` stages/verifies exactly eleven assets and advances one same-filesystem current pointer atomically under a live fence | missing/duplicate/mixed asset, kill at every fsync/rename, concurrent export/reset/verify | PH-C06; SC-03/07 | Keep/restore previous pointer; quarantine incomplete stage |
-| RUN-EVD-01 | Every required gate emits schema-valid evidence below `.artifacts/evidence/runner/<run-id>/` with commands, tools, SHAs, hashes, status, redaction and rollback | released schema validator, canonicalization/tamper/unknown-field/private-path tests | PH-H11; issue #9 evidence contract | Evidence failure fails gate; preserve sanitized failure artifacts |
-| RUN-TDD-01 | Interpreter/import/startup-hook/argv/path-TOCTOU/env/quota/output/descendant/base-write/browser-request/cross-entrypoint-race/crash/idempotency negatives are committed RED before behavior | RED manifest lists stable assertion IDs and expected absence/failure against exact dependency SHAs | I5-04 TDD; PH-C05/06; SC-02/03/14 | No behavior change until RED evidence is retained |
+| RUN-EVD-01 | Every required gate emits a closed `fitness-result-v2` envelope below `.artifacts/evidence/runner/<run-id>/`; runner detail is carried only by hashed referenced artifacts. Learner verification uses `learning-evidence-v1` | released schema/activation verifier, canonicalization/tamper/unknown-field/private-path tests | PH-H11; released Issue #8 evidence contract | Evidence failure fails gate; preserve sanitized failure artifacts |
+| RUN-TDD-01 | Interpreter/import/startup-hook/argv/path-TOCTOU/env/quota/output/descendant/base-write/browser-request/cross-entrypoint-race/crash/idempotency negatives traverse real public runner Make targets and are committed RED before behavior | RED manifest lists stable assertion IDs, fixture markers, public target, and expected absence/failure against exact dependency SHAs | I5-04 TDD; PH-C05/06; SC-02/03/14 | No behavior change until exact public-path RED evidence is retained |
 | RUN-GATE-01 | Exact future command set passes: `make runner-test runner-security-test runner-race-test data-contracts-check`; required S3 scans also pass | four result manifests plus aggregate evidence index | issue #9; master command registry | Any required failure blocks review/merge |
 | RUN-ROL-01 | Rollback disables runner, stops only owner-recorded processes, restores previous release pointer, and removes only marker-owned transient workspace; evidence and expert paths remain | rollback rehearsal twice, foreign marker/symlink refusal, final process/status checks | PH-C05/06; SC-03/14 | Manual inspection on ownership ambiguity; never broad clean |
 | RUN-APP-01 | Exact independently reviewed head receives human pre-merge approval; changed head invalidates approval | issue/PR attestation, remote head equality, zero Critical/High | issue #9 mandatory gate | No merge until re-review/re-attestation |
@@ -46,7 +46,7 @@
 | Local learner | Untrusted inputs, same product actor | Released typed values and workspace-scoped results | Host/repository paths, package install, arbitrary binary/shell/network/cloud |
 | Allow-listed child process | Contained | Read pinned base/runtime; write declared workspace set | Runtime secrets, home/credentials, base writes, network, other workspace |
 | Direct expert Make/Airflow user | Trusted expert namespace | Existing repository-local direct workflow | Learner namespace mutation without inherited fence capability |
-| Runner daemon | Privileged local authority | Workspace state, audit, process and release commits | Portal completion, shared contract writes, cloud/AWS/Terraform |
+| Runner daemon | Application-level local authority; OS process remains unprivileged | Workspace state, audit, process and release commits | Sudo/elevation, portal completion, shared contract writes, cloud/AWS/Terraform |
 | Same-account external process/root | Outside cryptographic assurance | None granted by product | Local non-repudiation/isolation claim; root can defeat host controls |
 
 ### Protected assets and boundaries
@@ -82,7 +82,9 @@
 
 | Risk | Likelihood / impact | Mitigation and release gate | Owner / evidence |
 |---|---|---|---|
-| Issue #8 release shape cannot activate I5-04 without shared write | Medium / Critical | Phase 2 hard STOP; shared owner publishes compatible version/activation seam | Issue #8 release handoff + lock |
+| Stage A generic seam is mis-pinned or locally forked | Low / Critical | Pin release/tree/hashes; use generic activation plus fitness v2 read-only; no shared write | Phase 2 release table + contract lock |
+| I5-04 activation bytes drift from their exact owned path | Low / Critical | Allow only `apps/lab-runner/config/command-owner-activation-i5-04-v1.json`; measure and lock actual base/fragment/instance hashes | Activation/lock evidence |
+| Oversized or ambiguous private request reaches allocation | Low / High | Exact 16,384-byte pre-parse ceiling plus duplicate/framing/streaming negatives | Transport RED evidence |
 | `sandbox-exec` is unavailable or behavior changes on a macOS update | Medium / Critical | Exact tested host tuple + functional startup probes; runner stays disabled | S3 containment evidence |
 | Existing CLI performs undeclared write despite explicit path args | Medium / High | Phase 1 syscall/path characterization; do not broaden write set; re-plan narrow seam if proven | characterization manifest |
 | Exact host cannot provide complete rapid fork/reparent/`setsid` control | Medium / Critical | Phase 1 non-poll-only admission; rlimits, process groups and ≤100 ms accounting are defense in depth; STOP before RED/product behavior if proof fails | capability + quota/descendant evidence |
@@ -96,8 +98,10 @@
 ## STOP Conditions
 
 - Wrong/dirty input, active overlapping shared-contract lease, or changed protected path.
-- Issue #8 exact Stage A SHA absent, unmerged, unreviewed, not an ancestor, or contract hashes/types/
-  registry/evidence activation incompatible.
+- Stage A SHA/tree/ancestry or any pinned contract/registry/operation/evidence hash mismatches.
+- I5-04 activation is absent from its exact owned path, any measured registry/fragment/instance
+  hash mismatches, the 16,384-byte request ceiling is not active, or the implementation head does
+  not descend from the release.
 - Required host containment, filesystem no-follow/atomicity, process-tree cleanup, or exact runtime
   lock cannot be proven.
 - Any required RED assertion is missing, passes before behavior for the wrong reason, or lacks a
@@ -109,5 +113,6 @@
 
 ## Unresolved Questions
 
-None. The Issue #8 released Stage A SHA is intentionally unresolved external state and remains a
-machine-blocking dependency, not a planner-selected value.
+None for plan readiness. Stage A compatibility, the activation path, private request ceiling, and
+write ownership are exact. Actual future hashes and review heads are captured contemporaneously
+after they exist; all execution-time mismatch and security conditions above remain fail-closed.

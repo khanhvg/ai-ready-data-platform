@@ -47,7 +47,7 @@ workspace lease FD + fence epoch
 
 - Create: `apps/lab-runner/src/lab_runner/{fence,state,release,evidence}.py`
 - Create: `apps/lab-runner/tests/unit/test_{fence,state,idempotency,audit,release}.py`
-- Create: `apps/lab-runner/tests/race/test_{fencing,cross_entrypoint,release_atomicity,crash_recovery,idempotency}.py`
+- Extend: `apps/lab-runner/tests/race/test_{fencing,cross_entrypoint,release_atomicity,crash_recovery,idempotency}.py` created RED in Phase 3
 - Extend: `apps/lab-runner/src/lab_runner/{service,workspace,process}.py`
 - Extend: app-owned fault fixtures and bounded pipeline integration tests
 - Consume read-only: `contracts/data/curated-release-manifest.schema.json` and exact curated list

@@ -2,12 +2,17 @@
 
 ## Context and Non-Authority
 
-- Immutable planning input: `24be3b34c6b0fcdbd07c5800dcab349054e34713`.
+- Original planning base / Issue #6 release: `24be3b34c6b0fcdbd07c5800dcab349054e34713`.
+- Immutable dependency-release amendment input:
+  `5cea5ce248b49ff8741af1b1e65f8ac2eb64698f`.
 - Fresh `origin/main` observed during planning: `3cd3d41f71582774e8d9656a51d1044035f4503c`.
-- Fresh `origin/integration/issue-5-local-learning` equals the input SHA.
-- Issue #6 is shipped at the input SHA. Issue #8 is OPEN with no released Stage A SHA.
-- At validation input, Issue #9 is OPEN with `ready for plan validation`, `risk:high`, `tdd`,
-  `security:S3`, and `backend`; `triaged` is no longer present.
+- Fresh `origin/integration/issue-5-local-learning` and fresh live ref equal released Stage A SHA
+  `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`.
+- Issue #6 is shipped. Issue #8 Stage A is released by owner comment `5043195549`; PR #23 merge is
+  `5c2244c2c860234d0df49cf0a42ad950c6495717`, PR #25 merge/current integration head is the Stage A
+  SHA, and the exact release tree is `27fc3667ef37892dad5c3fbfd76769f65a0760be`.
+- At amendment input, Issue #9 is OPEN with `ready for plan audit`, `risk:high`, `tdd`,
+  `security:S3`, and `backend`.
 - This document plans future work. It does not validate, audit, implement, authorize cook, create a
   PR, merge, or waive exact-head human approval.
 
@@ -20,14 +25,15 @@
 | Create | `apps/lab-runner/pyproject.toml` | Python 3.12 package metadata and console entrypoints |
 | Create | `apps/lab-runner/requirements/runner-py312-macos-arm64.{in,lock,metadata.json}` | Wheel-only, hash-complete runtime/test toolchain |
 | Create | `apps/lab-runner/config/runtime-policy-v1.toml` | Host tuple, transport, command quotas, environment, and containment policy |
-| Create | `apps/lab-runner/config/released-contract-lock.json` | Exact Issue #6/#8 SHAs and hashes; references contracts, never copies them |
+| Create | `apps/lab-runner/config/released-contract-lock.json` | Exact Issue #6 and released Stage A SHA/tree/path/version/hash references; never copies contracts |
+| Create | `apps/lab-runner/config/command-owner-activation-i5-04-v1.json` | Issue #9-owned activation instance binding the actual I5-04 fragment hash to the three reserved commands and `fitness-result-v2` |
 | Create | `apps/lab-runner/src/lab_runner/{__init__,__main__,contract,registry,transport,containment,launcher,workspace,fence,process,state,release,evidence,service}.py` | Framework-independent runner implementation |
 | Create | `apps/lab-runner/tools/run-gate.py` | Non-interactive pinned bootstrap and `make` gate dispatcher |
 | Create | `apps/lab-runner/tests/{characterization,unit,security,race,integration}/**` | RED-first and regression suites |
 | Create | `apps/lab-runner/tests/fixtures/**` | Harmless malicious import/process/path/browser/fault helpers |
 | Create | `apps/lab-runner/README.md` | Issue-local startup, disabled state, evidence, and rollback contract |
 | Create | `mk/issue-5/i5-04.mk` | Only `runner-test`, `runner-security-test`, `runner-race-test` recipes |
-| Modify | `orchestration/airflow/callables/pipeline.py` | Preserve default expert behavior; reject any explicit runner-reserved learner path before `_run`/import/write |
+| Conditional modify | `orchestration/airflow/callables/pipeline.py` | Only if Phase 1 still proves the seam necessary: preserve default expert behavior and reject explicit runner-reserved learner paths before `_run`/import/write |
 
 ### Runtime-only generated state
 
@@ -56,7 +62,8 @@ marker-verified issue-owned state.
   `release-manifest.json`, `.gitignore`, `docs/code-standards.md`, portal/framework paths,
   Docker/Compose, Airflow DAGs, every other Airflow file, Terraform/AWS/cloud paths, migrations,
   and other plans/issues.
-- The Airflow callable is the only scheduled existing-seam edit. Any additional Phase 1 RED
+- The Airflow callable is the only conditionally admitted existing-seam edit. If Phase 1 proves
+  no edit is necessary, it stays byte-identical. Any additional Phase 1 RED
   characterization failure must name one smallest seam and return to plan validation/readiness
   for scope confirmation; it may not trigger an opportunistic edit.
 
@@ -80,25 +87,44 @@ default call signatures, argv, environment behavior and DAG import/order unchang
 namespace non-overlap and denial before child/import/write. The runner never invokes root Make
 recipes.
 
-## Dependency Assimilation Without Contract Invention
+## Released Dependency Assimilation Without Contract Invention
 
-Phase 2 may begin only after an owner-published Issue #8 Stage A handoff identifies an exact
-merged/released 40-hex SHA. The implementer must then:
+Phase 2 consumes only exact Git-tree bytes at Stage A release
+`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`. The full pins are in Phase 2; the critical boundary is:
 
-1. Fetch fresh remote refs and prove the release SHA is the reviewed merge/release and an ancestor
-   of the implementation base.
-2. Read the released paths, schema IDs/versions, operation matrix, typed-generation command,
-   command-owner activation rule, migration/backward-reader contract, and recorded file hashes.
-3. Verify the released contract can represent I5-04 command authority, typed arguments,
-   idempotency/correlation, problem responses, state transitions, and an I5-04
-   `fitness-result-v1` evidence owner. The input schema currently fixes owner `I5-01`, and the
-   input command registry still marks the runner targets `future-owner`; both require a released,
-   owner-approved activation path.
-4. Record references and digests only in `released-contract-lock.json`. Generate runner-local
-   bindings under `apps/lab-runner/**` only through the released generator/procedure.
-5. STOP if a required command/field/operation is absent or incompatible. Return to Issue #8's
-   shared-contract owner; do not add a duplicate schema, guessed version, fake SHA, compatibility
-   alias, or local registry fork.
+1. `learning-contract-set-v1.json` content SHA-256 is
+   `92aaf9a573f5d23b5bf5d8d7db1e68150d4b0944f0e6ab6e651b1a3d34408638`; version-registry SHA-256
+   is `a34c907e8870e89a182a180250a284f1a3c2ab3b6f1c4217c087cbc57775f9cb`.
+2. The immutable base command registry SHA-256 is
+   `a94ac86bda0b70643edef9f144a59d8753d91f963b83d22cd510adbc31970e80`. It reserves the three
+   I5-04 Make commands and `mk/issue-5/i5-04.mk` while retaining `future-owner` base rows.
+3. `command-owner-activation-v1` is a generic hash-bound activation schema; `fitness-result-v2`
+   accepts I5-04 and `verify_fitness(..., activation=...)` enforces exact owner/command/
+   `implemented`/v2 selection. The version overlay keeps fitness v1 readable/current in the base,
+   adds readable v2, and defines no emission fallback.
+4. The released lab declares exactly eight zero-argument semantic commands, `small-42`, 120-second
+   and 512 MiB command bounds, 256 MiB workspace quota, denied network, and unprivileged local
+   execution. The operation/OpenAPI contracts define 16 synchronous endpoints and five mutations,
+   exact auth/CSRF/idempotency/CAS/problem/evidence metadata, and API `learning-platform-v1`.
+5. Stage A exposes no generated-binding command, path list, or output hash. Direct released
+   schema/reader use is authoritative; any `generated/**` path is denied.
+
+Compatibility is PASS without a shared-contract write. Issue #9 owns the exact activation-instance
+path `apps/lab-runner/config/command-owner-activation-i5-04-v1.json`; its content and fragment
+hashes are computed from the actual future files and then locked, never predicted in this plan.
+The future implementation head must be recorded only after it exists and must descend from the
+release. No duplicate schema, guessed version, fake SHA, local registry fork, or synthetic
+command-version field is allowed.
+
+## Shared-Contract Lease Reconciliation
+
+At `2026-07-22T08:05:02Z`, Issue #8 Stage B's latest handoff
+<https://github.com/khanhvg/ai-ready-data-platform/issues/8#issuecomment-5043335319> records a
+blocked plan-only attempt with `OUTPUT_SHA=none` and no amended path. Issue #9 reads immutable
+Stage A bytes at `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` and writes only the paths admitted in
+this plan. Read-only consumption is not a lease conflict. Any later real write to an Issue #9-owned
+path, or any requested Issue #9 write to `learning/contracts/**`, `contracts/**`, root Make,
+golden core, portal, cloud, or container paths, blocks cook pending a new ownership decision.
 
 ## Private Transport
 
@@ -121,15 +147,21 @@ merged/released 40-hex SHA. The implementer must then:
   content type, missing/duplicate auth header, or missing/duplicate CSRF header on a mutation is
   rejected before body parsing and before operation allocation. Responses emit no permissive
   CORS headers.
-- Request framing is fail-closed: Phase 2 must derive and pin a finite maximum serialized body
-  from the released Issue #8 request schemas and record the accepted media type/framing rules.
-  Ambiguous or duplicate length, transfer-encoding/chunked bodies, invalid UTF-8/JSON, trailing
-  bytes, and over-limit headers/body are rejected before typed operation allocation. If the
-  released request matrix cannot yield an exact bound, Phase 4 is blocked rather than assigning a
-  permissive local default.
+- Request framing is fail-closed. The released request objects are closed, but minimum-only integer
+  fields mean Stage A does not define a finite maximum serialized HTTP-body size. Issue #9 therefore
+  sets the stricter private-transport policy `RUNNER_REQUEST_BODY_LIMIT_BYTES=16384`. The limit is
+  checked while reading and before JSON parsing, audit allocation, operation allocation, or
+  workspace allocation. Ambiguous/duplicate length, transfer-encoding/chunked bodies, invalid
+  UTF-8/JSON, trailing bytes, and over-limit headers/body are rejected.
 - Only exact released runner-authority operations are routable. Health is read-only. Every
   mutation requires released typed body validation, bearer, CSRF, correlation, and idempotency.
   The browser has no direct privileged execution path.
+
+The private listener is not the public OpenAPI server. Its exact `Host: runner.internal` (or the
+launch-recorded ephemeral loopback host) and rejected `Origin` policy are intentionally stricter
+than the released public profile's `Host: localhost` / `Origin: http://localhost` boundary. Issue
+#10's future BFF owns that public mapping; Issue #9 consumes the released semantic bodies,
+operations, state, problems, and evidence without exposing the runner directly to a browser.
 
 ## Typed Command Registry and Pinned Execution
 
@@ -142,13 +174,12 @@ The wire shapes, versions, argument names, state transitions, and evidence field
 the released Issue #8 contract. If the release differs, the dependency gate decides; this plan
 does not guess a schema.
 
-Version negotiation is an exact-set match against the Issue #8 released operation matrix. The
-request must identify a released operation/command version exactly as that contract requires;
-unknown, retired, malformed, duplicated, or cross-command versions fail before descriptor lookup,
-and there is no implicit latest-version default, range match, downgrade, coercion, or compatibility
-alias unless the released contract explicitly defines it. Startup advertises only the pinned
-readable/current versions and their hashes from `released-contract-lock.json`; an unsupported
-matrix keeps readiness false.
+Version handling follows the release exactly: API responses advertise
+`learning-platform-v1`; operation rows use `apiVersion: v1`; mutation bodies use their exact
+`*-request-v1` schemaVersion; the lab document is `lab-v1`/`1.0.0`; and public gate fitness uses
+`fitness-result-v2` through the eventual I5-04 activation. Stage A defines no command-version
+field, so Issue #9 must not add one. Unknown schema/API versions and command IDs fail before
+descriptor lookup; there is no implicit latest, range, downgrade, coercion, or alias.
 
 Each resolved descriptor contains an app-owned execution policy: exact command ID/contract
 version, absolute interpreter/binary and entrypoint, Git blob/SHA-256, fixed argv template,
@@ -180,8 +211,8 @@ imports. Probe failure sets readiness false with `RUNNER_CONTAINMENT_UNAVAILABLE
 
 Before any runner RED or product cook, Phase 1 must admit one Darwin-native descendant-control
 mechanism by proving, with deterministic barriers, that it observes, accounts for, terminates, and
-reaps a rapid fork plus double-fork/`setsid` process without relying on a lucky 100 ms ancestry
-sample. Process-group cleanup and polling may be defense in depth, but polling alone is not an
+reaps a fast-exit parent plus rapid double-fork/`setsid` descendants without relying on a lucky
+100 ms ancestry sample. Process-group cleanup and polling may be defense in depth, but polling alone is not an
 accepted capability. If the exact no-sudo/no-container host cannot provide this guarantee, STOP
 and re-plan a narrower disabled runner; do not claim aggregate CPU/RSS/process quotas or complete
 descendant cleanup.
@@ -191,10 +222,10 @@ bounds for a child operation on the 16 GiB host:
 
 | Resource | Bound | Enforcement |
 |---|---:|---|
-| Wall time | prepare/reset/configure 30 s; generate/load/export/verify 120 s; dbt 300 s | monotonic deadline, TERM 5 s, KILL/reap 5 s |
+| Wall time | 120 s per each of the eight released lab commands | monotonic deadline, TERM 5 s, KILL/reap 5 s; no command exceeds the released ceiling |
 | Aggregate process-tree CPU | 600 CPU-seconds maximum; descriptor may lower | `RLIMIT_CPU` per child plus admitted descendant accounting at ≤100 ms |
-| Aggregate process-tree RSS | 3 GiB | admitted descendant accounting at ≤100 ms; immediate process-tree kill |
-| Workspace mutable allocation | 4 GiB logical **and** allocated bytes; 6 GiB free-space preflight | walk opened generation only; `RLIMIT_FSIZE` 1 GiB/file |
+| Aggregate process-tree RSS | 536,870,912 bytes per command | released lab bound plus admitted descendant accounting at ≤100 ms; immediate process-tree kill |
+| Workspace mutable allocation | 268,435,456 bytes logical **and** allocated; 6 GiB host free-space preflight | released lab quota; walk opened generation only; no file may exceed the workspace quota |
 | Descendants | 16 live processes | admitted fork/reparent tracking + PID/start identity; kill/reap escaped sessions too |
 | File descriptors | 256/process | `RLIMIT_NOFILE` |
 | stdout/stderr | 2 MiB each; retained sanitized preview 128 KiB each | descriptor-backed files, overflow kills run; full hash/count retained |
@@ -259,5 +290,8 @@ staging is quarantined/reconciled; evidence is retained.
 
 ## Unresolved Questions
 
-None for planning. The exact Issue #8 Stage A release identity and contents are a declared external
-implementation gate, not a value this planner may resolve.
+None for plan readiness. The activation path and request ceiling are exact. Hashes of Issue
+#9-owned future files and the implementation head are evidence captured after those bytes exist;
+they are deliberately not future placeholders and may never be synthesized. Host containment,
+descendant control, RED/GREEN behavior, and exact-head review remain execution gates inside the
+ordered cook, not unresolved planning dependencies.
