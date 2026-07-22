@@ -33,8 +33,8 @@ test("bounded deterministic Stage A visual evidence", async () => {
     await writeOwnedEvidence("no-js-inventory.json", JSON.stringify(routeInventory, null, 2), workEvidence);
     await writeOwnedEvidence("console-csp.json", JSON.stringify({ consoleErrors, csp: "strict-self-no-connect" }, null, 2), workEvidence);
     await writeOwnedEvidence("dom-inventory.json", JSON.stringify(domInventory, null, 2), workEvidence);
-    await finalizeEvidence(workEvidence);
-    await expect(fs.lstat(path.join(evidence, "stage-a-trace.zip"))).rejects.toThrow(/ENOENT/);
+    const publishedEvidence = await finalizeEvidence(workEvidence);
+    await expect(fs.lstat(path.join(publishedEvidence, "stage-a-trace.zip"))).rejects.toThrow(/ENOENT/);
     expect(axe.flatMap((entry) => entry.violations).filter((item) => ["critical", "serious"].includes(item.impact))).toEqual([]); expect(consoleErrors).toEqual([]);
   } finally { await fs.rm(temporary, { recursive: true, force: true }); }
 });

@@ -159,6 +159,27 @@ test("PTP-S3 protocol-aware socket replacement cannot impersonate the spawned ch
   }
 });
 
+test("PTP-S3 mutable runId cannot redirect the fixed child authority locator", async () => {
+  assert.equal(fs.existsSync(runtime), false);
+  assert.equal(run(process.execPath, [lifecycle, "start"], { timeout: 30_000 }).status, 0);
+  const original = await fsp.readFile(statePath, "utf8"); const state = JSON.parse(original); const fakeRunId = "f".repeat(32); const fakeRun = path.join(runtime, `run-${fakeRunId}`); const fakeControlRoot = path.join("/private/tmp", `i5-05-portal-${fakeRunId}`); const fakeControl = path.join(fakeControlRoot, "control.sock");
+  const { publicKey, privateKey } = crypto.generateKeyPairSync("ed25519"); let impostor;
+  try {
+    await fsp.mkdir(fakeRun, { mode: 0o700 }); await fsp.mkdir(fakeControlRoot, { mode: 0o700 });
+    const authorityPath = path.join(fakeRun, "child-authority.json"); await fsp.writeFile(authorityPath, JSON.stringify({ schemaVersion: "portal-child-authority-v1", runId: fakeRunId, publicKey: publicKey.export({ format: "der", type: "spki" }).toString("base64") }), { mode: 0o400 });
+    const logPath = path.join(fakeRun, "portal.log"); await fsp.writeFile(logPath, "foreign", { mode: 0o600 });
+    impostor = net.createServer((socket) => { let raw = ""; socket.setEncoding("utf8"); socket.on("data", (chunk) => { raw += chunk; try { const request = JSON.parse(raw); const payload = { action: "status", ok: true, requestNonce: request.requestNonce, runId: fakeRunId, status: "running", url: state.url }; socket.end(JSON.stringify({ ...payload, signature: crypto.sign(null, Buffer.from(JSON.stringify(payload)), privateKey).toString("base64") }) + "\n"); } catch {} }); });
+    await new Promise((resolve, reject) => { impostor.once("error", reject); impostor.listen(fakeControl, resolve); }); await fsp.chmod(fakeControl, 0o700);
+    const runStat = await fsp.lstat(fakeRun); const controlRootStat = await fsp.lstat(fakeControlRoot); const controlStat = await fsp.lstat(fakeControl); const logStat = await fsp.lstat(logPath);
+    await fsp.writeFile(statePath, JSON.stringify({ ...state, runId: fakeRunId, run: { dev: runStat.dev, ino: runStat.ino }, controlRoot: { dev: controlRootStat.dev, ino: controlRootStat.ino }, control: { dev: controlStat.dev, ino: controlStat.ino }, log: { dev: logStat.dev, ino: logStat.ino } }));
+    const rejected = await runAsync(process.execPath, [lifecycle, "status"], { timeout: 10_000 }); assert.notEqual(rejected.status, 0, "portal.json redirected child authority to an attacker-selected key"); assert.match(rejected.stderr, /FIXED_CONTROL_LOCATOR_MISMATCH|CHILD_AUTHENTICATION_FAILED|STATE_FILE_UNSAFE/);
+    assert.equal((await fetch(state.url)).status, 200, "redirected authority stopped the real child");
+  } finally {
+    if (impostor) await new Promise((resolve) => impostor.close(resolve)); await fsp.writeFile(statePath, original); await fsp.rm(fakeControlRoot, { recursive: true, force: true }); await fsp.rm(fakeRun, { recursive: true, force: true });
+    assert.equal(run(process.execPath, [lifecycle, "down"], { timeout: 10_000 }).status, 0);
+  }
+});
+
 test("PTP-S3 authenticated shutdown is self-directed and removes only owned control state", async () => {
   assert.equal(run(process.execPath, [lifecycle, "start"], { timeout: 30_000 }).status, 0);
   const state = JSON.parse(await fsp.readFile(statePath, "utf8")); const controlDirectory = path.join("/private/tmp", `i5-05-portal-${state.runId}`);
@@ -308,13 +329,16 @@ test("PTP-S3 artifact root, alias, type, residue, size, and privacy bounds are e
     await assert.rejects(writeOwnedEvidence("axe.json", "{}", work)); await fsp.rm(path.join(work, "axe.json"));
     for (const name of ["axe.json", "console-csp.json", "dom-inventory.json", "no-js-inventory.json"]) await writeOwnedEvidence(name, "[]", work);
     for (const name of ["desktop-catalog.png", "desktop-decision.png", "desktop-grains.png", "desktop-unavailable.png", "narrow-catalog.png", "narrow-decision.png", "narrow-grains.png", "narrow-unavailable.png"]) await writeOwnedEvidence(name, Buffer.from([0x89, 0x50, 0x4e, 0x47]), work);
-    await finalizeEvidence(work);
+    const published = await finalizeEvidence(work);
+    const pointer = `${root}.current`; const pointerStat = await fsp.lstat(pointer); assert.equal(pointerStat.isFile(), true); assert.equal(pointerStat.isSymbolicLink(), false); assert.equal(pointerStat.nlink, 1);
+    assert.match(path.basename(published), /^\.evidence\.generation-[0-9a-f]{64}$/);
     const verified = run(process.execPath, [path.join(appRoot, "scripts/write-review-artifacts.mjs")], { env: { ...process.env, PORTAL_EVIDENCE_ROOT: root } }); assert.equal(verified.status, 0, verified.stderr);
-    const retained = await fsp.readFile(path.join(root, "hash-manifest.sha256"));
+    const retained = await fsp.readFile(path.join(published, "hash-manifest.sha256")); const retainedPointer = await fsp.readFile(pointer);
     const interrupted = await prepareEvidenceRoot(root, { reset: true });
     await writeOwnedEvidence("axe.json", "[]", interrupted);
     await assert.rejects(finalizeEvidence(interrupted), /EVIDENCE_INVENTORY_UNEXPECTED/);
-    assert.deepEqual(await fsp.readFile(path.join(root, "hash-manifest.sha256")), retained, "failed replacement destroyed the prior verified evidence bundle");
+    assert.deepEqual(await fsp.readFile(pointer), retainedPointer, "failed replacement changed the atomic evidence pointer");
+    assert.deepEqual(await fsp.readFile(path.join(published, "hash-manifest.sha256")), retained, "failed replacement destroyed the prior immutable evidence generation");
   } finally { await fsp.rm(parent, { recursive: true, force: true }); }
 });
 
