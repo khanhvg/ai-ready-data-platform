@@ -240,6 +240,7 @@ class ViteConsumerBindingTests(unittest.TestCase):
                         self.public_path_validator,
                         root / name,
                     )
+            self.assertTrue(BINDING.is_file(), "VITE_BINDING_REQUIRED: document")
             valid_raw = schema.read_regular_bytes(BINDING)
             race_path = root / "race.json"; race_path.write_bytes(valid_raw)
             snapshot = self.public_path_validator(race_path)
