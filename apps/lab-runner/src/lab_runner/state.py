@@ -39,6 +39,18 @@ class Store:
         CREATE TRIGGER IF NOT EXISTS audit_no_delete BEFORE DELETE ON audit BEGIN SELECT RAISE(ABORT,'AUDIT_IMMUTABLE'); END;
         """)
         os.chmod(self.path, 0o600)
+        self.verify_audit()
+
+    def verify_audit(self) -> None:
+        previous="0"*64; expected_sequence=1
+        for sequence,stored_previous,payload,entry_digest in self.db.execute("SELECT sequence,previous_sha256,payload,entry_sha256 FROM audit ORDER BY sequence"):
+            if sequence!=expected_sequence or stored_previous!=previous or hashlib.sha256(payload).hexdigest()!=entry_digest:
+                raise StateError("RUNNER_AUDIT_TAMPERED")
+            try:value=json.loads(payload)
+            except (TypeError,json.JSONDecodeError) as exc: raise StateError("RUNNER_AUDIT_TAMPERED") from exc
+            if value.get("sequence")!=sequence or value.get("previousSha256")!=previous or set(value)!={"sequence","previousSha256","event"}:
+                raise StateError("RUNNER_AUDIT_TAMPERED")
+            previous=entry_digest;expected_sequence+=1
 
     @staticmethod
     def digest(request: dict[str, object]) -> str:
@@ -46,6 +58,7 @@ class Store:
         return hashlib.sha256(raw).hexdigest()
 
     def admit(self, request: dict[str, object], fence: int) -> Admission:
+        self.verify_audit()
         digest=self.digest(request); key=str(request["idempotencyKey"]); now=time.time_ns()
         self.db.execute("BEGIN IMMEDIATE")
         try:
@@ -66,6 +79,7 @@ class Store:
             self.db.execute("ROLLBACK"); raise
 
     def transition(self, run_id: str, fence: int, status: str, *, container_id: str|None=None, image_digest: str|None=None) -> None:
+        self.verify_audit()
         now=time.time_ns()
         self.db.execute("BEGIN IMMEDIATE")
         try:
@@ -77,6 +91,7 @@ class Store:
             self.db.execute("ROLLBACK"); raise
 
     def commit(self, run_id: str, fence: int, result: dict[str, object], new_revision: int) -> None:
+        self.verify_audit()
         now=time.time_ns(); encoded=json.dumps(result,sort_keys=True,separators=(",",":"))
         self.db.execute("BEGIN IMMEDIATE")
         try:

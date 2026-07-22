@@ -35,9 +35,11 @@ class RunnerService:
         request=validate_request(request_value)
         self._reserve()
         with acquire(self.root/"locks") as fence:
+            for run_id,status,container_id,image_digest,run_fence in self.store.incomplete():
+                self.backend.reconcile(run_id,status,container_id,image_digest,run_fence)
             admission=self.store.admit(request,fence.epoch)
             if admission.replay is not None:return admission.replay
-            run_dir=self.root/"staging"/admission.run_id;run_dir.mkdir(mode=0o700,parents=True,exist_ok=True)
+            run_dir=self.root/"inputs"/admission.run_id;run_dir.mkdir(mode=0o700,parents=True,exist_ok=False)
             input_archive=run_dir/"input.tar";self.workspace.input_archive(int(request["workspaceRevision"]),input_archive)
             try:
                 outcome=self.backend.execute(admission.run_id,fence.epoch,str(request["operationId"]),input_archive)

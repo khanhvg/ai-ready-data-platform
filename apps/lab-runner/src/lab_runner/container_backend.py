@@ -1,6 +1,6 @@
 """Fresh-container execution with exact identity fencing and teardown."""
 from __future__ import annotations
-import json, os, pathlib, subprocess, time
+import json, os, pathlib, struct, subprocess, time
 from dataclasses import dataclass
 from .archive import inspect_tar
 from .container_protocol import read as read_protocol
@@ -31,7 +31,7 @@ class Backend:
         resolve(operation_id)
         return ["create","--pull","never","--name",f"ai-ready-runner-{run_id}",
         "--label",f"{OWNER_LABEL}=issue-9","--label",f"{RUN_LABEL}={run_id}","--label",f"{FENCE_LABEL}={fence}","--label",f"{IMAGE_LABEL}={self.image}",
-        "--init","--network","none","--read-only","--user","65532:65532","--cap-drop","ALL",
+        "--init","--interactive","--hostname","issue9-runner","--log-driver","none","--network","none","--read-only","--user","65532:65532","--cap-drop","ALL",
         "--security-opt","no-new-privileges:true","--security-opt",f"seccomp={self.seccomp}",
         "--pids-limit","64","--memory","536870912","--memory-swap","536870912","--cpus","2",
         "--tmpfs","/workspace:rw,nosuid,nodev,size=268435456,uid=65532,gid=65532,mode=0700",
@@ -62,14 +62,10 @@ class Backend:
           set(tmp)=={"/workspace","/tmp","/run"},
           all(m.get("Type")!="bind" for m in value.get("Mounts",[])),
           any(str(x).startswith("no-new-privileges") for x in h.get("SecurityOpt",[])),
+          c.get("OpenStdin") is True,c.get("Tty") is False,c.get("Hostname")=="issue9-runner",
+          (h.get("LogConfig") or {}).get("Type")=="none",
         ]
         if not all(checks): raise EngineError("RUNNER_CONTAINMENT_UNAVAILABLE")
-
-    def _copy_retry(self,source:pathlib.Path,destination:str)->None:
-        for _ in range(50):
-            try: self.engine.command(["cp",str(source),destination],timeout=5);return
-            except EngineError: time.sleep(.05)
-        raise EngineError("RUNNER_INPUT_INVALID")
 
     def execute(self,run_id:str,fence:int,operation_id:str,input_archive:pathlib.Path)->Outcome:
         self.engine.admit();work=self.staging/run_id;work.mkdir(mode=0o700)
@@ -82,29 +78,38 @@ class Backend:
             inspected=self._inspect(cid)
             if not self._identity(inspected,run_id,fence): raise EngineError("RUNNER_STALE_IDENTITY")
             self.effective(inspected,self.image)
-            self.engine.command(["start",cid]);self.store.transition(run_id,fence,"started-awaiting-input")
-            self._copy_retry(input_archive,f"{cid}:/run/runner/input.tar")
-            self._copy_retry(marker,f"{cid}:/run/runner/input.ready")
+            self.store.transition(run_id,fence,"started-awaiting-input")
+            input_raw=input_archive.read_bytes()
+            if len(input_raw)>268435456:raise EngineError("RUNNER_INPUT_INVALID")
             self.store.transition(run_id,fence,"executing")
-            try: wait=self.engine.command(["wait",cid],timeout=115)
-            except EngineError:
-                self._teardown(cid,run_id,fence);raise EngineError("RUNNER_TIMEOUT")
-            result_path=work/"result.json"
-            self.engine.command(["cp",f"{cid}:/run/runner/result.json",str(result_path)])
-            protocol=read_protocol(result_path)
+            stdout,stderr=self.engine.attached(["start","--attach","--interactive",cid],b"I9IN"+struct.pack("!Q",len(input_raw))+input_raw,timeout=115)
+            if len(stderr)>2097152 or not stdout.startswith(b"I9OUT") or len(stdout)<17:raise EngineError("RUNNER_PROTOCOL_INVALID")
+            protocol_length=struct.unpack("!I",stdout[5:9])[0]
+            if protocol_length>65536 or len(stdout)<17+protocol_length:raise EngineError("RUNNER_PROTOCOL_INVALID")
+            protocol_raw=stdout[9:9+protocol_length];archive_length=struct.unpack("!Q",stdout[9+protocol_length:17+protocol_length])[0]
+            archive_raw=stdout[17+protocol_length:]
+            if archive_length!=len(archive_raw) or archive_length>268435456:raise EngineError("RUNNER_OUTPUT_INVALID")
+            result_path=work/"result.json";result_path.write_bytes(protocol_raw);protocol=read_protocol(result_path)
             output=work/"output.tar"
             if protocol["status"]=="pass":
-                self.engine.command(["cp",f"{cid}:/run/runner/output.tar",str(output)])
+                output.write_bytes(archive_raw)
                 inspect_tar(output)
             else: raise EngineError(str(protocol.get("failureCode") or "RUNNER_OPERATION_FAILED"))
             final_inspect=self._inspect(cid)
             self._teardown(cid,run_id,fence)
             return Outcome(protocol,output,final_inspect,cid)
-        except Exception:
+        except Exception as primary:
             if cid:
                 try:self._teardown(cid,run_id,fence)
-                except EngineError: pass
+                except EngineError as cleanup: raise cleanup from primary
             raise
+
+    def reconcile(self,run_id:str,status:str,container_id:str|None,image_digest:str|None,fence:int)->None:
+        if status=="admitted" and container_id is None:
+            self.store.transition(run_id,fence,"failed");return
+        if not container_id or image_digest!=self.image: raise EngineError("RUNNER_STALE_IDENTITY")
+        self._teardown(container_id,run_id,fence)
+        self.store.transition(run_id,fence,"failed")
 
     def _teardown(self,cid:str,run_id:str,fence:int)->None:
         try:value=self._inspect(cid)

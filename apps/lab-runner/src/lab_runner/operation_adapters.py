@@ -12,7 +12,18 @@ STATE=pathlib.Path("/workspace/state")
 def _load(name: str, path: pathlib.Path):
     spec=importlib.util.spec_from_file_location(name,path)
     if spec is None or spec.loader is None: raise RuntimeError("RUNNER_BAKED_MODULE_MISSING")
-    module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module); return module
+    module=importlib.util.module_from_spec(spec)
+    previous=sys.modules.get(name)
+    sys.modules[name]=module
+    try:
+        spec.loader.exec_module(module)
+    except BaseException:
+        if previous is None:
+            sys.modules.pop(name,None)
+        else:
+            sys.modules[name]=previous
+        raise
+    return module
 
 
 def _base() -> None:
@@ -47,9 +58,13 @@ def retail_load() -> dict[str,object]:
     return {"tables":len(counts),"totalRows":sum(counts.values())}
 
 
+def _dbt_profile(warehouse:pathlib.Path)->str:
+    return "retail_pipeline:\n  target: dev\n  outputs:\n    dev:\n      type: duckdb\n      path: "+json.dumps(str(warehouse))+"\n      threads: 2\n"
+
+
 def retail_dbt_build() -> dict[str,object]:
     _base(); warehouse=STATE/"warehouse/retail.duckdb"; profiles=STATE/"dbt-profiles"; profiles.mkdir(exist_ok=True)
-    (profiles/"profiles.yml").write_text("retail:\n  target: dev\n  outputs:\n    dev:\n      type: duckdb\n      path: "+json.dumps(str(warehouse))+"\n      threads: 2\n")
+    (profiles/"profiles.yml").write_text(_dbt_profile(warehouse))
     target=STATE/"target"; logs=STATE/"logs"
     from dbt.cli.main import dbtRunner
     args=["build","--project-dir",str(PROJECT/"transform/dbt"),"--profiles-dir",str(profiles),"--target-path",str(target),"--log-path",str(logs),"--no-use-colors"]

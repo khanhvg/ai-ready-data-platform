@@ -17,6 +17,9 @@ class Engine:
     def _env(self)->dict[str,str]:
         return {"PATH":"/usr/local/bin:/usr/bin:/bin","HOME":"/var/empty","DOCKER_CONFIG":"/var/empty"}
 
+    def argv(self,args:Sequence[str])->list[str]:
+        return [str(self.docker),"--host",f"unix://{self.socket}",*args]
+
     def admit(self)->dict[str,object]:
         try: st=os.lstat(self.socket)
         except FileNotFoundError as exc: raise EngineError("RUNNER_ENGINE_UNAVAILABLE") from exc
@@ -32,12 +35,20 @@ class Engine:
         return value
 
     def command(self,args:Sequence[str],*,timeout:float=30,check:bool=True)->subprocess.CompletedProcess[str]:
-        argv=[str(self.docker),"--host",f"unix://{self.socket}",*args]
+        argv=self.argv(args)
         try:
             return subprocess.run(argv,text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=timeout,check=check,env=self._env())
         except (OSError,subprocess.TimeoutExpired,subprocess.CalledProcessError) as exc:
             detail=getattr(exc,"stderr","")
             raise EngineError("RUNNER_ENGINE_OPERATION_FAILED") from exc
+
+    def attached(self,args:Sequence[str],payload:bytes,*,timeout:float)->tuple[bytes,bytes]:
+        process=subprocess.Popen(self.argv(args),stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,env=self._env())
+        try:stdout,stderr=process.communicate(payload,timeout=timeout)
+        except subprocess.TimeoutExpired as exc:
+            process.kill();process.communicate();raise EngineError("RUNNER_TIMEOUT") from exc
+        if process.returncode not in (0,1):raise EngineError("RUNNER_ENGINE_OPERATION_FAILED")
+        return stdout,stderr
 
     def json(self,args:Sequence[str],*,timeout:float=30)->dict[str,object]:
         try: return json.loads(self.command(args,timeout=timeout).stdout)

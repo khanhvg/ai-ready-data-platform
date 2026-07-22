@@ -1,6 +1,6 @@
 """Private workspace generations encoded as deterministic tar archives."""
 from __future__ import annotations
-import io, os, pathlib, tarfile, tempfile
+import os, pathlib, stat, tarfile
 from .archive import extract_tar, inspect_tar
 
 
@@ -10,11 +10,26 @@ class Workspace:
         (root/"generations").mkdir(mode=0o700,exist_ok=True)
 
     def input_archive(self, revision: int, output: pathlib.Path) -> None:
-        current=self.root/"current"
-        if current.is_symlink():
-            source=(self.root/current.readlink()).resolve()
-            if source.parent != (self.root/"generations").resolve(): raise RuntimeError("RUNNER_WORKSPACE_POINTER_INVALID")
-            output.write_bytes(source.read_bytes()); return
+        root_fd=os.open(self.root,os.O_RDONLY|os.O_DIRECTORY)
+        try:
+            try: pointer=os.readlink("current",dir_fd=root_fd)
+            except FileNotFoundError: pointer=None
+            if pointer is not None:
+                parts=pathlib.PurePosixPath(pointer).parts
+                if len(parts)!=2 or parts[0]!="generations" or len(parts[1])!=24 or not parts[1].endswith(".tar") or not parts[1][:-4].isdigit():
+                    raise RuntimeError("RUNNER_WORKSPACE_POINTER_INVALID")
+                source_fd=os.open(pointer,os.O_RDONLY|getattr(os,"O_NOFOLLOW",0),dir_fd=root_fd)
+                try:
+                    observed=os.fstat(source_fd)
+                    if not stat.S_ISREG(observed.st_mode) or observed.st_nlink!=1: raise RuntimeError("RUNNER_WORKSPACE_POINTER_INVALID")
+                    target_fd=os.open(output,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,"O_NOFOLLOW",0),0o600)
+                    try:
+                        while chunk:=os.read(source_fd,1024*1024): os.write(target_fd,chunk)
+                        os.fsync(target_fd)
+                    finally: os.close(target_fd)
+                finally: os.close(source_fd)
+                return
+        finally: os.close(root_fd)
         with tarfile.open(output,"w"):
             pass
         os.chmod(output,0o600)
