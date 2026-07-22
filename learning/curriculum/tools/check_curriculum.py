@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Any
+import json
+from pathlib import Path
+from typing import Any, Sequence
 
-from .content_io import CheckResult, NormalizedRequest, content_sha256
+from .content_io import CheckResult, NormalizedRequest, content_sha256, load_json
 
 ENTRYPOINT_ID = "I11-EP-CURRICULUM"
 
@@ -90,3 +92,79 @@ def _codes(payload: dict[str, Any]) -> list[str]:
 def run(request: NormalizedRequest) -> CheckResult:
     projection: dict[str, Any] = {"document": request.payload, "sourceClass": request.source.split(":", 1)[0]}
     return CheckResult(ENTRYPOINT_ID, True, tuple(_codes(dict(request.payload))), {"projectionSha256": content_sha256(projection)})
+
+
+ROOT = Path(__file__).resolve().parents[3]
+EXPECTED_PREREQUISITES = {
+    "F01": [], "F02": ["F01"], "F03": ["F02"], "F04": ["F03"],
+    "J01": ["F03", "F04"], "J02": ["F04"], "J03": ["J02"], "J04": ["J03"],
+    "J05": ["J03", "J04"], "J06": ["J03"], "D01": ["F03"], "D02": ["D01"],
+    "D03": ["D02", "J04"], "D04": ["D02"], "D05": ["D02", "D03", "D04"],
+    "D06": ["D05"], "M01": ["J02", "J03", "J04", "J05", "J06", "D05"],
+    "M02": ["M01", "J04"], "M03": ["D04", "D05", "M01"], "M04": ["J05", "M01"],
+}
+
+
+def _read(relative: str) -> dict[str, Any]:
+    return dict(load_json(ROOT / relative).payload)
+
+
+def check_repository() -> CheckResult:
+    codes: list[str] = []
+    manifest = _read("learning/curriculum/architecture-curriculum-v1.json")
+    modules = [
+        module for path in manifest.get("moduleCollections", [])
+        for module in _read(path).get("modules", [])
+    ]
+    by_id = {module.get("moduleId"): module for module in modules}
+    if len(modules) != 20 or len(by_id) != 20 or set(by_id) != set(EXPECTED_PREREQUISITES):
+        codes.append("I11_PREQ_UNREACHABLE")
+    for module_id, prerequisites in EXPECTED_PREREQUISITES.items():
+        module = by_id.get(module_id, {})
+        if module.get("prerequisites") != prerequisites:
+            codes.append("I11_PREQ_UNKNOWN")
+        title = module.get("titleVi", "")
+        if not title or not any(character in title for character in "ăâđêôơưDữệềờứấậốộíìáàảãạ"): codes.append("I11_VIEW_CONCERN_MISSING")
+        assessment = module.get("assessment", {})
+        if assessment.get("runtimeStatus") != "not-executed-static-only" or any(assessment.get(k) for k in ("writesProgress", "writesCompletion", "learnerEvidence")):
+            codes.append("I11_STAGE_BOUNDARY_RUNTIME_FORGERY")
+        if set(module.get("consequences", {})) != {"operations", "resilience", "security", "cost", "governance"}:
+            codes.append("I11_TRACE_GAP")
+        exercise = module.get("exercise", {})
+        if len(exercise.get("options", [])) < 2 or not exercise.get("implementationIntent"):
+            codes.append("I11_ADR_INCOMPLETE")
+    registry = _read(manifest["templateRegistry"])
+    templates = registry.get("templates", [])
+    if len(templates) != 12 or len({item.get("templateId") for item in templates}) != 12:
+        codes.append("I11_TEMPLATE_UNREGISTERED")
+    instances: dict[str, list[dict[str, Any]]] = {}
+    for module in modules:
+        for binding in module.get("templateBindings", []):
+            instances.setdefault(binding.get("templateId", ""), []).append({"moduleId": module["moduleId"], **binding})
+    for template in templates:
+        digest = content_sha256(template.get("content"))
+        if template.get("contentSha256") != digest: codes.append("I11_TEMPLATE_HASH_DRIFT")
+        bound = instances.get(template.get("templateId"), [])
+        if sorted(item["moduleId"] for item in bound) != template.get("instanceIds"): codes.append("I11_TEMPLATE_NONRECIPROCAL")
+        for item in bound:
+            if (item.get("registryId"), item.get("version"), item.get("contentSha256")) != (registry.get("registryId"), template.get("version"), digest):
+                codes.append("I11_TEMPLATE_NONRECIPROCAL")
+    promotion = _read(manifest["promotionExample"])
+    codes.extend(_codes({"promotion": promotion}))
+    if promotion.get("pinnedSchema", {}).get("sha256") != "43fc68833237ef5b522f82fbbd18caba0f11e16bf66e0ff26cf44f0238c39871":
+        codes.append("I11_REF_STALE")
+    operation_matrix = _read("learning/contracts/operation-matrix-v1.json")
+    if len(operation_matrix.get("operations", [])) != 16 or operation_matrix.get("channels") != []:
+        codes.append("I11_API_OPERATION_UNRELEASED")
+    unique = tuple(dict.fromkeys(codes))
+    return CheckResult(ENTRYPOINT_ID, True, unique, {"modules": len(modules), "templates": len(templates), "projectionSha256": content_sha256(manifest)})
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    result = check_repository()
+    print(json.dumps({"entrypointId": result.entrypoint_id, "codes": result.codes, **result.details}, ensure_ascii=False, sort_keys=True))
+    return 0 if result.ok else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
