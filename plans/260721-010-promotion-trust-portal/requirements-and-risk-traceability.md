@@ -4,7 +4,7 @@
 
 | Input | Exact identity | Use |
 |---|---|---|
-| Current planning start | `d79bcd0c3894c2b8477f1188faadc08f77480087` | Clean exact post-binding readiness input |
+| V3 correction input | `2f278eb25aaff9e050314b01d1be155b76793f11` | Exact clean local/upstream/live post-review plan input |
 | Issue #6 integration merge | `24be3b34c6b0fcdbd07c5800dcab349054e34713` | Read-only protected data truth |
 | Issue #7 approved feature head | `b219ba2d3843934c3bce2fbbec2a844b48b2dfa9` | Human-approved Vite release content |
 | Issue #7 PR #22 merge | `1806b6d515f2f7a2ace2be7077af84a745ff221f` | Released Vite/React authority |
@@ -16,7 +16,9 @@
 | Issue #8 release evidence | https://github.com/khanhvg/ai-ready-data-platform/issues/10#issuecomment-5047964988 | Final merge/topology/binding/pristine evidence handoff |
 | Master readiness report | `e440c5855732d5d8f5d634e3cc1359c010cc5ed3` | Issue fan-out authority only |
 | Prior independent validation | `e2bba33deff76985eb3bdae361d494d162c854f8` | Immutable historical validation output |
-| Live Issue #10 at current audit | OPEN with `ready for plan audit`, `risk:high`, `tdd`, `security:S3`, `frontend`, `accessibility`, `vertical-slice` | Scope and pre-promotion state |
+| Failed implementation review | PR #29 comment `5050218543`; 3 Medium findings | Invalidates prior Stage A readiness; immutable negative history |
+| Fresh recovery authorization | Issue #10 comment `5050239390` | V3 plan correction only; no cook/runner/cloud authority |
+| Live Issue #10 before correction publication | OPEN with `ready for review`, `risk:high`, `tdd`, `security:S3`, `frontend`, `accessibility`, `vertical-slice` | Must move to `ready for plan validation`, not readiness |
 | Live Issue #9 at current audit | OPEN and unreleased | Stage B blocker |
 
 The [Stage A release amendment](./stage-a-release-amendment.md) is the normative byte/path/command
@@ -60,16 +62,18 @@ may not imply a causal join, execute the failure, or relabel retained fixture ev
 | PTP-FR-05 | Show only `insufficient-evidence / no-common-grain` for released v1 evidence | A read-only; B deferred mutation | released validator + view tests |
 | PTP-FR-06 | Read-only navigation, back/forward/reload, and no-JS pages never mutate or progress | A | router + browser/network/storage tests |
 | PTP-FR-07 | Runner is explicitly unavailable; run/reset/verify are explanatory and completion impossible | A | DOM/bundle/import/request negatives |
-| PTP-FR-08 | Later released #11/#12 manifests enter through provider/catalog seams without shell/router redesign | A seam only | provider interface test using only empty and exact released descriptor sets; no synthetic identifier |
+| PTP-FR-08 | Later released #11/#12 content enters only through hash-bound released registry/binding entries without content-ID code switches | A seam only | current released descriptor + branded test-only metamorphic pure-function tests + production rejection/absence |
 | PTP-FR-09 | Execute/reset/fresh-verify/evidence/completion journey only through released #9 | B | blocked; no Stage A implementation |
 | PTP-FR-10 | Start/status/down control only the Stage A static process and preserve review artifacts | A | lifecycle/PID/path/cleanup tests |
 | PTP-NFR-01 | Exact #7 Vite/React lock and exact #8 validators/contracts/shared binding; no duplicated truth | A | shared binding + released-adapter mutation tests |
-| PTP-NFR-02 | One loopback GET/HEAD static process; no BFF/API/database/runner/service worker | A | server/import/process inspection |
+| PTP-NFR-02 | One loopback GET/HEAD static process plus private authenticated child-control listener; no product API/BFF/database/runner/service worker | A | closed request inventory + no-PID-signal lifecycle tests |
 | PTP-NFR-03 | No cloud/model credentials, AWS/Terraform/Docker/optional-profile action | A/B | call/environment/bundle scans |
 | PTP-NFR-04 | Semantic keyboard path, focus, 1280x800/360x800 reflow, reduced motion, axe zero Critical/Serious | A | one Chromium suite + unit checks |
 | PTP-NFR-05 | CSP/Host/path/XSS/storage/output/artifact/cleanup boundaries fail closed | A | S3 catalogue |
 | PTP-NFR-06 | Static and React modes share one safe view model and equivalent stable facts | A | parser/render/no-JS comparison |
-| PTP-NFR-07 | One process/worker and exact time/file/byte/artifact ceilings | A | lifecycle/build/output-limit tests |
+| PTP-NFR-07 | One process/worker and exact time/file/byte/artifact/current-generation/trace ceilings | A | lifecycle/build/evidence/trace/output-limit tests |
+| PTP-NFR-09 | Scaffold/tests/RED/first-semantic/final commits and trees are contemporaneously bound | A | Git ancestry + raw/sanitized log manifests |
+| PTP-NFR-10 | One atomic current generation verifies all non-self hashes and classifies stale/interrupted generations as negative history | A | closure/interruption/ignored-inclusive tests |
 | PTP-NFR-08 | Human visual/keyboard review and exact-head approval remain release gates, not automated claims | Release | bounded checklist + GitHub record |
 
 ## Source-to-Plan Trace
@@ -92,13 +96,15 @@ may not imply a causal join, execute the failure, or relabel retained fixture ev
 | PTP-R-03 | Static fixture looks like a fresh completed run | False learner trust | retained-baseline label; no action/completion/evidence control |
 | PTP-R-04 | Cross-grain display implies causality | Wrong business decision | adjacent independent-grain limitations and exact decision tests |
 | PTP-R-05 | Browser or static server grows privileged surface | command execution/XSS/state forgery | GET/HEAD only, no BFF/API/storage/runner, strict CSP/Host/path limits |
-| PTP-R-06 | Static/React content diverges | Inconsistent no-JS experience | one safe model, stable fact IDs, deterministic equivalence tests |
-| PTP-R-07 | #11/#12 require a redesign | Curriculum growth stalls | content-driven provider/catalog/router seams; no invented content |
+| PTP-R-06 | Static/React/router route truth diverges | Inconsistent no-JS experience | one released registry, catalog and route derivation, stable fact IDs |
+| PTP-R-07 | #11/#12 require hard-coded switches | Curriculum growth stalls | family-driven released registry plus test-only metamorphic proof; no invented release |
 | PTP-R-08 | Dependency or contract downgrade | Unsafe/incorrect render | exact paths/hashes/versions/validators; unknowns fail before build |
-| PTP-R-09 | Cleanup targets foreign process/path | Irrecoverable state loss | nonce marker, PID/start identity, containment and idempotency negatives |
+| PTP-R-09 | Mutable lifecycle state targets foreign process/path | Irrecoverable state loss | child-held capability/self-shutdown, no PID signal, containment/sentinel negatives |
 | PTP-R-10 | Visual/a11y scope becomes ceremony or overclaim | delay/false conformance | one Chromium desktop+narrow, axe Critical/Serious, bounded residual human UAT |
 | PTP-R-11 | Package lock or supply chain drifts | unreproducible/unsafe build | exact transitive lock, frozen install, no scripts, audit gate |
 | PTP-R-12 | Stage A is mistaken for completed Issue #10 | Premature closure | explicit non-execution/non-completion claim; Issue remains open; Stage B blocked |
+| PTP-R-13 | RED is reconstructed after semantics | False TDD provenance | exact scaffold/tests commit ancestry and contemporaneous raw/sanitized logs |
+| PTP-R-14 | Stale or partial evidence is selected | False exact-head proof | selector-written-last atomic publication, non-self closure, negative history |
 
 ## Hard STOP Conditions
 
@@ -108,9 +114,16 @@ may not imply a causal join, execute the failure, or relabel retained fixture ev
   differs from the amendment.
 - Any change falls outside the 33 Stage A paths, modifies/deletes a released path, or overlaps an
   active owner.
-- A portal-local binding, alias/mapping table, copied binding schema, generated binding type, or
-  invented module/identifier truth appears.
+- Scaffold chronology is not exact 22 paths then eight tests; RED is retrospective, missing a real
+  Chromium/public path, or fails for setup/forced/mock/skip/fallback reasons.
+- A portal-local binding, alias/mapping table, copied binding schema, generated binding type,
+  duplicate default catalog/step routes, promotion switch, test descriptor in production, or
+  invented module/identifier/release truth appears.
 - Any Stage A runner/BFF/API/mutation/storage/credential/cloud/host-command capability appears.
+- Lifecycle signals a mutable recorded PID; blocked Stage B output fails released
+  `fitness-result-v2`; build/request inventory is open; runtime/lock/env admission drifts.
+- Any current evidence entry/hash/privacy/count/size/aggregate/binding fails; trace is missing,
+  duplicated, source-bearing, oversized, stale-head, or unindexed; partial publication is current.
 - A required test/tool/measurement is absent; audit has High/Critical; axe has Critical/Serious;
   S3, cleanup, protected hash, or exact-head review fails.
 - Controlled and environmental failure are conflated; four-grain/canonical-decision semantics or
@@ -120,5 +133,6 @@ may not imply a causal join, execute the failure, or relabel retained fixture ev
 
 ## Unresolved Questions
 
-None for Stage A planning. Stage B identities and allowlists are intentionally absent because
-Issue #9 remains unreleased; that absence blocks Stage B and does not weaken Stage A.
+None for this correction. It requires a fresh independent validation and then a separate fresh
+readiness audit. Stage B identities and allowlists remain absent because Issue #9 is unreleased;
+that absence blocks Stage B and does not weaken Stage A.

@@ -1,71 +1,70 @@
 # Verification, Evidence, and UAT
 
-## TDD Rule
+## Scaffold-First TDD Rule
 
-Every behavior begins with a retained RED at pristine integration
-`5644f01b4c0443a81f3af0bcce80f44c847cd986` or a tests-only descendant. RED must traverse the
-real portal adapter, model, static/React render, router, server, or lifecycle path and fail because
-the behavior is absent. Missing imports/tools, unconditional failure, snapshots of copied truth,
-or reconstructed evidence are invalid.
+V3 uses the exact chronology in the
+[recovery amendment](./stage-a-release-amendment.md#scaffold-first-commit-chronology): 22 callable
+semantics-free scaffold paths, then all eight test paths, then contemporaneous RED, then semantic
+commits. No product path exists before the scaffold commit. No test exists in that commit. No
+semantic byte exists before the tests-only commit and its closed RED generation.
 
-Each RED record binds ID, exact pre-behavior source/tree, dependency identities, tests-only diff,
-command/exit code, expected and actual failure, raw-log digest, and later GREEN at the reviewed
-head without weakening the assertion.
+The scaffold must let real adapter, provider, catalog, router, static/React render, built server,
+lifecycle, evidence writer, Make delegates, and real Chromium reach a bounded neutral document.
+It contains no target lesson/routes/outcome, fixture ID, expected-value branch, forced error,
+default catalog/step table, mock, skip, or final semantic copy. RED is valid only when a complete
+assertion reaches that scaffold and reports one of the named absent-semantics classifications.
 
-RED starts in the fresh v2 worktree after the ordered plan-only cherry-picks. A detached clean
-checkout at the same tree must also pass release verification, static generation, production
-build, and public-route tests without branch-name or upstream assumptions. Every dependency and
-fixture is resolved from a tracked cook-tree path whose Git blob/bytes/SHA-256 match the 85-path
-catalogue. An ignored, untracked, generated, retained-worktree, environment-selected, or absolute
-private-path artifact is never authority; substituting any such candidate is a named RED failure.
+Every RED record binds the actual base, derived plan-only input, scaffold commit/tree, tests
+commit/tree, 85-input aggregate, lock/tools, command argv/exit/duration, raw log SHA-256, sanitized
+log SHA-256, expected invariant, and observed absent semantic. A later detached reproduction or
+summary is diagnostic only and cannot replace contemporaneous RED.
 
-## Tests-Before Matrix
+## Complete Tests-Only Portfolio
 
-| ID | First real failing assertion | Stage |
+Commit 2 creates all eight final test paths and changes no scaffold byte. Valid controls and
+mutations are exact:
+
+| Family | Valid control | One-change mutations and required oracle |
 |---|---|---|
-| PTP-RED-A-001 | Wrong integration/#7/#8/tree/blob/byte/hash/version/operation/lock is admitted | A |
-| PTP-RED-A-002 | Any protected Issue #6/release identity drifts without failure | A |
-| PTP-RED-A-010 | Real server/static render lacks catalog/module/lesson/step shell or required facts | A |
-| PTP-RED-A-011 | Cross-grain attribution or non-canonical decision renders | A |
-| PTP-RED-A-012 | Stage A exposes run/reset/verify/progress/evidence/completion or runner request | A |
-| PTP-RED-A-013 | Router back/forward/reload changes more than validated view state | A |
-| PTP-RED-A-014 | Built no-JS route lacks facts, navigation, unavailable, or non-completion state | A |
-| PTP-RED-A-015 | Runner unavailable is confused with controlled lesson failure | A |
-| PTP-RED-A-016 | Vietnamese semantics, focus, 360px reflow, reduced motion, or live status fails | A |
-| PTP-RED-A-020 | Released binding/provider admits invalid authority/path/hash/grain/key/alias/type/version/field/state | A |
-| PTP-RED-A-021 | Static and React renderers disagree on fact IDs or escaping | A |
-| PTP-RED-A-022 | Bundle/build contains #9, API mutation, storage, secret, cloud, or source map | A |
-| PTP-RED-A-023 | Process/request/output/artifact/alias/special-file ceilings are not enforced | A |
-| PTP-RED-A-024 | Status/cleanup can target foreign PID/path or remove retained review evidence | A |
-| PTP-RED-S3-001..014 | Corresponding S3 negative does not fail closed, including absence assertions | A |
-| PTP-RED-B-001..016 | Runner/journey/evidence/completion requirements | B, catalogued but not runnable |
+| Release/contract | Exact 85 released inputs at `5644f01…` | commit/tree/blob/byte/hash/path/version/family/field/operation/lock/freeze drift must fail before admission |
+| Registry/generic seam | Exact released descriptor registry plus binding | branded in-memory `test-only-structure` exercises pure functions; production rejects it; duplicate/unhashed/draft/unknown descriptors fail |
+| Content/grain | Released lesson/manifest/binding and 89 sanitized rows | fifth/missing/reordered grain, key/alias drift, causal wording, outcome drift, raw field, fresh-evidence claim fail |
+| Router/render | Registry-derived current routes | malformed/overlong/ambiguous/traversal path, duplicate route, order mutation, escaping payload, static/React fact drift fail |
+| Build/server | Closed valid regular-file build inventory and loopback GET/HEAD | extra/unlisted file, content change, media/size mismatch, executable, symlink/hardlink/FIFO/socket/device, Host/method/body/chunked/length/decoding mutation fail |
+| Lifecycle | One test-owned scaffold child and authentic private control record | tampered endpoint/nonce/capability, owner/mode/type/link/containment drift, stale record, benign foreign-process sentinel fail without any PID signal |
+| Blocked result | Released `fitness-result-v2` schema and exact Stage B invocation | missing/extra field, `unavailable` status, wrong code/exit/stream, empty bindings/artifacts, bad argv/payload hash, any runner action fail |
+| Evidence | One fresh private pending generation with valid payloads | missing/extra/duplicate entry, stale log, hash/count/size/aggregate/privacy/type/link/source/tree/tool drift, recursive hash, interrupted publish, second/missing trace fail |
+| Browser/a11y | Real Chrome channel, current released registry, two fixed viewports | missing Vietnamese semantics, focus/order/live region, overflow, reduced motion, axe, no-JS, request/storage/console/CSP invariant fail |
+| S3 | PTP-S3-01..14 valid absence/control cases | one exact canary per row must fail closed; no row passes by skip or predicate copy |
 
-Tests load exact tracked released files. No copied, synthetic on-disk, ignored, generated, or
-framework-specific promotion data fixture is allowed. The SA-R11 seam test uses only empty sets,
-the exact current released descriptor, and duplicate rejection; it must not invent #11/#12
-content or identifiers.
+Mutations use in-memory clones or private `mkdtemp` roots created from the valid control. They are
+never tracked, shipped, selected by environment, admitted by production, or used as a fallback.
+The exact released invalid binding fixtures remain read-only controls and must produce their
+released eight codes through the real public validator and portal adapter.
 
-## Practical Stage A Portfolio
+## RED Families and Commands
 
-| Layer | Exact focus | Bound |
-|---|---|---|
-| Release/contract | shared binding, 85 per-file identities, #8 public validators, registry, two lesson-read operation identities | exact released bytes |
-| Unit | provider/catalog/safe model/router/static render/security | focused Node tests; no snapshot wall |
-| Build | exact frozen Vite graph and deterministic static routes | production build, no source maps |
-| Security | PTP-S3-01..14, CSP/Host/path/XSS/storage/network/bundle/supply chain | closed negative matrix |
-| Accessibility | semantics, keyboard, focus, live status, reduced motion, overflow, axe | zero Critical/Serious |
-| Browser | one Chromium journey at 1280x800 then 360x800 | one worker, zero retry |
-| Static/no-JS | built parser plus JavaScript-disabled Chromium | same stable facts/routes |
-| Lifecycle | start/status/down twice, stale PID, foreign path/process, output bounds | one owned process |
-| Visual/UAT | fixed Stage A screenshots/trace/manifest/checklist | no native OS automation or approval claim |
+The normative family/classification matrix is in the
+[amendment](./stage-a-release-amendment.md#exact-red-families-classifications-and-commands). The
+tests-only head runs every command in the 18-command allowlist. Acquisition and released
+validators may be successful setup controls. Every behavior-bearing unit/build/public/Chromium
+path must fail at a named absent semantic after reaching the scaffold. The RED recorder rejects:
 
-There is no Next.js/Astro comparison, Firefox/WebKit matrix, VoiceOver/System Settings/native
-browser control, performance contest, score/timer, exhaustive device grid, or automated
-conformance claim.
+- import/tool/path-not-found failures;
+- unconditional throw, `assert false`, deliberate non-zero, expected echo, or hard-coded answer;
+- mock/skip/xfail/todo/only/focus or predicate-only reimplementation of production admission;
+- snapshots copied from released truth without traversing the real path;
+- ignored/untracked/other-worktree/absolute-path fixture fallback;
+- logs generated after the matching semantic commit.
+
+`make learn`, status, and down traverse real scaffold lifecycle state. The scaffold child
+self-expires safely; public commands report semantic readiness absent and produce current logs.
+The two Stage B commands are non-zero both before and after implementation, but RED remains until
+their stderr objects validate as exact blocked `fitness-result-v2` with zero runner action.
 
 ## Exact Stage A Command Contract
 
-Run only the exact allowlist in the amendment. The implementation gate sequence is:
+No additional command shape is authorized:
 
 ```bash
 node apps/learning-portal/scripts/verify-stage-a-release.mjs
@@ -84,156 +83,171 @@ make portal-visual-review
 make learn LESSON=promotion-trust
 make learn-status
 make learn-down
-```
-
-Then prove the Stage B commands fail without runner action:
-
-```bash
 make lesson-e2e LESSON=promotion-trust
 make local-journey-e2e
 ```
 
-Both required negatives return non-zero `STAGE_B_DEPENDENCY_UNAVAILABLE`. `mk/issue-5/i5-05.mk`
-owns the nine reserved I5-05 public targets and delegates only to locked portal scripts. It does
-not edit root Make, invoke Docker/optional profiles/cloud, or expose a generic host command.
+The root Makefile remains byte-identical and supplies only the sorted fragment include seam.
+`mk/issue-5/i5-05.mk` owns the nine reserved commands and delegates fixed argv to portal scripts.
+Direct fragment execution, arbitrary variables/argv, generic host commands, and root edits fail.
 
 ## Command Acceptance
 
-| Command | Required Stage A result |
+| Command group | Final required result |
 |---|---|
-| release verifier and #8 checks | one exact-lock CPython 3.12.3 runtime is marker-admitted/cleaned; shared binding focused 11/11 and invalid 8/8, exact lesson/lab/manifest/registry, and 16 OpenAPI operations pass |
-| frozen install/build/unit | exact lock graph, real adapter/router/render/security tests, deterministic bounded production output |
-| `make portal-test portal-a11y` | focused unit/contract/security/build plus axe zero Critical/Serious |
-| `make portal-e2e` | desktop+narrow, history/reload, no-JS, unavailable/non-completion, zero unexpected network/storage |
-| `make portal-visual-review` | bounded named Stage A artifacts and unapproved checklist |
-| `make learn` | start static server only and print canonical URL, runner unavailable, completion disabled |
-| `make learn-status` | report owned PID/start identity/static readiness and Stage B blocked |
-| `make learn-down` | stop only owned portal; idempotent twice; retain review evidence |
-| Stage B negatives | typed non-zero dependency unavailable; no runner import/start/call |
+| Release verifier and three released checks | Exact runtime/lock/environment admitted; 85 inputs, public binding, lesson/lab/manifest/registry, and 16 OpenAPI operations verify |
+| Frozen install/unit/build/audit | Exact graph; unchanged complete tests; two byte-identical builds; closed inventory; zero High/Critical |
+| Public test/a11y/e2e | Real delegates pass current descriptor, desktop/narrow, keyboard/focus/overflow, axe, no-JS, request/storage/network/console/CSP gates |
+| Public visual review | One fresh atomic generation with hash-valid artifacts and exactly one sources-excluded Chromium trace; checklist unapproved |
+| Learn/status/down | Static portal only; authenticated child status/self-shutdown; down twice safe; evidence retained |
+| Two Stage B negatives | stderr one-line schema-valid blocked `fitness-result-v2`; exit 2; stdout empty; no runner/container/network action |
 
-No Stage A command emits fresh learner-run, progress, completion, or verified evidence. Test and
-review records are implementation-review artifacts, not Issue #8 completion evidence.
+## Production Registry and Metamorphic Proof
 
-## Release and Fixture Identity Tests
+Production constructs one `ReleasedPortalDescriptorRegistry` from the exact released contract-set
+root and shared binding after released validation. Catalog, app, router, static-route generation,
+static rendering, and React rendering consume only that object. Tests prove:
 
-Before content tests, recompute:
+1. the current released descriptor derives exactly `/`, `/module`, one released lesson route, and
+   its ten ordered released step routes;
+2. route count equals two presentation roots plus each admitted lesson and its steps; order and
+   uniqueness are deterministic;
+3. a branded test-only structural descriptor can be renamed, reordered, added, or removed in pure
+   functions with local predictable effects;
+4. production admission rejects that brand with `PORTAL_DESCRIPTOR_AUTHORITY_FORBIDDEN`;
+5. build/runtime inventories and string scans contain no test-only tokens;
+6. unknown, duplicate, unhashed, wrong-family/version/path/field, draft, or future descriptors fail
+   before catalog creation;
+7. no `defaultCatalog`, `STEP_IDS`, promotion switch, copied route list, or duplicated alias map
+   exists.
 
-- the exact #7/#8 commit ancestry/tree relationships and 921-entry final released tree listing;
-- every one of the 85 admitted released paths' blobs, byte lengths, and SHA-256 from the cook tree;
-- exact package/lock graph and tool versions;
-- all seven protected Issue #6/release identities;
-- root Make include and the nine I5-05 `future-owner/not-runnable` registry rows;
-- the app activation's base-registry/final-fragment hashes, nine exact command IDs,
-  `implemented` recipe availability, and `fitness-result-v2` output binding;
-- absence of the 33 Stage A create paths in the pristine integration.
+This proves generic structure without pretending a future release exists. #11/#12 later enter
+only through a reviewed integration release that adds hash-bound recognized-family entries and a
+later exact-SHA amendment; the production code gains no content-ID switch.
 
-Mutation tests change one identity, path, byte, hash, version, operation, unknown field, or lock
-edge at a time and require a stable fail-closed result before render.
+## Released Product Truth
 
-The released public binding adapter must additionally execute its exact invalid inventory:
+The real final Chromium/no-JS journey derives and visits the current 13 documents:
 
-| Released invalid fixture | Required code |
-|---|---|
-| `absolute-path.json` | `BINDING_REFERENCE_FORBIDDEN` |
-| `completion-authority-override.json` | `BINDING_AUTHORITY_FORBIDDEN` |
-| `contract-key-drift.json` | `BINDING_STAGE_A_KEY_MISMATCH` |
-| `dependency-hash-drift.json` | `BINDING_DEPENDENCY_HASH_MISMATCH` |
-| `duplicate-target-key.json` | `BINDING_ALIAS_NOT_BIJECTIVE` |
-| `fixture-key-drift.json` | `BINDING_FIXTURE_KEY_MISMATCH` |
-| `grain-id-drift.json` | `BINDING_GRAIN_MISMATCH` |
-| `raw-record-leak.json` | `BINDING_DATA_PAYLOAD_FORBIDDEN` |
+```text
+/
+/module
+/lesson/promotion-trust
+/lesson/promotion-trust/step/frame
+/lesson/promotion-trust/step/inspect
+/lesson/promotion-trust/step/run
+/lesson/promotion-trust/step/fail
+/lesson/promotion-trust/step/trace
+/lesson/promotion-trust/step/decide
+/lesson/promotion-trust/step/reset
+/lesson/promotion-trust/step/configure
+/lesson/promotion-trust/step/verify
+/lesson/promotion-trust/step/reflect
+```
 
-In-memory released-adapter cases also cover missing/extra grain, lossy/cyclic alias,
-unsupported version, wrong type, unknown field, contract/fixture substitution, descriptor race,
-hardlink/symlink/FIFO, and authority-state mutation. Portal tests then prove those failures stop
-the real adapter/build/public-route path; they do not recreate the Python predicates in JavaScript.
+The route list above is acceptance truth derived from the released lesson, never a production
+table. `/module` is presentation-only. Every route is Vietnamese-first, visibly identifies Stage
+A as a static slice rather than the full product, presents four independent grains without causal
+join, and shows only `insufficient-evidence/no-common-grain`. Run/reset/verify are explanation
+only. Runner, execution, reset, fresh evidence, progress, and completion remain unavailable,
+disabled, not-run, false, disabled, and disabled respectively.
 
-## Chromium Journey
+## Chromium Journey and Trace
 
-Use the frozen Playwright/Chrome channel, one worker, no retry, locale `vi-VN`, timezone
-`Asia/Ho_Chi_Minh`, reduced motion, fixed color scheme, and animations suppressed only for
-capture. Bind the journey to fixture `promotion-trust-small-42-v1`, profile `small`, seed `42`,
-manifest SHA-256 `0a1dcd4023648f52009bfd4dc5d529c00ce66f42cd0e725732b972b0b78df341`, evidence SHA-256
-`2f4d90228fa2ea8859a8db630ff587b6cebdc10a0bf6b7db25e46c3dc27181d5`, binding ID
-`promotion-trust-vite-binding-v1`, and binding SHA-256
-`03d2aa6bd9fa178e6075865364a8ae8b83ce548c42b450d1858b451b45d0d1d0`. Run the same route
-sequence at 1280x800 and 360x800:
+One Playwright test, one Chrome channel, one worker, and zero retries perform the entire journey.
+Locale is `vi-VN`; timezone is `Asia/Ho_Chi_Minh`; color scheme and reduced motion are fixed. The
+same test uses `1280x800`, then `360x800`, and creates a JavaScript-disabled context for static
+parity.
 
-1. open `/` and confirm Vietnamese-first shell, one vertical-slice module/lesson, and visible
-   not-full-product wording;
-2. navigate `/module` → `/lesson/promotion-trust` → the `frame`, `inspect`, `run`, `fail`,
-   `trace`, `decide`, `reset`, `configure`, `verify`, and `reflect` step documents;
-3. verify four independent grains, limitations, controlled-failure explanation, and canonical
-   decision without causal attribution;
-4. reach run/reset/verify explanation and confirm runner unavailable/no actionable control;
-5. use back, forward, and reload; confirm only view state changes and zero mutation/network replay;
-6. verify keyboard order/focus/live status/reduced motion/no overflow and axe zero Critical/Serious;
-7. verify every route's exact machine-readable non-claim attributes: runner unavailable,
-   execution/progress/completion disabled, reset not-run, fresh evidence false, static slice;
-8. inspect console, CSP, requests, cookies, all Web Storage/IndexedDB/Cache APIs, and bundle
-   exposure for zero prohibited state/capability.
+The test covers catalog → module → lesson → every released step, direct links, reload,
+back/forward, unknown routes, keyboard order, visible focus, live status, reduced motion, no
+horizontal overflow, axe zero Critical/Serious, no-JS parity, exact non-claim attributes, zero
+unexpected request/storage/cookie/cache/service-worker state, and zero console/page/CSP error.
+It distinguishes the released controlled-failure explanation from environmental runner
+unavailability.
 
-No console/page/unhandled/CSP error is allowed. Automated checks do not claim full WCAG or
-screen-reader conformance.
+Playwright trace configuration is an object with mode `on`, screenshots/snapshots enabled,
+attachments enabled, and sources disabled for the single journey project. The visual project
+omits trace recording. The completed journey must retain exactly one trace archive. The official
+Playwright Test API documents the object mode and `sources` control:
+https://playwright.dev/docs/api/class-testoptions#test-options-trace.
 
-## No-JavaScript and Static Equivalence
+Trace admission verifies regular single-link type, exact owner/private mode, SHA-256, compressed
+and uncompressed bounds, archive count, safe relative entries, no source-resource entries, and
+privacy canaries. A missing, second, oversized, source-bearing, stale-head, or unindexed trace is
+failure.
 
-A JavaScript-disabled Chromium context follows all 13 canonical catalog/module/lesson/step links.
-A separate parser reads every generated route. Both must expose the same stable released facts,
-navigation, grain limitations, `PROMOTION_HEADLINE_INSUFFICIENT` explanation,
-`insufficient-evidence / no-common-grain`, runner-unavailable state, and non-completion warning.
+## Authenticated Lifecycle Verification
 
-Static and React output share one safe model and escaping rules. No required fact/control may
-exist only behind JavaScript, animation, hover, external network, or scroll position.
+The public process record is not kill authority. Tests start a benign foreign sentinel and then
+mutate PID/start fields, endpoint, nonce, capability, owner, mode, type, link count, and path.
+`learn-status`/down must not call `kill` or signal any recorded PID. They authenticate over the
+private loopback control listener; only the child can close its listeners and exit. Tampering
+fails closed while the sentinel remains alive. Valid down proves authenticated response, listener
+closure, child exit, no owned descendant, retained evidence, and safe second down.
 
-## Runner-Unavailable Boundary
+## Blocked `fitness-result-v2` Verification
 
-Prove by import graph, built bundle/string scan, request observation, process inventory, DOM,
-storage inventory, and command negatives that Stage A:
+For each Stage B command, parse stderr as one JSON object, validate it with the exact released
+schema, independently recompute RFC 8785 payload SHA-256, verify all named hashes/artifacts and
+actual argv, require `status: fail` plus `STAGE_B_DEPENDENCY_UNAVAILABLE`, require exit 2 and empty
+stdout, and inspect process/network/import records for no runner, container, Docker, cloud, or
+optional-profile action. Mutation tests cover every required field and conditional.
 
-- does not import/start/probe/call Issue #9 or any runner-compatible placeholder;
-- exposes no runner address/token, command/argv/path/URL/SQL, mutation method, API proxy, or
-  browser secret;
-- does not create progress, completion, workspace, run, reset, verifier, evidence, or download
-  state;
-- keeps the released controlled-failure explanation distinct from environmental unavailability.
+## One Current Evidence Generation
 
-## Deterministic Visual Review
+The exact publication protocol is normative in
+[Current-Generation Evidence Publication](./stage-a-release-amendment.md#current-generation-evidence-publication).
+The current generation must contain:
 
-`make portal-visual-review` captures only these Stage A states at both viewports, within the
-eight-screenshot ceiling: catalog/vertical-slice context, four-grain lesson context, canonical
-decision, and runner-unavailable/no-completion static fallback. It also emits one trace, axe JSON,
-no-JS inventory, console/CSP record, SHA-256 manifest, and `uat-checklist.md` under the bounded
-review root.
+- raw and sanitized RED logs from the tests-only head and raw/sanitized GREEN logs from the final
+  tested head for all 18 command rows;
+- actual commit/tree roles for base, derived plan-only input, scaffold, tests/RED, first semantic,
+  later semantics, and final head;
+- 85-input/protected/runtime/lock/tool/command/build inventories;
+- current resource, all-14-S3, lifecycle, blocked-result, cleanup, interruption, and rollback
+  records;
+- exact browser/axe/no-JS/console/CSP/request/storage records, at most eight fixed screenshots,
+  and exactly one compliant Chromium trace;
+- `inventory.json`, `generation-index.json`, and an atomically published regular
+  `current-generation.json` selector with non-self hash closure.
 
-The checklist asks one human to review hierarchy, Vietnamese-first labels, focus, status/error
-copy, grain honesty, 360px readability, static parity, reduced motion, and absence of false
-course/run/completion claims. Reviewer identity, exact head, date, result, and residual notes are
-recorded separately; artifact generation never fabricates approval.
+Every retained current manifest entry must verify. Negative history has a separate outer manifest
+whose entries also all verify; an old invalid manifest is inert payload with its failure recorded,
+never nested authority. A stale prior generation is not a current fallback. An interrupted pending
+directory is never selectable. Raw logs may remain local-private but must reject secret/credential
+canaries; sanitized logs also remove private paths and unstable ports. File count, aggregate bytes,
+every individual size/hash/type/mode/owner/link, privacy class, and source/tree/input/dependency/
+tool binding are exact, not summaries.
 
-## Evidence, Cleanup, and Rollback
+## Cleanup, Rollback, and Ignored Classification
 
-Retain RED/GREEN records, release/protected identity manifests, unit/contract/S3/a11y results,
-build/output inventory, audit result, Chromium trace/screenshots, axe/no-JS/console/CSP records,
-artifact hashes, lifecycle/cleanup/rollback results, independent reviews, bounded UAT, and human
-exact-head approval through release policy.
+Cleanup closes handles, uses authenticated child self-shutdown, removes only owner-validated
+runtime/dependency/build/test scratch, and preserves current evidence plus classified negative
+history. It runs twice. Recovery after injected interruption proves the selector still names the
+previous verified generation or no generation, never a partial publication.
 
-Runtime and review roots, file/byte bounds, PID/start identity, marker/nonce containment, special
-file/alias denial, and idempotent cleanup are exact in the amendment. Cleanup preserves review
-artifacts and never touches repository/dependency/fixture/home/other-worktree/foreign-process
-state. Rollback removes only the exact 33 Stage A additions at a reviewed Git point.
+An ignored-inclusive walk and Git classification account for every node: tracked product,
+expected ignored dependency cache, build/test scratch to remove, runtime to remove, selected
+current evidence, or negative history. Unknown untracked/ignored content, tracked generated
+output, special files, aliases, private paths, or unclassified bytes fail.
 
-## Exact-Head Release Gate
+Rollback removes only the exact 33 create-only tracked paths and owned scratch while retaining
+evidence. It never modifies released inputs, failed PR #29, another worktree, home, containers,
+cloud, AWS, or Terraform.
 
-Before a Stage A human merge:
+## Exact-Head Gate
 
-- every exact command and TDD/S3 check above passes at one clean head;
-- changed paths equal the 33-path create allowlist; no modify/delete or generated tracked output;
-- release/protected hashes and command ownership match;
-- `npm audit` has zero High/Critical and axe has zero Critical/Serious;
-- two fresh independent exact-head reviews have zero unresolved Critical/High findings;
-- one named human completes bounded visual/keyboard UAT and exact-head approval;
-- local, upstream, and fresh PR head are equal; no cloud/AWS/Terraform action occurred.
+Before any Stage A merge:
 
-Stage A readiness planning satisfies none of those implementation/release gates. Stage B remains
-blocked and cannot be skipped, passed, or claimed by Stage A results.
+- final diff is exact 33 creates; commands are 18/18; released inputs are 85/85;
+- tests-only blobs remain bound; all GREEN and current evidence match the final head/tree;
+- one trace, all current manifest entries, resource/S3/cleanup/rollback, build inventory, blocked
+  results, secret/private-path and ignored-inclusive scans pass;
+- two fresh independent final-head implementation reviews have zero unresolved Critical/High;
+- one named human completes bounded keyboard/visual UAT and exact-head approval;
+- local, upstream, and fresh PR head match.
+
+This corrected plan satisfies none of those implementation gates. Fresh independent plan
+validation and fresh readiness audit must occur before v3 cook. Stage B remains blocked on Issue
+#9 and Issue #10 stays open.

@@ -1,120 +1,118 @@
 ---
 phase: 3
-title: "Stage A static lesson shell and navigation"
+title: "Stage A released-registry semantics and portal slice"
 status: pending
 priority: P1
 dependencies: [2]
-effort: "M"
+effort: "L"
 ---
 
-# Phase 3: Stage A static lesson shell and navigation
+# Phase 3: Stage A released-registry semantics and portal slice
 
 ## Overview
 
-Deliver the useful learning surface: a reusable Vietnamese-first catalog → module → lesson →
-narrative-step shell whose first content is the released promotion-trust vertical slice. Render
-the same facts in static/no-JavaScript and React modes, with reversible read-only navigation and
-explicit non-execution/non-completion semantics.
+Implement semantics only after the closed RED generation. First admit the exact released
+descriptor registry; then deliver the Vietnamese-first catalog → module → lesson → step slice
+from that single authority in React and static/no-JavaScript modes.
 
 ## Context Links
 
-- [PortalCatalog seams](./architecture-and-api-boundaries.md#portalcatalog-and-extension-seams)
-- [Protected lesson truth](./requirements-and-risk-traceability.md#protected-data-and-contract-truth)
-- [No-JS verification](./verification-evidence-and-uat.md#no-javascript-and-static-equivalence)
-- [Stage A scenarios](./stage-a-release-amendment.md#requirements-and-scenario-catalogue)
+- [Released registry admission](./architecture-and-api-boundaries.md#released-descriptor-registry-admission)
+- [Generic structural tests](./architecture-and-api-boundaries.md#test-only-structural-descriptors)
+- [Released product truth](./verification-evidence-and-uat.md#released-product-truth)
+- [Current generation](./stage-a-release-amendment.md#current-generation-evidence-publication)
 
 ## Requirements
 
-### Functional
+### First semantic commit
 
-- Derive one presentation-only module view and one lesson entry from released
-  `promotion-trust-v1`; never invent a module ID or call it the full course/product.
-- Render the stakeholder question, four independent grains/limitations, released controlled
-  failure, and `insufficient-evidence / no-common-grain` without causal attribution.
-- Provide the exact 13-route public catalog/module/lesson/step navigation set with
-  back/forward/reload view-only state.
-- Render explanation-only run/reset/verify narrative steps with runner unavailable.
-- Generate all admitted static routes from the same safe model.
+- Bind exact integration, 85 inputs, contract-set root, promotion manifest/lesson/lab, shared Vite
+  binding, released validators, protected inputs, operations, runtime, and locks.
+- Build one immutable `ReleasedPortalDescriptorRegistry`; current production admits only those
+  exact Issue #8 descriptor/binding/contract hashes.
+- Reject unknown/extra/test-only/unhashed/draft/wrong-family/version/path/hash/field/state before
+  catalog construction.
+- Record the actual first semantic commit/tree. Re-run unchanged tests and prove RED families
+  begin turning GREEN for authority only.
 
-### Non-functional
+### Portal semantic commit
 
-- No hand-maintained duplicate lesson, raw HTML/MDX, copied #7 lesson contract, copied fixture,
-  local binding/alias map, or generated binding type.
-- Semantic landmarks/headings/lists, visible focus, 360px reflow, reduced motion, live status.
-- #11/#12 can later add released manifests through provider/catalog seams without redesign;
-  no future content is invented now.
+- Derive catalog, current routes, static documents, and React views from the one registry.
+- Add the three remaining product paths: lesson navigation, module navigation, and the
+  promotion-trust renderer.
+- Present Vietnamese-first navigation/status/guidance and keep canonical released English IDs,
+  questions, codes, and decision visibly distinct.
+- Render four independent grains and limitations without causal attribution; show only
+  `insufficient-evidence/no-common-grain`.
+- Make `/module` presentation-only. Describe promotion-trust as one Stage A vertical slice, not
+  the course or full product.
+- Make run/reset/verify explanation-only with runner unavailable, execution/progress/completion
+  disabled, reset not-run, and fresh evidence false.
+- Provide equivalent stable facts/links with JavaScript disabled; back/forward/reload change only
+  view state.
 
-## Authorized Files
+### Generic seam
 
-Create only:
+- No `defaultCatalog`, `STEP_IDS`, 13-route table, promotion switch, copied fixture/schema/route,
+  or duplicate alias mapping in production.
+- Metamorphic tests over current release plus branded test-only structure prove generic pure
+  functions. Production negative gates reject and exclude every test-only token.
+- Map future #11/#12 entry only through later released contract-set/binding hashes and a later
+  exact-SHA amendment; no future ID or authority is invented.
+
+## Related Code Files
+
+Create exactly:
 
 ```text
-apps/learning-portal/scripts/generate-static-routes.mjs
 apps/learning-portal/src/app/lesson-navigation.jsx
 apps/learning-portal/src/app/module-navigation.jsx
-apps/learning-portal/src/catalog/module-catalog.mjs
-apps/learning-portal/src/catalog/released-module-provider.mjs
 apps/learning-portal/src/features/promotion-trust/promotion-trust-lesson.jsx
-apps/learning-portal/src/render/static-document.mjs
-apps/learning-portal/src/routing/portal-router.mjs
-apps/learning-portal/tests/unit/module-catalog.test.mjs
-apps/learning-portal/tests/unit/portal-router.test.mjs
-apps/learning-portal/tests/unit/render.test.mjs
 ```
+
+Modify only scaffold paths within the final 33-path set for adapter/provider/catalog/router/
+render/app/static generation/styles/release admission. Modify no test or released file.
 
 ## Tests Before
 
-1. Retain PTP-RED-A-010..016 through the real provider/catalog/router/render paths and canonical
-   public route set.
-2. Retain PTP-RED-A-020/021 for released invalid bindings, unknown descriptors, invented route
-   identifiers, invalid path/state, and static/React disagreement.
-3. Mutate a fifth source, grain, causal wording, decision, raw field, false fresh-evidence label,
-   enabled action, missing static fact, and route/history behavior.
-4. Start built-output parser and JavaScript-disabled browser assertions before output exists.
-
-## Tests After and Regression
-
-- Provider/catalog accept exact registered released descriptors and the released shared binding
-  only.
-- Promotion-trust is visibly one vertical slice in a reusable foundation-to-mid shell.
-- Static and React stable fact IDs, values, ordering, 13 routes, non-claim attributes, and
-  escaping agree.
-- Back/forward/reload make zero mutation/network/storage effects.
-- Four grains/limitations and canonical decision are honest in every admitted route.
-- Unit/adapter/render/router/build/no-JS/axe/diff checks stay green.
+Use the closed Phase 2 RED without changing its test blobs. Specifically preserve RED for release
+admission, registry authority, generic route/render, current product truth, four-grain decision,
+no-JS parity, history-only state, accessibility, and prohibited capabilities.
 
 ## Implementation Steps
 
-1. Write provider/catalog/router/render RED cases and mutation fixtures in memory.
-2. Implement released module provider and ordered catalog over the closed safe model and shared
-   binding; iterate aliases instead of restating them.
-3. Implement generic module/lesson navigation and read-only router.
-4. Implement promotion-trust presentation as a feature renderer, not a portal-wide switch.
-5. Implement deterministic static document and route generation from the same model.
-6. Prove Vietnamese-first semantics, canonical English values, focus/reflow/reduced motion.
-7. Run equivalence/history/negative regression and verify only these 11 paths are added.
+1. Implement production registry admission only; commit and record the first semantic tree.
+2. Run exact release/runtime/lock controls plus registry mutations and production negative gates.
+3. Implement catalog and route pure functions over the admitted registry.
+4. Add the three remaining product paths and wire app/static renderers through the same catalog.
+5. Implement Vietnamese-first current content, grain honesty, Stage A non-claims, semantic
+   keyboard/focus/reflow/reduced-motion behavior, and no-JS parity.
+6. Run unchanged unit/build/public/Chromium tests. Preserve raw/sanitized GREEN candidate logs as
+   pending only; final current GREEN is Phase 4's final head.
+7. Prove the union is 33 created paths, test blobs equal Commit 2, released bytes unchanged, and
+   test-only tokens absent from build/runtime.
 
 ## Success Criteria
 
-- [ ] One honest promotion-trust vertical slice is useful with runner absent and explicitly not
-  the complete learning product.
-- [ ] Shell/provider/router seams admit later released content without redesign.
-- [ ] Static and React modes expose equivalent released facts and navigation.
-- [ ] Navigation cannot execute, reset, verify, progress, evidence, or complete.
-- [ ] Only the 11 authorized files are added.
+- [ ] First semantic commit/tree is separately bound after contemporaneous RED.
+- [ ] One exact released descriptor registry drives every production consumer.
+- [ ] Current production admits only released Issue #8 hashes and rejects test-only structure.
+- [ ] Vietnamese-first 13-document static/React slice is honest and accessible.
+- [ ] Exactly three remaining paths are added; final path union is 33/33.
+- [ ] No Stage B, runner, progress, completion, container, cloud, or future-content authority exists.
 
 ## Risks and Rollback
 
 | Risk | Mitigation |
 |---|---|
-| Promotion lesson hard-coded as whole course | generic provider/catalog/router plus copy tests |
-| Static copy drifts | one safe model and fact-ID equivalence |
-| Four cards imply joinability | adjacent independent-grain limitations and attribution negatives |
-| Future seam becomes permissive plugin system | exact registered release descriptors only |
+| Router recreates local truth | Explicit registry argument; AST/string test forbids default/step tables and switches |
+| Test descriptor leaks into production | Branded test-only value, production rejection, bundle/runtime inventory scan |
+| Static/React divergence | One catalog/model/route derivation plus fact-ID equivalence |
+| Partial product overclaimed | Visible static-slice/not-full-product and machine-readable non-claims |
 
-Rollback removes only these 11 unmerged additions.
+Rollback returns to the scaffold/tests head and preserves RED/current negative history. It removes
+no released input or failed-review evidence.
 
 ## Next Steps
 
-Phase 4 adds the bounded static server lifecycle, Chromium journey, review artifacts, and Make
-handoff.
+Phase 4 completes defensive semantics, final GREEN, and atomic current-generation evidence.

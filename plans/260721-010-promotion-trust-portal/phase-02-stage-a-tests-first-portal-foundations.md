@@ -1,107 +1,118 @@
 ---
 phase: 2
-title: "Stage A tests-first portal foundations"
+title: "Stage A complete tests and contemporaneous RED"
 status: pending
 priority: P1
 dependencies: [1]
-effort: "M"
+effort: "L"
 ---
 
-# Phase 2: Stage A tests-first portal foundations
+# Phase 2: Stage A complete tests and contemporaneous RED
 
 ## Overview
 
-Create the minimal Vietnamese-first React/static shell and strict GET/HEAD-only serving
-foundation. The real adapter feeds one safe view model into semantic shell/status components.
-There is no BFF/API, runner mock, storage, mutation, or completion path.
+Create all eight final test files without changing scaffold bytes. Run every exact command at that
+tests-only head, prove real scaffold reachability, and publish raw/sanitized contemporaneous RED
+for named absent semantics before any semantic commit.
 
 ## Context Links
 
-- [Architecture](./architecture-and-api-boundaries.md)
-- [Threat model](./threat-model-and-security.md)
-- [Stage A commands](./stage-a-release-amendment.md#exact-stage-a-command-allowlist)
-- [TDD matrix](./verification-evidence-and-uat.md#tests-before-matrix)
+- [Scaffold-first rule](./verification-evidence-and-uat.md#scaffold-first-tdd-rule)
+- [Complete tests-only portfolio](./verification-evidence-and-uat.md#complete-tests-only-portfolio)
+- [RED families](./stage-a-release-amendment.md#exact-red-families-classifications-and-commands)
+- [S3 matrix](./threat-model-and-security.md#stride-and-negative-test-matrix)
 
 ## Requirements
 
 ### Functional
 
-- Build with the exact frozen #7 Vite/React graph.
-- Render the semantic catalog/module/lesson foundation from the validated model, not hard-coded
-  contract copies or invented module identifiers.
-- Present Vietnamese-first status and explicit static-slice, not-full-product,
-  runner-unavailable, execution/progress/completion-disabled language.
-- Emit the exact machine-readable non-claim `data-*` attributes on every static and enhanced
-  route; they are assertions only, never a state contract or store.
-- Serve strict production documents over loopback with no API surface.
+- Add complete unit coverage for release/binding/registry/catalog/router/render/security and all
+  seven prior defensive requirements.
+- Add complete Make delegate/lifecycle/request/build/evidence/blocked-result negatives.
+- Add one real Chromium journey test covering desktop, narrow, keyboard/focus/overflow, axe,
+  no-JavaScript, request/storage/console/CSP, and the future trace contract.
+- Add visual/evidence tests for exact inventory/hash/privacy/count/size/aggregate, atomic selector,
+  interruption, stale-generation classification, resource records, and all S3 records.
+- Use only exact released controls and in-memory/private-run-owned one-change mutations. Track no
+  new fixture path.
 
-### Non-functional
+### RED integrity
 
-- External compiled assets, exact CSP, escaped text, closed Host/method/path behavior.
-- No cookies, browser storage, service worker, external network, secrets, source maps, or #9 import.
-- One Node process and exact production-output ceilings.
+- Commit 2 changes only the eight test paths. Scaffold/test commit and tree values are recorded.
+- Execute all 18 command rows. Setup controls may pass; behavior-bearing paths must fail only for a
+  named absent semantic after reaching real scaffold code.
+- `make learn`, status, down, both Stage B negatives, and the real Chromium test must traverse
+  their actual entrypoints. Expected echo, forced exit, mock, skip, predicate copy, or fixture
+  fallback is invalid.
+- Capture bounded raw and sanitized logs immediately. Bind source/tree/input/dependencies/tools,
+  exact argv/exit/duration, expected invariant, observed failure, and both hashes.
+- No semantic commit exists until all RED entries and the current RED index verify.
 
-## Authorized Files
+## Related Code Files
 
-Create only:
+Create exactly:
 
 ```text
-apps/learning-portal/index.html
-apps/learning-portal/vite.config.mjs
-apps/learning-portal/src/app/app-shell.jsx
-apps/learning-portal/src/app/portal-status.jsx
-apps/learning-portal/src/main.jsx
-apps/learning-portal/src/styles.css
+apps/learning-portal/tests/e2e/stage-a.spec.mjs
+apps/learning-portal/tests/e2e/visual-review.spec.mjs
+apps/learning-portal/tests/unit/module-catalog.test.mjs
+apps/learning-portal/tests/unit/portal-router.test.mjs
+apps/learning-portal/tests/unit/release-binding.test.mjs
+apps/learning-portal/tests/unit/released-learning-adapter.test.mjs
+apps/learning-portal/tests/unit/render.test.mjs
 apps/learning-portal/tests/unit/security.test.mjs
 ```
 
+Modify no scaffold or released file in Commit 2.
+
 ## Tests Before
 
-1. Retain PTP-RED-A-010/012/015/016 through the real shell/status render and exact `/`, `/module`,
-   and `/lesson/promotion-trust` public routes.
-2. Retain PTP-RED-A-021/022 for renderer escaping/import/bundle/storage/cloud boundaries.
-3. Retain applicable PTP-RED-S3-01..14 negatives before enabling serving.
-4. Prove missing shell semantics and unsafe mutations fail for the intended reason.
+The tests themselves are the before state. They must cover:
 
-## Tests After and Regression
+1. PTP-RED-A-001/002/010..016/020..024.
+2. PTP-S3-01..14 with a valid control and exact negative each.
+3. Valid blocked `fitness-result-v2`, closed build inventory/request policy, authenticated child
+   self-shutdown without PID authority, runtime/lock/env admission, generic seam, evidence bounds,
+   and atomic closure/interruption.
+4. Exact current released descriptor plus branded test-only structure for pure-function
+   metamorphic tests, followed by production rejection and build/runtime absence.
+5. The current released Vietnamese-first 13-document output and
+   `insufficient-evidence/no-common-grain` as future expectations reached through real paths.
 
-- Frozen production build succeeds with no source maps and bounded regular output.
-- Semantic shell/status is useful in Vietnamese, distinguishes canonical English values, and
-  cannot be mistaken for the complete learning product.
-- Exact static headers/CSP, Host, methods, paths, XSS, storage, network, secret, cloud, and #9
-  absence tests pass.
-- Missing runner never blocks render and never becomes the controlled failure.
-- Unit/contract/security/build/audit/diff gates stay within exact time/output bounds.
+## RED Execution Steps
 
-## Implementation Steps
-
-1. Write shell/status/security RED assertions against the real entry/render path.
-2. Add the minimal Vite entry/config from the released toolchain, without spike product code.
-3. Build semantic app shell and status from the safe model.
-4. Add external styles for focus, logical order, narrow reflow, reduced motion, and no color-only
-   state.
-5. Add strict production build and security constraints.
-6. Run GREEN/refactor/regression and confirm only these seven paths are added.
+1. Confirm Commit 2 diff is the exact eight paths and the scaffold commit/tree is its parent.
+2. Create an owner-private pending RED generation and capture each allowlisted command.
+3. Run real valid controls, then one-change mutation families from the portfolio.
+4. Run all public Make commands, including the bounded scaffold lifecycle and both Stage B
+   negatives.
+5. Run the real Chrome-channel journey against the scaffold; prove it reaches a served neutral
+   document and fails the named catalog semantics—not setup or connectivity.
+6. Sanitize logs, verify raw/sanitized hashes and privacy, and close the RED inventory/index.
+7. Reject the RED generation if any expected failure is a missing import/tool/path, forced failure,
+   mock/skip, predicate-only oracle, fallback fixture, or unbound summary.
+8. Only after the closed RED record exists may Phase 3 create a semantic commit.
 
 ## Success Criteria
 
-- [ ] Exact Vite graph builds reproducibly.
-- [ ] Vietnamese-first static-slice and runner-unavailable state render from validated data.
-- [ ] Stage A exposes no BFF/API/runner/mutation/storage/completion capability.
-- [ ] CSP/XSS/Host/path/bundle/storage/cloud security foundation is green.
-- [ ] Only the seven authorized files are added.
+- [ ] Commit 2 is eight tests only; the parent is the exact scaffold commit.
+- [ ] All required valid controls/mutations and PTP-S3-01..14 are complete.
+- [ ] All 18 commands are recorded; behavior RED reaches the real scaffold.
+- [ ] Real Chromium reaches the scaffold and fails named absent semantics.
+- [ ] Raw/sanitized RED closure verifies and predates every semantic commit.
 
 ## Risks and Rollback
 
 | Risk | Mitigation |
 |---|---|
-| Spike code leaks into product | Build purpose-built files; import/bundle scan |
-| Static server evolves into BFF | GET/HEAD closed map only; method/API negatives |
-| CSP relaxed for Vite | Test built output with exact CSP and external assets |
-| Unavailable becomes lesson result | Distinct typed copy and contract assertions |
+| Test passes on expected echo | Require call-path/served-document/process/network evidence |
+| Mutation becomes new authority | Test-only brand, private temp root, production rejection, bundle absence |
+| RED reconstructed later | Source/tree time order and Git ancestry gate |
+| Unsafe lifecycle negative | Self-expiring scaffold plus test-owned process handle; never signal mutable PID |
 
-Rollback removes only these seven unmerged additions.
+Rollback removes only the eight test creates and their owner-validated pending scratch. Retained
+published RED is preserved as negative history if a new tests commit is needed.
 
 ## Next Steps
 
-Phase 3 adds reusable navigation and the promotion-trust vertical slice.
+Phase 3 begins with the first semantic commit and must keep test expectations unchanged.

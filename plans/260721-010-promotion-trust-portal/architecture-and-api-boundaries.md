@@ -2,216 +2,178 @@
 
 ## Decision
 
-Stage A is one Vite-built React application plus one minimal Node static-file process. It has no
-BFF, HTTP API, runner adapter, completion repository, session, database, or mutation surface.
-The built static documents are complete without JavaScript; React progressively enhances the same
-validated read-only view model.
+Stage A is one Vite-built React enhancement plus deterministic static documents and one minimal
+Node static-file process. It has no BFF, product API, runner adapter, completion repository,
+session, database, mutation, or canonical learner state. Static documents remain complete without
+JavaScript.
+
+Production has exactly one content/route authority:
 
 ```text
-released #8 files + validators + exact shared Vite binding
-                         |
-                         v
-              released-module-provider
-                         |
-                         v
-            closed safe PortalCatalog model
-                         |
-          catalog -> module -> lesson -> step
-                    /                    \
-        static document             React shell
-                    \                    /
-             Node GET/HEAD-only static server
-                         |
-                   loopback browser
+exact released integration 5644f01...
+  -> released validators
+  -> learning-contract-set-v1.json (sole descriptor-registry root)
+  -> exact hash-bound manifest + lesson + lab + shared Vite binding
+  -> immutable ReleasedPortalDescriptorRegistry
+  -> catalog + app + router + static routes + React/static render
+  -> closed inventoried build
+  -> loopback GET/HEAD server
 ```
 
-Stage B is a separate future architecture decision. It may add a server-only BFF and released
-private Issue #9 adapter only after an exact #9 release amendment. Nothing in Stage A anticipates
-that dependency through a placeholder, probe, client, route, token, or browser contract.
+Stage B remains a separate future architecture decision blocked on Issue #9. Nothing in Stage A
+adds a placeholder runner, probe, client, route, token, container, or browser contract.
 
 ## Stage Separation
 
 | Concern | Stage A | Stage B |
 |---|---|---|
-| Framework | Exact #7 Vite/React toolchain | Accepted Stage A or explicit compatible successor |
-| Content/contracts | Exact released #8 files and validators | Same authority or released compatible successor |
-| Server | Built-in static GET/HEAD server | Deferred BFF, if exact #9 release requires it |
-| Runner | Absent; explicit unavailable state | Exact released #9 server-only client/API |
-| State | URL/history presentation state only | Deferred canonical runner/#8 completion state |
-| Evidence | Released fixture facts labelled retained baseline | Deferred fresh runner evidence |
-| Claim | Understandable portal lesson slice | Deferred complete local journey |
+| Framework | Exact released Vite/React toolchain | No authority |
+| Content | Exact released Issue #8 descriptor/binding/contract hashes | No additional authority |
+| Server | Inventoried static GET/HEAD process plus private lifecycle control listener | No BFF authority |
+| Runner | Absent; visible unavailable state | Blocked on exact released Issue #9 |
+| State | URL/history presentation only | No progress/completion authority |
+| Evidence | Released facts plus implementation-review evidence, never learner-run evidence | Blocked |
+| Claim | Understandable static vertical slice | None |
 
-## Exact Ownership and Files
+## Exact Ownership
 
-The issue-level ceiling is `apps/learning-portal/**`, `mk/issue-5/i5-05.mk`, and Issue #10
-plan/evidence artifacts. Stage A is narrower: exactly the 33 creates in the
-[release amendment](./stage-a-release-amendment.md#exact-stage-a-tracked-write-allowlist), with no
-modifies or deletes. Root Make already supplies the fragment include seam and remains unchanged.
+Stage A creates exactly the 33 paths in the
+[v3 amendment](./stage-a-release-amendment.md#exact-stage-a-tracked-write-allowlist). It modifies
+and deletes no released path. Root Make remains unchanged and includes the issue-local fragment
+through its released sorted include seam.
 
-Stage B paths, commands, and dependency identities are `[]`. Shared contracts, released lessons,
-validators, fixtures, root files, dependency source, runner source, `README.md`, `docs/**`, cloud,
-AWS, Terraform, CI, and other issues remain read-only or denied.
+Stage B path/command/dependency authorities are `[]`. Shared contracts, released lessons,
+validators, fixtures, root files, runner source, Issue #11 curriculum, Issue #12 labs, Issue #13
+profiles, README/docs, CI, containers, cloud, AWS, and Terraform are read-only or denied.
 
-## Contract Binding Policy
+## Released Descriptor Registry Admission
 
-The portal consumes the released shared binding exactly at
-`learning/bindings/vite/promotion-trust-v1.json`, version/binding ID
-`promotion-trust-vite-binding-v1`, SHA-256
-`03d2aa6bd9fa178e6075865364a8ae8b83ce548c42b450d1858b451b45d0d1d0`. Its released schema
-SHA-256 is `74035baee08b378e46421466333d6933d1bad820337acd1b80a633d236173a43`; the bound Stage A
-contract-set SHA-256 is `92aaf9a573f5d23b5bf5d8d7db1e68150d4b0944f0e6ab6e651b1a3d34408638`.
+`learning/contracts/learning-contract-set-v1.json` at SHA-256
+`92aaf9a573f5d23b5bf5d8d7db1e68150d4b0944f0e6ab6e651b1a3d34408638` is the sole released
+descriptor-registry root. The current admitted graph is:
 
-The released public Python validators are the sole binding semantic authority. The portal may
-iterate the accepted ordered `grainBindings` to project safe labels, but it must not create a
-portal-local binding, alias/mapping table, copied schema, generated binding type, default,
-transform, operation list, canonicalizer, or identifier truth. The release verifier separately
-pins the #7 tool graph, all 85 consumed release paths, protected identities, and the two read-only
-OpenAPI operation identities `listLessons` and `getLesson`; neither operation is exposed or
-called.
+- `learning/manifests/promotion-trust-v1.json` at its exact 85-row catalogue hash;
+- its exact hash-bound `lesson-v1` and `lab-v1` members;
+- `learning/bindings/vite/promotion-trust-v1.json`, binding ID
+  `promotion-trust-vite-binding-v1`, SHA-256
+  `03d2aa6bd9fa178e6075865364a8ae8b83ce548c42b450d1858b451b45d0d1d0`;
+- the exact contract-set, binding-schema, fixture, protected, operation, and tool hashes in the
+  released-input catalogue.
 
-The separate app-owned command activation is validated against the released generic activation
-schema and immutable command-owner registry. It binds the final I5-05 fragment digest and emits
-truthful `fitness-result-v2` results; it does not edit or replace shared registry truth.
+The released Python validators remain semantic authority. The Node verifier independently binds
+the release tree and all 85 rows, runs those validators through the exact admitted runtime, then
+builds one immutable `ReleasedPortalDescriptorRegistry` containing only safe released fields.
+Unknown/extra/unhashed/draft/wrong-family/version/path/hash/field/state fails before catalog
+construction. There is no permissive fallback, portal-local schema, copied registry, generated
+binding type, or duplicate alias map.
 
-The portal reads tracked released files at build time after the released validators pass. An
-unknown field, family, version, path, hash, operation identity, content type, registry state,
-binding authority, grain, key, alias, fixture reference, or special-file state fails the build
-before render. There is no permissive fallback, local schema, copied registry, hand-written
-lesson, or draft #9 value.
+The shared binding's ordered `grainBindings` are iterated directly. Portal source never restates
+`region→region_name`, `category→category_name`, or `dq→data-quality`.
 
-## PortalCatalog and Extension Seams
+## Catalog, App, Router, and Renderer Contract
 
-`PortalCatalog` is a closed internal projection with stable catalog, module, lesson, and narrative
-step identities plus only safe released facts. The initial catalog contains one module entry and
-one promotion-trust lesson vertical slice. It is never described as the entire course.
+All production consumers accept one explicit registry argument. None imports content directly or
+creates default truth:
 
-The seams are deliberately content-driven:
+- `released-module-provider` performs production admission and safe projection;
+- `module-catalog` orders admitted descriptors;
+- `portal-router` derives routes and resolves views from that catalog;
+- `generate-static-routes`, `static-document`, `main`, and app/navigation components consume the
+  same derived catalog and route objects;
+- the promotion-trust feature renders generic safe-model fields for the currently admitted lesson
+  and is not a portal-wide switch.
 
-1. `released-module-provider` accepts only paths/families/versions/hashes recognized by the exact
-   released contract set, shared Vite binding, and their validators.
-2. `module-catalog` orders module and lesson descriptors without hard-coded route switches.
-3. `portal-router` resolves catalog/module/lesson/step identities and stores only the selected
-   read-only view in the URL/history.
-4. static and React renderers consume the same `PortalCatalog` and stable fact IDs.
+The router owns no `defaultCatalog`, `STEP_IDS`, 13-route constant, promotion-specific branch, or
+fallback lesson. Acceptance tests may enumerate the current expected route output, but production
+derives it from released `lesson.id` and ordered `narrativeSteps`.
 
-Later #11/#12 releases can contribute curriculum/module/lesson/lab manifests through that
-provider after a new exact release binding. They do not require a shell, router, navigation, or
-rendering redesign. Stage A does not invent their content, metadata, levels, routes, commands, or
-contracts. Vietnamese is the default shell language; canonical released English IDs, questions,
-failure codes, and decision values remain visibly distinguishable.
+`PortalCatalog` and safe view objects are internal immutable projections, not new contracts. They
+carry only released IDs/versions, title/summary/level, stakeholder question, ordered narrative
+steps, accessibility flags, source grains/limitations, binding-derived aliases, decision status,
+and explicit Stage A capability absence.
 
-## Runtime Loading Boundary
+## Test-Only Structural Descriptors
 
-The production build resolves only exact #7 packages and exact #8 read-only files/validators.
-The browser bundle and static server must contain no Issue #9 path, module, URL, transport,
-credential, registry, command, environment, dynamic optional import, storage adapter, or
-completion code. Static startup must not probe Docker, a runner, optional tools, external network,
-or cloud.
+Unit tests may construct in-memory structural values with
+`authorityKind: test-only-structure`. These values:
 
-Bundle/import and network/storage tests make this absence executable. A missing or incompatible
-Stage B capability leaves Stage A fully readable and reports `runner unavailable`; it is not a
-controlled lesson failure.
+- use neutral unit-test tokens and never claim a release, Issue #11/#12 identity, path, hash, or
+  authority;
+- enter only pure catalog/route/render derivation functions;
+- never enter `admitReleasedRegistry`, build inputs, static output, runtime catalogs, Chromium
+  evidence, or public evidence;
+- are production-rejected with `PORTAL_DESCRIPTOR_AUTHORITY_FORBIDDEN`;
+- are absent from bundle/build/runtime inventories and string scans.
 
-## Logical Capability Boundary
+Metamorphic tests use both the exact current released descriptor and branded test-only structure
+to prove order, uniqueness, route-count, escaping, rename locality, and add/remove locality. They
+prove generic mechanics only—not that another release exists.
 
-| Capability | Stage A disposition | Authority |
-|---|---|---|
-| lesson/catalog read | Build-time validated projection only | exact released #8 files |
-| read-only navigation | URL and `history.state`; no canonical progress | portal view state |
-| runner/tool status | Constant explicit unavailable copy; no probe | Stage A claim boundary |
-| run/reset/verify | Explanation only; no control or request | denied |
-| progress/completion | No read/write/store/derived truth | denied |
-| evidence | Released baseline facts only, never fresh/downloadable evidence | exact #6/#8 release |
-| arbitrary command/path/URL/SQL/upload/proxy | No surface | denied |
+## Future #11/#12 Entry
 
-Stage B logical operations remain descriptive historical requirements only. None becomes Stage A
-route, type, module, or test double.
+Future content can enter without code-level content-ID hardcoding only through this sequence:
 
-## State, Routing, and History
+1. the owning issue releases validated curriculum/module/lesson/lab documents;
+2. a reviewed integration release adds exact hash-bound entries to the released contract set and,
+   when aliases are needed, a compatible released binding;
+3. a later Issue #10 amendment pins the new integration and expands the read-only input catalogue;
+4. the unchanged family-driven provider enumerates the recognized entries and pure derivation
+   creates catalog/routes/documents;
+5. fresh tests, validation, readiness, implementation review, and evidence run at that head.
 
-The only browser state is the selected catalog/module/lesson/narrative-step view. Canonical route
-generation is deterministic from validated IDs. Navigation uses same-origin links first, with
-React enhancement for `pushState`; `popstate`, back, forward, and reload select a view only. They
-cannot initiate a request, replay a mutation, advance progress, or complete anything.
+No current code names or guesses an Issue #11/#12 route, ID, level, content, or release hash.
 
-Unknown, malformed, overlong, percent-ambiguous, traversal, dot-segment, or unregistered routes
-fail closed to a safe not-found document. No state lives in local/session storage, IndexedDB,
-Cache Storage, cookies, service workers, query secrets, fragments, or ambient globals.
+## State and Routing
 
-### Exact Stage A public route set
+The only browser state is the selected catalog/module/lesson/narrative-step view. Navigation uses
+same-origin links first and may enhance with `pushState`; popstate, back, forward, and reload
+select a view only. They cannot invoke a request, mutation, runner, progress, evidence, or
+completion path.
 
-The static and enhanced portal expose exactly 13 canonical public documents:
+The current registry derives exactly 13 public documents: catalog root, presentation-only module
+root, the released promotion-trust lesson, and its ten released steps. `/module` has no fabricated
+module identifier. Unknown, malformed, overlong, percent-ambiguous, traversal, dot-segment, or
+unregistered routes fail closed.
 
-```text
-/
-/module
-/lesson/promotion-trust
-/lesson/promotion-trust/step/frame
-/lesson/promotion-trust/step/inspect
-/lesson/promotion-trust/step/run
-/lesson/promotion-trust/step/fail
-/lesson/promotion-trust/step/trace
-/lesson/promotion-trust/step/decide
-/lesson/promotion-trust/step/reset
-/lesson/promotion-trust/step/configure
-/lesson/promotion-trust/step/verify
-/lesson/promotion-trust/step/reflect
-```
-
-`/` is the catalog. `/module` is a presentation-only Stage A grouping view with no fabricated
-module identifier; it does not claim released curriculum/module truth. The lesson ID and ten step
-IDs come directly from the released `lesson-v1` document. Later #11/#12 route additions require
-their released identifiers and a new exact binding; no current route guesses them.
-
-Every route carries the same machine-readable non-claim attributes on its primary content root:
-
-```text
-data-product-scope="static-portal-slice"
-data-runner="unavailable"
-data-execution="disabled"
-data-reset="not-run"
-data-fresh-evidence="false"
-data-progress="disabled"
-data-completion="disabled"
-```
-
-These attributes are render assertions, not a new schema or state store. Visible Vietnamese-first
-copy must also say this is a Stage A static learning slice, not the full learning product.
+No state lives in cookies, local/session storage, IndexedDB, Cache Storage, service workers,
+query secrets, fragments, ambient globals, or a database.
 
 ## Static and No-JavaScript Path
 
-`generate-static-routes.mjs` renders the admitted route set from the same safe model used by
-React. Every required route is a built HTML document with semantic navigation, breadcrumbs,
-released lesson facts, independent-grain limitations, canonical decision, explanation-only
-run/reset/verify steps, runner-unavailable notice, and explicit non-completion wording.
+`generate-static-routes.mjs` renders the registry-derived routes from the same safe model used by
+React. Each built HTML document contains semantic navigation, Vietnamese-first guidance, released
+facts, four independent-grain limitations, `insufficient-evidence/no-common-grain`, explanation-
+only run/reset/verify, runner unavailable, and explicit non-completion/not-full-product wording.
 
-There is no second hand-maintained page or raw HTML/MDX execution. Stable fact-ID equivalence,
-escaping tests, a built-output parser, and JavaScript-disabled Chromium prove parity. Missing JS,
-runner, network, animation, hover, or optional tools cannot hide required facts.
+There is no hand-maintained second page, raw HTML/MDX execution, copied fixture, or separate route
+truth. Stable fact-ID, escaping, built-output, and JavaScript-disabled Chromium tests prove parity.
 
-## Stage A Data Flow
+## Static Server and Build Inventory
 
-1. Verify final integration `5644f01b4c0443a81f3af0bcce80f44c847cd986`, the shared binding,
-   all 85 consumed bytes, protected identities, lock, and command owner.
-2. Run released #8 learning, lesson, and API validators.
-3. Map only admitted released fields into `PortalCatalog`.
-4. Render Vietnamese-first catalog/module/lesson/step static documents.
-5. Build the React enhancement from the same model.
-6. Serve only bounded built regular files over loopback GET/HEAD.
-7. Explain the four independent grains and canonical
-   `insufficient-evidence / no-common-grain` outcome.
-8. Report runner unavailable and completion disabled; perform no lab action.
+After two deterministic builds compare equal, the server admits one closed inventory containing
+only regular single-link files with exact path/media/size/SHA-256. It serves no filesystem path
+outside that inventory. Public listener policy is exact loopback Host plus GET/HEAD, zero body,
+no transfer encoding, bounded target, and strict decoding. It rejects method/body/chunking/length/
+Host/path ambiguity before opening content.
 
-No step produces a workspace, run, reset, fresh verification, evidence, progress, completion, or
-course claim.
+The separate private lifecycle control listener is not a product API. It accepts only bounded
+authenticated status/shutdown messages carrying the child-held instance nonce and capability.
+The child performs its own shutdown. Parent commands never signal a PID from mutable state.
 
-## Static Server and Performance Shape
+One Node process and one Playwright worker are allowed. There is no broker, database, worker
+fleet, BFF, runner, service worker, poller, container, optional profile, external fetch, or cloud
+component.
 
-The Node server binds `127.0.0.1` on a runtime-selected port, accepts exact local Host values,
-serves GET/HEAD only, and rejects bodies, traversal, ambiguous decoding, unknown routes, and
-foreign Hosts. It serves only admitted build-root regular files with declared media types and the
-strict Stage A headers/CSP.
+## Capability Boundary
 
-One Node process and one Playwright worker are allowed. Install/build/test/server/output/review
-ceilings are exact in the amendment. There is no broker, worker fleet, database, service worker,
-poller, container, optional profile, API buffering, external fetch, runner, or cloud component.
+| Capability | Stage A disposition |
+|---|---|
+| catalog/lesson read | Build-time validated released projection only |
+| navigation | URL/history view only |
+| runner | Constant visible unavailable state; no probe |
+| run/reset/verify | Explanation only |
+| progress/completion | Absent; no store or derived truth |
+| evidence | Released baseline facts plus implementation-review artifacts, never fresh learner evidence |
+| arbitrary command/path/URL/SQL/upload/proxy | No surface |
+
+Every route states that Stage A is a static portal slice, not the complete learning product.

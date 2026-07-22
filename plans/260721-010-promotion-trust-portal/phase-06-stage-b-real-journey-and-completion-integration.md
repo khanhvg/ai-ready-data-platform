@@ -23,10 +23,10 @@ released #8/#9 interfaces; no fake/ignored fixture or browser-direct privilege.
 ## Context Links
 
 - [Stage separation](./architecture-and-api-boundaries.md#stage-separation)
-- [Logical capability boundary](./architecture-and-api-boundaries.md#logical-capability-boundary)
+- [Capability boundary](./architecture-and-api-boundaries.md#capability-boundary)
 - [Gate B](./dependency-and-release-gates.md#gate-b--real-journey-authority)
 - [Requirements](./requirements-and-risk-traceability.md#requirement-catalogue)
-- [Stage B command negatives](./verification-evidence-and-uat.md#runner-unavailable-boundary)
+- [Stage B blocked-result verification](./verification-evidence-and-uat.md#blocked-fitness-result-v2-verification)
 
 ## Requirements
 

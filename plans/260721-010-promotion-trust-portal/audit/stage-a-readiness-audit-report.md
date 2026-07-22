@@ -1,27 +1,34 @@
 ---
-title: "Issue #10 Stage A post-binding release-readiness audit"
+title: "Historical Issue #10 Stage A post-binding release-readiness audit — invalidated"
 auditDate: "2026-07-22"
 inputSha: "d79bcd0c3894c2b8477f1188faadc08f77480087"
 integrationReleaseSha: "5644f01b4c0443a81f3af0bcce80f44c847cd986"
 integrationTreeSha: "a38594d420fe7df2b30265a8a72bb5fad1698012"
 bindingSha256: "03d2aa6bd9fa178e6075865364a8ae8b83ce548c42b450d1858b451b45d0d1d0"
-verdict: STAGE_A_READY
-cookScope: stage-a-static-portal
+verdict: INVALIDATED_BY_PR29_REVIEW
+cookScope: none
 stageB: blocked-on-issue9
 cloudAction: none
 ---
 
-# Issue #10 Stage A Post-Binding Release-Readiness Audit
+# Historical Issue #10 Stage A Post-Binding Release-Readiness Audit — Invalidated
+
+> Historical record: the independent review of failed PR #29 at comment `5050218543` invalidated
+> this readiness conclusion with three Medium findings. The fresh recovery authorization is Issue
+> #10 comment `5050239390`. The v3 correction is normative in
+> [the recovery amendment](../stage-a-release-amendment.md) and
+> [post-review correction report](./stage-a-v3-post-review-correction-report.md). Nothing below
+> authorizes cook, evidence reuse, or a readiness claim.
 
 ## Verdict
 
-`STAGE_A_READY` for one bounded static portal cook from final released integration
+Historical conclusion only: `STAGE_A_READY` for one bounded static portal cook from final released integration
 `5644f01b4c0443a81f3af0bcce80f44c847cd986`. The exact authority is 33 create-only tracked paths,
 18 command surfaces, and 85 consumed release paths. Stage B is `blocked-on-issue9`; its file,
 command, dependency, transport, action, evidence, reset, progress, and completion authorities are
 all `[]`.
 
-This is planning/cook readiness only. It does not claim that the portal was implemented, built,
+That conclusion is now invalid. It did not claim that the portal was implemented, built,
 run, reset, evidenced, completed, reviewed, approved, merged, or released. The product claim is a
 meaningful Vietnamese-first static Stage A portal slice, not the complete learning product.
 
@@ -163,7 +170,10 @@ the pinned Issue #8 release. Current Issue #9 plan/cook heads are not adapters. 
 synthetic success/evidence, browser-to-host/engine command, local-shell fallback, reset,
 verification, evidence, progress, or completion action is authorized. `STAGE_B=blocked-on-issue9`.
 
-## Fresh Implementation Worktree Decision
+## Historical Implementation Worktree Decision — Superseded
+
+The following v2 instruction is preserved only to explain the failed history. It is forbidden for
+v3 and has no current authority.
 
 Create a new `feature/issue-10-portal-stage-a-v2` branch/worktree directly from M after this output
 is published. Cherry-pick the ordered Issue #10 plan-only commits `ad87c3f`, `e2bba33`, `4a36bab`,
@@ -173,7 +183,9 @@ changed before RED. Preserve the old stopped worktree without reset, rewrite, de
 
 ## Validation and Publication Gates
 
-Prepublication validation passed:
+## Historical Prepublication Validation — Superseded
+
+At that original audit input, the recorded prepublication validation was:
 
 - CK 4.5.2 strict JSON: `valid: true`, zero issues, seven phase links resolved. CK JSON status is
   correctly `pending`, with seven pending phases and zero implementation progress.
@@ -200,10 +212,11 @@ Prepublication validation passed:
   34-path scope, and portal-local binding occur only as final-release ancestry or explicitly
   labelled historical/superseded facts.
 
-Publication still requires this focused plan-only commit, push, and fresh local/upstream/live
-equality before the Issue #10 comment and label transition; the issue handoff records those
-post-commit facts because a commit cannot embed its own SHA.
+Those counts and checks describe the invalidated v2 audit only. They are not the v3 correction
+results and cannot satisfy any current gate. The current results are recorded only in the v3
+post-review correction report and its eventual Issue #10 handoff because a commit cannot embed
+its own SHA.
 
-On PASS, remove `ready for plan audit` and add `ready to cook` for Stage A only. Issue #10 remains
-open and Stage B explicitly blocked. Any failed publication gate changes the verdict to BLOCKED
-and preserves the current labels.
+Current disposition: this historical audit cannot drive a label or cook transition. The v3
+correction must receive a fresh independent validation and separate fresh readiness audit. Issue
+#10 moves only to `ready for plan validation`; Stage B remains blocked.

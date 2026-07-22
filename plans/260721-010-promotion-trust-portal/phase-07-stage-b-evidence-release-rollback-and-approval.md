@@ -23,8 +23,8 @@ pre-merge approval. No PR/merge is implied by this plan.
 ## Context Links
 
 - [Stage A commands and Stage B negatives](./verification-evidence-and-uat.md#exact-stage-a-command-contract)
-- [Visual/UAT contract](./verification-evidence-and-uat.md#deterministic-visual-review)
-- [Exact-head release gate](./verification-evidence-and-uat.md#exact-head-release-gate)
+- [Visual/UAT and trace contract](./verification-evidence-and-uat.md#chromium-journey-and-trace)
+- [Exact-head gate](./verification-evidence-and-uat.md#exact-head-gate)
 - [Threat retention/rollback](./threat-model-and-security.md#retention-cleanup-and-rollback)
 - [Hard STOP conditions](./requirements-and-risk-traceability.md#hard-stop-conditions)
 

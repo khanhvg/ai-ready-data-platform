@@ -9,9 +9,9 @@ effort: "L"
 
 # Phase 5: Stage B runner release and BFF gate
 
-> Blocked: Issue #9 plan head `308c736f8811ac9aeaf41ad5b27dea07d2e60b2e` and cook head
-> `9eb31075aeb0e7b974ad15645460ab4987570f20` are non-release provenance. Stage B path, command,
-> dependency, transport, execution, evidence, reset, and completion authorities are all `[]`.
+> Blocked: Issue #9 is OPEN and unreleased at this correction. Every Issue #9 plan/cook candidate
+> is non-release provenance. Stage B path, command, dependency, transport, execution, evidence,
+> reset, progress, and completion authorities are all `[]`.
 
 ## Overview
 
@@ -23,9 +23,9 @@ This phase is hard-blocked today and never edits runner/shared-contract source.
 
 - [Gate B](./dependency-and-release-gates.md#gate-b--real-journey-authority)
 - [Stage separation](./architecture-and-api-boundaries.md#stage-separation)
-- [Logical capability boundary](./architecture-and-api-boundaries.md#logical-capability-boundary)
+- [Capability boundary](./architecture-and-api-boundaries.md#capability-boundary)
 - [S3 matrix](./threat-model-and-security.md#stride-and-negative-test-matrix)
-- [Runner-unavailable boundary](./verification-evidence-and-uat.md#runner-unavailable-boundary)
+- [Blocked result verification](./verification-evidence-and-uat.md#blocked-fitness-result-v2-verification)
 
 ## Requirements
 

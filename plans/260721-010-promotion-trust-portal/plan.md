@@ -1,11 +1,11 @@
 ---
 title: "I5-05 — Promotion-trust portal vertical slice"
-description: "Cook the exact-release Stage A Vite/React learning portal shell while keeping the runner-backed Stage B blocked."
+description: "Recover Stage A with scaffold-first TDD, one released descriptor registry, and closed current-generation evidence while Stage B remains blocked."
 status: pending
 priority: P1
 issue: 10
 branch: "plan/issue-10-promotion-portal"
-tags: [feature, frontend, backend, api, critical]
+tags: [feature, frontend, security, tdd, critical]
 blockedBy: []
 blocks: []
 created: "2026-07-21T16:49:00.989Z"
@@ -13,67 +13,76 @@ createdBy: "ck:plan"
 source: skill
 mode: fast-tdd-no-tasks
 integrationBaseSha: "5644f01b4c0443a81f3af0bcce80f44c847cd986"
-validationInputSha: "d79bcd0c3894c2b8477f1188faadc08f77480087"
-planningValidation: post-binding-stage-a-readiness-pass
-readinessAuditInputSha: "d79bcd0c3894c2b8477f1188faadc08f77480087"
-readinessVerdict: stage-a-ready
-cookScope: stage-a-static-portal
+correctionInputSha: "2f278eb25aaff9e050314b01d1be155b76793f11"
+planningValidation: v3-correction-pending-independent-validation
+readinessVerdict: invalidated-by-pr29-review
+cookScope: none
 dependencyIssue7: RELEASED_PR22_MERGE_1806B6D
 dependencyIssue8: RELEASED_FINAL_INTEGRATION_5644F01
 dependencyIssue9: BLOCKED_UNRELEASED
-stageAStatus: ready-from-integration-5644f01b4c0443a81f3af0bcce80f44c847cd986
-stageBStatus: blocked-on-issue-9-released-runner-sha
+stageAStatus: ready-for-fresh-independent-plan-validation-only
+stageBStatus: blocked-on-issue-9
 ---
 
 # I5-05 — Promotion-trust portal vertical slice
 
 ## Overview
 
-Deliver Stage A as a local, 16 GiB-friendly Vite + React static portal process from pristine
-released integration `5644f01b4c0443a81f3af0bcce80f44c847cd986`. The released #7 toolchain and
-#8 validators, registry, lesson, lab, OpenAPI, progress/completion/evidence, promotion manifest,
-and shared Vite binding are now exact authorities. Stage A has no BFF or API: it renders a
-Vietnamese-first catalog/module/lesson/step shell, one promotion-trust vertical slice,
-read-only navigation, a real no-JavaScript equivalent, and explicit runner-unavailable behavior.
-It is explicitly a static Stage A slice, not the complete learning product.
+Recover Stage A from exact released integration
+`5644f01b4c0443a81f3af0bcce80f44c847cd986` after the independent review of failed PR #29 found
+three Medium blockers: incomplete contemporaneous RED provenance, duplicated/invented content
+authority, and an invalid retained-evidence publication with no required Chromium trace.
 
-Stage A may be cooked only within the exact file/command/dependency allowlists in
-[the release amendment](./stage-a-release-amendment.md). It cannot claim execution, reset, fresh
-evidence, progress, or completion. Stage B alone may later integrate a released Issue #9 runner,
-execute the controlled failure → `insufficient-evidence / no-common-grain` decision → reset →
-fresh verify sequence, and use the single Issue #8 completion authority. Stage B remains blocked
-and has empty authority.
+The correction preserves the exact final boundary: 33 create-only product/test paths, 18 command
+shapes, and 85 released read-only inputs. It changes chronology and proof, not product scope.
+Stage A remains a meaningful Vietnamese-first catalog → module → lesson → step static portal
+slice with the released promotion-trust lesson and
+`insufficient-evidence/no-common-grain`; runner, progress, completion, fresh learner evidence,
+and the full product remain unavailable. Stage B remains blocked on Issue #9.
+
+This output is a plan correction only. It is not independently validated, readiness-audited, or
+cook authority.
+
+## Review Findings and Corrections
+
+| Finding | Root correction |
+|---|---|
+| RED chronology was incomplete | One semantics-free callable scaffold commit, one complete tests-only commit, contemporaneous raw/sanitized RED through real unit/build/Make/Chromium paths, then semantic commits; commit/tree/log bindings are mandatory |
+| Content authority was duplicated/invented | One validated released descriptor registry drives production catalog, app, router, static routes, and React routes; test-only structural descriptors are non-authoritative pure-function inputs and production-rejected |
+| Evidence was stale and trace-free | One atomic current generation per tested head, complete non-self hash closure, all entries verified, one real Chromium trace with sources excluded, and stale generations classified as negative history |
+
+The normative details are in the
+[Stage A v3 recovery amendment](./stage-a-release-amendment.md) and
+[post-review correction report](./audit/stage-a-v3-post-review-correction-report.md).
 
 ## Phases
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 1 | [Stage A exact dependency and contract gate](./phase-01-stage-a-exact-dependency-and-contract-gate.md) | Pending |
-| 2 | [Stage A tests-first portal foundations](./phase-02-stage-a-tests-first-portal-foundations.md) | Pending |
-| 3 | [Stage A static lesson shell and navigation](./phase-03-stage-a-static-lesson-shell-and-navigation.md) | Pending |
-| 4 | [Stage A bounded verification and handoff](./phase-04-stage-a-bounded-verification-and-handoff.md) | Pending |
+| 1 | [Stage A exact dependency and callable scaffold gate](./phase-01-stage-a-exact-dependency-and-contract-gate.md) | Pending |
+| 2 | [Stage A complete tests and contemporaneous RED](./phase-02-stage-a-tests-first-portal-foundations.md) | Pending |
+| 3 | [Stage A released-registry semantics and portal slice](./phase-03-stage-a-static-lesson-shell-and-navigation.md) | Pending |
+| 4 | [Stage A closed evidence and exact-head handoff](./phase-04-stage-a-bounded-verification-and-handoff.md) | Pending |
 | 5 | [Stage B runner release and BFF gate](./phase-05-stage-b-runner-release-and-bff-gate.md) | Blocked on Issue #9 |
 | 6 | [Stage B real journey and completion integration](./phase-06-stage-b-real-journey-and-completion-integration.md) | Blocked on Issue #9 |
 | 7 | [Stage B evidence release rollback and approval](./phase-07-stage-b-evidence-release-rollback-and-approval.md) | Blocked on Issue #9 |
 
-## Dependencies
+## Dependencies and Recovery Input
 
-- Same-scope `blockedBy` is empty. Exact external release authorities are normative in
-  [Dependency and Release Gates](./dependency-and-release-gates.md) and the
-  [Stage A release amendment](./stage-a-release-amendment.md).
-- **Stage A:** released Issue #7 PR #22 merge
-  `1806b6d515f2f7a2ace2be7077af84a745ff221f`, approved feature head
-  `b219ba2d3843934c3bce2fbbec2a844b48b2dfa9`, released Issue #8 Stage A PR #23 merge
-  `5c2244c2c860234d0df49cf0a42ad950c6495717`, final Issue #8 Stage B v2 head
-  `12e17427076fb31de85534bfbbbedca7e901e76c`, and pristine final integration
-  `5644f01b4c0443a81f3af0bcce80f44c847cd986`. Consume shared binding
-  `learning/bindings/vite/promotion-trust-v1.json` exactly; Stage A has no Issue #9 runner
-  dependency and cannot claim execution or completion.
-- **Stage B:** passing Stage A plus exact released Issue #9 runner API, registry, client/transport,
-  idempotency, problem, and evidence handoff SHA.
-- Issue #6 data/fixture truth at input `24be3b34c6b0fcdbd07c5800dcab349054e34713`
-  remains read-only. Root `release-manifest.json`, shared contracts, runner source, root Makefile,
-  and other issue/worktree files remain outside I5-05 ownership.
+- Stage A consumes only the released Issue #7/#8 ancestry and exact final integration enumerated
+  in [Dependency and Release Gates](./dependency-and-release-gates.md).
+- Failed PR #29, branch `feature/issue-10-portal-stage-a-v2`, its commits, and its retained evidence
+  are immutable negative history. They are not a source, fixture, replay target, or evidence
+  authority for v3.
+- After this correction receives a fresh independent validation and a separate fresh readiness
+  audit, recovery creates `feature/issue-10-portal-stage-a-v3` in a new worktree directly from
+  exact integration. Before the scaffold commit, that branch may contain only this v3 correction
+  output plus its ensuing fresh independent validation and readiness plan commits, each with a
+  plan-directory-only diff.
+- No v2 product, test, log, trace, manifest, evidence, or generated byte may be cherry-picked,
+  copied, regenerated from a v2 artifact, or used as an oracle.
+- Issue #9 is live but unreleased. Stage B file, command, dependency, transport, execution,
+  evidence, reset, progress, and completion authorities remain `[]`.
 
 ## Companion Contracts
 
@@ -82,141 +91,73 @@ and has empty authority.
 - [Architecture and API Boundaries](./architecture-and-api-boundaries.md)
 - [Threat Model and Security](./threat-model-and-security.md)
 - [Verification, Evidence, and UAT](./verification-evidence-and-uat.md)
-- [Stage A Exact-Release Amendment](./stage-a-release-amendment.md)
-- [Stage A Readiness Audit](./audit/stage-a-readiness-audit-report.md)
+- [Stage A v3 Recovery Amendment](./stage-a-release-amendment.md)
+- [Historical Stage A Readiness Audit](./audit/stage-a-readiness-audit-report.md)
+- [V3 Post-Review Correction Report](./audit/stage-a-v3-post-review-correction-report.md)
 
-## Stage Claims
+## Exact Stage Claims
 
 | Stage | Earliest honest claim | Prohibited claim |
 |---|---|---|
-| A | Static lesson is understandable and accessible with runner absent | Lab ran, reset occurred, evidence is fresh, lesson completed |
-| B | Real local journey completed against pinned released dependencies | Hosted, cloud, cross-user, signed/non-repudiable, or full WCAG conformance |
+| A | Static lesson is understandable, navigable, accessible, and truthful with runner absent | Lab ran, reset occurred, evidence is fresh, progress persisted, lesson completed, or full product exists |
+| B | None until exact released Issue #9 authority and later amendment | Any runner, execution, reset, evidence, progress, completion, container, or cloud claim |
 
-## Ownership
+## Stage A Invariants
 
-The maximum Issue #10 ownership ceiling is `apps/learning-portal/**`, portal tests within that
-tree, `mk/issue-5/i5-05.mk`, and Issue #10 plan/evidence artifacts. Stage A present cook authority
-is narrower: exactly 33 new tracked files, 18 admitted command surfaces, and 85 consumed release
-identities enumerated in the amendment. It has no modifies or deletes. Stage B file, command, and
-dependency SHA allow-lists remain `[]`. Any shared-contract, runner, root Make,
-architecture-view, fixture, data-pipeline, cloud, AWS, Terraform, or unrelated-path change is a
-hard STOP.
+1. Final product scope is exactly 33 creates, zero released modifies, and zero deletes.
+2. The 18 command shapes and 85 released-input rows remain byte-exact.
+3. The first product commit contains only the exact 22 callable, semantics-free scaffold paths.
+4. The next commit contains all eight final tests; valid controls and one-field mutations use
+   released inputs or private run-owned temporary bytes, never a fallback fixture.
+5. RED is produced immediately at that tests-only head through the callable scaffold. Missing
+   imports, expected echoes, unconditional failures, mocks, skips, predicate-only tests, and
+   retrospective reconstruction are invalid.
+6. Production has one hash-bound released descriptor registry. There is no `defaultCatalog`,
+   `STEP_IDS`, duplicate route table, promotion switch, or test descriptor admitted as release
+   authority.
+7. The final tested head has one current evidence generation with all hashes valid, one
+   sources-excluded Chromium trace, exact closure and privacy scans, and atomic publication.
+8. The seven defensive requirements remain mandatory: authenticated child self-shutdown without
+   mutable PID authority; schema-valid blocked `fitness-result-v2`; closed build inventory and
+   request policy; exact runtime/lock/environment admission; generic seam; bounded artifacts; and
+   complete defensive RED/S3 coverage.
 
-`README.md`, `docs/**`, dependency worktrees, and release metadata owned outside Issue #10 are not
-future I5-05 write authority. Any user-facing documentation or release-note change discovered at
-implementation review must be handed to its owner through a separately authorized serialized
-change; it cannot broaden the portal cook allow-list.
+## Ownership and Non-Overlap
 
-## Plan Exit
+Issue #10 may create only the 33 paths in the amendment. Root Make, released contracts and data,
+Issue #9 runner, Issue #11 curriculum, Issue #12 labs, Issue #13 profiles, README/docs, CI,
+containers, cloud, AWS, and Terraform remain denied. Root Make already owns the sorted
+`mk/issue-5/*.mk` include seam; Stage A creates only `mk/issue-5/i5-05.mk`.
 
-The Session 1 validation, blocked readiness, and pre-binding Session 2 readiness report remain
-immutable historical snapshots. This post-binding amendment/readiness pass at exact clean input
-`d79bcd0c3894c2b8477f1188faadc08f77480087` supersedes their cook-base, binding, and scope-count
-conclusions. Stage A may proceed from pristine released integration
-`5644f01b4c0443a81f3af0bcce80f44c847cd986` within its closed allowlists. Stage B remains blocked
-on Issue #9 and has no cook authority. Stage A still requires two fresh independent exact-head
-implementation reviews and human exact-head approval before a human merge; planning readiness is
-not implementation, execution, evidence, completion, or merge approval.
+## Validation State
 
-## Validation Log
+Historical validation and readiness records remain attributable to their original inputs. The
+Stage A readiness conclusion at `2f278eb25aaff9e050314b01d1be155b76793f11` was invalidated by
+the failed PR #29 review and cannot authorize v3.
 
-### Session 1 — 2026-07-22 (historical; dependency conclusion superseded)
+### Session 4 — Stage A v3 post-review correction
 
-**Trigger:** Fresh independent Issue #10 plan validation at exact input
-`ad87c3f6090129dd30cfb626c6f396567f567a42`.
-
-**Questions asked:** 0. The owner supplied ten exact validation decisions in the invocation; no
-unresolved product choice remained and repeating them as an interview would add no information.
-
-#### Confirmed Decisions
-
-- Stage A is runner-independent, static/read-only, explicitly unavailable, and non-completing.
-- Stage B alone may consume released #9 and claim the real controlled-failure → four-grain
-  decision → reset → verified-evidence journey.
-- #8 is the sole completion/evidence authority; #9 is private and server-only.
-- At the Session 1 input, both stage file/command/dependency SHA allow-lists were empty pending
-  released dependencies. Session 2 now supplies Stage A authority; Stage B remains empty.
-- The practical TDD, Chromium desktop+narrow, axe Critical/Serious, no-JS, recovery, S3,
-  evidence-integrity, cleanup, residual UAT, independent-review, and human exact-head gates remain.
-
-#### Verification Results
-
-- **Tier:** Full (7 phases; Fact Checker, Flow Tracer, Scope Auditor, Contract Verifier)
-- **Claims checked:** 105
-- **Verified:** 105 | **Failed:** 0 | **Unverified:** 0
-- **Corrections applied:** empty staged authorities; stale dependency state; deferred #7/#8/#9
-  routes/modules/viewports/result schema; explicit #8 CAS/version/reconciliation and #9 private
-  crash/retry/reset/error/unavailable semantics.
-
-#### Impact on Phases
-
-- At Session 1, Phases 1–4 were Stage A design only and Phases 5–7 were Stage B design only.
-  Session 2 supersedes this only for Stage A; Phases 5–7 remain blocked.
+- Exact correction input: `2f278eb25aaff9e050314b01d1be155b76793f11`.
+- Review findings addressed: 3/3 at plan level.
+- Scope retained: 33/33 paths, 18/18 commands, 85/85 released inputs.
+- Product paths absent from v3 base: 33/33.
+- Stage B: blocked on Issue #9.
+- Required next gates: fresh independent plan validation, then fresh independent readiness audit.
+- Cook authority: none.
 
 ### Whole-Plan Consistency Sweep
 
-- Files reread: `plan.md`, seven phase files, and five companion contracts.
-- Decision deltas checked: 8.
-- Reconciled stale references: 13 plan files.
-- Unresolved contradictions: 0.
+- Decision deltas: v3 branch/recovery, scaffold-first chronology, released-registry authority,
+  authenticated self-shutdown, blocked result schema, and current-generation trace/evidence
+  closure.
+- Files in scope: `plan.md`, all seven phase files, six current companion contracts, the
+  historical readiness banner, and the v3 correction report.
+- Unresolved contradictions permitted before publication: zero.
 
-### Session 2 — 2026-07-22 Stage A release amendment (historical; binding-invalidated)
+## Plan Exit
 
-**Trigger:** Fresh dependency-release amendment and readiness audit from exact clean plan head
-`4a36bab4f8a8c9f393060cf7337b2e5ca45cd9b7`, using remote Git objects and live GitHub records.
-
-#### Released authority
-
-- Issue #7 PR #22 is merged at `1806b6d515f2f7a2ace2be7077af84a745ff221f`; its approved feature
-  head is `b219ba2d3843934c3bce2fbbec2a844b48b2dfa9`.
-- Issue #8 Stage A PR #23 is merged at `5c2244c2c860234d0df49cf0a42ad950c6495717`.
-- Composition PR #25 yielded released Stage A integration
-  `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`; it is now the embedded Stage A source/first parent,
-  not the cook base.
-- Issue #9 remains unreleased. Stage B stays blocked with empty file, command, and dependency
-  lists.
-
-#### Stage A disposition
-
-- Exact dependency bytes, protected identities, toolchain, historical 34-file write allowlist, command
-  allowlist, requirements, scenarios, RED catalogue, S3 controls, cleanup, rollback, and review
-  gates are closed in the amendment.
-- The useful slice is a Vietnamese-first reusable catalog/module/lesson/step shell with the
-  promotion-trust lesson as one vertical slice, no-JavaScript equivalence, and explicit runner
-  unavailability. It has no BFF/API, mutation, storage, runner, execution, reset, evidence, or
-  completion authority.
-- Strict CK validation, link/anchor, placeholder/future-SHA, dependency identity, path/command,
-  requirement/scenario/RED/S3, diff-hygiene, and whole-plan results are recorded in the current
-  readiness audit.
-
-### Session 3 — 2026-07-22 final Issue #8 binding release
-
-**Trigger:** Issue #8 CLOSED/`shipped` handoff comment `5047964988` at exact clean Issue #10 input
-`d79bcd0c3894c2b8477f1188faadc08f77480087`.
-
-#### Released authority and bounded scope delta
-
-- Final integration is `5644f01b4c0443a81f3af0bcce80f44c847cd986`, parents
-  `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` and
-  `12e17427076fb31de85534bfbbbedca7e901e76c`, tree
-  `a38594d420fe7df2b30265a8a72bb5fad1698012`.
-- Shared binding is `promotion-trust-vite-binding-v1`, SHA-256
-  `03d2aa6bd9fa178e6075865364a8ae8b83ce548c42b450d1858b451b45d0d1d0`; schema SHA-256 is
-  `74035baee08b378e46421466333d6933d1bad820337acd1b80a633d236173a43`; Stage A contract-set
-  SHA-256 remains `92aaf9a573f5d23b5bf5d8d7db1e68150d4b0944f0e6ab6e651b1a3d34408638`.
-- Consumed release closure is 85 paths. Portal-local `release-binding.stage-a.json` is removed
-  from authority, leaving exactly 33 create-only paths; the 18-command allowlist is unchanged.
-- Exact public documents are `/`, `/module`, `/lesson/promotion-trust`, and the ten released step
-  routes. `/module` is presentation-only and carries no invented module identifier.
-- Every route exposes the exact machine-readable static-slice/non-claim attributes and visible
-  Vietnamese-first not-full-product copy.
-
-#### Worktree and stage decision
-
-- The stopped clean pre-binding worktree at
-  `feature/issue-10-portal-stage-a`/`515bd919da243dd9f30395d3deef02f7819cd0a1` is preserved and
-  not reused.
-- Cook uses a new v2 branch/worktree from the final integration plus the four named plan-only
-  commits followed by the published readiness commit identified in the Issue #10 handoff.
-- Issue #9 remains open and unreleased. Stage B file/command/dependency authorities are `[]` and
-  every runner-backed action/evidence/reset/completion path remains blocked.
+Publish this correction only after CK 4.5.2 strict validation/status, links/anchors, scope,
+command, RED, evidence, trace, protected/private-path/secret/diff, and local/upstream/live checks
+pass. Then move Issue #10 from `ready for review` to `ready for plan validation` and request a
+fresh independent validation. Do not claim readiness, cook authority, review approval, merge, or
+release.
