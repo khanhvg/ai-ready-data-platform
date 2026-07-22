@@ -31,13 +31,15 @@ class Store:
           run_id TEXT PRIMARY KEY, idempotency_key TEXT UNIQUE NOT NULL, request_sha256 TEXT NOT NULL,
           operation_id TEXT NOT NULL, requested_revision INTEGER NOT NULL, fence INTEGER NOT NULL,
           status TEXT NOT NULL, container_id TEXT, image_digest TEXT, result_json TEXT,
-          created_ns INTEGER NOT NULL, updated_ns INTEGER NOT NULL);
+          created_ns INTEGER NOT NULL, updated_ns INTEGER NOT NULL, daemon_identity TEXT);
         CREATE TABLE IF NOT EXISTS audit(
           sequence INTEGER PRIMARY KEY, previous_sha256 TEXT NOT NULL, payload BLOB NOT NULL,
           entry_sha256 TEXT UNIQUE NOT NULL);
         CREATE TRIGGER IF NOT EXISTS audit_no_update BEFORE UPDATE ON audit BEGIN SELECT RAISE(ABORT,'AUDIT_IMMUTABLE'); END;
         CREATE TRIGGER IF NOT EXISTS audit_no_delete BEFORE DELETE ON audit BEGIN SELECT RAISE(ABORT,'AUDIT_IMMUTABLE'); END;
         """)
+        if "daemon_identity" not in {row[1] for row in self.db.execute("PRAGMA table_info(runs)")}:
+            self.db.execute("ALTER TABLE runs ADD COLUMN daemon_identity TEXT")
         os.chmod(self.path, 0o600)
         if self.db.execute("SELECT COUNT(*) FROM audit").fetchone()[0]==0:
             self.db.execute("BEGIN IMMEDIATE")
@@ -76,20 +78,21 @@ class Store:
             ws=self.db.execute("SELECT revision FROM workspaces WHERE id='promotion-trust'").fetchone()
             if ws[0] != request["workspaceRevision"]: raise StateError("RUNNER_CONFLICT")
             run_id=hashlib.sha256(f"{key}:{digest}:{fence}".encode()).hexdigest()[:32]
-            self.db.execute("INSERT INTO runs VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",(run_id,key,digest,request["operationId"],request["workspaceRevision"],fence,"admitted",None,None,None,now,now))
+            self.db.execute("INSERT INTO runs(run_id,idempotency_key,request_sha256,operation_id,requested_revision,fence,status,container_id,image_digest,result_json,created_ns,updated_ns,daemon_identity) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",(run_id,key,digest,request["operationId"],request["workspaceRevision"],fence,"admitted",None,None,None,now,now,None))
             self._append({"kind":"admitted","runId":run_id,"operationId":request["operationId"],"fence":fence})
             self.db.execute("COMMIT"); return Admission(run_id,fence,None)
         except Exception:
             self.db.execute("ROLLBACK"); raise
 
-    def transition(self, run_id: str, fence: int, status: str, *, container_id: str|None=None, image_digest: str|None=None) -> None:
+    def transition(self, run_id: str, fence: int, status: str, *, container_id: str|None=None, image_digest: str|None=None, daemon_identity:str|None=None) -> None:
         self.verify_audit()
         now=time.time_ns()
         self.db.execute("BEGIN IMMEDIATE")
         try:
             row=self.db.execute("SELECT status FROM runs WHERE run_id=? AND fence=?",(run_id,fence)).fetchone()
             allowed={
-                "admitted":{"created","failed"},
+                "admitted":{"creating","failed"},
+                "creating":{"created","failed"},
                 "created":{"started-awaiting-input","removed","failed"},
                 "started-awaiting-input":{"executing","removed","failed"},
                 "executing":{"removed","failed"},
@@ -97,7 +100,7 @@ class Store:
             }
             if not row: raise StateError("RUNNER_STALE_IDENTITY")
             if status not in allowed.get(str(row[0]),set()): raise StateError("RUNNER_ILLEGAL_TRANSITION")
-            cur=self.db.execute("UPDATE runs SET status=?,container_id=COALESCE(?,container_id),image_digest=COALESCE(?,image_digest),updated_ns=? WHERE run_id=? AND fence=?",(status,container_id,image_digest,now,run_id,fence))
+            cur=self.db.execute("UPDATE runs SET status=?,container_id=COALESCE(?,container_id),image_digest=COALESCE(?,image_digest),daemon_identity=COALESCE(?,daemon_identity),updated_ns=? WHERE run_id=? AND fence=?",(status,container_id,image_digest,daemon_identity,now,run_id,fence))
             if cur.rowcount != 1: raise StateError("RUNNER_STALE_IDENTITY")
             self._append({"kind":"transition","runId":run_id,"status":status,"fence":fence})
             self.db.execute("COMMIT")
@@ -128,5 +131,11 @@ class Store:
     def current_revision(self) -> int:
         return int(self.db.execute("SELECT revision FROM workspaces WHERE id='promotion-trust'").fetchone()[0])
 
-    def incomplete(self) -> list[tuple[str,str,str|None,str|None,int]]:
-        return list(self.db.execute("SELECT run_id,status,container_id,image_digest,fence FROM runs WHERE status NOT IN ('committed','failed')"))
+    def fail_if_safe(self,run_id:str,fence:int)->bool:
+        row=self.db.execute("SELECT status FROM runs WHERE run_id=? AND fence=?",(run_id,fence)).fetchone()
+        if not row:raise StateError("RUNNER_STALE_IDENTITY")
+        if row[0] not in ("admitted","removed"):return False
+        self.transition(run_id,fence,"failed");return True
+
+    def incomplete(self) -> list[tuple[str,str,str|None,str|None,int,str|None]]:
+        return list(self.db.execute("SELECT run_id,status,container_id,image_digest,fence,daemon_identity FROM runs WHERE status NOT IN ('committed','failed')"))

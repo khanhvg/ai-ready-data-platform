@@ -53,8 +53,8 @@
     {
       "path": "app/src/lab_runner/container_backend.py",
       "mode": "0644",
-      "size": 9190,
-      "sha256": "1d56397ee70fd9b30413f00e3688045eac4d65556b1448618d4ca776ed805dd8"
+      "size": 10732,
+      "sha256": "d8d38ac69b83c3559f7ecb50208b6ccfa34891bda70387ba3931eac277dbd563"
     },
     {
       "path": "app/src/lab_runner/container_protocol.py",
@@ -77,8 +77,8 @@
     {
       "path": "app/src/lab_runner/engine.py",
       "mode": "0644",
-      "size": 3784,
-      "sha256": "7557065b35f9e47ad8f2df6ecc27df5e5dafef563511723bb9b2750cdde6a789"
+      "size": 3808,
+      "sha256": "3c4a1babed4f455e3693dc1faea8721470c289c6bb047d16b9e6349635434fb1"
     },
     {
       "path": "app/src/lab_runner/evidence.py",
@@ -95,8 +95,8 @@
     {
       "path": "app/src/lab_runner/operation_adapters.py",
       "mode": "0644",
-      "size": 7665,
-      "sha256": "876d9a060e76accde4851988bb2ad4a8ebcf565c4c3f279481f6feec39e692b2"
+      "size": 8823,
+      "sha256": "52dd1bf197ab085783cecab0e550cffa2f4b269784baeab29c58c86753bccc49"
     },
     {
       "path": "app/src/lab_runner/registry.py",
@@ -113,14 +113,14 @@
     {
       "path": "app/src/lab_runner/service.py",
       "mode": "0644",
-      "size": 3780,
-      "sha256": "068d7f19ef2a99f6398ed01150dadbbcfe1b5836981b3667f3ba81f6e91eabe6"
+      "size": 3805,
+      "sha256": "d82e9f466a4c3ea1818da10a61b8b70383c24d091bc093aeda093261f4896a46"
     },
     {
       "path": "app/src/lab_runner/state.py",
       "mode": "0644",
-      "size": 7824,
-      "sha256": "9ef4db0150ae00c91d73514d6c702f60bcdb7abee62aada2926c7aa8b9c01a04"
+      "size": 8704,
+      "sha256": "7b9d6f169e1726e3c43489cb609742c9b450bd8487a0acc5cea0b734ec0d925e"
     },
     {
       "path": "app/src/lab_runner/transport.py",
@@ -131,8 +131,8 @@
     {
       "path": "app/src/lab_runner/workspace.py",
       "mode": "0644",
-      "size": 3602,
-      "sha256": "594890a52f4bbd6abb307fe42146efe2f2bdbe84eb538ee683c8bf20c947107a"
+      "size": 4120,
+      "sha256": "536200a19ec7c4299d36e98b655213fcecefea669feda9de37f8281ab08bcc8e"
     },
     {
       "path": "app/tests/fixtures/archive_attacks.py",

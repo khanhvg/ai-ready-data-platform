@@ -3,27 +3,96 @@
   "cookInputSha": "f6791555dc8b2ada6fa44747ca829a3d9cd87667",
   "integrationReleaseSha": "5644f01b4c0443a81f3af0bcce80f44c847cd986",
   "releasedStageASha": "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9",
-  "imageDigest": "sha256:ff49b94738953c9a2354f3f60474c4710335902e74900675ccf4e5f0ab2dd652",
+  "imageDigest": "sha256:6fb0a3ffa8c6dcddb0aff6593bb665ed8b3fe7a23e69f9eb8f0d005b6cb6c106",
   "platform": "linux/arm64",
   "user": "65532:65532",
   "workdir": "/workspace",
-  "entrypoint": ["python3.12", "-I", "-m", "lab_runner.container_supervisor"],
-  "environmentNames": ["HOME", "LANG", "PATH", "PYTHONDONTWRITEBYTECODE", "PYTHONNOUSERSITE"],
+  "entrypoint": [
+    "python3.12",
+    "-I",
+    "-m",
+    "lab_runner.container_supervisor"
+  ],
+  "environmentNames": [
+    "HOME",
+    "LANG",
+    "PATH",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE"
+  ],
   "layerCount": 13,
   "sbom": {
     "format": "SPDX-2.3",
     "packages": 61,
-    "sha256": "5b29e9c5c61bc36eb49be57a3bcc94b6b2ad6e8c4ff77d602c7b197288cc151d"
+    "sha256": "6e8413f8db54ea8df9efd9f3c7ea74275f6756eab649aa449a663507b2c65ab6"
   },
   "vulnerability": {
     "scanner": "grype@0.116.0",
     "databaseSchema": "v6.1.9",
     "databaseBuilt": "2026-07-22T07:06:24Z",
-    "scanSha256": "88b75c200b521e8dc389350c148917535a1272a0170b9616668c69488683b7e5",
+    "scanSha256": "5a74fcb35aa0dd26a711bd0621cc1af719e399f5f14a2576a141e90785f05aec",
     "scannerCriticalHigh": 10,
     "openVexNotAffected": 10,
-    "openVexSha256": "315073fdd38fb87ead7c930ce293f8222f26f2835343e616b3e22faf784405bb",
+    "openVexSha256": "66fc757dbfa47237264fc5f7ff95f5d26f79d3bd63b58984457af34d968f47ca",
     "unresolvedCriticalHigh": 0
   },
-  "operations": ["workspace.prepare", "retail.generate", "retail.load", "retail.dbt-build", "retail.export", "promotion.configure", "promotion.verify", "workspace.reset"]
+  "operations": [
+    "workspace.prepare",
+    "retail.generate",
+    "retail.load",
+    "retail.dbt-build",
+    "retail.export",
+    "promotion.configure",
+    "promotion.verify",
+    "workspace.reset"
+  ],
+  "imageManifestDigest": "sha256:6fb0a3ffa8c6dcddb0aff6593bb665ed8b3fe7a23e69f9eb8f0d005b6cb6c106",
+  "imageConfigDigest": "sha256:4f9cf20e890480d119e1f19bef3709fcff6e44bea9dd070c2a98883c593316f9",
+  "seccompSha256": "ad19b56e07dd87ad4375c1ecbc600704767308520290e17bb00cf04fdce54fc5",
+  "assetResults": [
+    {
+      "assetId": "mart_daily_revenue",
+      "sha256": "abd083c6e7c3aa2aee1ef51f61ec200593d1389e6762073bf1e23377f0fc9748"
+    },
+    {
+      "assetId": "mart_top_products",
+      "sha256": "2c3713bf87437a4a65ce6ea0f71606e9bd7a164c9f61fb2ff5e8cf03d498b19a"
+    },
+    {
+      "assetId": "mart_customer_cohorts",
+      "sha256": "f22c506e467617ff2cfef41f9382e4ac6bf4dcdd10f076e880fc6a203cf14c8a"
+    },
+    {
+      "assetId": "mart_fulfillment_performance",
+      "sha256": "8436580fc071613e519495dd792d6920df57c308052a4e4afbcc7f2ccfcae460"
+    },
+    {
+      "assetId": "mart_returns_analysis",
+      "sha256": "05759aeba4e2646fc124ee0b84ebe9811223ba12159776799ec381b9d7637e0e"
+    },
+    {
+      "assetId": "mart_promotion_effectiveness",
+      "sha256": "6c94d683b278db0ea050ccc6c380cf101a7b2b42a0f8fd20afc21134310c1127"
+    },
+    {
+      "assetId": "mart_channel_geography",
+      "sha256": "106780f69bc44aed7ca603de8bd0fc48fe3e76e09880ca4e46162ddcb3063813"
+    },
+    {
+      "assetId": "mart_inventory_health",
+      "sha256": "c3d9f9531cc27ab549c549ef31d58128dd901e8c912089cdcef8e9710b04571b"
+    },
+    {
+      "assetId": "mart_web_funnel_conversion",
+      "sha256": "1f6a9ef8f8f48ce63effd17065dc3839d7f80c1d8d5eeb2643fca59f089d1131"
+    },
+    {
+      "assetId": "mart_supplier_purchasing",
+      "sha256": "3158ae9f925151e08fbb915cdf3e0dc92b1e95644a4c1356f0b68b2260a2840e"
+    },
+    {
+      "assetId": "mart_data_quality",
+      "sha256": "351fb7b4051bc7e1c28a7b3b426a86fc0367102c53ecaf39e82fa79255a90f0e"
+    }
+  ]
 }

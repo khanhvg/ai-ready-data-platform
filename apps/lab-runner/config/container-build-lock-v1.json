@@ -2,8 +2,8 @@
   "schemaVersion": "container-build-lock-v1",
   "platform": "linux/arm64",
   "baseManifestDigest": "sha256:55842c72c6b3584d06ec84c731fc516b30b8a53ad262ebd085e47ab568b3bfc1",
-  "contextManifestSha256": "f619c22d033eb134488952b7bb13c8bc55201ffafe82ea0cdfc22df3cb28341c",
-  "contextTarSha256": "62d82fe4e82f5d1dc021b465e2fe4aab860fe62bee5bf72ecebc3b858b41a6f5",
+  "contextManifestSha256": "3e48bb046398a242d3300fd1ed4e83e65ef0380dbc6e486988597336e56d9ca2",
+  "contextTarSha256": "2867ce4f0a3d21a200bb94e9533f3e7372663453880f968794a6517dfc3979d7",
   "wheelhouseManifestSha256": "6381419faa9d95f38f774eb0b6e61e65449b7bd829ebc514b6c73900301b2be3",
   "requirementsLockSha256": "f41c727b39f99106f95b7937b2811e8d27db89d1d5106e9f1d9effd4403143d2",
   "dockerClientVersion": "29.4.0",
@@ -12,7 +12,14 @@
   "buildNetwork": "none",
   "runtimePull": "never",
   "sourceDateEpoch": 0,
-  "imageDigest": "sha256:ff49b94738953c9a2354f3f60474c4710335902e74900675ccf4e5f0ab2dd652",
+  "imageDigest": "sha256:6fb0a3ffa8c6dcddb0aff6593bb665ed8b3fe7a23e69f9eb8f0d005b6cb6c106",
   "reproducibleBuilds": 2,
-  "reproducibleDigest": "sha256:ff49b94738953c9a2354f3f60474c4710335902e74900675ccf4e5f0ab2dd652"
+  "reproducibleDigest": "sha256:6fb0a3ffa8c6dcddb0aff6593bb665ed8b3fe7a23e69f9eb8f0d005b6cb6c106",
+  "imageManifestDigest": "sha256:6fb0a3ffa8c6dcddb0aff6593bb665ed8b3fe7a23e69f9eb8f0d005b6cb6c106",
+  "imageConfigDigest": "sha256:4f9cf20e890480d119e1f19bef3709fcff6e44bea9dd070c2a98883c593316f9",
+  "seccompSha256": "ad19b56e07dd87ad4375c1ecbc600704767308520290e17bb00cf04fdce54fc5",
+  "seccompBaseline": {
+    "source": "moby/profiles seccomp/v0.2.1",
+    "sha256": "536529b665dd0972c37bfb569f5d4ac8a53592e7b00752bc39ff063ca9864c74"
+  }
 }

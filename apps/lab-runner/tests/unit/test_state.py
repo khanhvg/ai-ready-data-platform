@@ -22,12 +22,22 @@ class RedPublicPathTest(unittest.TestCase):
             store = Store(pathlib.Path(temporary))
             request = {"operationId": "workspace.prepare", "idempotencyKey": "terminal-state-key", "workspaceRevision": 0}
             admitted = store.admit(request, 1)
+            store.transition(admitted.run_id, 1, "creating")
             store.transition(admitted.run_id, 1, "created")
             store.transition(admitted.run_id, 1, "removed")
             result = {"status": "pass"}
             store.commit(admitted.run_id, 1, result, 1)
             with self.assertRaisesRegex(StateError, "RUNNER_ILLEGAL_TRANSITION"):
                 store.transition(admitted.run_id, 1, "failed")
+
+    def test_ambiguous_external_identity_remains_reconcilable(self) -> None:
+        from lab_runner.state import Store
+
+        with tempfile.TemporaryDirectory() as temporary:
+            store=Store(pathlib.Path(temporary));request={"operationId":"workspace.prepare","idempotencyKey":"ambiguous-cleanup-key","workspaceRevision":0}
+            admitted=store.admit(request,1);store.transition(admitted.run_id,1,"creating",image_digest="sha256:"+"a"*64,daemon_identity="d"*64);store.transition(admitted.run_id,1,"created",container_id="c"*64)
+            self.assertFalse(store.fail_if_safe(admitted.run_id,1))
+            self.assertEqual(admitted.run_id,store.incomplete()[0][0])
 
     def test_named_behavior_is_not_yet_implemented(self) -> None:
         for case_id in ["RED-CRS-001"]:

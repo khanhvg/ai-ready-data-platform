@@ -20,6 +20,9 @@ class RedPublicPathTest(unittest.TestCase):
         from lab_runner.engine import EngineError
 
         class AmbiguousEngine:
+            def admit(self):
+                return {"ID":"d"*32}
+
             def inspect_optional(self, _container_id):
                 raise EngineError("RUNNER_ENGINE_OPERATION_FAILED")
 
@@ -34,7 +37,7 @@ class RedPublicPathTest(unittest.TestCase):
             store = RecordingStore()
             backend = Backend(AmbiguousEngine(), "sha256:" + "a" * 64, pathlib.Path(temporary) / "seccomp.json", pathlib.Path(temporary) / "stage", store)
             with self.assertRaisesRegex(EngineError, "RUNNER_ENGINE_OPERATION_FAILED"):
-                backend._teardown("container-id", "r" * 32, 7)
+                backend._teardown("container-id", "r" * 32, 7, __import__("hashlib").sha256(("d"*32).encode()).hexdigest())
             self.assertEqual([], store.transitions)
 
     def test_named_behavior_is_not_yet_implemented(self) -> None:

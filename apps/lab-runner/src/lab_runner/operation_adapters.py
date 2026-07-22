@@ -81,12 +81,24 @@ def retail_export() -> dict[str,object]:
     counts=module.export_marts(STATE/"warehouse/retail.duckdb",STATE/"serving/export")
     assets=validate_release(STATE)
     if list(counts)!=[row["assetId"] for row in assets]: raise RuntimeError("RUNNER_EXPORT_ORDER_INVALID")
-    return {"assets":assets,"rowCounts":counts}
+    golden_module=_load("runner_golden_worker",PROJECT/"scripts/golden/golden_worker.py")
+    golden=json.loads((PROJECT/"contracts/data/retail-golden-v1.json").read_text());semantic=[]
+    import duckdb
+    connection=duckdb.connect(str(STATE/"warehouse/retail.duckdb"),read_only=True)
+    try:
+        for expected in golden["marts"]:
+            mart=expected["martId"];cursor=connection.execute("select * from query_table(?) order by all",[f"main_marts.{mart}"]);rows=cursor.fetchall();columns=[entry[0] for entry in cursor.description]
+            digest=hashlib.sha256(golden_module.mart_csv(columns,rows)).hexdigest()
+            if (len(rows),digest)!=(expected["rowCount"],expected["contentSha256"]):raise RuntimeError("RUNNER_EXPORT_GOLDEN_MISMATCH")
+            semantic.append({"assetId":mart,"rowCount":len(rows),"contentSha256":digest})
+    finally:connection.close()
+    return {"assets":assets,"rowCounts":counts,"semanticAssets":semantic}
 
 
 def promotion_configure() -> dict[str,object]:
     _base(); config={"schemaVersion":"promotion-runner-config-v1","controlledFailure":"headline-revenue-overweighted","expectedEvidence":["METRIC_REFUND_NOT_ACCOUNTED"]}
     (STATE/"promotion-config.json").write_text(json.dumps(config,sort_keys=True,separators=(",",":"))+"\n")
+    (STATE/"progress.json").write_text(json.dumps({"schemaVersion":"runner-progress-v1","state":"running"},sort_keys=True,separators=(",",":"))+"\n")
     return {"configured":True,"controlledFailure":config["controlledFailure"]}
 
 
@@ -115,6 +127,7 @@ def promotion_verify() -> dict[str,object]:
     if not controlled_failure:raise RuntimeError("METRIC_REFUND_NOT_ACCOUNTED")
     result={"schemaVersion":"promotion-verification-v1","decision":contract["decision"],"reason":contract["reason"],"assertions":[{"id":"four-independent-grains","status":"pass","observedCommonKeys":[]},{"id":"METRIC_REFUND_NOT_ACCOUNTED","status":"pass","observed":"refund-metric-is-independent-returns-grain"}],"assetCount":len(assets),"contractSha256":hashlib.sha256((PROJECT/"contracts/data/promotion-trust-v1.yaml").read_bytes()).hexdigest()}
     (STATE/"promotion-verification.json").write_text(json.dumps(result,sort_keys=True,separators=(",",":"))+"\n")
+    (STATE/"evidence.json").write_text(json.dumps(result,sort_keys=True,separators=(",",":"))+"\n")
     return result
 
 

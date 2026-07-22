@@ -54,18 +54,27 @@ class Workspace:
         observed=generation.stat()
         if not stat.S_ISREG(observed.st_mode) or observed.st_nlink!=1:
             raise RuntimeError("RUNNER_WORKSPACE_REVISION_MISSING")
-        link_tmp=self.root/f".current.{os.getpid()}"
-        try: link_tmp.symlink_to(pathlib.Path("generations")/generation.name); os.replace(link_tmp,self.root/"current")
+        pointer_tmp=self.root/f".current.{os.getpid()}"
+        try:
+            fd=os.open(pointer_tmp,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,"O_NOFOLLOW",0),0o600)
+            try:os.write(fd,f"generations/{generation.name}\n".encode());os.fsync(fd)
+            finally:os.close(fd)
+            os.replace(pointer_tmp,self.root/"current")
         finally:
-            if link_tmp.exists() or link_tmp.is_symlink(): link_tmp.unlink()
+            if pointer_tmp.exists() or pointer_tmp.is_symlink(): pointer_tmp.unlink()
         dfd=os.open(self.root,os.O_RDONLY); os.fsync(dfd); os.close(dfd)
         return generation
 
 
     def reconcile(self, revision: int) -> None:
         expected=None if revision==0 else f"generations/{revision:020d}.tar"
-        try: observed=os.readlink(self.root/"current")
-        except FileNotFoundError: observed=None
+        pointer=self.root/"current"
+        try:
+            metadata=pointer.stat(follow_symlinks=False)
+            if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink!=1:observed="invalid"
+            else:
+                fd=os.open(pointer,os.O_RDONLY|getattr(os,"O_NOFOLLOW",0));observed=os.read(fd,128).decode("ascii","strict").rstrip("\n");os.close(fd)
+        except (FileNotFoundError,OSError,UnicodeError): observed=None
         if observed!=expected:self.publish(revision)
 
 

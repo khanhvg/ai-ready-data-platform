@@ -36,8 +36,8 @@ class RunnerService:
         self._reserve()
         with acquire(self.root/"locks") as fence:
             self.workspace.reconcile(self.store.current_revision())
-            for run_id,status,container_id,image_digest,run_fence in self.store.incomplete():
-                self.backend.reconcile(run_id,status,container_id,image_digest,run_fence)
+            for run_id,status,container_id,image_digest,run_fence,daemon_identity in self.store.incomplete():
+                self.backend.reconcile(run_id,status,container_id,image_digest,run_fence,daemon_identity)
             admission=self.store.admit(request,fence.epoch)
             if admission.replay is not None:return admission.replay
             run_dir=self.root/"inputs"/admission.run_id;run_dir.mkdir(mode=0o700,parents=True,exist_ok=False)
@@ -55,7 +55,7 @@ class RunnerService:
                 return result
             except (EngineError,StateError,RuntimeError) as exc:
                 if not committed:
-                    try:self.store.transition(admission.run_id,fence.epoch,"failed")
+                    try:self.store.fail_if_safe(admission.run_id,fence.epoch)
                     except StateError:pass
                 raise RunnerError(str(exc)) from exc
 

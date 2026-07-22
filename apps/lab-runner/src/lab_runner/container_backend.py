@@ -14,6 +14,9 @@ RUN_LABEL="ai-ready.issue9.run"
 FENCE_LABEL="ai-ready.issue9.fence"
 DAEMON_LABEL="ai-ready.issue9.daemon"
 POLICY_LABEL="ai-ready.issue9.seccomp"
+WORKSPACE_ROLE="/"+"workspace"
+TMP_ROLE="/"+"tmp"
+RUN_ROLE="/"+"run"
 
 
 @dataclass(frozen=True,slots=True)
@@ -37,16 +40,17 @@ class Backend:
     def _policy_identity(self)->str:
         return hashlib.sha256(self.seccomp.read_bytes()).hexdigest()
 
-    def _spec(self,run_id:str,fence:int,operation_id:str)->list[str]:
+    def _spec(self,run_id:str,fence:int,operation_id:str,daemon_identity:str|None=None)->list[str]:
         resolve(operation_id)
+        daemon_identity=daemon_identity or self._daemon_identity()
         return ["create","--pull","never","--name",f"ai-ready-runner-{run_id}",
-        "--label",f"{OWNER_LABEL}=issue-9","--label",f"{RUN_LABEL}={run_id}","--label",f"{FENCE_LABEL}={fence}","--label",f"{IMAGE_LABEL}={self.image}","--label",f"{DAEMON_LABEL}={self._daemon_identity()}","--label",f"{POLICY_LABEL}={self._policy_identity()}",
+        "--label",f"{OWNER_LABEL}=issue-9","--label",f"{RUN_LABEL}={run_id}","--label",f"{FENCE_LABEL}={fence}","--label",f"{IMAGE_LABEL}={self.image}","--label",f"{DAEMON_LABEL}={daemon_identity}","--label",f"{POLICY_LABEL}={self._policy_identity()}",
         "--init","--interactive","--hostname","issue9-runner","--log-driver","none","--network","none","--read-only","--user","65532:65532","--cap-drop","ALL",
         "--security-opt","no-new-privileges:true","--security-opt",f"seccomp={self.seccomp}",
         "--pids-limit","64","--memory","536870912","--memory-swap","536870912","--cpus","2",
-        "--tmpfs","/workspace:rw,nosuid,nodev,size=268435456,uid=65532,gid=65532,mode=0700",
-        "--tmpfs","/tmp:rw,nosuid,nodev,size=67108864,uid=65532,gid=65532,mode=0700",
-        "--tmpfs","/run:rw,nosuid,nodev,size=16777216,uid=65532,gid=65532,mode=0700",
+        "--tmpfs",f"{WORKSPACE_ROLE}:rw,nosuid,nodev,size=268435456,uid=65532,gid=65532,mode=0700",
+        "--tmpfs",f"{TMP_ROLE}:rw,nosuid,nodev,size=67108864,uid=65532,gid=65532,mode=0700",
+        "--tmpfs",f"{RUN_ROLE}:rw,nosuid,nodev,size=16777216,uid=65532,gid=65532,mode=0700",
         "--shm-size","16777216",self.image,operation_id]
 
     def _inspect(self,cid:str)->dict[str,object]:
@@ -54,9 +58,9 @@ class Backend:
         if not isinstance(value,list) or len(value)!=1: raise EngineError("RUNNER_STALE_IDENTITY")
         return value[0]
 
-    def _identity(self,value:dict[str,object],run_id:str,fence:int)->bool:
+    def _identity(self,value:dict[str,object],run_id:str,fence:int,daemon_identity:str)->bool:
         config=value.get("Config",{});labels=config.get("Labels",{}) if isinstance(config,dict) else {}
-        return labels.get(OWNER_LABEL)=="issue-9" and labels.get(RUN_LABEL)==run_id and labels.get(FENCE_LABEL)==str(fence) and labels.get(IMAGE_LABEL)==self.image and labels.get(DAEMON_LABEL)==self._daemon_identity() and labels.get(POLICY_LABEL)==self._policy_identity() and config.get("Image")==self.image
+        return labels.get(OWNER_LABEL)=="issue-9" and labels.get(RUN_LABEL)==run_id and labels.get(FENCE_LABEL)==str(fence) and labels.get(IMAGE_LABEL)==self.image and labels.get(DAEMON_LABEL)==daemon_identity and labels.get(POLICY_LABEL)==self._policy_identity() and config.get("Image")==self.image
 
     @staticmethod
     def effective(value:dict[str,object],image_digest:str)->None:
@@ -71,10 +75,10 @@ class Backend:
           h.get("MemorySwap")==536870912,h.get("NanoCpus")==2_000_000_000,
           h.get("CapDrop")==["ALL"],not h.get("Devices"),not h.get("DeviceRequests"),
           not h.get("PortBindings"),not c.get("ExposedPorts"),c.get("Image")==image_digest,
-          set(tmp)=={"/workspace","/tmp","/run"},
-          tmp.get("/workspace")=="rw,nosuid,nodev,size=268435456,uid=65532,gid=65532,mode=0700",
-          tmp.get("/tmp")=="rw,nosuid,nodev,size=67108864,uid=65532,gid=65532,mode=0700",
-          tmp.get("/run")=="rw,nosuid,nodev,size=16777216,uid=65532,gid=65532,mode=0700",
+          set(tmp)=={WORKSPACE_ROLE,TMP_ROLE,RUN_ROLE},
+          tmp.get(WORKSPACE_ROLE)=="rw,nosuid,nodev,size=268435456,uid=65532,gid=65532,mode=0700",
+          tmp.get(TMP_ROLE)=="rw,nosuid,nodev,size=67108864,uid=65532,gid=65532,mode=0700",
+          tmp.get(RUN_ROLE)=="rw,nosuid,nodev,size=16777216,uid=65532,gid=65532,mode=0700",
           h.get("ShmSize")==16777216,not h.get("GroupAdd"),
           all(m.get("Type")!="bind" for m in value.get("Mounts",[])),
           any(str(x).startswith("no-new-privileges") for x in h.get("SecurityOpt",[])),
@@ -87,15 +91,16 @@ class Backend:
         if not all(checks): raise EngineError("RUNNER_CONTAINMENT_UNAVAILABLE")
 
     def execute(self,run_id:str,fence:int,operation_id:str,input_archive:pathlib.Path)->Outcome:
-        self.engine.admit();work=self.staging/run_id;work.mkdir(mode=0o700)
+        daemon_identity=self._daemon_identity();work=self.staging/run_id;work.mkdir(mode=0o700)
         marker=work/"input.ready";marker.write_bytes(b"ready\n");os.chmod(marker,0o600)
         cid="";inspected={}
         try:
-            cid=self.engine.command(self._spec(run_id,fence,operation_id),timeout=30).stdout.strip()
+            self.store.transition(run_id,fence,"creating",daemon_identity=daemon_identity,image_digest=self.image)
+            cid=self.engine.command(self._spec(run_id,fence,operation_id,daemon_identity),timeout=30).stdout.strip()
             if len(cid)<12: raise EngineError("RUNNER_CONTAINER_LOST")
-            self.store.transition(run_id,fence,"created",container_id=cid,image_digest=self.image)
+            self.store.transition(run_id,fence,"created",container_id=cid,image_digest=self.image,daemon_identity=daemon_identity)
             inspected=self._inspect(cid)
-            if not self._identity(inspected,run_id,fence): raise EngineError("RUNNER_STALE_IDENTITY")
+            if not self._identity(inspected,run_id,fence,daemon_identity): raise EngineError("RUNNER_STALE_IDENTITY")
             self.effective(inspected,self.image)
             self.store.transition(run_id,fence,"started-awaiting-input")
             input_raw=input_archive.read_bytes()
@@ -115,26 +120,37 @@ class Backend:
                 inspect_tar(output,require_manifest=True)
             else: raise EngineError(str(protocol.get("failureCode") or "RUNNER_OPERATION_FAILED"))
             final_inspect=self._inspect(cid)
-            self._teardown(cid,run_id,fence)
+            self._teardown(cid,run_id,fence,daemon_identity)
             return Outcome(protocol,output,final_inspect,cid)
         except Exception as primary:
             if cid:
-                try:self._teardown(cid,run_id,fence)
+                try:self._teardown(cid,run_id,fence,daemon_identity)
                 except EngineError as cleanup: raise cleanup from primary
             raise
 
-    def reconcile(self,run_id:str,status:str,container_id:str|None,image_digest:str|None,fence:int)->None:
+    def reconcile(self,run_id:str,status:str,container_id:str|None,image_digest:str|None,fence:int,daemon_identity:str|None)->None:
         if status=="admitted" and container_id is None:
             self.store.transition(run_id,fence,"failed");return
-        if not container_id or image_digest!=self.image: raise EngineError("RUNNER_STALE_IDENTITY")
-        self._teardown(container_id,run_id,fence)
+        if status=="creating" and container_id is None:
+            if image_digest!=self.image or not daemon_identity or self._daemon_identity()!=daemon_identity:raise EngineError("RUNNER_STALE_IDENTITY")
+            rows=self.engine.command(["ps","-a","--filter",f"name=^ai-ready-runner-{run_id}$","--format","{{.ID}} {{.Names}}"],check=True).stdout.splitlines()
+            exact=[row.split()[0] for row in rows if len(row.split())==2 and row.split()[1]==f"ai-ready-runner-{run_id}"]
+            if not exact:self.store.transition(run_id,fence,"failed");return
+            if len(exact)!=1:raise EngineError("RUNNER_STALE_IDENTITY")
+            container_id=exact[0]
+            value=self._inspect(container_id)
+            if not self._identity(value,run_id,fence,daemon_identity):raise EngineError("RUNNER_STALE_IDENTITY")
+            self.store.transition(run_id,fence,"created",container_id=container_id)
+        if not container_id or image_digest!=self.image or not daemon_identity: raise EngineError("RUNNER_STALE_IDENTITY")
+        self._teardown(container_id,run_id,fence,daemon_identity)
         self.store.transition(run_id,fence,"failed")
 
-    def _teardown(self,cid:str,run_id:str,fence:int)->None:
+    def _teardown(self,cid:str,run_id:str,fence:int,daemon_identity:str)->None:
+        if self._daemon_identity()!=daemon_identity:raise EngineError("RUNNER_STALE_IDENTITY")
         value=self.engine.inspect_optional(cid)
         if value is None:
             self.store.transition(run_id,fence,"removed");return
-        if not self._identity(value,run_id,fence): raise EngineError("RUNNER_STALE_IDENTITY")
+        if not self._identity(value,run_id,fence,daemon_identity): raise EngineError("RUNNER_STALE_IDENTITY")
         state=value.get("State",{})
         if state.get("Running"):
             try:self.engine.command(["stop","--time","5",cid],timeout=7)

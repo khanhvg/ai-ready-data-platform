@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import concurrent.futures
+import ast
 import datetime
 import hashlib
 import importlib.util
@@ -357,8 +358,9 @@ class Gate:
             with tarfile.open(first, "w"): pass
             workspace.commit(first, 1)
             (workspace.root / "current").unlink(); (workspace.root / "current").symlink_to("../outside")
-            expect_error(RuntimeError, "RUNNER_WORKSPACE_POINTER_INVALID", lambda: workspace.input_archive(1, self.root / "race-copy.tar"))
-            return {"unsafePointerRejected": True}
+            copied=self.root/"race-copy.tar";workspace.input_archive(1,copied)
+            if copied.read_bytes()!=first.read_bytes():raise AssertionError("mutable pointer selected input")
+            return {"unsafePointerIgnored": True,"selectedRevision":1}
 
         self.record("RED-FS-005", pointer_race)
 
@@ -377,7 +379,7 @@ class Gate:
     def operations_state_release(self) -> None:
         runtime = self.root / "operations"
         service = RunnerService(runtime, self.image, APP / "container/seccomp-runner-v1.json")
-        results=[]; replay=None
+        results=[]; replay=None;reset_replay=None
         for index, operation in enumerate(operation_ids(), 1):
             request={"operationId":operation,"idempotencyKey":f"gate-operation-{index:02d}-exact","workspaceRevision":service.current_revision()}
             result=service.run(request);results.append(result)
@@ -386,6 +388,9 @@ class Gate:
                 replay=service.run(request)
                 after=len(self.engine.command(["ps","-a","--filter","label=ai-ready.issue9.owner=issue-9","--format","{{.ID}}"],check=True).stdout.splitlines())
                 if replay!=result or before!=after:raise AssertionError("idempotency replay")
+            if operation=="workspace.reset":
+                before=len(self.engine.command(["ps","-a","--filter","label=ai-ready.issue9.owner=issue-9","--format","{{.ID}}"],check=True).stdout.splitlines());reset_replay=service.run(request);after=len(self.engine.command(["ps","-a","--filter","label=ai-ready.issue9.owner=issue-9","--format","{{.ID}}"],check=True).stdout.splitlines())
+                if reset_replay!=result or before!=after or result["result"]["preserved"]!=["evidence.json","progress.json"]:raise AssertionError("reset replay")
         if tuple(row["operationId"] for row in results)!=EXPECTED_COMMANDS or any(row["status"]!="pass" for row in results):raise AssertionError("operation closure")
         dbt_run=next(row for row in results if row["operationId"]=="retail.dbt-build")
         dbt_protocol=None
@@ -398,7 +403,7 @@ class Gate:
 
         self.record("RED-OPS-001", lambda: {"operations": [row["operationId"] for row in results], "imageDigest": self.image})
         self.record("RED-OPS-002", lambda: {"models": dbt_run["result"]["models"], "assets": len(export["result"]["assets"]), "decision": next(row for row in results if row["operationId"]=="promotion.verify")["result"]["decision"]})
-        self.record("RED-IDM-001", lambda: {"replayEqual": replay==results[0], "runId": results[0]["runId"]})
+        self.record("RED-IDM-001", lambda: {"replayEqual": replay==results[0],"resetReplayEqual":reset_replay==results[-1],"resetPreserved":results[-1]["result"]["preserved"], "runId": results[0]["runId"]})
         self.record("RED-IDM-002", lambda: self._idempotency_conflict(service, results[0]))
         self.record("RED-REL-001", lambda: self._release_invalid())
         self.record("RED-REL-002", self._release_reader_atomicity)
@@ -448,14 +453,15 @@ class Gate:
         def reader()->None:
             while not stop:
                 try:
-                    target=os.readlink(workspace.root/"current");observed.append(target)
+                    pointer=(workspace.root/"current").read_text().strip();payload=(workspace.root/pointer).read_bytes();observed.append(hashlib.sha256(payload).hexdigest())
                 except FileNotFoundError:observed.append("missing")
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
             future=pool.submit(reader)
             for _ in range(100):workspace.publish(2);workspace.publish(1)
             stop=True;future.result()
-        if not observed or set(observed)-{"generations/00000000000000000001.tar","generations/00000000000000000002.tar"}:raise AssertionError("partial release")
-        return {"readerSamples":len(observed),"completeGenerations":sorted(set(observed))}
+        expected={hashlib.sha256(path.read_bytes()).hexdigest() for path in archives}
+        if not observed or set(observed)-expected:raise AssertionError("partial release")
+        return {"readerSamples":len(observed),"completeGenerationHashes":sorted(set(observed))}
 
     def _stale_revision_conflict(self,service:RunnerService)->object:
         before=self._no_runner_containers()
@@ -466,7 +472,7 @@ class Gate:
 
     def _durable_replay(self)->object:
         root=self.root/f"replay-{time.time_ns()}";store=Store(root);request=validate_request({"operationId":"workspace.prepare","idempotencyKey":"durable-replay-gate","workspaceRevision":0})
-        admission=store.admit(request,1);store.transition(admission.run_id,1,"created");store.transition(admission.run_id,1,"removed")
+        admission=store.admit(request,1);store.transition(admission.run_id,1,"creating");store.transition(admission.run_id,1,"created");store.transition(admission.run_id,1,"removed")
         result={"status":"pass","runId":admission.run_id};store.commit(admission.run_id,1,result,1);store.db.close()
         reopened=Store(root);replay=reopened.admit(request,2)
         if replay.replay!=result:raise AssertionError("durable replay mismatch")
@@ -496,7 +502,7 @@ class Gate:
         workspace=Workspace(self.root/"atomic-workspace");empty=self.root/"atomic-empty.tar"
         with tarfile.open(empty,"w"):pass
         workspace.commit(empty,1);workspace.commit(empty,1)
-        return {"pointer":os.readlink(workspace.root/"current"),"replay":True}
+        return {"pointer":(workspace.root/"current").read_text().strip(),"replay":True}
 
     def _recover_admitted(self)->object:
         root=self.root/"recovery";service=RunnerService(root,self.image,APP/"container/seccomp-runner-v1.json")
@@ -511,7 +517,7 @@ class Gate:
         cid=self._probe_container(create_only=True)
         value=self.engine.json(["inspect",cid])[0];run=value["Config"]["Labels"]["ai-ready.issue9.run"]
         try:
-            expect_error(EngineError,"RUNNER_STALE_IDENTITY",lambda:self.fixture_backend._teardown(cid,run,999))
+            expect_error(EngineError,"RUNNER_STALE_IDENTITY",lambda:self.fixture_backend._teardown(cid,run,999,self.fixture_backend._daemon_identity()))
             still=len(self.engine.json(["inspect",cid]))==1
         finally:self.remove_test_container(cid)
         if not still:raise AssertionError("foreign-like identity removed")
@@ -536,7 +542,10 @@ class Gate:
             invalid=[name for name in changed if not (name.startswith("apps/lab-runner/") or name=="mk/issue-5/i5-04.mk")]
             if invalid:raise AssertionError(f"write lease:{invalid}")
             if (APP/".gitignore").read_text()!="/.local-state/\n":raise AssertionError("ignore rule")
-            return {"changed":changed,"protected":True}
+            validate_released_contract(ROOT,APP/"config/released-contract-lock.json")
+            protected=[name for name in changed if not (name.startswith("apps/lab-runner/") or name=="mk/issue-5/i5-04.mk")]
+            if protected:raise AssertionError("protected drift")
+            return {"changed":changed,"protected":True,"releasedPins":38}
 
         def supply() -> object:
             path=ROOT/".artifacts/build/issue-9/vulnerability-grype-current.json"
@@ -573,11 +582,26 @@ class Gate:
             return {"runtimePackages":len(resolved),"noticeFiles":observed["noticeFiles"],"unknown":0,"denied":0}
 
         def policy() -> object:
-            backend=(APP/"src/lab_runner/container_backend.py").read_text();engine=(APP/"src/lab_runner/engine.py").read_text();build=(APP/"tools/build-runner-image.py").read_text()
+            paths=sorted((APP/"src/lab_runner").glob("*.py"))+sorted((APP/"tools").glob("*.py"));sources={path:path.read_text() for path in paths}
+            backend=sources[APP/"src/lab_runner/container_backend.py"];engine=sources[APP/"src/lab_runner/engine.py"];build=sources[APP/"tools/build-runner-image.py"]
             forbidden=("shell=True","os.system(","eval(","exec(","--privileged","/var/run/docker.sock","--push")
             present=[token for token in forbidden if token in backend+engine+build]
             if present:raise AssertionError(str(present))
-            return {"fixedArrays":True,"forbidden":[]}
+            unsafe=[]
+            for path,source_text in sources.items():
+                tree=ast.parse(source_text,path.as_posix())
+                for node in ast.walk(tree):
+                    if isinstance(node,ast.Call) and any(keyword.arg=="shell" and isinstance(keyword.value,ast.Constant) and keyword.value.value is True for keyword in node.keywords):unsafe.append(f"{path.name}:{node.lineno}:shell")
+                    if isinstance(node,ast.Call) and isinstance(node.func,ast.Name) and node.func.id in ("eval","exec"):unsafe.append(f"{path.name}:{node.lineno}:{node.func.id}")
+            seccomp=json.loads((APP/"container/seccomp-runner-v1.json").read_text())
+            denied={row["args"][0]["value"] for row in seccomp["syscalls"] if row.get("names")==["socket"] and row.get("action")=="SCMP_ACT_ERRNO" and row.get("args")}
+            bandit_root=ROOT/".artifacts/build/issue-9/tools/bandit";bandit_output=self.root/"bandit.json"
+            scan=subprocess.run([sys.executable,"-m","bandit","-r",str(APP/"src"),"-f","json","-o",str(bandit_output)],cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,env={"PATH":"/usr/bin:/bin:/usr/local/bin","PYTHONPATH":str(bandit_root)},timeout=30)
+            if scan.returncode not in (0,1) or not bandit_output.is_file():raise AssertionError("pinned static scan failed")
+            bandit=json.loads(bandit_output.read_text());blocking=[row for row in bandit["results"] if row["issue_severity"] in ("MEDIUM","HIGH")]
+            version=(bandit_root/"bandit-1.8.6.dist-info/METADATA").read_text()
+            if "Version: 1.8.6\n" not in version or blocking or unsafe or seccomp.get("defaultAction")!="SCMP_ACT_ERRNO" or denied!={2,10,16,17}:raise AssertionError(f"policy:{blocking}:{unsafe}:{denied}")
+            return {"fixedArrays":True,"forbidden":[],"astFiles":len(paths),"banditVersion":"1.8.6","banditFindings":{"high":0,"medium":0,"low":sum(row["issue_severity"]=="LOW" for row in bandit["results"])},"banditSha256":sha256(bandit_output),"seccompDefault":"SCMP_ACT_ERRNO","deniedInternetFamilies":sorted(denied),"seccompSha256":sha256(APP/"container/seccomp-runner-v1.json")}
 
         def evidence() -> object:
             target=write_evidence(self.root/"evidence-test","e"*32,{"schemaVersion":"runner-operation-result-v1","status":"pass"})
@@ -605,9 +629,25 @@ class Gate:
         self.record("S3-SEC-001",secret)
         self.record("S3-EVD-001",evidence)
         self.record("S3-OPS-001",lambda:{"operations":len(self.operations),"dbtTracker":self.dbt_tracker} if len(self.operations)==8 and self.dbt_tracker else (_ for _ in ()).throw(AssertionError("operations")))
-        self.record("S3-RES-001",lambda:{"memory":536870912,"cpus":2,"pids":64,"singleActive":True})
-        self.record("S3-RAC-001",lambda:{"audit":True,"cas":True,"foreignUnchanged":self._foreign_unchanged()} if self._foreign_unchanged() else (_ for _ in ()).throw(AssertionError("foreign drift")))
-        self.record("S3-CLOUD-001",lambda:{"cloudActions":0,"registryPush":False,"runtimePull":"never"})
+        self.record("S3-RES-001",lambda:self._resource_aggregate())
+        self.record("S3-RAC-001",lambda:{"audit":self._audit_immutable(self.root/"operations"),"durableReplay":self._durable_replay(),"cas":self._lock_serialization(),"foreignUnchanged":self._foreign_unchanged()} if self._foreign_unchanged() else (_ for _ in ()).throw(AssertionError("foreign drift")))
+        self.record("S3-CLOUD-001",self._cloud_absence)
+
+    def _resource_aggregate(self)->object:
+        value=self.direct(["/opt/runner-fixtures/process_tree_probe.py"])["inspect"];self.fixture_backend.effective(value,self.image);host=self.engine.admit()
+        running=self.engine.command(["ps","--filter","label=ai-ready.issue9.owner=issue-9","--format","{{.ID}}"],check=True).stdout.splitlines()
+        if len(running)>1:raise AssertionError("multiple active")
+        return {"memory":value["HostConfig"]["Memory"],"swap":value["HostConfig"]["MemorySwap"],"cpus":value["HostConfig"]["NanoCpus"],"pids":value["HostConfig"]["PidsLimit"],"singleActive":True,"cgroupVersion":host["CgroupVersion"]}
+
+    def _cloud_absence(self)->object:
+        changed=subprocess.run(["git","diff","--name-only",COOK_INPUT],cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE).stdout.splitlines()
+        forbidden_prefixes=("infra/","terraform/","kubernetes/","orchestration/airflow/","compose")
+        if any(name.startswith(forbidden_prefixes) for name in changed):raise AssertionError("cloud path changed")
+        source="\n".join(path.read_text() for path in sorted((APP/"src").rglob("*.py"))+sorted((APP/"tools").glob("*.py")))
+        forbidden=("terraform apply","aws ","kubectl ","docker push","--push")
+        found=[token for token in forbidden if token in source.lower()]
+        if found:raise AssertionError(str(found))
+        return {"cloudActions":0,"registryPush":False,"runtimePull":"never","scannedFiles":len(changed)}
 
     def remaining_red(self) -> None:
         self.record("RED-REC-003",lambda:{"resultBeforeAck":"durable","reconciled":True}) if "RED-REC-003" not in self.rows else None
