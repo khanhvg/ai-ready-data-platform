@@ -1,0 +1,22 @@
+{
+  "name": "i5-05-learning-portal",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/verify-stage-a-release.mjs --local-only && vite build && node scripts/generate-static-routes.mjs",
+    "test:unit": "node --test tests/unit/*.test.mjs",
+    "test:stage-a": "playwright test tests/e2e/stage-a.spec.mjs --config playwright.config.mjs",
+    "test:visual": "playwright test tests/e2e/visual-review.spec.mjs --config playwright.config.mjs"
+  },
+  "dependencies": {
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.12.1",
+    "@playwright/test": "1.61.1",
+    "@vitejs/plugin-react": "6.0.1",
+    "vite": "8.1.5"
+  }
+}
