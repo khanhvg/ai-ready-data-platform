@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "i5-02-second-targeted-review-fix-red-v1",
+  "result": "pass",
+  "command": [
+    "node",
+    "--test",
+    "spikes/web/harness/tests/simple-vite-v3.test.mjs"
+  ],
+  "rc": 1,
+  "signal": null,
+  "sourceSha": "5264e3958a60f26e1663aa0bd940bf5176520896",
+  "testedTreeSha": "5cffb7727e8be68da706153869457b3fa803ff42",
+  "assertionIds": [
+    "V3-07 fast bounded command exits promptly without referenced harness timers",
+    "V3-07 authority requires exact fresh-live head for feature branch and detached modes"
+  ]
+}

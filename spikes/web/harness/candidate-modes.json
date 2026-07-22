@@ -1,0 +1,9 @@
+{
+  "schema": "i5-02-candidate-modes-v1",
+  "activation": "deferred",
+  "modes": {
+    "astro": "static-react-island",
+    "next": "standalone-app-router",
+    "vite": "static-mpa-progressive-react"
+  }
+}

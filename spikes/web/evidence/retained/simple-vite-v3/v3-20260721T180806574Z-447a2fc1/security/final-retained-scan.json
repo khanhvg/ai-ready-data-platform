@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "i5-02-simple-vite-v3-final-retained-scan-v1",
+  "result": "pass",
+  "root": ".",
+  "scannedFiles": 23,
+  "excluded": [
+    "hash-index.json",
+    "security/final-retained-scan.json"
+  ],
+  "findings": []
+}

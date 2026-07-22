@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "staticLogical": "required",
+  "browserDecision": "required-pending",
+  "manualDecision": "required-pending",
+  "fixtureKind": "synthetic-preview",
+  "journey": [
+    { "action": "frame-explicit", "expectedState": "exploring", "expectedCommittedAct": 1 },
+    { "action": "controlled-failure-explicit", "expectedState": "controlled-failure-shown", "expectedCommittedAct": 4 },
+    { "action": "diagnose-explicit", "expectedState": "diagnosing", "expectedCommittedAct": 5 },
+    { "action": "alternative-explicit", "expectedState": "exploring", "expectedCommittedAct": 6 },
+    { "action": "reset-explicit", "expectedState": "reset-demonstrated", "expectedCommittedAct": 7 },
+    { "action": "verify-fixture-explicit", "expectedState": "fixture-verified", "expectedCommittedAct": 9 },
+    { "action": "review-evidence-explicit", "expectedState": "evidence-reviewed", "expectedCommittedAct": 9 },
+    { "action": "reflection-open-explicit", "expectedState": "evidence-reviewed", "expectedCommittedAct": 9 }
+  ]
+}

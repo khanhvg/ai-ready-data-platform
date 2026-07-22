@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "gate-a-tdd-strengthening-v1",
+  "issue": 7,
+  "runId": "gate-a-recovery-20260721T003738Z",
+  "testedTreeSha": "2e2d024043070955d2c460b2e58bb9a926384762",
+  "classification": "post-canonical-red-review-strengthening",
+  "acceptanceSubstitute": false,
+  "cycles": [
+    {
+      "area": "readiness-deadline-and-identity",
+      "red": "intended",
+      "green": "pass"
+    },
+    {
+      "area": "asset-symlink-race-and-process-group-survival",
+      "red": "intended",
+      "green": "pass"
+    },
+    {
+      "area": "dual-contrast-focus",
+      "red": "intended",
+      "green": "pass"
+    },
+    {
+      "area": "full committed-state restoration and untrusted projection invariants",
+      "red": "intended",
+      "green": "pass"
+    },
+    {
+      "area": "path-scoped credential canary",
+      "red": "intended",
+      "green": "pass"
+    }
+  ],
+  "invalidAttempts": [
+    {
+      "area": "state test edit",
+      "reason": "syntax error before behavior change",
+      "acceptanceEvidence": false
+    },
+    {
+      "area": "route drill",
+      "reason": "client normalized encoded traversal path",
+      "acceptanceEvidence": false
+    }
+  ],
+  "finalReview": "no-blocking-findings"
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "fitness-result-v1",
+  "issue": 7,
+  "gate": "gate-a",
+  "candidate": "preview",
+  "fixtureKind": "synthetic-preview",
+  "notice": "SYNTHETIC LEARN-PREVIEW — UNSCORED — CANNOT COMPLETE",
+  "resultStatus": "pass",
+  "candidateDisposition": null,
+  "numericScore": null,
+  "decisionGrade": false,
+  "issueComplete": false,
+  "opensBarrierB": false,
+  "runId": "gate-a-recovery-20260721T003738Z",
+  "recoveryKind": "recovery-rerun",
+  "oldBlockedInputSha": "e8ca5f3ee9e8976a4b92915fd7d7dc687609f7a9",
+  "implementationInputSha": "0c73f4712c8ac7902042735ff1da96ef1e5285a3",
+  "sourceSha": "2e2d024043070955d2c460b2e58bb9a926384762",
+  "testedTreeSha": "2e2d024043070955d2c460b2e58bb9a926384762",
+  "timer": {
+    "startedAtUtc": "2026-07-21T00:31:46Z",
+    "testedAtUtc": "2026-07-21T01:15:17Z",
+    "withinThreeHours": true
+  },
+  "preRed": {
+    "treeDigest": "0cbaf86673850e60d6ee01dea9a5a66dd0aaeb40da609da39bbcfd632c5c66f2",
+    "preExecutionRecordSha256": "d1ac51e56bb39a224cef6fa60dbaa9cc369bacca1cdec3714381d91c58c12470",
+    "commands": 3,
+    "result": "intended-absent-behavior",
+    "gate0Failures": 10,
+    "lifecycleFailures": 17,
+    "commonFailures": 27,
+    "canonicalWebIdsCovered": 19
+  },
+  "green": {
+    "gate0": "10/10",
+    "lifecycle": "17/17",
+    "common": "27/27",
+    "total": "54/54",
+    "makeTargets": "12/12",
+    "routeCases": "12/12",
+    "security": "pass",
+    "credential": "pass",
+    "nonCopy": "pass",
+    "rollback": "pass",
+    "protected": "pass",
+    "changedPaths": "pass",
+    "discovery": "pass"
+  },
+  "artifactLocators": [
+    "recovery-rerun/red/pre-red-tree.manifest.bin",
+    "recovery-rerun/red/pre-execution-record.json",
+    "recovery-rerun/red/01-authority-result.json",
+    "recovery-rerun/red/02-preview-control-result.json",
+    "recovery-rerun/red/03-common-result.json",
+    "gate-a/commands.json",
+    "gate-a/verification.json",
+    "gate-a/route-csp-drill.json",
+    "gate-a/rollback.json",
+    "redaction.json",
+    "hash-index.json"
+  ],
+  "accessibility": {
+    "staticLogical": "pass",
+    "browser": "required-pending",
+    "keyboard": "required-pending",
+    "namedScreenReader": "required-pending",
+    "zoom200Percent": "required-pending",
+    "reducedMotion": "required-pending",
+    "noJsManual": "required-pending"
+  },
+  "deferred": [
+    "issue-6 fixture handoff",
+    "Barrier B",
+    "Gate C browser/manual validation",
+    "Gate D comparative decision",
+    "human approval",
+    "pull request",
+    "merge"
+  ],
+  "quarantine": {
+    "classification": "developer-input-and-blocked-attempt-provenance",
+    "status": "superseded-awaiting-owner-cleanup",
+    "deleted": false
+  },
+  "attestationCommitRecordedExternally": true
+}

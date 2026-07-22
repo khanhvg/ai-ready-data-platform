@@ -1,0 +1,59 @@
+{
+  "candidate": "next",
+  "browser": "chrome",
+  "browserVersion": "150.0.7871.129",
+  "facts": {
+    "title": "Promotion trust — Next candidate",
+    "headings": [
+      "Can this promotion headline be trusted?",
+      "Act 1: Orient",
+      "Act 2: Question",
+      "Act 3: Inspect promotion grain",
+      "Act 4: Inspect fulfillment grain",
+      "Act 5: Inspect returns grain",
+      "Act 6: Inspect data-quality grain",
+      "Act 7: Try the headline",
+      "Act 8: Observe controlled failure",
+      "Act 9: Verify evidence boundaries",
+      "mart_promotion_effectiveness",
+      "mart_fulfillment_performance",
+      "mart_returns_analysis",
+      "mart_data_quality",
+      "Act 10: Reflect and reset"
+    ],
+    "acts": 10,
+    "cards": 4,
+    "conclusion": "insufficient-evidence",
+    "reason": "no-common-grain"
+  },
+  "focused": {
+    "tag": "A",
+    "text": "6. Inspect data-quality grain"
+  },
+  "axeViolations": [],
+  "overflow": false,
+  "reducedMotionMatched": true,
+  "noJsFacts": {
+    "acts": 10,
+    "cards": 4,
+    "conclusion": "insufficient-evidence"
+  },
+  "requests": [
+    "http://127.0.0.1:4177/",
+    "http://127.0.0.1:4177/_next/static/chunks/3taco7_kctfzg.css",
+    "http://127.0.0.1:4177/_next/static/chunks/1jq4o6yq14o4c.js",
+    "http://127.0.0.1:4177/_next/static/chunks/0atut6a2uuyid.js",
+    "http://127.0.0.1:4177/_next/static/chunks/3rxl-jt3pdxgx.js",
+    "http://127.0.0.1:4177/_next/static/chunks/turbopack-38l7qwik-h828.js",
+    "http://127.0.0.1:4177/_next/static/chunks/158myu8e_yme3.js",
+    "http://127.0.0.1:4177/_next/static/chunks/1d7iris92cw9-.js"
+  ],
+  "externalRequests": [],
+  "storage": {
+    "local": [],
+    "session": [],
+    "cookies": "",
+    "indexedDB": true
+  },
+  "pass": true
+}

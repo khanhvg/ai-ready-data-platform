@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "i5-02-simple-vite-v3-fifth-targeted-review-fix-red-v1",
+  "result": "pass",
+  "command": [
+    "node",
+    "--test",
+    "spikes/web/harness/tests/simple-vite-v3.test.mjs"
+  ],
+  "sourceSha": "adf79aee0f672a3c26604ea65624632d8ef9cd8c",
+  "testedTreeSha": "e89118bbb52d3390062b547ea88ef28c088ec22c",
+  "rc": 1,
+  "passed": 11,
+  "failed": 3,
+  "assertionIds": [
+    "built-output-required-root",
+    "built-output-unsafe-detection",
+    "built-output-complete-inventory"
+  ],
+  "failure": "built-output scanner was unavailable at the tests-only RED",
+  "contamination": []
+}

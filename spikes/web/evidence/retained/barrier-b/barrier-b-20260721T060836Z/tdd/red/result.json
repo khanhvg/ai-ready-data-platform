@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "fitness-result-v1",
+  "issue": 7,
+  "gate": "barrier-b",
+  "evidenceScope": "barrier",
+  "resultStatus": "fail",
+  "expectedFailure": "missing-behavior",
+  "command": "node --test spikes/web/harness/tests/barrier-b.test.mjs",
+  "exitStatus": 1,
+  "tests": {"total": 10, "pass": 0, "fail": 10},
+  "implementationInputSha": "8869b9238704719caff5140d9412bb7bebcecc6f",
+  "issue6MergeSha": "24be3b34c6b0fcdbd07c5800dcab349054e34713",
+  "preRedTreeSha256": "afd92e8cdf2a085fef995358fbc211c01f3517cacc42fd43dccee371ef4af3e7"
+}

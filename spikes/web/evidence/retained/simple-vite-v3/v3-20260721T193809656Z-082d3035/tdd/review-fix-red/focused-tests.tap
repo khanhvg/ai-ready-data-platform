@@ -1,0 +1,244 @@
+TAP version 13
+# Subtest: V3-02 fixture SHA-256 identities and independent source grains are exact
+ok 1 - V3-02 fixture SHA-256 identities and independent source grains are exact
+  ---
+  duration_ms: 2.390958
+  type: 'test'
+  ...
+# Subtest: V3-02 lesson contract names the Vietnamese representative entry and four evidence limitations
+ok 2 - V3-02 lesson contract names the Vietnamese representative entry and four evidence limitations
+  ---
+  duration_ms: 0.94025
+  type: 'test'
+  ...
+# Subtest: V3-02 controlled failure, conclusion, reset baseline, and reflection are exact and non-attributing
+ok 3 - V3-02 controlled failure, conclusion, reset baseline, and reflection are exact and non-attributing
+  ---
+  duration_ms: 0.214209
+  type: 'test'
+  ...
+# Subtest: V3-02 authored fallback exposes the complete contract in response bytes before React
+ok 4 - V3-02 authored fallback exposes the complete contract in response bytes before React
+  ---
+  duration_ms: 0.68975
+  type: 'test'
+  ...
+# Subtest: V3-05 progressive controls use valid named group semantics
+not ok 5 - V3-05 progressive controls use valid named group semantics
+  ---
+  duration_ms: 1.1675
+  type: 'test'
+  location: '<WORKSPACE>/spikes/web/candidates/vite/tests/promotion-trust-contract.test.mjs:72:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /className="controls"\s+role="group"\s+aria-label="Điều khiển khảo sát"/. Input:
+
+    "import React, { useState } from 'react';\n" +
+      "import { createRoot } from 'react-dom/client';\n" +
+      "import { lessonContract } from './lesson-contract.mjs';\n" +
+      "import './styles.css';\n" +
+      '\n' +
+      'function Probe() {\n' +
+      '  const [status, setStatus] = useState(lessonContract.status.baseline);\n' +
+      '\n' +
+      '  return (\n' +
+      '    <div className="probe-controls">\n' +
+      '      <div className="controls" aria-label="Điều khiển khảo sát">\n' +
+      '        <button\n' +
+      '          type="button"\n' +
+      '          data-testid="run-bounded-probe"\n' +
+      '          onClick={() => setStatus(lessonContract.status.failure)}\n' +
+      '        >\n' +
+      '          Chạy khảo sát có giới hạn\n' +
+      '        </button>\n' +
+      '        <button\n' +
+      '          type="button"\n' +
+      '          data-testid="reset-lesson"\n' +
+      '          onClick={() => setStatus(lessonContract.status.reset)}\n' +
+      '        >\n' +
+      '          Đặt lại bài học\n' +
+      '        </button>\n' +
+      '      </div>\n' +
+      '      <p\n' +
+      '        data-testid="lesson-status"\n' +
+      '        role="status"\n' +
+      '        aria-live="polite"\n' +
+      '        aria-atomic="true"\n' +
+      '        lang="en"\n' +
+      '      >\n' +
+      '        {status}\n' +
+      '      </p>\n' +
+      '    </div>\n' +
+      '  );\n' +
+      '}\n' +
+      '\n' +
+      "const root = document.getElementById('probe');\n" +
+      'if (root) createRoot(root).render(<Probe />);\n'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    import React, { useState } from 'react';
+    import { createRoot } from 'react-dom/client';
+    import { lessonContract } from './lesson-contract.mjs';
+    import './styles.css';
+
+    function Probe() {
+      const [status, setStatus] = useState(lessonContract.status.baseline);
+
+      return (
+        <div className="probe-controls">
+          <div className="controls" aria-label="Điều khiển khảo sát">
+            <button
+              type="button"
+              data-testid="run-bounded-probe"
+              onClick={() => setStatus(lessonContract.status.failure)}
+            >
+              Chạy khảo sát có giới hạn
+            </button>
+            <button
+              type="button"
+              data-testid="reset-lesson"
+              onClick={() => setStatus(lessonContract.status.reset)}
+            >
+              Đặt lại bài học
+            </button>
+          </div>
+          <p
+            data-testid="lesson-status"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            lang="en"
+          >
+            {status}
+          </p>
+        </div>
+      );
+    }
+
+    const root = document.getElementById('probe');
+    if (root) createRoot(root).render(<Probe />);
+
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file://<WORKSPACE>/spikes/web/candidates/vite/tests/promotion-trust-contract.test.mjs:74:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: V3-07 harness contract closes authority, seven groups, commands, and write paths
+ok 6 - V3-07 harness contract closes authority, seven groups, commands, and write paths
+  ---
+  duration_ms: 0.790166
+  type: 'test'
+  ...
+# Subtest: V3-07 S3 scanner rejects credentials, private paths, PII, injection, and remote imports
+ok 7 - V3-07 S3 scanner rejects credentials, private paths, PII, injection, and remote imports
+  ---
+  duration_ms: 1.045125
+  type: 'test'
+  ...
+# Subtest: V3-07 ownership ledger fails closed on foreign port, missing fingerprint, and run mismatch
+ok 8 - V3-07 ownership ledger fails closed on foreign port, missing fingerprint, and run mismatch
+  ---
+  duration_ms: 0.366625
+  type: 'test'
+  ...
+# Subtest: V3-07 retained manifest is closed over exact-head RED, 7/7, redaction, and rollback
+ok 9 - V3-07 retained manifest is closed over exact-head RED, 7/7, redaction, and rollback
+  ---
+  duration_ms: 1.017791
+  type: 'test'
+  ...
+# Subtest: V3-07 runner contains bounded commands and never imports comparison, native, timer, or cloud paths
+ok 10 - V3-07 runner contains bounded commands and never imports comparison, native, timer, or cloud paths
+  ---
+  duration_ms: 0.602458
+  type: 'test'
+  ...
+# Subtest: V3-07 bounded command escalates TERM to KILL for its owned group and leaves no descendant
+not ok 11 - V3-07 bounded command escalates TERM to KILL for its owned group and leaves no descendant
+  ---
+  duration_ms: 1266.463042
+  type: 'test'
+  location: '<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:110:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    owned group must receive SIGTERM
+    + actual - expected
+
+    + undefined
+    - true
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:133:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: V3-07 host READY timeout rejects boundedly and cleans its owned process group
+not ok 12 - V3-07 host READY timeout rejects boundedly and cleans its owned process group
+  ---
+  duration_ms: 282.969417
+  type: 'test'
+  location: '<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:147:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    READY-timeout host survived owned-group cleanup
+
+    true !== false
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:167:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: V3-07 authority accepts detached exact-live head and rejects detached mismatch or another branch
+not ok 13 - V3-07 authority accepts detached exact-live head and rejects detached mismatch or another branch
+  ---
+  duration_ms: 5020.579125
+  type: 'test'
+  location: '<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:175:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"result":"fail","failures":["branch-mismatch"],"changedPaths":["docs/decisions/0005-web-stack.md","docs/decisions/evidence/adr-0005-web-stack-scorecard.json","docs/decisions/evidence/adr-0005-web-stack-scorecard.md","mk/issue-5/i5-02.mk","plans/260721-007-web-stack-representative-lesson/acceptance-and-test-matrix.md","plans/260721-007-web-stack-representative-lesson/plan.md","plans/260721-007-web-stack-representative-lesson/simple-vite-acceptance-amendment-v3.md","spikes/web/candidates/vite/index.html","spikes/web/candidates/vite/package.json","spikes/web/candidates/vite/playwright.config.mjs","spikes/web/candidates/vite/src/lesson-contract.mjs","spikes/web/candidates/vite/src/main.jsx","spikes/web/candidates/vite/src/styles.css","spikes/web/candidates/vite/tests/promotion-trust-contract.test.mjs","spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs","spikes/web/candidates/vite/vite.config.mjs","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/green/browser-results/.last-run.json","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/green/browser-results/chromium-desktop/v3-03-v3-04-journey-facts.json","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/green/browser-results/chromium-desktop/v3-05-axe-complete.json","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/green/browser-results/chromium-desktop/v3-06-no-js-inventory.json","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/green/browser-results/chromium-desktop/v3-06-response.html","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/green/browser-results/chromium-narrow/v3-03-v3-04-journey-facts.json","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/green/build.log","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/green/harness.log","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/green/install.log","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/green/playwright.log","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/green/response-index.html","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/green/result.json","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/green/unit.log","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/hash-index.json","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/lifecycle/owned-resources.json","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/lifecycle/rollback.json","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/manifest.json","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/security/final-retained-scan.json","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/security/npm-audit.json","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/security/scans.json","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/tdd/red/playwright.log","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/tdd/red/result.json","spikes/web/evidence/retained/simple-vite-v3/v3-20260721T174126318Z-af388ddf/tdd/red/unit.log","spikes/web/evidence/retention-index-v3.json","spikes/web/harness/scripts/simple-vite-v3.mjs","spikes/web/harness/simple-vite-v3.json","spikes/web/harness/tests/simple-vite-v3.test.mjs"]}
+
+    1 !== 0
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:188:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 9
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6631.290875

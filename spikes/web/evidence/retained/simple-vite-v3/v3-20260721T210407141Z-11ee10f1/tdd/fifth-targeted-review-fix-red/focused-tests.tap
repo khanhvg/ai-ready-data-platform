@@ -1,0 +1,148 @@
+TAP version 13
+# Subtest: V3-07 harness contract closes authority, seven groups, commands, and write paths
+ok 1 - V3-07 harness contract closes authority, seven groups, commands, and write paths
+  ---
+  duration_ms: 0.884125
+  type: 'test'
+  ...
+# Subtest: V3-07 S3 scanner rejects credentials, private paths, PII, injection, and remote imports
+ok 2 - V3-07 S3 scanner rejects credentials, private paths, PII, injection, and remote imports
+  ---
+  duration_ms: 1.031459
+  type: 'test'
+  ...
+# Subtest: V3-07 built-output scan fails closed when the required root is missing
+not ok 3 - V3-07 built-output scan fails closed when the required root is missing
+  ---
+  duration_ms: 3.067292
+  type: 'test'
+  location: '<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:82:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    missing required built-output root must fail closed
+
+    'pass' !== 'fail'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'fail'
+  actual: 'pass'
+  operator: 'strictEqual'
+  stack: |-
+    file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:88:14
+    withBuiltOutputScanner (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:22:12)
+    async TestContext.<anonymous> (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:86:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: V3-07 built-output scan detects forbidden markers in generated JS, CSS, and source maps
+not ok 4 - V3-07 built-output scan detects forbidden markers in generated JS, CSS, and source maps
+  ---
+  duration_ms: 3.332917
+  type: 'test'
+  location: '<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:97:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    unsafe generated assets must fail content safety
+
+    'pass' !== 'fail'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'fail'
+  actual: 'pass'
+  operator: 'strictEqual'
+  stack: |-
+    file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:107:14
+    withBuiltOutputScanner (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:22:12)
+    async TestContext.<anonymous> (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:105:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: V3-07 clean complete built-output scan emits normalized path and SHA-256 inventory
+not ok 5 - V3-07 clean complete built-output scan emits normalized path and SHA-256 inventory
+  ---
+  duration_ms: 3.075208
+  type: 'test'
+  location: '<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:118:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    false !== true
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:133:14
+    withBuiltOutputScanner (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:22:12)
+    async TestContext.<anonymous> (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:130:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: V3-07 ownership ledger fails closed on foreign port, missing fingerprint, and run mismatch
+ok 6 - V3-07 ownership ledger fails closed on foreign port, missing fingerprint, and run mismatch
+  ---
+  duration_ms: 0.220875
+  type: 'test'
+  ...
+# Subtest: V3-07 retained manifest is closed over exact-head RED, 7/7, redaction, and rollback
+ok 7 - V3-07 retained manifest is closed over exact-head RED, 7/7, redaction, and rollback
+  ---
+  duration_ms: 0.5245
+  type: 'test'
+  ...
+# Subtest: V3-07 runner contains bounded commands and never imports comparison, native, timer, or cloud paths
+ok 8 - V3-07 runner contains bounded commands and never imports comparison, native, timer, or cloud paths
+  ---
+  duration_ms: 0.804834
+  type: 'test'
+  ...
+# Subtest: V3-07 fast bounded command exits promptly without referenced harness timers
+ok 9 - V3-07 fast bounded command exits promptly without referenced harness timers
+  ---
+  duration_ms: 73.917833
+  type: 'test'
+  ...
+# Subtest: V3-07 bounded command escalates TERM to KILL for its owned group and leaves no descendant
+ok 10 - V3-07 bounded command escalates TERM to KILL for its owned group and leaves no descendant
+  ---
+  duration_ms: 517.688917
+  type: 'test'
+  ...
+# Subtest: V3-07 host READY timeout rejects boundedly and cleans its owned process group
+ok 11 - V3-07 host READY timeout rejects boundedly and cleans its owned process group
+  ---
+  duration_ms: 649.869041
+  type: 'test'
+  ...
+# Subtest: V3-07 authority requires exact fresh-live head for feature branch and detached modes
+ok 12 - V3-07 authority requires exact fresh-live head for feature branch and detached modes
+  ---
+  duration_ms: 12594.4365
+  type: 'test'
+  ...
+# Subtest: V3-07 authority lookup timeout is bounded and fails closed deterministically
+ok 13 - V3-07 authority lookup timeout is bounded and fails closed deterministically
+  ---
+  duration_ms: 6063.835875
+  type: 'test'
+  ...
+# Subtest: V3-07 authority timeout cleans its transport descendant without signaling current or foreign groups
+ok 14 - V3-07 authority timeout cleans its transport descendant without signaling current or foreign groups
+  ---
+  duration_ms: 904.547
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 11
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 20873.305333

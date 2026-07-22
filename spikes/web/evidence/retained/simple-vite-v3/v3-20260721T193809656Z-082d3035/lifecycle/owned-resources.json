@@ -1,0 +1,16 @@
+{
+  "pid": 52220,
+  "processGroup": 52220,
+  "fingerprint": "52220 Wed Jul 22 02:38:30 2026 <PRIVATE_PATH> <WORKSPACE>/spikes/web/harness/scripts/candidate-static-host.mjs <WORKSPACE>/spikes/web/candidates/vite/dist 4175",
+  "cwd": ".",
+  "command": [
+    "<PRIVATE_PATH>",
+    "<WORKSPACE>/spikes/web/harness/scripts/candidate-static-host.mjs",
+    "<WORKSPACE>/spikes/web/candidates/vite/dist",
+    "4175"
+  ],
+  "root": "spikes/web/candidates/vite/dist",
+  "port": 4175,
+  "runId": "v3-20260721T193809656Z-082d3035",
+  "childHandle": true
+}

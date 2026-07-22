@@ -1,0 +1,8 @@
+{
+  "fixtureKind": "synthetic-preview",
+  "relationship": {
+    "promotion": "Midyear Spark",
+    "carrier": "Parcel North",
+    "claim": "The promotion caused this carrier delay"
+  }
+}

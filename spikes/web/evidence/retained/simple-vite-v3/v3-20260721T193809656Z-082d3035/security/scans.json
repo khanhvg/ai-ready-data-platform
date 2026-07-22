@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "i5-02-simple-vite-v3-scan-v1",
+  "result": "pass",
+  "roots": [
+    "spikes/web/candidates/vite/index.html",
+    "spikes/web/candidates/vite/src",
+    "spikes/web/candidates/vite/dist",
+    ".artifacts/runtime/i5-02/v3-20260721T193809656Z-082d3035/gate"
+  ],
+  "checkInventory": [
+    {
+      "id": "content-safety",
+      "result": "pass",
+      "details": {
+        "scannedRoots": [
+          "spikes/web/candidates/vite/index.html",
+          "spikes/web/candidates/vite/src",
+          "spikes/web/candidates/vite/dist",
+          ".artifacts/runtime/i5-02/v3-20260721T193809656Z-082d3035/gate"
+        ],
+        "ruleIds": [
+          "privateKey",
+          "credential",
+          "absolutePrivatePath",
+          "email",
+          "phone",
+          "governmentIdentifier",
+          "unsafeInjection",
+          "remoteImport",
+          "sourceMap"
+        ]
+      }
+    },
+    {
+      "id": "csp-document",
+      "result": "pass",
+      "details": {
+        "expected": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+      }
+    },
+    {
+      "id": "csp-response",
+      "result": "pass",
+      "details": {
+        "expected": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+      }
+    },
+    {
+      "id": "same-origin",
+      "result": "pass",
+      "details": {
+        "allowedOrigin": "http://127.0.0.1:4175",
+        "projects": [
+          {
+            "project": "chromium-desktop",
+            "requestOrigins": [
+              "http://127.0.0.1:4175"
+            ]
+          },
+          {
+            "project": "chromium-narrow",
+            "requestOrigins": [
+              "http://127.0.0.1:4175"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "persistence-empty",
+      "result": "pass",
+      "details": {
+        "stores": [
+          "cookies",
+          "localStorage",
+          "sessionStorage",
+          "CacheStorage",
+          "IndexedDB",
+          "serviceWorkers"
+        ]
+      }
+    },
+    {
+      "id": "no-js-response-inventory",
+      "result": "pass",
+      "details": {
+        "responseBytes": 6416,
+        "inventoryIds": [
+          "lesson-entry",
+          "grain-promotion",
+          "grain-promotion-limitation",
+          "grain-fulfillment",
+          "grain-fulfillment-limitation",
+          "grain-returns",
+          "grain-returns-limitation",
+          "grain-data-quality",
+          "grain-data-quality-limitation",
+          "lesson-conclusion",
+          "lesson-reason",
+          "no-js-reset-limitation",
+          "reflection-prompt"
+        ]
+      }
+    },
+    {
+      "id": "axe-complete",
+      "result": "pass",
+      "details": {
+        "violations": 0,
+        "critical": 0,
+        "serious": 0,
+        "passes": 39,
+        "incomplete": 0,
+        "inapplicable": 50
+      }
+    },
+    {
+      "id": "browser-evidence-materialized",
+      "result": "pass",
+      "details": {
+        "artifacts": [
+          ".artifacts/runtime/i5-02/v3-20260721T193809656Z-082d3035/gate/browser-evidence/chromium-desktop/v3-03-v3-04-journey-facts.json",
+          ".artifacts/runtime/i5-02/v3-20260721T193809656Z-082d3035/gate/browser-evidence/chromium-desktop/v3-05-axe-complete.json",
+          ".artifacts/runtime/i5-02/v3-20260721T193809656Z-082d3035/gate/browser-evidence/chromium-desktop/v3-06-no-js-inventory.json",
+          ".artifacts/runtime/i5-02/v3-20260721T193809656Z-082d3035/gate/browser-evidence/chromium-desktop/v3-06-response.html",
+          ".artifacts/runtime/i5-02/v3-20260721T193809656Z-082d3035/gate/browser-evidence/chromium-narrow/v3-03-v3-04-journey-facts.json"
+        ]
+      }
+    }
+  ],
+  "findings": []
+}

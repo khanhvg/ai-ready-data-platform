@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "i5-02-gate-c-automated-v1",
+  "frozen": {
+    "implementationInputSha": "8869b9238704719caff5140d9412bb7bebcecc6f",
+    "issue6MergeSha": "24be3b34c6b0fcdbd07c5800dcab349054e34713",
+    "commonTree": "f00fe97715df5dd469302994349fb95c9412482b",
+    "scoreAnchorSha256": "56a15b9babf3e354d5df8279929df0c12e61c2e2e58bc90a8364038b424c9a75",
+    "order": [
+      "vite",
+      "astro",
+      "next"
+    ],
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "deviceScaleFactor": 1,
+    "locale": "en-US",
+    "timezoneId": "UTC",
+    "retryPolicy": "none",
+    "locks": {
+      "vite": "96feead881be424d4c0d8d4629d7da0312722a3d7c945d08ed071542ea5d443c",
+      "astro": "78677d1a272fdc5c9758810343f89e82f2914625a03259a575208fe1fafef760",
+      "next": "4939388a7e7290ec640e418afac94dc68cfba7bf6b5692df61317b4c95de2e8b"
+    },
+    "sources": {
+      "vite": "b6b8eb8bf40065dfdda48b1755f0beb83b57bed77e614ff6138952f2f1c1a6f9",
+      "astro": "ba50910b99daddc9390c4581dd48646bf75704cfa80fa171a9ba5253e54dc154",
+      "next": "2874536efcbaf4e1cd7660bc72481a654da7225458c8d265793f156e7664f616"
+    }
+  },
+  "results": [
+    {
+      "candidate": "vite",
+      "browser": "chrome",
+      "version": "150.0.7871.129",
+      "pass": true
+    },
+    {
+      "candidate": "vite",
+      "browser": "firefox",
+      "version": "151.0",
+      "pass": true
+    },
+    {
+      "candidate": "astro",
+      "browser": "chrome",
+      "version": "150.0.7871.129",
+      "pass": false
+    },
+    {
+      "candidate": "astro",
+      "browser": "firefox",
+      "version": "151.0",
+      "pass": false
+    },
+    {
+      "candidate": "next",
+      "browser": "chrome",
+      "version": "150.0.7871.129",
+      "pass": true
+    },
+    {
+      "candidate": "next",
+      "browser": "firefox",
+      "version": "151.0",
+      "pass": true
+    }
+  ],
+  "dispositions": {
+    "vite": {
+      "status": "SURVIVOR",
+      "numericScore": null,
+      "reasons": []
+    },
+    "astro": {
+      "status": "ELIMINATED",
+      "numericScore": null,
+      "reasons": [
+        "chrome:target-size:serious",
+        "firefox:target-size:serious"
+      ]
+    },
+    "next": {
+      "status": "SURVIVOR",
+      "numericScore": null,
+      "reasons": []
+    }
+  },
+  "comparisonComplete": true
+}

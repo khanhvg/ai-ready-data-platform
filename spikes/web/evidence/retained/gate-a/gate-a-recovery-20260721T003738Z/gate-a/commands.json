@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "gate-a-command-summary-v1",
+  "schema": "fitness-result-v1",
+  "issue": 7,
+  "gate": "gate-a",
+  "candidate": "common",
+  "fixtureKind": "synthetic-preview",
+  "notice": "SYNTHETIC LEARN-PREVIEW — UNSCORED — CANNOT COMPLETE",
+  "resultStatus": "pass",
+  "candidateDisposition": null,
+  "numericScore": null,
+  "decisionGrade": false,
+  "issueComplete": false,
+  "opensBarrierB": false,
+  "runId": "gate-a-recovery-20260721T003738Z",
+  "implementationInputSha": "0c73f4712c8ac7902042735ff1da96ef1e5285a3",
+  "testedTreeSha": "2e2d024043070955d2c460b2e58bb9a926384762",
+  "startedAtUtc": "2026-07-21T01:14:59Z",
+  "endedAtUtc": "2026-07-21T01:15:17Z",
+  "commands": [
+    "node --test spikes/web/harness/tests/authority.test.mjs",
+    "node --test spikes/web/harness/tests/preview-control.test.mjs",
+    "node --test spikes/web/common/tests/*.test.mjs",
+    "node spikes/web/harness/scripts/authority-check.mjs --implementation-input 0c73f4712c8ac7902042735ff1da96ef1e5285a3",
+    "make -f mk/issue-5/i5-02.mk <each of 12 exact targets> IMPLEMENTATION_INPUT_SHA=0c73f4712c8ac7902042735ff1da96ef1e5285a3",
+    "git diff --check 0c73f4712c8ac7902042735ff1da96ef1e5285a3...HEAD"
+  ],
+  "toolVersions": {
+    "node": "22.22.3",
+    "npm": "10.9.4",
+    "git": "2.50.1",
+    "make": "3.81"
+  },
+  "fullLogSha256": "e591549a9a6da30c7693cc78ffe86d0870a3db16aff00995717567a2567c66fb",
+  "results": {
+    "gate0": "10/10",
+    "lifecycle": "17/17",
+    "common": "27/27",
+    "makeTargets": "12/12",
+    "diffCheck": "pass"
+  }
+}

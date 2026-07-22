@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>Bài học về độ tin cậy của khuyến mãi — Vite</title>
+    <script type="module" src="/src/main.jsx"></script>
+  </head>
+  <body>
+    <header data-testid="lesson-entry" data-act="1">
+      <p class="eyebrow">Bài học đại diện: độ tin cậy của khuyến mãi</p>
+      <p class="notice" lang="en">TRACKED REAL FIXTURE — UNSCORED — CANNOT COMPLETE</p>
+      <h1 lang="en">Can this promotion headline be trusted?</h1>
+      <p>Khảo sát có giới hạn này giữ từng nguồn ở đúng mức hạt và không đưa ra khẳng định nhân quả.</p>
+    </header>
+
+    <main>
+      <nav aria-label="Các bước của bài học">
+        <ol>
+          <li><a href="#question">Đặt câu hỏi</a></li>
+          <li><a href="#evidence">Kiểm tra bằng chứng</a></li>
+          <li><a href="#decision">Kết luận</a></li>
+          <li><a href="#reflection">Suy ngẫm</a></li>
+        </ol>
+      </nav>
+
+      <section id="question" data-act="2" aria-labelledby="question-heading">
+        <h2 id="question-heading">Thử một câu hỏi có giới hạn</h2>
+        <p>Các cửa sổ thời gian tương tự không tạo ra một khóa nối chung giữa các nguồn.</p>
+        <div id="probe">
+          <p data-testid="lesson-status" role="status" aria-live="polite" aria-atomic="true" lang="en">Exploration is reversible and unverified.</p>
+        </div>
+      </section>
+
+      <section id="evidence" aria-labelledby="evidence-heading">
+        <h2 id="evidence-heading">Bốn mức hạt bằng chứng độc lập</h2>
+        <div class="evidence">
+          <article data-act="3" aria-labelledby="promotion-heading">
+            <h3 id="promotion-heading">Khuyến mãi</h3>
+            <p><strong>Mức hạt:</strong> <code data-testid="grain-promotion" lang="en">promo_name × channel</code></p>
+            <p data-testid="grain-promotion-limitation" lang="en">Promotion aggregates cannot identify fulfillment, returns, or data-quality causes.</p>
+          </article>
+          <article data-act="4" aria-labelledby="fulfillment-heading">
+            <h3 id="fulfillment-heading">Thực hiện đơn hàng</h3>
+            <p><strong>Mức hạt:</strong> <code data-testid="grain-fulfillment" lang="en">carrier × region_name</code></p>
+            <p data-testid="grain-fulfillment-limitation" lang="en">No shared key permits attribution to a promotion.</p>
+          </article>
+          <article data-act="5" aria-labelledby="returns-heading">
+            <h3 id="returns-heading">Hoàn trả</h3>
+            <p><strong>Mức hạt:</strong> <code data-testid="grain-returns" lang="en">reason × category_name × region_name</code></p>
+            <p data-testid="grain-returns-limitation" lang="en">No shared key permits attribution to a promotion.</p>
+          </article>
+          <article data-act="6" aria-labelledby="quality-heading">
+            <h3 id="quality-heading">Chất lượng dữ liệu</h3>
+            <p><strong>Mức hạt:</strong> <code data-testid="grain-data-quality" lang="en">scenario</code></p>
+            <p data-testid="grain-data-quality-limitation" lang="en">Scenario evidence is independent and does not establish a cause.</p>
+          </article>
+        </div>
+      </section>
+
+      <section data-act="7" aria-labelledby="boundary-heading">
+        <h2 id="boundary-heading">Giữ nguyên ranh giới bằng chứng</h2>
+        <p>Không ghép các nguồn độc lập và không suy diễn quan hệ chỉ từ các khoảng thời gian tương tự.</p>
+      </section>
+
+      <section class="failure" data-act="8" aria-labelledby="failure-heading">
+        <h2 id="failure-heading">Thất bại được kiểm soát</h2>
+        <p>Việc thiếu mức hạt chung ngăn câu trả lời, quy kết, hoàn thành hoặc điểm số được lưu.</p>
+      </section>
+
+      <section id="decision" data-act="9" aria-labelledby="decision-heading">
+        <h2 id="decision-heading">Kết luận có giới hạn</h2>
+        <dl class="decision">
+          <div>
+            <dt>Kết luận</dt>
+            <dd><code data-testid="lesson-conclusion" lang="en">insufficient-evidence</code></dd>
+          </div>
+          <div>
+            <dt>Lý do</dt>
+            <dd><code data-testid="lesson-reason" lang="en">no-common-grain</code></dd>
+          </div>
+        </dl>
+        <p data-testid="no-js-reset-limitation" class="fallback-note" lang="en">Without JavaScript, reset is unavailable; all facts remain in their baseline state.</p>
+      </section>
+
+      <section id="reflection" data-act="10" aria-labelledby="reflection-heading">
+        <h2 id="reflection-heading">Suy ngẫm</h2>
+        <p data-testid="reflection-prompt" lang="en">Reflection: What additional common-grain evidence would be needed before making a causal claim?</p>
+      </section>
+    </main>
+
+    <footer>
+      <!--FIXTURE-METADATA-->
+      <p class="notice">KHÔNG CHẤM ĐIỂM — KHÔNG CÓ QUYỀN HOÀN THÀNH HOẶC QUY KẾT</p>
+    </footer>
+  </body>
+</html>

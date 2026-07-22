@@ -1,0 +1,39 @@
+{
+  "result": "pass",
+  "cleanup": {
+    "result": "pass",
+    "removed": [
+      "spikes/web/candidates/vite/node_modules",
+      "spikes/web/candidates/vite/dist",
+      "spikes/web/candidates/vite/test-results",
+      "spikes/web/candidates/vite/playwright-report"
+    ],
+    "preserved": ".artifacts/runtime/i5-02/v3-20260721T174126318Z-af388ddf/gate/result.json",
+    "scope": "run-owned-candidate-runtime-only"
+  },
+  "ownedRollbackSentinel": {
+    "id": "ownedRollbackSentinel",
+    "removed": true,
+    "scope": ".artifacts/runtime/i5-02/v3-20260721T174126318Z-af388ddf/rollback-simulation"
+  },
+  "unownedRollbackSentinel": {
+    "id": "unownedRollbackSentinel",
+    "preservedDuringSimulation": true,
+    "sha256": "07973579e48d9b73a6c830bab87586b255d361846378ed5b291f5a5217ec27a0",
+    "controlCleanup": true
+  },
+  "retainedPreservation": {
+    "result": "pass",
+    "before": {
+      "green/result.json": "81caa50c98e2a353d3a79fb27fd5dceb658e00420ecdc7fe9d78166d1395cdbb",
+      "security/scans.json": "50accb6ea0076ccb64964c43d1a34f68d1a92bd1541ed784caa1eb4f3803531e",
+      "green/browser-results/chromium-desktop/v3-05-axe-complete.json": "e36a05bc1505ad59cae31111d4e4ac70e35d85519272abe99ff4e9ea2d19cdd9"
+    },
+    "after": {
+      "green/result.json": "81caa50c98e2a353d3a79fb27fd5dceb658e00420ecdc7fe9d78166d1395cdbb",
+      "security/scans.json": "50accb6ea0076ccb64964c43d1a34f68d1a92bd1541ed784caa1eb4f3803531e",
+      "green/browser-results/chromium-desktop/v3-05-axe-complete.json": "e36a05bc1505ad59cae31111d4e4ac70e35d85519272abe99ff4e9ea2d19cdd9"
+    }
+  },
+  "scope": "run-owned-sentinel-only"
+}

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "i5-02-gate-c-recovery-hash-index-v1",
+  "recoveryInputSha": "8dd2fc2e0954bd933c3584a2f50a9856ff5915d4",
+  "candidateSourceAndTestedSha": "02051ed94d4e2c920f8a65a4ecab0e08a82b946a",
+  "testedOutputCommitSha": "bef2d20f9b1d8029900b88aaea2f9991b0547590",
+  "testedTreeSha": "d990cd5f7e4fff2af74d1cd0d8a2967d8f7aa23b",
+  "artifactCount": 10,
+  "selfIndexed": false,
+  "artifacts": [
+    {"locator":"manual-result.json","bytes":5871,"sha256":"92a0ff80a9c3ea7746f34226be5cdbebdda51e4e70d5b1201816ea7a893fa231"},
+    {"locator":"preflight/preflight.json","bytes":3479,"sha256":"2c6f566925f898e0a9ad8887fe5ec7a51fbd486077fc3a441b666e5e5fd9ee21"},
+    {"locator":"timer.json","bytes":565,"sha256":"8d43cdb190a67db36dcf1e37bd256e7104f12b91e073793348524742a2917540"},
+    {"locator":"verification.json","bytes":3036,"sha256":"f3aa5b20091f8857db225fbe8885c35163f67539b8940b224b4dd8e1bd8174bb"},
+    {"locator":"vite/screenshots/keyboard-entry.png","bytes":270177,"sha256":"44c77f14e588255be4fa742b7f50910aefaedf106f47df22d26d72dff2c4a205"},
+    {"locator":"vite/screenshots/keyboard-focus-orient.png","bytes":275139,"sha256":"74389c333b96cca78b6cfdff14cb48bf5e60473ef1a4bdfb895cfb9daef80439"},
+    {"locator":"vite/screenshots/voiceover-run-button-window.png","bytes":428006,"sha256":"f79b9075cf0de59b555b9c1644a2ef750fdec5a76a7c00291371b223a1bd98c0"},
+    {"locator":"vite/screenshots/zoom-enlarged-viewport.png","bytes":322849,"sha256":"6e39a8747e0fd06a8faa947174a166c999c70e2f57629183219d1eb7c4f72225"},
+    {"locator":"vite/screenshots/zoom-restored-100.png","bytes":287649,"sha256":"6ee133ae35e5094dc7c4cf7f925583826964e4da8d643639ca1b7dea9935752e"},
+    {"locator":"vite/voiceover/caption-run-button.png","bytes":55169,"sha256":"1401d59297611f5896e9c8855f919df32b84ca17a3ad3d4f6fc71761dc7cd45a"}
+  ]
+}

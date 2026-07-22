@@ -1,0 +1,145 @@
+{
+  "schemaVersion": "gate-a-route-drill-v1",
+  "runId": "gate-a-recovery-20260721T003738Z",
+  "attempt": 2,
+  "testedTreeSha": "2e2d024043070955d2c460b2e58bb9a926384762",
+  "host": "127.0.0.1",
+  "port": 4174,
+  "strictCsp": "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'",
+  "results": [
+    {
+      "method": "GET",
+      "path": "/",
+      "status": 200,
+      "csp": "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'",
+      "cors": null,
+      "location": null,
+      "bodyBytes": 26486,
+      "expectedStatus": 200,
+      "ok": true
+    },
+    {
+      "method": "GET",
+      "path": "/index.html",
+      "status": 200,
+      "csp": "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'",
+      "cors": null,
+      "location": null,
+      "bodyBytes": 26486,
+      "expectedStatus": 200,
+      "ok": true
+    },
+    {
+      "method": "GET",
+      "path": "/preview.css",
+      "status": 200,
+      "csp": "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'",
+      "cors": null,
+      "location": null,
+      "bodyBytes": 13584,
+      "expectedStatus": 200,
+      "ok": true
+    },
+    {
+      "method": "GET",
+      "path": "/preview.mjs",
+      "status": 200,
+      "csp": "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'",
+      "cors": null,
+      "location": null,
+      "bodyBytes": 17649,
+      "expectedStatus": 200,
+      "ok": true
+    },
+    {
+      "method": "GET",
+      "path": "/__i5_02_ready",
+      "status": 200,
+      "csp": "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'",
+      "cors": null,
+      "location": null,
+      "bodyBytes": 235,
+      "expectedStatus": 200,
+      "ok": true
+    },
+    {
+      "method": "GET",
+      "path": "/unknown",
+      "status": 404,
+      "csp": "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'",
+      "cors": null,
+      "location": null,
+      "bodyBytes": 14,
+      "expectedStatus": 404,
+      "ok": true
+    },
+    {
+      "method": "GET",
+      "path": "/.env",
+      "status": 404,
+      "csp": "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'",
+      "cors": null,
+      "location": null,
+      "bodyBytes": 14,
+      "expectedStatus": 404,
+      "ok": true
+    },
+    {
+      "method": "GET",
+      "path": "/%2e%2e/index.html",
+      "status": 404,
+      "csp": "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'",
+      "cors": null,
+      "location": null,
+      "bodyBytes": 14,
+      "expectedStatus": 404,
+      "ok": true
+    },
+    {
+      "method": "GET",
+      "path": "/%252e%252e/index.html",
+      "status": 404,
+      "csp": "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'",
+      "cors": null,
+      "location": null,
+      "bodyBytes": 14,
+      "expectedStatus": 404,
+      "ok": true
+    },
+    {
+      "method": "GET",
+      "path": "/preview.css?theme=remote",
+      "status": 404,
+      "csp": "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'",
+      "cors": null,
+      "location": null,
+      "bodyBytes": 14,
+      "expectedStatus": 404,
+      "ok": true
+    },
+    {
+      "method": "POST",
+      "path": "/",
+      "status": 405,
+      "csp": "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'",
+      "cors": null,
+      "location": null,
+      "bodyBytes": 15,
+      "expectedStatus": 405,
+      "ok": true
+    },
+    {
+      "method": "HEAD",
+      "path": "/preview.mjs",
+      "status": 405,
+      "csp": "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'",
+      "cors": null,
+      "location": null,
+      "bodyBytes": 0,
+      "expectedStatus": 405,
+      "ok": true
+    }
+  ],
+  "allPassed": true,
+  "foreignPort4173Signalled": false
+}

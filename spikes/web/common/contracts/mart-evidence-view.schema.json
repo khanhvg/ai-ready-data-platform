@@ -1,0 +1,71 @@
+{
+  "$id": "urn:i5-02:mart-evidence-view:v1",
+  "title": "MartEvidenceView",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "grain", "timeScope", "filterScope", "numerator", "denominator", "weighting", "limitations", "supports", "cannotEstablish", "facts"],
+  "properties": {
+    "id": { "enum": ["promotion", "fulfillment", "returns", "global-dq"] },
+    "grain": { "type": "array", "minItems": 2, "maxItems": 3, "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" } },
+    "timeScope": { "type": "string", "minLength": 1 },
+    "filterScope": { "type": "string", "minLength": 1 },
+    "numerator": { "type": "string", "minLength": 1 },
+    "denominator": { "type": "string", "minLength": 1 },
+    "weighting": { "type": "string", "minLength": 1 },
+    "limitations": { "type": "string", "minLength": 1 },
+    "supports": { "type": "string", "minLength": 1 },
+    "cannotEstablish": { "type": "string", "minLength": 1 },
+    "facts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "promo_name": { "type": "string" },
+        "channel": { "type": "string" },
+        "carrier": { "type": "string" },
+        "region": { "type": "string" },
+        "return_reason": { "type": "string" },
+        "category": { "type": "string" },
+        "scenario": { "type": "string" },
+        "count": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "id": { "const": "promotion" } }, "required": ["id"] },
+      "then": {
+        "properties": {
+          "grain": { "prefixItems": [{ "const": "promo_name" }, { "const": "channel" }], "items": false },
+          "facts": { "required": ["promo_name", "channel"], "propertyNames": { "enum": ["promo_name", "channel"] } }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "id": { "const": "fulfillment" } }, "required": ["id"] },
+      "then": {
+        "properties": {
+          "grain": { "prefixItems": [{ "const": "carrier" }, { "const": "region" }], "items": false },
+          "facts": { "required": ["carrier", "region"], "propertyNames": { "enum": ["carrier", "region"] } }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "id": { "const": "returns" } }, "required": ["id"] },
+      "then": {
+        "properties": {
+          "grain": { "prefixItems": [{ "const": "return_reason" }, { "const": "category" }, { "const": "region" }], "items": false },
+          "facts": { "required": ["return_reason", "category", "region"], "propertyNames": { "enum": ["return_reason", "category", "region"] } }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "id": { "const": "global-dq" } }, "required": ["id"] },
+      "then": {
+        "properties": {
+          "grain": { "prefixItems": [{ "const": "scenario" }, { "const": "count" }], "items": false },
+          "facts": { "required": ["scenario", "count"], "propertyNames": { "enum": ["scenario", "count"] } }
+        }
+      }
+    }
+  ]
+}

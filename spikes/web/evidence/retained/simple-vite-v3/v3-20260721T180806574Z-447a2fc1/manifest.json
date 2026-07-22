@@ -1,0 +1,364 @@
+{
+  "schemaVersion": "i5-02-simple-vite-v3-evidence-v1",
+  "acceptanceRevision": "i5-02-simple-vite-v3",
+  "runId": "v3-20260721T180806574Z-447a2fc1",
+  "implementationInputSha": "4cfd01f891655670b5a43a362b1567bcaaf4a824",
+  "testedSourceSha": "98cdeb0da8004222f5ee6c954bdc024573850c40",
+  "testedTreeSha": "bf0018194a63eaf1f075578dcb3771ab4aedd586",
+  "branch": "feature/issue-5-02-web-spike",
+  "authorityMode": "feature-branch",
+  "freshLiveHead": "f45aa016605c250aa26c977f2320acf75b565ecb",
+  "issue6IntegrationSha": "24be3b34c6b0fcdbd07c5800dcab349054e34713",
+  "fixtureIdentities": {
+    "contracts/data/retail-golden-v1.json": {
+      "sha256": "f303282e3b524e1273e702c9b8b24b500aaa01afdd3c3b623ac997afba8840cc",
+      "blob": "2bdd653ced3ce3f69652d2b873f21699e1e1fc81"
+    },
+    "contracts/data/promotion-trust-v1.yaml": {
+      "sha256": "c30e1938aae6eeffa2adf0c0b3bdee15f7f877d769cce09e171d43dc2f153cfe",
+      "blob": "876789d549276b44a6e64cc4c9a471886fd2752b"
+    },
+    "tests/fixtures/learning/promotion-trust/evidence-v1.json": {
+      "sha256": "2f4d90228fa2ea8859a8db630ff587b6cebdc10a0bf6b7db25e46c3dc27181d5",
+      "blob": "6b5d8a01a59856cdb93a674a0cce5c2bcc9527e0"
+    },
+    "tests/fixtures/learning/promotion-trust/manifest.json": {
+      "sha256": "0a1dcd4023648f52009bfd4dc5d529c00ce66f42cd0e725732b972b0b78df341",
+      "blob": "a4b32032962f5f787d733f7de8cf657491944e37"
+    }
+  },
+  "lockSha256": "96feead881be424d4c0d8d4629d7da0312722a3d7c945d08ed071542ea5d443c",
+  "tools": {
+    "node": "v22.22.3",
+    "npm": "10.9.8",
+    "chrome": "Google Chrome 150.0.7871.129"
+  },
+  "commands": [
+    {
+      "name": "install",
+      "command": [
+        "npm",
+        "--prefix",
+        "spikes/web/candidates/vite",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "rc": 0,
+      "timedOut": false,
+      "durationMs": 775.940708
+    },
+    {
+      "name": "build",
+      "command": [
+        "npm",
+        "--prefix",
+        "spikes/web/candidates/vite",
+        "run",
+        "build"
+      ],
+      "rc": 0,
+      "timedOut": false,
+      "durationMs": 1772.730958
+    },
+    {
+      "name": "unit",
+      "command": [
+        "npm",
+        "--prefix",
+        "spikes/web/candidates/vite",
+        "run",
+        "test:unit"
+      ],
+      "rc": 0,
+      "timedOut": false,
+      "durationMs": 219.85525
+    },
+    {
+      "name": "harness",
+      "command": [
+        "node",
+        "--test",
+        "spikes/web/harness/tests/simple-vite-v3.test.mjs"
+      ],
+      "rc": 0,
+      "timedOut": false,
+      "durationMs": 7451.139917
+    },
+    {
+      "name": "playwright",
+      "command": [
+        "npm",
+        "--prefix",
+        "spikes/web/candidates/vite",
+        "run",
+        "test:smoke",
+        "--",
+        "--workers=1",
+        "--retries=0"
+      ],
+      "rc": 0,
+      "timedOut": false,
+      "durationMs": 6416.71325
+    },
+    {
+      "name": "npm-audit",
+      "command": [
+        "npm",
+        "--prefix",
+        "spikes/web/candidates/vite",
+        "audit",
+        "--audit-level=high",
+        "--json"
+      ],
+      "rc": 0,
+      "timedOut": false,
+      "durationMs": 793.3895
+    }
+  ],
+  "browserInventory": [
+    {
+      "title": "@desktop-only V3-05 one whole-page axe scan",
+      "project": "chromium-desktop",
+      "status": "expected",
+      "retries": 0
+    },
+    {
+      "title": "@desktop-only V3-06 real JavaScript-disabled response and DOM fallback",
+      "project": "chromium-desktop",
+      "status": "expected",
+      "retries": 0
+    },
+    {
+      "title": "@journey V3-03 V3-04 representative promotion-trust journey",
+      "project": "chromium-desktop",
+      "status": "expected",
+      "retries": 0
+    },
+    {
+      "title": "@journey V3-03 V3-04 representative promotion-trust journey",
+      "project": "chromium-narrow",
+      "status": "expected",
+      "retries": 0
+    }
+  ],
+  "groups": [
+    {
+      "id": "V3-01",
+      "result": "pass"
+    },
+    {
+      "id": "V3-02",
+      "result": "pass"
+    },
+    {
+      "id": "V3-03",
+      "result": "pass"
+    },
+    {
+      "id": "V3-04",
+      "result": "pass"
+    },
+    {
+      "id": "V3-05",
+      "result": "pass"
+    },
+    {
+      "id": "V3-06",
+      "result": "pass"
+    },
+    {
+      "id": "V3-07",
+      "result": "pass"
+    }
+  ],
+  "redProvenance": {
+    "result": "pass",
+    "testOnlySha": "d644c4fbb0e88bd4d77567a705b835a9c0eb79a0",
+    "testedTreeSha": "61f8abbe6e79febb66035e8be2634a32544edb4d"
+  },
+  "targetedReviewFixRed": {
+    "result": "pass",
+    "sourceSha": "f45aa016605c250aa26c977f2320acf75b565ecb",
+    "rc": 1,
+    "assertionIds": [
+      "V3-07 bounded command escalates TERM to KILL for its owned group and leaves no descendant",
+      "V3-07 host READY timeout rejects boundedly and cleans its owned process group",
+      "V3-07 authority accepts detached exact-live head and rejects detached mismatch or another branch",
+      "V3-05 progressive controls use valid named group semantics"
+    ],
+    "log": "tdd/review-fix-red/focused-tests.tap"
+  },
+  "evidenceClosureRedSha": "23ad065ed49aa5bba718252a6755511182e55a23",
+  "testNameInventory": [
+    "VITE-FOUNDATION-001 pins static MPA progressive React and exact supply chain",
+    "VITE-FIXTURE-001 build adapter directly reads all four tracked inputs",
+    "VITE-SEMANTIC-001 emits static ten-act facts before progressive React",
+    "V3-02 fixture SHA-256 identities and independent source grains are exact",
+    "V3-02 lesson contract names the Vietnamese representative entry and four evidence limitations",
+    "V3-02 controlled failure, conclusion, reset baseline, and reflection are exact and non-attributing",
+    "V3-02 authored fallback exposes the complete contract in response bytes before React",
+    "V3-05 progressive controls use valid named group semantics",
+    "V3-07 harness contract closes authority, seven groups, commands, and write paths",
+    "V3-07 S3 scanner rejects credentials, private paths, PII, injection, and remote imports",
+    "V3-07 ownership ledger fails closed on foreign port, missing fingerprint, and run mismatch",
+    "V3-07 retained manifest is closed over exact-head RED, 7/7, redaction, and rollback",
+    "V3-07 runner contains bounded commands and never imports comparison, native, timer, or cloud paths",
+    "V3-07 bounded command escalates TERM to KILL for its owned group and leaves no descendant",
+    "V3-07 host READY timeout rejects boundedly and cleans its owned process group",
+    "V3-07 authority accepts detached exact-live head and rejects detached mismatch or another branch",
+    "@desktop-only V3-05 one whole-page axe scan [chromium-desktop]",
+    "@desktop-only V3-06 real JavaScript-disabled response and DOM fallback [chromium-desktop]",
+    "@journey V3-03 V3-04 representative promotion-trust journey [chromium-desktop]",
+    "@journey V3-03 V3-04 representative promotion-trust journey [chromium-narrow]"
+  ],
+  "artifactLocators": {
+    "journeyFacts": [
+      "green/browser-results/chromium-desktop/v3-03-v3-04-journey-facts.json",
+      "green/browser-results/chromium-narrow/v3-03-v3-04-journey-facts.json"
+    ],
+    "axe": "green/browser-results/chromium-desktop/v3-05-axe-complete.json",
+    "noJsInventory": "green/browser-results/chromium-desktop/v3-06-no-js-inventory.json",
+    "noJsResponse": "green/browser-results/chromium-desktop/v3-06-response.html",
+    "scan": "security/scans.json",
+    "finalRetainedScan": "security/final-retained-scan.json",
+    "ownership": "lifecycle/owned-resources.json",
+    "rollback": "lifecycle/rollback.json"
+  },
+  "axeSummary": {
+    "invocations": 1,
+    "critical": 0,
+    "serious": 0,
+    "violations": 0,
+    "passes": 39,
+    "incomplete": 0,
+    "incompleteSummary": [],
+    "inapplicable": 50,
+    "findingsRetained": true
+  },
+  "noJsFacts": {
+    "javaScriptEnabled": false,
+    "responseBytes": 6416,
+    "csp": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'",
+    "inventoryCount": 13,
+    "inventoryIds": [
+      "lesson-entry",
+      "grain-promotion",
+      "grain-promotion-limitation",
+      "grain-fulfillment",
+      "grain-fulfillment-limitation",
+      "grain-returns",
+      "grain-returns-limitation",
+      "grain-data-quality",
+      "grain-data-quality-limitation",
+      "lesson-conclusion",
+      "lesson-reason",
+      "no-js-reset-limitation",
+      "reflection-prompt"
+    ],
+    "responseSha256": "e385370f6ed23698287ecedc82589d7ba0cbfc3828f5d0d539e278ca2894b161"
+  },
+  "scanSummary": {
+    "result": "pass",
+    "findings": 0,
+    "checks": 8,
+    "checkInventory": [
+      {
+        "id": "content-safety",
+        "result": "pass"
+      },
+      {
+        "id": "csp-document",
+        "result": "pass"
+      },
+      {
+        "id": "csp-response",
+        "result": "pass"
+      },
+      {
+        "id": "same-origin",
+        "result": "pass"
+      },
+      {
+        "id": "persistence-empty",
+        "result": "pass"
+      },
+      {
+        "id": "no-js-response-inventory",
+        "result": "pass"
+      },
+      {
+        "id": "axe-complete",
+        "result": "pass"
+      },
+      {
+        "id": "browser-evidence-materialized",
+        "result": "pass"
+      }
+    ],
+    "finalRetained": "pass"
+  },
+  "ownedResourceSummary": {
+    "result": "pass",
+    "serverCount": 1,
+    "port": 4175,
+    "cleanup": "pass",
+    "rollbackSimulation": "pass"
+  },
+  "audit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "redaction": {
+    "result": "pass",
+    "findings": []
+  },
+  "cleanupRollback": {
+    "result": "pass",
+    "cleanup": {
+      "result": "pass",
+      "removed": [
+        "spikes/web/candidates/vite/node_modules",
+        "spikes/web/candidates/vite/dist",
+        "spikes/web/candidates/vite/test-results",
+        "spikes/web/candidates/vite/playwright-report"
+      ],
+      "preserved": ".artifacts/runtime/i5-02/v3-20260721T180806574Z-447a2fc1/gate/result.json",
+      "scope": "run-owned-candidate-runtime-only"
+    },
+    "ownedRollbackSentinel": {
+      "id": "ownedRollbackSentinel",
+      "removed": true,
+      "scope": ".artifacts/runtime/i5-02/v3-20260721T180806574Z-447a2fc1/rollback-simulation"
+    },
+    "unownedRollbackSentinel": {
+      "id": "unownedRollbackSentinel",
+      "preservedDuringSimulation": true,
+      "sha256": "d0aeff959fe30bb58424a02370bc1db31f584fcb55df1503917a314bcf1054ed",
+      "controlCleanup": true
+    },
+    "retainedPreservation": {
+      "result": "pass",
+      "before": {
+        "green/result.json": "2b5a3feab7a6a4c751fa862878cac9f077325b603ca0fa933c281754b1d08045",
+        "security/scans.json": "1973acd00bd2b1f766bbff2819f0dd33e79cd56930f6883086cbfabf6a71f498",
+        "green/browser-results/chromium-desktop/v3-05-axe-complete.json": "28f005a7a246affdda06a09f405a2dbf29a8798e56d972d85e024e5b8f008c6c"
+      },
+      "after": {
+        "green/result.json": "2b5a3feab7a6a4c751fa862878cac9f077325b603ca0fa933c281754b1d08045",
+        "security/scans.json": "1973acd00bd2b1f766bbff2819f0dd33e79cd56930f6883086cbfabf6a71f498",
+        "green/browser-results/chromium-desktop/v3-05-axe-complete.json": "28f005a7a246affdda06a09f405a2dbf29a8798e56d972d85e024e5b8f008c6c"
+      }
+    },
+    "scope": "run-owned-sentinel-only"
+  },
+  "limitations": [
+    "Chromium and axe automation are not a full WCAG or screen-reader conformance claim.",
+    "Production accessibility and manual UAT remain deferred."
+  ]
+}

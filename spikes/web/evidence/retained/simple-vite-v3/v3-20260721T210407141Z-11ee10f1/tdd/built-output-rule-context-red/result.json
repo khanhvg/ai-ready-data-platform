@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "i5-02-simple-vite-v3-built-output-rule-context-red-v1",
+  "result": "pass",
+  "command": [
+    "node",
+    "--test",
+    "spikes/web/harness/tests/simple-vite-v3.test.mjs"
+  ],
+  "sourceSha": "c5ec294ded082a0138096ad8dd851e2b7b0a117f",
+  "testedTreeSha": "e841efc7f3e2cd3059e051a1ee02326e44cfbb4c",
+  "rc": 1,
+  "passed": 16,
+  "failed": 1,
+  "assertionIds": [
+    "authored-unsafe-injection-remains-enforced",
+    "built-react-runtime-unsafe-injection-excluded",
+    "built-non-injection-rules-remain-enforced"
+  ],
+  "failure": "React-runtime-shaped built output must not trip the authored-source heuristic",
+  "contamination": []
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "gate-a-review-attempts-v1",
+  "runId": "gate-a-review-fix-20260721T013916Z",
+  "attempts": [
+    {
+      "stage": "focused-red",
+      "status": "intended-failure",
+      "result": "three assertions failed for the three confirmed defects",
+      "acceptanceEvidence": true
+    },
+    {
+      "stage": "precommit-54-test-regroup",
+      "status": "invalid-test-attempt",
+      "result": "duplicate local identifier caused a syntax failure; corrected without changing expectations",
+      "acceptanceEvidence": false
+    },
+    {
+      "stage": "exact-tree-make-before-source-push",
+      "status": "publication-order-failure",
+      "result": "G0-REMOTE-001 and G0-PATH-001 rejected unpushed source and transient review artifacts",
+      "acceptanceEvidence": false
+    },
+    {
+      "stage": "exact-tree-final",
+      "status": "pass",
+      "result": "54/54 tests, 12/12 Make targets, 12/12 routes and rollback passed",
+      "acceptanceEvidence": true
+    }
+  ]
+}

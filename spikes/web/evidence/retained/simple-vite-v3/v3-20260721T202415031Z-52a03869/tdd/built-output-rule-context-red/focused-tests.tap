@@ -1,0 +1,130 @@
+TAP version 13
+# Subtest: V3-07 harness contract closes authority, seven groups, commands, and write paths
+ok 1 - V3-07 harness contract closes authority, seven groups, commands, and write paths
+  ---
+  duration_ms: 0.925833
+  type: 'test'
+  ...
+# Subtest: V3-07 S3 scanner rejects credentials, private paths, PII, injection, and remote imports
+ok 2 - V3-07 S3 scanner rejects credentials, private paths, PII, injection, and remote imports
+  ---
+  duration_ms: 1.25525
+  type: 'test'
+  ...
+# Subtest: V3-07 scanner context keeps authored injection detection while built output excludes only that rule
+not ok 3 - V3-07 scanner context keeps authored injection detection while built output excludes only that rule
+  ---
+  duration_ms: 3.982209
+  type: 'test'
+  location: '<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:83:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    React-runtime-shaped built output must not trip the authored-source heuristic
+
+    'fail' !== 'pass'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'pass'
+  actual: 'fail'
+  operator: 'strictEqual'
+  stack: |-
+    file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:92:14
+    withBuiltOutputScanner (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:23:12)
+    async TestContext.<anonymous> (file://<WORKSPACE>/spikes/web/harness/tests/simple-vite-v3.test.mjs:90:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: V3-07 built-output scan fails closed when the required root is missing
+ok 4 - V3-07 built-output scan fails closed when the required root is missing
+  ---
+  duration_ms: 1.465042
+  type: 'test'
+  ...
+# Subtest: V3-07 built-output scan detects forbidden markers in generated JS, CSS, and source maps
+ok 5 - V3-07 built-output scan detects forbidden markers in generated JS, CSS, and source maps
+  ---
+  duration_ms: 12.635458
+  type: 'test'
+  ...
+# Subtest: V3-07 clean complete built-output scan emits normalized path and SHA-256 inventory
+ok 6 - V3-07 clean complete built-output scan emits normalized path and SHA-256 inventory
+  ---
+  duration_ms: 4.408458
+  type: 'test'
+  ...
+# Subtest: V3-07 built-output scan rejects symlinks, hardlinks, special files, and their escape targets
+ok 7 - V3-07 built-output scan rejects symlinks, hardlinks, special files, and their escape targets
+  ---
+  duration_ms: 5.572875
+  type: 'test'
+  ...
+# Subtest: V3-07 structural built-output scan failure records evidence before run-owned cleanup
+ok 8 - V3-07 structural built-output scan failure records evidence before run-owned cleanup
+  ---
+  duration_ms: 4.944459
+  type: 'test'
+  ...
+# Subtest: V3-07 ownership ledger fails closed on foreign port, missing fingerprint, and run mismatch
+ok 9 - V3-07 ownership ledger fails closed on foreign port, missing fingerprint, and run mismatch
+  ---
+  duration_ms: 0.521209
+  type: 'test'
+  ...
+# Subtest: V3-07 retained manifest is closed over exact-head RED, 7/7, redaction, and rollback
+ok 10 - V3-07 retained manifest is closed over exact-head RED, 7/7, redaction, and rollback
+  ---
+  duration_ms: 0.905708
+  type: 'test'
+  ...
+# Subtest: V3-07 runner contains bounded commands and never imports comparison, native, timer, or cloud paths
+ok 11 - V3-07 runner contains bounded commands and never imports comparison, native, timer, or cloud paths
+  ---
+  duration_ms: 0.584083
+  type: 'test'
+  ...
+# Subtest: V3-07 fast bounded command exits promptly without referenced harness timers
+ok 12 - V3-07 fast bounded command exits promptly without referenced harness timers
+  ---
+  duration_ms: 81.625791
+  type: 'test'
+  ...
+# Subtest: V3-07 bounded command escalates TERM to KILL for its owned group and leaves no descendant
+ok 13 - V3-07 bounded command escalates TERM to KILL for its owned group and leaves no descendant
+  ---
+  duration_ms: 532.618625
+  type: 'test'
+  ...
+# Subtest: V3-07 host READY timeout rejects boundedly and cleans its owned process group
+ok 14 - V3-07 host READY timeout rejects boundedly and cleans its owned process group
+  ---
+  duration_ms: 619.061
+  type: 'test'
+  ...
+# Subtest: V3-07 authority requires exact fresh-live head for feature branch and detached modes
+ok 15 - V3-07 authority requires exact fresh-live head for feature branch and detached modes
+  ---
+  duration_ms: 11950.3615
+  type: 'test'
+  ...
+# Subtest: V3-07 authority lookup timeout is bounded and fails closed deterministically
+ok 16 - V3-07 authority lookup timeout is bounded and fails closed deterministically
+  ---
+  duration_ms: 5414.884208
+  type: 'test'
+  ...
+# Subtest: V3-07 authority timeout cleans its transport descendant without signaling current or foreign groups
+ok 17 - V3-07 authority timeout cleans its transport descendant without signaling current or foreign groups
+  ---
+  duration_ms: 901.654833
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 16
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 19595.995667

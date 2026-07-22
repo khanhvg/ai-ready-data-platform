@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "i5-02-simple-vite-v3-runner-v1",
+  "acceptanceRevision": "i5-02-simple-vite-v3",
+  "implementationInputSha": "4cfd01f891655670b5a43a362b1567bcaaf4a824",
+  "branch": "feature/issue-5-02-web-spike",
+  "issue6IntegrationSha": "24be3b34c6b0fcdbd07c5800dcab349054e34713",
+  "lockSha256": "96feead881be424d4c0d8d4629d7da0312722a3d7c945d08ed071542ea5d443c",
+  "fixtureIdentities": {
+    "contracts/data/retail-golden-v1.json": {"sha256":"f303282e3b524e1273e702c9b8b24b500aaa01afdd3c3b623ac997afba8840cc","blob":"2bdd653ced3ce3f69652d2b873f21699e1e1fc81"},
+    "contracts/data/promotion-trust-v1.yaml": {"sha256":"c30e1938aae6eeffa2adf0c0b3bdee15f7f877d769cce09e171d43dc2f153cfe","blob":"876789d549276b44a6e64cc4c9a471886fd2752b"},
+    "tests/fixtures/learning/promotion-trust/evidence-v1.json": {"sha256":"2f4d90228fa2ea8859a8db630ff587b6cebdc10a0bf6b7db25e46c3dc27181d5","blob":"6b5d8a01a59856cdb93a674a0cce5c2bcc9527e0"},
+    "tests/fixtures/learning/promotion-trust/manifest.json": {"sha256":"0a1dcd4023648f52009bfd4dc5d529c00ce66f42cd0e725732b972b0b78df341","blob":"a4b32032962f5f787d733f7de8cf657491944e37"}
+  },
+  "protected": {
+    "Makefile":"12926b16a797fded79b0b11b00147887258721f145c79e66472f44c5f0228458",
+    ".gitignore":"aa93e47707e95286126f47b3d70fe7fc6c047b49c861184533e38b3c5a971316",
+    "release-manifest.json":"f9037b5d946d14f7b1b9c020939f1a44961011f2ad933db9f2b69054abbf9539"
+  },
+  "protectedTrees": {
+    "spikes/web/common":"f00fe97715df5dd469302994349fb95c9412482b",
+    "spikes/web/candidates/astro":"4b352a31354cc12bebcad9f0a461000c167e5f11",
+    "spikes/web/candidates/next":"85777043224f7f00ec944642e3531c1d891e5ec3",
+    "spikes/web/evidence/retained":"7b65d74d4131ed1ac9056ae05f599854215f99f5"
+  },
+  "groups": ["V3-01","V3-02","V3-03","V3-04","V3-05","V3-06","V3-07"],
+  "port": 4175,
+  "authorityLookupMs": 60000,
+  "ceilingsMs": {"install":300000,"build":180000,"node":120000,"hostReady":15000,"playwright":300000,"audit":180000},
+  "commands": {
+    "install":["npm","--prefix","spikes/web/candidates/vite","ci","--ignore-scripts","--no-audit","--no-fund"],
+    "build":["npm","--prefix","spikes/web/candidates/vite","run","build"],
+    "unit":["npm","--prefix","spikes/web/candidates/vite","run","test:unit"],
+    "harness":["node","--test","spikes/web/harness/tests/simple-vite-v3.test.mjs"],
+    "smoke":["npm","--prefix","spikes/web/candidates/vite","run","test:smoke","--","--workers=1","--retries=0"],
+    "audit":["npm","--prefix","spikes/web/candidates/vite","audit","--audit-level=high","--json"]
+  },
+  "allowedPaths": [
+    ".gitattributes","spikes/web/candidates/vite/index.html","spikes/web/candidates/vite/vite.config.mjs","spikes/web/candidates/vite/src/main.jsx","spikes/web/candidates/vite/src/styles.css","spikes/web/candidates/vite/src/lesson-contract.mjs","spikes/web/candidates/vite/package.json","spikes/web/candidates/vite/playwright.config.mjs","spikes/web/candidates/vite/tests/promotion-trust-contract.test.mjs","spikes/web/candidates/vite/tests/simple-vite-smoke.spec.mjs","spikes/web/harness/simple-vite-v3.json","spikes/web/harness/scripts/simple-vite-v3.mjs","spikes/web/harness/tests/simple-vite-v3.test.mjs","mk/issue-5/i5-02.mk","spikes/web/evidence/retention-index-v3.json","docs/decisions/0005-web-stack.md","docs/decisions/evidence/adr-0005-web-stack-scorecard.md","docs/decisions/evidence/adr-0005-web-stack-scorecard.json","plans/260721-007-web-stack-representative-lesson/plan.md","plans/260721-007-web-stack-representative-lesson/acceptance-and-test-matrix.md","plans/260721-007-web-stack-representative-lesson/simple-vite-acceptance-amendment-v3.md"
+  ],
+  "allowedPrefixes": ["spikes/web/evidence/retained/simple-vite-v3/"],
+  "runtimePrefix": ".artifacts/runtime/i5-02/",
+  "retainedPrefix": "spikes/web/evidence/retained/simple-vite-v3/",
+  "retentionIndex": "spikes/web/evidence/retention-index-v3.json"
+}

@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "failures": [
+    {
+      "code": "PROMOTION_HEADLINE_INSUFFICIENT",
+      "class": "controlled-analytical",
+      "copy": "Khẳng định tiêu đề không vượt qua phép kiểm tra bằng chứng đã giới hạn.",
+      "recovery": "Đối chiếu riêng từng grain, phép tính và giới hạn trước khi nêu kết luận.",
+      "progression": "diagnosis-only",
+      "evidence": "Lưu kết quả khẳng định tổng hợp từ fixture tổng hợp cùng bốn thẻ độc lập.",
+      "cue": "Kiểm tra có chủ đích"
+    },
+    {
+      "code": "FIXTURE_UNAVAILABLE",
+      "class": "environmental",
+      "copy": "Không tìm thấy fixture tổng hợp nên bản xem trước không thể tiếp tục.",
+      "recovery": "Khôi phục đúng fixture được sở hữu bởi dự án rồi khởi động lại.",
+      "progression": "stopped",
+      "evidence": "Ghi nhận mã thiếu fixture và dừng, không thay bằng lỗi phân tích.",
+      "cue": "Đầu vào bị thiếu"
+    },
+    {
+      "code": "FIXTURE_DIGEST_MISMATCH",
+      "class": "environmental",
+      "copy": "Digest fixture không khớp với trạng thái đã ghi nhận.",
+      "recovery": "Xóa phép chiếu trạng thái cũ và tải lại fixture có digest đúng.",
+      "progression": "stopped",
+      "evidence": "Ghi hai digest rút gọn an toàn và từ chối trạng thái cũ.",
+      "cue": "Đầu vào không khớp"
+    },
+    {
+      "code": "STATIC_ASSET_UNAVAILABLE",
+      "class": "environmental",
+      "copy": "Một tài sản tĩnh bắt buộc của bản xem trước không khả dụng.",
+      "recovery": "Khôi phục bộ tài sản tĩnh nguyên vẹn rồi khởi động lại.",
+      "progression": "stopped",
+      "evidence": "Ghi locator tương đối của tài sản và phản hồi máy chủ an toàn.",
+      "cue": "Tài sản bị thiếu"
+    },
+    {
+      "code": "PREVIEW_UNEXPECTED",
+      "class": "unexpected-product",
+      "copy": "Bản xem trước gặp trạng thái sản phẩm ngoài hợp đồng.",
+      "recovery": "Dừng hành trình, giữ dấu vết an toàn và sửa nguồn trước khi thử lại.",
+      "progression": "stopped",
+      "evidence": "Ghi mã lỗi, hành động tường minh gần nhất và digest mà không ghi dữ liệu riêng tư.",
+      "cue": "Lỗi sản phẩm ngoài dự kiến"
+    },
+    {
+      "code": "SESSION_ORIGIN_REJECTED",
+      "class": "future-compatibility",
+      "copy": "Nguồn phiên không được chấp nhận bởi ranh giới cổng tương lai.",
+      "recovery": "Để chủ sở hữu cổng tương lai xác thực lại phiên cùng nguồn.",
+      "progression": "not-emitted",
+      "evidence": "Chỉ là mã tương thích; bản xem trước này không phát mã đó.",
+      "cue": "Ranh giới tương lai"
+    },
+    {
+      "code": "CSRF_REJECTED",
+      "class": "future-compatibility",
+      "copy": "Yêu cầu thay đổi tương lai thiếu bằng chứng chống giả mạo.",
+      "recovery": "Để cổng tương lai cấp lại bằng chứng phiên hợp lệ.",
+      "progression": "not-emitted",
+      "evidence": "Chỉ mô tả khả năng tương thích; không có yêu cầu thay đổi trong preview.",
+      "cue": "Ranh giới tương lai"
+    }
+  ]
+}

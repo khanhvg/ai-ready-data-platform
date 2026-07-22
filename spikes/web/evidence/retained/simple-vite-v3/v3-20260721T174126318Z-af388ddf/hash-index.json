@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "i5-02-simple-vite-v3-hash-index-v1",
+  "files": [
+    {
+      "path": "green/browser-results/.last-run.json",
+      "bytes": 45,
+      "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+    },
+    {
+      "path": "green/browser-results/chromium-desktop/v3-03-v3-04-journey-facts.json",
+      "bytes": 14470,
+      "sha256": "a5147d113c84da88550f565828b3b969467dfa3fa23f79c1be3e78ee5fc3fac4"
+    },
+    {
+      "path": "green/browser-results/chromium-desktop/v3-05-axe-complete.json",
+      "bytes": 238843,
+      "sha256": "e36a05bc1505ad59cae31111d4e4ac70e35d85519272abe99ff4e9ea2d19cdd9"
+    },
+    {
+      "path": "green/browser-results/chromium-desktop/v3-06-no-js-inventory.json",
+      "bytes": 1895,
+      "sha256": "dc0365587769021b0b429f368a00ccccd221a17c2f1ebf1c91f2ac78bd5c4486"
+    },
+    {
+      "path": "green/browser-results/chromium-desktop/v3-06-response.html",
+      "bytes": 6416,
+      "sha256": "5b3a87fec58576a882305363245b04acce7e537ef30de1ae87a4e22228f0760e"
+    },
+    {
+      "path": "green/browser-results/chromium-narrow/v3-03-v3-04-journey-facts.json",
+      "bytes": 14321,
+      "sha256": "148c9fa59c1dbf221476fadcfbc391df9527429a8b4bd0d7522a26f5eeb2734c"
+    },
+    {
+      "path": "green/build.log",
+      "bytes": 402,
+      "sha256": "17963db20e12637b3ada048a036c8f82e69fcbb555410378bfddd102b58b03ec"
+    },
+    {
+      "path": "green/harness.log",
+      "bytes": 1345,
+      "sha256": "d526db1b2074182a722e797902506fe77e0abeac7bf6d5e3bd734026d80221a5"
+    },
+    {
+      "path": "green/install.log",
+      "bytes": 28,
+      "sha256": "36501cce0c5c88e04e9e08f75a2f964355587e7ca8f00ee4db04a796f8615928"
+    },
+    {
+      "path": "green/playwright.log",
+      "bytes": 376010,
+      "sha256": "75541374bdae7a821efba0723703adf48a49f55543e21e4d5c156be4cb2a0547"
+    },
+    {
+      "path": "green/response-index.html",
+      "bytes": 6416,
+      "sha256": "5b3a87fec58576a882305363245b04acce7e537ef30de1ae87a4e22228f0760e"
+    },
+    {
+      "path": "green/result.json",
+      "bytes": 6269,
+      "sha256": "81caa50c98e2a353d3a79fb27fd5dceb658e00420ecdc7fe9d78166d1395cdbb"
+    },
+    {
+      "path": "green/unit.log",
+      "bytes": 1857,
+      "sha256": "7e4e2cd29c2e772275e68c609a206d83f72b1d66be3ec31812e9809294e3f6af"
+    },
+    {
+      "path": "lifecycle/owned-resources.json",
+      "bytes": 544,
+      "sha256": "8da318a1c0e9e1b46ce5759b9d0021d961f39ef5bb44814678238ecf1a3ea783"
+    },
+    {
+      "path": "lifecycle/rollback.json",
+      "bytes": 1625,
+      "sha256": "826a7c590dd08affed74927fe7b66fff8782aed51ca3c920e54447133509d13b"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 10689,
+      "sha256": "d3c09e372df3e6f6a9e8609000074391ec0973630e8f2ae2477360b5b507a85b"
+    },
+    {
+      "path": "security/final-retained-scan.json",
+      "bytes": 228,
+      "sha256": "c7cf4b675ed8c6b4a8e18ab675c9d1bd495fa28370f9e77a4a43f5a35bbdf024"
+    },
+    {
+      "path": "security/npm-audit.json",
+      "bytes": 361,
+      "sha256": "bf4f8a0aad53df9a81b47a6cb06d869c558b67622ae30eff590874d796622109"
+    },
+    {
+      "path": "security/scans.json",
+      "bytes": 3866,
+      "sha256": "50accb6ea0076ccb64964c43d1a34f68d1a92bd1541ed784caa1eb4f3803531e"
+    },
+    {
+      "path": "tdd/red/playwright.log",
+      "bytes": 26057,
+      "sha256": "d5bb5d9f786ff14018d60769ca45f87bb9547d596c99d342cb45683dbcc0f700"
+    },
+    {
+      "path": "tdd/red/result.json",
+      "bytes": 2395,
+      "sha256": "e7eefe60b6713a242fe0b0372558d4f7928caf8e93a888a3a4bea667bb477487"
+    },
+    {
+      "path": "tdd/red/unit.log",
+      "bytes": 4682,
+      "sha256": "0a64bc2863dcd93aa93a9002a22710d088db152fd0974171110d2bd87a61b0ef"
+    }
+  ]
+}

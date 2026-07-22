@@ -1,0 +1,135 @@
+:root {
+  color: #172033;
+  background: #f4f1fa;
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  max-width: 74rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+header,
+section,
+footer {
+  max-width: 100%;
+  margin: 1rem 0;
+  padding: 1rem;
+  overflow-wrap: anywhere;
+  background: #fff;
+  border: 2px solid #26324a;
+  border-radius: .5rem;
+}
+
+.eyebrow {
+  margin-bottom: .25rem;
+  color: #40516c;
+  font-weight: 700;
+}
+
+.notice {
+  color: #7a1f14;
+  font-weight: 800;
+}
+
+nav ol,
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+}
+
+.evidence {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.evidence article,
+.decision > div,
+.fixture-metadata,
+.probe-controls {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.evidence article {
+  padding: 1rem;
+  border: 1px solid #52627a;
+}
+
+.failure {
+  padding-left: 1rem;
+  border-left: 6px solid #a12a1c;
+}
+
+.decision {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.decision dt {
+  font-weight: 700;
+}
+
+.decision dd {
+  margin: .25rem 0 0;
+}
+
+.fallback-note {
+  padding: .75rem;
+  background: #eef3fb;
+  border-left: 4px solid #52627a;
+}
+
+a,
+button {
+  color: #063f78;
+  scroll-margin-block: .75rem;
+}
+
+button {
+  max-width: 100%;
+  margin: .25rem;
+  padding: .6rem;
+  overflow-wrap: anywhere;
+  background: #fff;
+  border: 2px solid currentColor;
+  font: inherit;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 4px solid #8a3ffc;
+  outline-offset: 3px;
+}
+
+code,
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 42rem) {
+  .evidence,
+  .decision {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
