@@ -19,11 +19,11 @@ effort: "M"
 
 ## Overview
 
-Prove the future Stage A candidate is contract-valid, trace-complete, deterministic,
+Prove the exact-authorized Stage A candidate is contract-valid, trace-complete, deterministic,
 evidence-backed, rollback-safe, and restricted to static claims. Stage A may be reviewed or later
 merged only under its exact readiness and human gates; it does not unlock Stage B automatically.
 
-At the current planner output this phase is blocked and has no file or command authority.
+This phase is ready to cook only after Phases 1–3 pass at the exact candidate tree.
 
 ## Requirements
 
@@ -34,17 +34,17 @@ At the current planner output this phase is blocked and has no file or command a
 
 ## Architecture
 
-Evidence is produced under `.artifacts/evidence/architecture-curriculum/<run-id>/` through the
-exact released #8 binding. It distinguishes input, tested tree, optional attestation commit, and
-external merge/approval. One closed immutable run index enumerates every required result/artifact
-and byte hash; missing, duplicate, orphaned, or unindexed bytes fail. Stage A results never
-synthesize an `architecture-lab-e2e` pass.
+Evidence is produced under the amendment's two I5-06 run-owned roots and the existing protected
+architecture evidence roots. It uses `fitness-result-v1` command envelopes, not Issue #8 learner
+evidence. It distinguishes input, tested tree, optional attestation commit, and external merge/
+approval. One closed immutable run index enumerates every required result/artifact and byte hash;
+missing, duplicate, orphaned, or unindexed bytes fail. Stage A never synthesizes an
+`architecture-lab-e2e` or `architecture-visual-review` pass.
 
 ## Related Code Files
 
-- Current Create/Modify/Delete: none (`[]`).
-- Future evidence is runtime/local and never staged unless a later explicit evidence publication
-  path is authorized. Exact evidence filenames come from the #8 release amendment.
+- Current tracked Create: exact amendment paths only; Modify/Delete: none (`[]`).
+- Evidence is bounded runtime/local state and is never staged by this authority.
 
 ## Implementation Steps
 
@@ -90,8 +90,8 @@ Exact Stage A amendment-authorized command list plus static checks. The immutabl
 ## Success Criteria
 
 - [ ] RED/GREEN/static/render/trace/security/rollback evidence is complete at exact tested tree.
-- [ ] Exact released #8 evidence path/hash and owner-authorized compatibility with the Issue #11
-      command-result requirement are pinned; Issue #6 `fitness-result-v1` is not a fallback.
+- [ ] I5-06 command evidence uses the existing `fitness-result-v1` registry contract; released
+      `fitness-result-v2`, learner evidence, progress, and completion remain non-authorities.
 - [ ] The immutable run index is complete and rejects missing, duplicate, orphaned, stale, or
       tampered results/artifacts.
 - [ ] Protected six and dependency/portal/root/cloud deny-list remain unchanged.

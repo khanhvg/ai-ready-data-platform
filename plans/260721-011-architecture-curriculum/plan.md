@@ -1,6 +1,6 @@
 ---
 title: "I5-06 — Architecture curriculum, templates, and fitness functions"
-description: "Plan a Vietnamese-first foundation-to-mid architecture learning product in two exact-dependency stages without inventing contracts, renderer seams, or cook authority."
+description: "Authorize a bounded Vietnamese-first static Stage A curriculum from the exact released Issue #8 contracts while keeping portal-dependent Stage B blocked."
 status: pending
 priority: P1
 issue: 11
@@ -20,12 +20,18 @@ validationInputSha: "7620d168fb96cf9ae11e963501f65ea5a416af43"
 validationReport: "validation/independent-validation-report.md"
 readinessAuditInputSha: "1287fe35aa9ab29a97daa541f39a624d01a77d31"
 readinessAuditReport: "audit/readiness-audit-report.md"
-readinessVerdict: blocked-dependencies
-implementationAuthority: none
-stageAStatus: blocked-on-issue-8-released-contracts-and-additions-only-view-seam
-stageBStatus: blocked-on-stage-a-and-issue-10-passing-merged-real-journey
-currentImplementationFileAllowList: []
-currentImplementationCommandAllowList: []
+stageAAmendmentStartSha: "ab653f6edec73e5ef875723945d2e3cd7814b4e6"
+releasedStageASha: "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9"
+stageAAmendment: "stage-a-release-amendment.md"
+stageAReadinessAudit: "audit/stage-a-readiness-audit-report.md"
+readinessVerdict: stage-a-ready
+implementationAuthority: stage-a-only
+stageAStatus: ready-to-cook-from-exact-released-integration
+stageBStatus: blocked-on-issue10
+currentStageAFileAuthority: "stage-a-release-amendment.md#exact-stage-a-tracked-write-allowlist"
+currentStageACommandAuthority: "stage-a-release-amendment.md#exact-command-allowlist"
+stageBImplementationFileAllowList: []
+stageBImplementationCommandAllowList: []
 ---
 
 # I5-06 — Architecture curriculum, templates, and fitness functions
@@ -38,47 +44,45 @@ C4/data/integration/security/deployment views, an ADR or admitted pattern, imple
 automated evidence, and operations/resilience/security/cost/governance consequences. A topic list
 or Markdown dump is not a release.
 
-Planning is complete at exact clean input
-`24be3b34c6b0fcdbd07c5800dcab349054e34713`; implementation is not authorized. Stage A may become
-cookable only after Issue #8 publishes exact released learning contracts and this plan receives a
-fresh exact-SHA amendment, independent revalidation, and fresh readiness authorization. Stage A
-may create only a curriculum/template/static architecture-expansion candidate. It cannot claim
-portal delivery, an executable lab, completion, reset, or fresh learner evidence. Stage B alone
-may become cookable after the exact passing merged Issue #10 real journey and released portal
-renderer SHA is pinned through the same amendment/revalidation/readiness sequence. Only Stage B
-may claim the controlled failure → reset → verify → evidence journey.
+The original plan was completed at exact clean input
+`24be3b34c6b0fcdbd07c5800dcab349054e34713`. A fresh audit starting from clean plan head
+`ab653f6edec73e5ef875723945d2e3cd7814b4e6` now binds Stage A to released integration
+`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`. The
+[Stage A Exact-Release Amendment](./stage-a-release-amendment.md) is the normative authority for
+its exact 50 create-only paths, commands, contracts, tests, output bounds, evidence, cleanup, and
+rollback gates. It supersedes stale Stage A dependency and empty-authority statements below while
+preserving the original validation and blocked audit as historical records.
 
-No text in this plan assigns a future dependency SHA, released contract path/version, portal
-renderer module, fitness-schema implementation path, fixture path, architecture extension seam,
-or concrete implementation command/file allow-list. Those values must be copied from real
-released handoffs by later amendments; a guessed equivalent is a hard STOP.
+Stage A is a machine-valid curriculum/template/static-view foundation. It cannot claim portal
+delivery, an executable lab, runner, reset, progress, completion, fresh learner evidence, or
+learner effectiveness. Issue #8's active Stage B Vite identifier-binding lease is an explicit
+non-authority and is not consumed. Stage B remains blocked on a passing merged Issue #10 real
+journey and released renderer; its file, command, dependency, and renderer lists remain empty.
 
 ## Phases
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 1 | [Freeze authority and dependency gates](./phase-01-freeze-authority-and-dependency-gates.md) | Pending |
-| 2 | [Stage A tests-first contract and preservation](./phase-02-stage-a-tests-first-contract-and-preservation.md) | Pending |
-| 3 | [Stage A curriculum templates and static expansion](./phase-03-stage-a-curriculum-templates-and-static-expansion.md) | Pending |
-| 4 | [Stage A evidence and bounded handoff](./phase-04-stage-a-evidence-and-bounded-handoff.md) | Pending |
-| 5 | [Stage B exact renderer and journey amendment](./phase-05-stage-b-exact-renderer-and-journey-amendment.md) | Pending |
-| 6 | [Stage B executable architecture lab and publication](./phase-06-stage-b-executable-architecture-lab-and-publication.md) | Pending |
-| 7 | [Final verification rollback and exact-head approval](./phase-07-final-verification-rollback-and-exact-head-approval.md) | Pending |
+| 1 | [Freeze authority and dependency gates](./phase-01-freeze-authority-and-dependency-gates.md) | Ready for Stage A cook preflight |
+| 2 | [Stage A tests-first contract and preservation](./phase-02-stage-a-tests-first-contract-and-preservation.md) | Ready for Stage A cook |
+| 3 | [Stage A curriculum templates and static expansion](./phase-03-stage-a-curriculum-templates-and-static-expansion.md) | Ready for Stage A cook |
+| 4 | [Stage A evidence and bounded handoff](./phase-04-stage-a-evidence-and-bounded-handoff.md) | Ready for Stage A cook |
+| 5 | [Stage B exact renderer and journey amendment](./phase-05-stage-b-exact-renderer-and-journey-amendment.md) | Blocked on Issue #10 release |
+| 6 | [Stage B executable architecture lab and publication](./phase-06-stage-b-executable-architecture-lab-and-publication.md) | Blocked on Phase 5 |
+| 7 | [Final verification rollback and exact-head approval](./phase-07-final-verification-rollback-and-exact-head-approval.md) | Blocked on Phase 6 |
 
 ## Dependencies
 
 - Same-scope `blockedBy` is empty because the Issue #8 and Issue #10 plan directories are not
   present in this exact input tree and plan branches are not release artifacts. External release
   gates are normative in [Dependency and Release Gates](./dependency-and-release-gates.md).
-- **Stage A:** exact released Issue #8 learning contracts. Issue #8 is currently OPEN; its
-  latest repair candidate failed fresh exact-head review with two High and one Medium findings;
-  the owner authorized a narrow follow-up repair. It has no passing review, human approval,
-  merge, release, or downstream authority. Stage A also requires an admitted additions-only
-  architecture seam and exact view lease.
-- **Stage B:** passing Stage A plus the exact passing merged Issue #10 real journey and released
-  portal renderer SHA. Issue #10 is currently OPEN at `ready for plan audit`; its blocked
-  readiness audit authorizes no cook scope, and no implementation PR or merged real-journey
-  release exists.
+- **Stage A:** Issue #8 Stage A is released at exact integration SHA `fecf6bb8…`; its 21-file
+  contract set and additional version/command/tool inputs are read-only. The independently derived
+  additions-only view lease is confined to exact new `architecture/expansions/i5-06/**` paths. The
+  active unreleased Issue #8 Stage B lease `promotion-trust-vite-identifier-binding-v1` is not
+  required and grants no authority.
+- **Stage B:** exact passing merged Issue #10 real journey and released portal renderer SHA. Issue
+  #10 is OPEN and not released, so all Stage B authorities remain empty.
 - Owner comment
   [#5036142770](https://github.com/khanhvg/ai-ready-data-platform/issues/5#issuecomment-5036142770)
   authorizes parallel planning only. It does not bypass either release dependency or a serialized
@@ -104,17 +108,19 @@ released handoffs by later amendments; a guessed equivalent is a hard STOP.
 
 ## Current Authority
 
-The Issue #11 ownership ceiling is `learning/curriculum/**`, the architecture lab, Issue/P6-owned
-AWS/publish architecture expansion sources/renders, implementation ADR templates,
-`mk/issue-5/i5-06.mk`, and an additions-only view lease. This ceiling is not present cook
-authority. At this planner output:
+Present cook authority is Stage A only and is closed by the exact enumeration in the
+[amendment](./stage-a-release-amendment.md). It creates 50 paths beneath the isolated architecture
+expansion root, `learning/curriculum/**`, `mk/issue-5/i5-06.mk`, and curriculum tests/fixtures.
+There are no modifies or deletes. Shared contracts and released validators are read-only.
 
 ```yaml
-implementationFileAllowList: []
-implementationCommandAllowList: []
-dependencyReleaseShas: []
-portalRendererPaths: []
-fitnessSchemaBindings: []
+stageAInputSha: fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9
+stageAFileAuthority: stage-a-release-amendment.md#exact-stage-a-tracked-write-allowlist
+stageACommandAuthority: stage-a-release-amendment.md#exact-command-allowlist
+stageBImplementationFileAllowList: []
+stageBImplementationCommandAllowList: []
+stageBDependencyReleaseShas: []
+stageBPortalRendererPaths: []
 ```
 
 No root `Makefile`, `docs/code-standards.md`, `release-manifest.json`, portal/shared-contract,
@@ -126,27 +132,28 @@ Stage A or Stage B allow-list.
 
 ## Workflow and Exit
 
-- Workflow: `ck:plan` fast/TDD/no-task equivalent. Accepted master discovery/planning/readiness
-  supplied research; the user reserved independent validation and audit for fresh later phases.
-- Checks in this planner: plan status, frontmatter/static structure, local links/anchors,
-  dependency state, protected hashes/blobs, staged scope, formatting, and S3 secret/private-path
-  scans only.
-- Not run by the planner: plan validation, red-team/readiness, curriculum/architecture commands, renderer,
-  lab/portal tests, native GUI/manual matrix, cook, PR, merge, cloud, AWS, or Terraform.
-- Validation completed with bounded fixes at the exact planner input. The fresh dependency-aware
-  readiness audit at exact input `1287fe35aa9ab29a97daa541f39a624d01a77d31` is
-  `BLOCKED_DEPENDENCIES` with no implementation authority. The next phase is dependency release,
-  then an exact-SHA amendment, fresh independent revalidation, and fresh readiness. No partial
-  cook is authorized.
+- Workflow: `ck:plan` plus plan-to-cook-equivalent exact-release amendment and independent
+  readiness audit through Herdr using `gpt-5.6-sol` at `xhigh` reasoning.
+- Readiness checks cover CK status/strict validation, links/anchors, placeholders/future SHAs,
+  dependency release objects, exact allow-list absence/overlap, requirements/scenario/RED/S3
+  catalogues, 33 protected identities, architecture tool availability, diff hygiene, and a
+  whole-plan sweep.
+- The original validation and blocked audit remain historical. The current result is in
+  [Stage A Readiness Audit](./audit/stage-a-readiness-audit-report.md).
+- Not run: curriculum/product implementation, new renderer execution, portal/lab tests, learner
+  journeys, PR/merge, cloud, AWS, or Terraform.
 
 ## Unresolved Questions
 
-None for planning. Exact dependency releases and the implementation authorities derived from
-them are intentionally absent and block cook, not completion of this planner-only artifact.
+None for Stage A. Stage B remains intentionally unresolved until Issue #10 publishes its actual
+merged journey/renderer contract.
 
 ## Validation Log
 
 ### Session 1 — 2026-07-22 — Fresh independent initial validation
+
+Historical snapshot: Session 2 supersedes its Stage A dependency and empty-authority conclusions;
+its Stage B block and non-runtime claim boundaries remain current.
 
 **Trigger:** Validate exact planner output
 `7620d168fb96cf9ae11e963501f65ea5a416af43` adversarially before readiness.
@@ -206,3 +213,26 @@ resolved the remaining factual checks; no genuine product decision was reopened.
 - Unresolved contradictions: 0.
 - Recommendation: proceed only to a fresh dependency-aware readiness audit; do not cook while
   either stage authority remains empty.
+
+### Session 2 — 2026-07-22 — Exact-release Stage A amendment and readiness
+
+**Trigger:** Re-audit from clean head `ab653f6edec73e5ef875723945d2e3cd7814b4e6` after Issue #8
+Stage A release `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`.
+
+#### Confirmed Decisions
+
+- Stage A is useful and cookable as a static, machine-valid Vietnamese-first foundation-to-mid
+  curriculum with deterministic text/SVG expansions and complete business-to-evidence trace.
+- The active Issue #8 Stage B Vite identifier-binding lease and unreleased Issue #10 portal are
+  explicit non-authorities; neither is consumed by Stage A.
+- The Issue #6 exact-six roots and tools remain immutable. Five additions use a separate extension
+  root and manifest seam; all 33 protected identities are preserved.
+- Stage B remains empty and blocked. Stage A makes no portal, lab, reset, progress, completion,
+  fresh learner-evidence, deployment, or cloud claim.
+
+#### Current Authority
+
+- Exact 50 create-only paths and exact command shapes:
+  [Stage A amendment](./stage-a-release-amendment.md).
+- Fresh audit result and machine-check evidence:
+  [Stage A readiness audit](./audit/stage-a-readiness-audit-report.md).

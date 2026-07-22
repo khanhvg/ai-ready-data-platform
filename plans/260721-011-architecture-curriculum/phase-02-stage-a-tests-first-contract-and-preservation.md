@@ -20,11 +20,11 @@ effort: "M after Stage A readiness"
 
 ## Overview
 
-Under a future exact Stage A readiness output, write every required broken fixture before
+Under the exact Stage A amendment and readiness output, write every required broken fixture before
 curriculum/template/static expansion behavior. Prove the exact released Issue #8 consumer
 boundary and freeze Issue #6 local architecture bytes, rows, IDs, semantics, and renders.
 
-At the current planner output this phase is blocked and has no file or command authority.
+This phase is ready to cook only from `fecf6bb8…` and only within the amendment authority.
 
 ## Requirements
 
@@ -42,9 +42,9 @@ from implementation output and binds the exact input/dependency/tool hashes.
 
 ## Related Code Files
 
-- Current Create/Modify/Delete: none (`[]`).
-- Future exact test/fixture paths must be enumerated by the Stage A amendment; “tests somewhere
-  under the repository” or a wildcard outside the ownership ceiling is invalid.
+- Current Create: the one fixture and four test paths enumerated by the Stage A amendment.
+- Current Modify/Delete: none (`[]`).
+- “Tests somewhere under the repository” or a wildcard outside that exact list is invalid.
 
 ## Implementation Steps
 
@@ -86,9 +86,9 @@ assertion.
 
 ## Regression Gate
 
-Exact future command(s) come only from the Stage A amendment. The final acceptance names
-`curriculum-check`, `architecture-check`, `architecture-render`, and `traceability-check`, but
-those names are not current authority.
+Exact commands come only from the Stage A amendment. Stage A runs `curriculum-check`,
+`traceability-check`, and the protected `architecture-check`/`architecture-render` regression
+commands; `architecture-lab-e2e` and `architecture-visual-review` remain excluded.
 
 ## Success Criteria
 

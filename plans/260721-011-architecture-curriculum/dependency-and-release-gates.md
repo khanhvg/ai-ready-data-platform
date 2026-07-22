@@ -2,9 +2,11 @@
 
 ## Purpose
 
-Define the only legal path from this planner-only output to Stage A and Stage B cook authority.
-Planning may run in parallel; implementation may not consume a plan, feature branch, readiness
-input, ignored artifact, or predicted SHA as though it were a released dependency.
+Define the only legal path to Stage A and Stage B cook authority. The
+[Stage A Exact-Release Amendment](./stage-a-release-amendment.md) closes Gate A from released
+bytes and admits one isolated additions-only view lease. It supersedes the historical Stage A
+blocked snapshot below. Stage B remains blocked and empty. A plan, feature branch, readiness
+input, ignored artifact, or predicted SHA is never a released dependency.
 
 ## Immutable Planner Provenance
 
@@ -22,6 +24,9 @@ input, ignored artifact, or predicted SHA as though it were a released dependenc
 | Audited mapping/integration handoff | `f9a87d0ebdb72c014a6f8c6eaae865dad4d2188c` | Ownership/dependency graph |
 | Owner parallelization decision | [Issue #5 comment 5036142770](https://github.com/khanhvg/ai-ready-data-platform/issues/5#issuecomment-5036142770) | Plan now; do not bypass dependencies |
 | Live Issue #11 | [Issue #11](https://github.com/khanhvg/ai-ready-data-platform/issues/11) | OPEN, initial label `triaged`, risk high/TDD/S3/architecture/curriculum |
+| Stage A amendment start | `ab653f6edec73e5ef875723945d2e3cd7814b4e6` | Clean local/tracking/live plan branch identity |
+| Released integration / Issue #8 Stage A | `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` | Current Stage A dependency and future cook base |
+| Released tree | `27fc3667ef37892dad5c3fbfd76769f65a0760be` | Independently recomputed commit tree |
 
 Primary repository inputs:
 
@@ -38,45 +43,41 @@ Primary repository inputs:
 - [Issue #6 architecture toolchain](../260721-006-freeze-golden-baseline/architecture-toolchain-decision.md)
 - [Issue #6 implementation handoff](../260721-006-freeze-golden-baseline/implementation-handoff.md)
 
-## Fresh Dependency Snapshot
+## Historical Dependency Snapshot
 
-Observed after `git fetch --prune origin` and fresh GitHub reads on 2026-07-22:
+This table records the original blocked audit on 2026-07-22. It is retained as history and does
+not describe current Stage A authority:
 
 | Dependency | Fresh state | Why it is not consumable now |
 |---|---|---|
 | Issue #8 learning contracts | OPEN; label `ready to cook`; candidate `393b66e93461433fcded4ce4e6defa64f937fcfa` on `feature/issue-5-03-learning-contracts-v3` failed fresh exact-head review with two High and one Medium findings; owner comment `5040086369` authorizes one narrow follow-up repair; no matching PR, passing review, human exact-head approval, merge, tag, or release | Failed review and repair authority are not released downstream contract authority; the prior readiness input and every failed/superseded feature head are also forbidden as dependencies |
 | Issue #10 real journey/renderer | OPEN; label `ready for plan audit`; blocked readiness-audit head `4a36bab4f8a8c9f393060cf7337b2e5ca45cd9b7` has `COOK_SCOPE=none`; no matching implementation PR, passing merged journey, released renderer, tag, or release | A blocked plan audit is not implementation, passing journey, merge, renderer release, or downstream authority |
 
-These SHAs are status evidence only. They are forbidden as future dependency placeholders.
-The authorized #8 follow-up repair and its future review may later produce new evidence, but a
-repair branch or review comment still cannot substitute for the complete owner-authored release
-handoff in Gate A.
+Those former candidate SHAs remain status evidence only and are forbidden as dependency
+placeholders. The current release binding is the exact merge object below.
 
-## Gate A — Released Issue #8 Contracts
+## Gate A — Released Issue #8 Contracts — PASS
 
-Stage A remains blocked until one owner-authored release handoff supplies all of the following:
+Fresh Git and GitHub proof closes the Stage A dependency gate:
 
-1. Exact released Issue #8 commit SHA reachable from the authorized merged integration lineage,
-   not merely a plan/readiness/feature-branch SHA.
-2. Release identity and merge/attestation URL; Issue #8 contract version registry and every
-   consumed lesson/lab/progress/prerequisite/hint/evidence/operation-matrix path.
-3. SHA-256 for every consumed schema, validator, registry, fixture, example, and canonicalization
-   rule; exact compatibility/rollback versions.
-4. Exact evidence/fitness result bindings and compatibility. The current
-   `fitness-result-v1` schema/registry is Issue #6 command-result truth; the Issue #8 validated
-   plan currently proposes a distinct Issue #8 evidence version, but that proposal is not a
-   release. The later amendment must pin the actual released #8 evidence schema and an exact
-   owner-authorized mapping to the Issue #11 command-result requirement. It may not bind the two
-   by name, copy the Issue #6 schema, consume the proposed version, or invent a compatibility
-   object. If the release supplies no authorized mapping, STOP for a plan/owner decision.
-5. Exact successful release commands, evidence locator/hash, tested tree SHA, implementation
-   review, and human exact-head pre-merge approval.
-6. Confirmation that Issue #11 consumes these files read-only and creates no duplicate lesson,
-   lab, progress, completion, evidence, OpenAPI, or operation-matrix truth.
-
-After all six exist, a fresh amendment must pin the values, derive a closed Stage A file and
-command allow-list, update protected hashes, and run independent validation plus fresh readiness.
-Only that readiness output may authorize a Stage A cook.
+1. `refs/heads/integration/issue-5-local-learning` resolves exactly to
+   `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`; its ordered parents are the PR #23 merge
+   `5c2244c2c860234d0df49cf0a42ad950c6495717` and composition head
+   `734cf637a20ae186597e23d96a194ed4e30220ea`.
+2. [Release evidence](https://github.com/khanhvg/ai-ready-data-platform/issues/8#issuecomment-5043195549)
+   records `STAGE_A_MERGED_VERIFIED_RELEASED` and exact 56/56, invalid 65/65, API 16, final 4/4,
+   inherited 19/19 + 1/1 + 13/13 results without inventing a CI-success claim.
+3. The release contains a 21-path contract-set descriptor with SHA-256
+   `92aaf9a573f5d23b5bf5d8d7db1e68150d4b0944f0e6ab6e651b1a3d34408638`; the amendment pins
+   every consumed read-only path plus canonicalization, version registry, command registry,
+   Python lock, and public validator command identities.
+4. I5-06 activates only `fitness-result-v1` command evidence. Released `fitness-result-v2` has
+   `emissionFallback: null`, so it and all progress/completion/learner-evidence outputs are
+   explicit non-authorities, not guessed compatibility targets.
+5. Issue #11 creates no shared contract, lesson, lab, progress, completion, evidence, OpenAPI,
+   Vite, or operation-matrix truth.
+6. The exact Stage A file/command lists, hashes, output limits, tests, evidence, cleanup, and
+   rollback rules are closed by the amendment and current readiness audit.
 
 ## Gate B — Passing Merged Issue #10 Journey and Renderer
 
@@ -104,33 +105,33 @@ revalidation plus fresh readiness. Only that readiness output may authorize Stag
 Issue #6 selected LikeC4 `1.59.1` plus WASM Graphviz and explicitly records the master
 `architecture/structurizr/**` layout as a placeholder, with no silent Structurizr/browser/native
 Graphviz fallback. The Issue #11 body and master graph retain “Structurizr expansion” as an
-ownership label. The later amendment must reconcile that label against the released Issue #6
+ownership label. The current amendment reconciles that label against the released Issue #6
 toolchain:
 
-- default legal interpretation: additions-only expansion using the exact released LikeC4
-  toolchain and a lease-provided extension seam;
+- admitted legal interpretation: additions-only expansion using the exact released LikeC4
+  toolchain and an I5-06-owned extension seam beneath `architecture/expansions/i5-06/**`;
 - forbidden: alter the six local source files/rows/renders, tool lock, renderer/normalizer, or
   hard-coded six-view fitness logic without explicit shared-core authority;
 - if no additions-only seam exists, STOP and obtain a separately validated shared-core/toolchain
   migration or extension lease; do not invent a second renderer or call Structurizr equivalent.
 
-The amendment must name the exact lease start SHA, owner, paths, duration, conflict check, old/new
-manifest semantics, render commands, and rollback. Until then, architecture expansion paths and
-commands remain empty.
+The amendment names the lease start SHA, owner, exact 19 expansion paths, duration, conflict rule,
+separate base/extension manifest semantics, render commands, and rollback. The existing exact-six
+roots remain separate and byte-identical. This gate is PASS for Stage A only.
 
-## Current and Future Authority Matrix
+## Current Authority Matrix
 
-| Boundary | Current planner output | Value required in later amendment |
+| Boundary | Stage A | Stage B |
 |---|---|---|
-| Implementation input SHA | None | Exact readiness output commit for the authorized stage |
-| Dependency release SHAs | `[]` | Exact accepted #8, and #10 for Stage B |
-| File allow-list | `[]` | Enumerated exact paths, no wildcard outside immutable ownership ceiling |
-| Command allow-list | `[]` | Exact commands, arguments, tools, versions, time/resource bounds |
-| Contract bindings | `[]` | Exact paths, versions, SHA-256, reader/rollback rules |
-| Portal renderer bindings | `[]` | Stage B exact released modules/registries/build-test commands |
-| Fitness/evidence schema bindings | `[]` | Exact released #8 evidence path/version/SHA-256 plus an owner-authorized command-result compatibility mapping; never the current #6 copy as fallback |
-| View lease | None | Exact additions-only sources/rows/renders and protected baseline |
-| Cloud/AWS/Terraform authority | None | Remains none for both stages |
+| Cook base | `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` | None; blocked on Issue #10 |
+| Dependency release | Released Issue #8 Stage A, read-only | `[]` |
+| File allow-list | Exact 50 create-only amendment paths | `[]` |
+| Command allow-list | Exact amendment commands | `[]` |
+| Contract bindings | Exact released paths/blobs/hashes; read-only | `[]` |
+| Portal renderer bindings | `[]`; not needed | `[]` |
+| Evidence binding | Existing `fitness-result-v1` command envelope only; no learner evidence | `[]` |
+| View lease | `i5-06-stage-a-architecture-expansion-v1`; exact additions only | None |
+| Cloud/AWS/Terraform authority | None | None |
 
 ## Dependency Preflight Algorithm
 
@@ -152,10 +153,11 @@ At each amendment/readiness and again before the first write:
 
 ## Hard STOP Conditions
 
-- Either dependency is unmerged, unreleased, stale, unreachable, or hash-inconsistent.
+- A dependency required by the active stage is unmerged, unreleased, stale, unreachable, or
+  hash-inconsistent.
 - A plan/readiness/feature SHA is offered as a release.
 - Any future SHA, route, renderer, contract, schema, fixture, tool, or command is inferred.
-- Exact allow-lists remain empty or fresh validation/readiness is missing.
+- The active-stage allow-lists are empty or fresh validation/readiness is missing.
 - Protected Issue #6 bytes drift or a view/tool/shared-contract lease overlaps.
 - Portal integration would require an unowned portal edit.
 - AWS credentials, cloud calls, Terraform plan/apply/destroy, or resource creation become required.
@@ -163,4 +165,5 @@ At each amendment/readiness and again before the first write:
 
 ## Unresolved Questions
 
-None. The missing release values are dependency outputs, not choices for this planner.
+None for Stage A. Issue #10 release values are dependency outputs that keep Stage B blocked; they
+are not guessed choices for this plan.

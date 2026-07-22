@@ -5,7 +5,8 @@
 - A requirement is implementation-ready only after it has an owner, stage, exact dependency
   release, closed file/command allow-list, architecture/ADR link, test, evidence, rollback, and
   clearing authority.
-- Every requirement below is a plan obligation. It is not current cook authority.
+- Every requirement below is a plan obligation. Current Stage A cook authority is only the exact
+  release amendment; Stage B remains empty.
 - Stable IDs are reciprocal: curriculum content, views, ADRs, tests, and evidence must point to
   each other. Filename or heading similarity is insufficient.
 - Stage A can prove static/schema/render/trace behavior only. Stage B alone can prove runtime
@@ -18,7 +19,7 @@
 | ID | Requirement | Stage | Verification obligation |
 |---|---|---|---|
 | I11-AUTH-01 | Pin exact clean input, branch, remote/body, ancestry, dependency and lease state before each amendment/cook | A/B | Fresh preflight and authority evidence |
-| I11-AUTH-02 | Keep current implementation file/command/dependency/renderer/schema authorities empty | Plan | Static authority scan |
+| I11-AUTH-02 | Keep Stage A authority closed to the exact amendment and all Stage B implementation/dependency/renderer authorities empty | Plan | Static authority and overlap scan |
 | I11-AUTH-03 | Derive Stage A only from exact released #8; derive Stage B only from exact passing merged #10 plus #8 | A/B | Release SHA/blob/evidence verification |
 | I11-CUR-01 | Vietnamese-first foundation-to-mid competency graph; reachable, acyclic, remediation-aware | A | Prerequisite/locale/coverage failures |
 | I11-CUR-02 | Every module supplies prerequisite check, starter, task, controlled failure, verify, evidence, reset, hints, solution, reflection | A structure; B runtime | Schema/static then E2E lifecycle evidence |
@@ -52,15 +53,17 @@ The immutable final acceptance names are:
 make curriculum-check architecture-check architecture-render architecture-lab-e2e traceability-check
 ```
 
-They are not current command authority. A later amendment must bind each target to exact owner,
-recipe path, dependency tools/versions, arguments, time/resource bounds, evidence output, and
-failure behavior. Stage A may run only the amendment-authorized static subset and must mark
-`architecture-lab-e2e` unavailable—not passed. Stage B must run the full line. Existing Issue #6
-`architecture-check`/`architecture-render` targets remain read-only and cannot be redefined.
+Stage A may run only the exact amendment-authorized static subset and must mark
+`architecture-lab-e2e` unavailable—not passed. `architecture-visual-review` is also unavailable
+because its released definition requires the Issue #10 portal/browser and human review. Stage B
+must later bind the full line. Existing Issue #6 `architecture-check`/`architecture-render`
+targets remain read-only and cannot be redefined.
 
 ## TDD Failure Fixtures
 
-Exact fixture paths remain empty until Stage A amendment. Required semantic cases are fixed:
+The exact fixture path is
+`tests/fixtures/learning/curriculum/invalid-cases-v1.json`; the amendment expands this catalogue
+to 15 stable RED IDs. These original semantic classes remain required:
 
 | ID | RED case | Required failure |
 |---|---|---|
@@ -94,7 +97,7 @@ implementation behavior changes. It may not use fake data or a test that passes 
 
 | ID | Risk | Impact | Mitigation / rollback | Clearing gate |
 |---|---|---|---|---|
-| I11-R-01 | #8/#10 draft/readiness SHA mistaken for release | Contract drift, duplicate truth, unsafe cook | Empty authorities; exact merged-release preflight | Stage amendment/readiness |
+| I11-R-01 | #8/#10 draft/readiness SHA mistaken for release | Contract drift, duplicate truth, unsafe cook | Exact merged-release preflight; Stage B authority empty | Stage amendment/readiness |
 | I11-R-02 | Issue body’s Structurizr label overrides released LikeC4 decision | Split renderer truth, non-determinism | Treat as ownership label; use exact lease/toolchain or explicit migration authority | View-lease amendment |
 | I11-R-03 | Existing six-view checker has no expansion seam | Protected code edit or unverified expansion | Require exact additions-only seam; STOP if absent | Stage A readiness |
 | I11-R-04 | Markdown/topic dump masquerades as curriculum | Passive learning, unverifiable outcomes | Module loop, competency graph, templates, Stage B real lab | Curriculum checks/UAT |
@@ -126,4 +129,5 @@ implementation behavior changes. It may not use fake data or a test that passes 
 
 ## Unresolved Questions
 
-None. Dependency-produced exact values remain intentionally unavailable and are not planning gaps.
+None for Stage A. Issue #10-produced values remain intentionally unavailable and keep Stage B
+blocked; they are not Stage A planning gaps.
