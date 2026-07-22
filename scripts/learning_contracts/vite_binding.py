@@ -192,6 +192,14 @@ def validate_vite_binding_document(value: Any, *, root: pathlib.Path = ROOT) -> 
     """Validate one binding without transforming or returning fixture records."""
     if not isinstance(value, dict):
         raise LearningContractError("BINDING_SCHEMA_INVALID")
+    try:
+        validate_document(value, family="vite-binding")
+    except LearningContractError as exc:
+        if exc.code in {"SCHEMA_INVALID", "SCHEMA_DOCUMENT_INVALID"}:
+            raise LearningContractError("BINDING_SCHEMA_INVALID") from exc
+        raise
+    return value
+
     _scan_forbidden(value)
     _scan_reference_paths(value)
     if value.get("schemaVersion") != "promotion-trust-vite-binding-v1" or value.get("bindingId") != "promotion-trust-vite-binding-v1":
