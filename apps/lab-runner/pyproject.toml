@@ -9,6 +9,6 @@ requires-python = ">=3.12,<3.13"
 dependencies = []
 
 [tool.pytest.ini_options]
-addopts = "-ra --strict-markers"
+addopts = "-ra --strict-markers --import-mode=importlib"
 testpaths = ["tests"]
 pythonpath = ["src"]
