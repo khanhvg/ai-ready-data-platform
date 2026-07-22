@@ -135,6 +135,27 @@ test("PTP-S3 foreign socket, state alias, and runtime mode never gain lifecycle 
   }
 });
 
+test("PTP-S3 protocol-aware socket replacement cannot impersonate the spawned child", async () => {
+  assert.equal(fs.existsSync(runtime), false);
+  assert.equal(run(process.execPath, [lifecycle, "start"], { timeout: 30_000 }).status, 0);
+  const original = await fsp.readFile(statePath, "utf8"); const state = JSON.parse(original); const controlDirectory = path.join("/private/tmp", `i5-05-portal-${state.runId}`); const controlPath = path.join(controlDirectory, "control.sock"); const ownedPath = path.join(controlDirectory, "owned.sock");
+  let impostor;
+  try {
+    await fsp.rename(controlPath, ownedPath);
+    impostor = net.createServer((socket) => { let raw = ""; socket.setEncoding("utf8"); socket.on("data", (chunk) => { raw += chunk; }); socket.on("end", () => { const request = JSON.parse(raw); socket.end(JSON.stringify({ ok: true, status: "running", url: state.url, requestNonce: request.requestNonce }) + "\n"); }); });
+    await new Promise((resolve, reject) => { impostor.once("error", reject); impostor.listen(controlPath, resolve); }); await fsp.chmod(controlPath, 0o700);
+    const foreignStat = await fsp.lstat(controlPath); await fsp.writeFile(statePath, JSON.stringify({ ...state, control: { dev: foreignStat.dev, ino: foreignStat.ino } }));
+    const rejected = run(process.execPath, [lifecycle, "status"], { timeout: 10_000 });
+    assert.notEqual(rejected.status, 0, "protocol-aware impostor authenticated through mutable portal.json");
+    assert.match(rejected.stderr, /CHILD_AUTHENTICATION_FAILED/);
+    assert.equal((await fetch(state.url)).status, 200, "protocol-aware impostor stopped the real child");
+  } finally {
+    if (impostor) await new Promise((resolve) => impostor.close(resolve));
+    await fsp.rm(controlPath, { force: true }); await fsp.rename(ownedPath, controlPath); await fsp.writeFile(statePath, original);
+    assert.equal(run(process.execPath, [lifecycle, "down"], { timeout: 10_000 }).status, 0);
+  }
+});
+
 test("PTP-S3 authenticated shutdown is self-directed and removes only owned control state", async () => {
   assert.equal(run(process.execPath, [lifecycle, "start"], { timeout: 30_000 }).status, 0);
   const state = JSON.parse(await fsp.readFile(statePath, "utf8")); const controlDirectory = path.join("/private/tmp", `i5-05-portal-${state.runId}`);
@@ -270,19 +291,27 @@ test("PTP-S3 evidence writer refuses foreign outputs and enforces a closed bound
 });
 
 test("PTP-S3 artifact root, alias, type, residue, size, and privacy bounds are executable", async () => {
-  const parent = await fsp.mkdtemp(path.join("/private/tmp", "portal-evidence-bounds-")); const root = path.join(parent, "evidence"); await fsp.mkdir(root, { mode: 0o700 });
+  const approvedParent = path.join(repo, ".hermes/issue-10-stage-a-v2/evidence"); await fsp.mkdir(approvedParent, { recursive: true, mode: 0o700 });
+  const parent = await fsp.mkdtemp(path.join(approvedParent, "portal-evidence-bounds-")); const root = path.join(parent, "evidence"); await fsp.mkdir(root, { mode: 0o700 });
   try {
+    const outside = await fsp.mkdtemp(path.join("/private/tmp", "portal-evidence-outside-"));
+    try { await assert.rejects(prepareEvidenceRoot(outside), /EVIDENCE_ROOT_OUTSIDE_APPROVED_NAMESPACE/); } finally { await fsp.rm(outside, { recursive: true, force: true }); }
     await fsp.chmod(root, 0o755); await assert.rejects(prepareEvidenceRoot(root), /EVIDENCE_OWNER_MISMATCH/); await fsp.chmod(root, 0o700);
-    await prepareEvidenceRoot(root);
-    await assert.rejects(writeOwnedEvidence("unexpected.json", "{}", root), /EVIDENCE_INVENTORY_UNEXPECTED/);
-    await assert.rejects(writeOwnedEvidence("axe.json", `{"raw_record":"${"x".repeat(16)}"}`, root), /EVIDENCE_PRIVACY_REJECTED/);
-    await assert.rejects(writeOwnedEvidence("axe.json", "x".repeat(2 * 1024 * 1024 + 1), root), /EVIDENCE_FILE_LIMIT/);
-    const outside = path.join(parent, "outside"); await fsp.writeFile(outside, "foreign"); await fsp.link(outside, path.join(root, "axe.json"));
-    await assert.rejects(writeOwnedEvidence("axe.json", "{}", root)); await fsp.rm(path.join(root, "axe.json"));
-    for (const name of ["axe.json", "console-csp.json", "dom-inventory.json", "no-js-inventory.json"]) await writeOwnedEvidence(name, "[]", root);
-    for (const name of ["desktop-catalog.png", "desktop-decision.png", "desktop-grains.png", "desktop-unavailable.png", "narrow-catalog.png", "narrow-decision.png", "narrow-grains.png", "narrow-unavailable.png"]) await writeOwnedEvidence(name, Buffer.from([0x89, 0x50, 0x4e, 0x47]), root);
-    await finalizeEvidence(root);
+    const work = await prepareEvidenceRoot(root);
+    await assert.rejects(writeOwnedEvidence("unexpected.json", "{}", work), /EVIDENCE_INVENTORY_UNEXPECTED/);
+    await assert.rejects(writeOwnedEvidence("axe.json", `{"raw_record":"${"x".repeat(16)}"}`, work), /EVIDENCE_PRIVACY_REJECTED/);
+    await assert.rejects(writeOwnedEvidence("axe.json", "x".repeat(2 * 1024 * 1024 + 1), work), /EVIDENCE_FILE_LIMIT/);
+    const outsideFile = path.join(parent, "outside"); await fsp.writeFile(outsideFile, "foreign"); await fsp.link(outsideFile, path.join(work, "axe.json"));
+    await assert.rejects(writeOwnedEvidence("axe.json", "{}", work)); await fsp.rm(path.join(work, "axe.json"));
+    for (const name of ["axe.json", "console-csp.json", "dom-inventory.json", "no-js-inventory.json"]) await writeOwnedEvidence(name, "[]", work);
+    for (const name of ["desktop-catalog.png", "desktop-decision.png", "desktop-grains.png", "desktop-unavailable.png", "narrow-catalog.png", "narrow-decision.png", "narrow-grains.png", "narrow-unavailable.png"]) await writeOwnedEvidence(name, Buffer.from([0x89, 0x50, 0x4e, 0x47]), work);
+    await finalizeEvidence(work);
     const verified = run(process.execPath, [path.join(appRoot, "scripts/write-review-artifacts.mjs")], { env: { ...process.env, PORTAL_EVIDENCE_ROOT: root } }); assert.equal(verified.status, 0, verified.stderr);
+    const retained = await fsp.readFile(path.join(root, "hash-manifest.sha256"));
+    const interrupted = await prepareEvidenceRoot(root, { reset: true });
+    await writeOwnedEvidence("axe.json", "[]", interrupted);
+    await assert.rejects(finalizeEvidence(interrupted), /EVIDENCE_INVENTORY_UNEXPECTED/);
+    assert.deepEqual(await fsp.readFile(path.join(root, "hash-manifest.sha256")), retained, "failed replacement destroyed the prior verified evidence bundle");
   } finally { await fsp.rm(parent, { recursive: true, force: true }); }
 });
 
