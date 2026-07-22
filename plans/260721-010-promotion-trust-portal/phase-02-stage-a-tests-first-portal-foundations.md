@@ -11,115 +11,92 @@ effort: "M"
 
 ## Overview
 
-Promote the exact merged Vite/React foundation and establish portal-only client/BFF/security
-seams through failing tests first. The result is a buildable Stage A foundation with validated
-Issue #8 content and a hard-coded capability outcome of runner unavailable—not a runner mock or
-completion path.
+Create the minimal Vietnamese-first React/static shell and strict GET/HEAD-only serving
+foundation. The real adapter feeds one safe view model into semantic shell/status components.
+There is no BFF/API, runner mock, storage, mutation, or completion path.
 
 ## Context Links
 
-- [Plan](./plan.md)
 - [Architecture](./architecture-and-api-boundaries.md)
 - [Threat model](./threat-model-and-security.md)
-- [Tests-before matrix](./verification-evidence-and-uat.md#tests-before-matrix)
+- [Stage A commands](./stage-a-release-amendment.md#exact-stage-a-command-allowlist)
+- [TDD matrix](./verification-evidence-and-uat.md#tests-before-matrix)
 
 ## Requirements
 
 ### Functional
 
-- Build the exact Vite/React shell and Node BFF from the #7 release.
-- Load Issue #8 released lesson data into one closed safe view model.
-- Provide semantic status/error/live-region components and explicit unavailable/offline states.
-- Enforce Stage A non-completion at UI, API, and storage boundaries.
+- Build with the exact frozen #7 Vite/React graph.
+- Render semantic catalog/module/lesson placeholders from the validated model, not hard-coded
+  contract copies.
+- Present Vietnamese-first status and explicit runner-unavailable/completion-disabled language.
+- Serve strict production documents over loopback with no API surface.
 
 ### Non-functional
 
-- Same-origin, loopback-only BFF with strict production CSP and no CORS.
-- No browser storage authority, runner client, runner endpoint, or completion database mutation.
-- Frozen lock install/build and 16 GiB-friendly single portal process.
+- External compiled assets, exact CSP, escaped text, closed Host/method/path behavior.
+- No cookies, browser storage, service worker, external network, secrets, source maps, or #9 import.
+- One Node process and exact production-output ceilings.
 
-## Architecture
+## Authorized Files
 
-The BFF serves built/static assets and only the exact read operations from the #8 release. Its
-released Stage A capability reports runner unavailable and contains no runner configuration.
-Client state is presentation-only. Security filtering runs before BFF routing and rejects
-unknown host, origin, content type, method, version, and body.
+Create only:
 
-## Related Code Files
-
-- Authorized Stage A create/modify/delete paths now: `[]`.
-- Authorized Stage A implementation commands now: `[]`.
-- Consumable Stage A dependency SHAs now: `[]`.
-- A later amendment may authorize only the smallest #7/#8-derived subset beneath
-  `apps/learning-portal/**` (including portal tests) and `mk/issue-5/i5-05.mk` after revalidation
-  and readiness.
+```text
+apps/learning-portal/index.html
+apps/learning-portal/vite.config.mjs
+apps/learning-portal/src/app/app-shell.jsx
+apps/learning-portal/src/app/portal-status.jsx
+apps/learning-portal/src/main.jsx
+apps/learning-portal/src/styles.css
+apps/learning-portal/tests/unit/security.test.mjs
+```
 
 ## Tests Before
 
-1. Add PTP-RED-A-010/011/012/015/016 component and state assertions using only released content.
-2. Add PTP-RED-S3-01..06 and 08..11/13/14 at the portal boundary.
-3. Prove the route shell initially lacks the required question/grain/unavailable semantics.
-4. Prove any completion mutation, runner configuration, unsafe content, wrong version, foreign
-   Host/Origin, missing CSRF on a mutation-shaped request, or browser storage authority fails.
+1. Retain PTP-RED-A-010/012/015/016 through the real shell/status render.
+2. Retain PTP-RED-A-021/022 for renderer escaping/import/bundle/storage/cloud boundaries.
+3. Retain applicable PTP-RED-S3-01..14 negatives before enabling serving.
+4. Prove missing shell semantics and unsafe mutations fail for the intended reason.
 
-## Refactor
+## Tests After and Regression
 
-Share one safe view-model mapper between client/static/BFF. Keep presentation components local.
-Do not generalize a design system, state framework, API proxy, service worker, or plugin system.
-
-## Tests After
-
-- Frozen `npm ci` and production build pass with the exact released toolchain.
-- Safe view model rejects unknown/unreleased fields and attribution language.
-- Stage A has no mutation route, completion write, runner import, or browser-direct privileged
-  capability.
-- The production/browser bundle and static startup contain no eager Stage B runner or optional-tool
-  import; missing optional capabilities cannot break Stage A.
-- Security headers and same-origin negative cases pass.
-- Component semantics, focus, live regions, narrow layout primitives, and reduced motion pass.
-
-## Regression Gate
-
-Run focused locked unit/contract/security/accessibility tests, typecheck, production build,
-`npm audit --audit-level=high`, bundle scan, and `git diff --check`. Record exact results without
-calling Stage B targets.
+- Frozen production build succeeds with no source maps and bounded regular output.
+- Semantic shell/status is useful in Vietnamese and distinguishes canonical English values.
+- Exact static headers/CSP, Host, methods, paths, XSS, storage, network, secret, cloud, and #9
+  absence tests pass.
+- Missing runner never blocks render and never becomes the controlled failure.
+- Unit/contract/security/build/audit/diff gates stay within exact time/output bounds.
 
 ## Implementation Steps
 
-1. Stop until the later amendment pins real dependencies and exact Stage A paths/commands, then
-   retain the failing tests and exact dependency/input identities.
-2. Promote the minimal accepted #7 Vite files inside the authorized portal subset; remove all loser
-   candidate code and unneeded score/timer machinery from the product copy.
-3. Add released #8 content loader and safe shared view model; do not copy shared schemas.
-4. Build the loopback BFF with strict headers and exact released read-only operations within the
-   amended allow-list.
-5. Build the semantic application/status/error skeleton with Stage A banner and no completion.
-6. Add closed runtime mode, offline detection, focus/live-region primitives, and safe errors.
-7. Run focused green/refactor/regression checks and preserve evidence.
+1. Write shell/status/security RED assertions against the real entry/render path.
+2. Add the minimal Vite entry/config from the released toolchain, without spike product code.
+3. Build semantic app shell and status from the safe model.
+4. Add external styles for focus, logical order, narrow reflow, reduced motion, and no color-only
+   state.
+5. Add strict production build and security constraints.
+6. Run GREEN/refactor/regression and confirm only these seven paths are added.
 
 ## Success Criteria
 
-- [ ] Exact Vite foundation installs/builds reproducibly from the tracked lock.
-- [ ] Stage A loads only exact #8 released content and exact Issue #6 fixture identity.
-- [ ] Runner is explicitly unavailable and impossible to configure/call from Stage A.
-- [ ] No client or BFF action can claim or persist completion.
-- [ ] PTP-S3 and accessibility foundation tests pass with no High/Critical package finding.
+- [ ] Exact Vite graph builds reproducibly.
+- [ ] Vietnamese-first shell and runner-unavailable state render from validated data.
+- [ ] Stage A exposes no BFF/API/runner/mutation/storage/completion capability.
+- [ ] CSP/XSS/Host/path/bundle/storage/cloud security foundation is green.
+- [ ] Only the seven authorized files are added.
 
-## Risk Assessment
+## Risks and Rollback
 
 | Risk | Mitigation |
 |---|---|
-| Vite spike code imports provisional fixture/score logic | Promote only handoff path map; scan bundles/import graph |
-| BFF grows into a second framework | Node/Vite boundary only; no broker/plugin/proxy abstraction |
-| CSP relaxed for development | Test built release with exact strict header; no unsafe directives |
-| “Unavailable” treated as controlled failure | Separate released environmental problem state and language |
+| Spike code leaks into product | Build purpose-built files; import/bundle scan |
+| Static server evolves into BFF | GET/HEAD closed map only; method/API negatives |
+| CSP relaxed for Vite | Test built output with exact CSP and external assets |
+| Unavailable becomes lesson result | Distinct typed copy and contract assertions |
 
-## Security Considerations
-
-Implement the HTTP/XSS/storage controls in the S3 contract before adding any interactive
-mutation. The portal session is distinct from the runner credential; Stage A never receives the
-latter.
+Rollback removes only these seven unmerged additions.
 
 ## Next Steps
 
-Phase 3 adds read-only lesson navigation and the deterministic static/no-JavaScript document.
+Phase 3 adds reusable navigation and the promotion-trust vertical slice.

@@ -11,116 +11,101 @@ effort: "M"
 
 ## Overview
 
-Deliver the honest Stage A learner surface: business question, exact four-mart grain context,
-controlled-failure explanation, canonical decision, reset explanation, baseline evidence label,
-read-only reversible navigation, and static/no-JavaScript equivalence. Nothing runs or completes.
+Deliver the useful learning surface: a reusable Vietnamese-first catalog → module → lesson →
+narrative-step shell whose first content is the released promotion-trust vertical slice. Render
+the same facts in static/no-JavaScript and React modes, with reversible read-only navigation and
+explicit non-execution/non-completion semantics.
 
 ## Context Links
 
-- [Architecture: routing and static path](./architecture-and-api-boundaries.md#routing-history-and-reset)
-- [Issue #6 data truth](./requirements-and-risk-traceability.md#issue-6-data-truth)
-- [Accessibility/browser scope](./verification-evidence-and-uat.md#practical-test-portfolio)
-- [Threat model](./threat-model-and-security.md)
+- [PortalCatalog seams](./architecture-and-api-boundaries.md#portalcatalog-and-extension-seams)
+- [Protected lesson truth](./requirements-and-risk-traceability.md#protected-data-and-contract-truth)
+- [No-JS verification](./verification-evidence-and-uat.md#no-javascript-and-static-equivalence)
+- [Stage A scenarios](./stage-a-release-amendment.md#requirements-and-scenario-catalogue)
 
 ## Requirements
 
 ### Functional
 
-- Render the exact released stakeholder/business question and all four independent grains.
-- Show each mart's scope, filter, calculation, numerator/denominator, and limitation.
-- Explain the expected `PROMOTION_HEADLINE_INSUFFICIENT` controlled failure and exact
-  `insufficient-evidence / no-common-grain` conclusion.
-- Provide back/forward/reload-safe read-only steps and an equivalent static page.
-- Label Issue #6 evidence as a retained baseline fixture, never a fresh run.
+- Derive one module/lesson entry from released `promotion-trust-v1`; never call it the full course.
+- Render the stakeholder question, four independent grains/limitations, released controlled
+  failure, and `insufficient-evidence / no-common-grain` without causal attribution.
+- Provide semantic catalog/module/lesson/step navigation with back/forward/reload view-only state.
+- Render explanation-only run/reset/verify narrative steps with runner unavailable.
+- Generate all admitted static routes from the same safe model.
 
 ### Non-functional
 
-- Semantic headings/landmarks/table/list, visible focus, logical keyboard order, narrow reflow,
-  no color-only meaning, reduced motion, and useful non-flooding status announcements.
-- No JavaScript, animation, hover, scrolling, or optional tool is required to understand facts.
-- No copied proprietary prose/assets/layout/style from the reference experience.
+- No hand-maintained duplicate lesson, raw HTML/MDX, copied #7 lesson contract, or copied fixture.
+- Semantic landmarks/headings/lists, visible focus, 360px reflow, reduced motion, live status.
+- #11/#12 can later add released manifests through provider/catalog seams without redesign;
+  no future content is invented now.
 
-## Architecture
+## Authorized Files
 
-The portal router authorized by the later amendment validates the released lesson/step IDs and
-changes only presentation state. The interactive and static renderers share the same closed view
-model, and their stable fact IDs are compared in tests. Exact module and route paths are deferred
-to merged #7/released #8 and are not authorized by this plan alone.
+Create only:
 
-## Related Code Files
-
-- Authorized Stage A create/modify/delete paths now: `[]`.
-- Authorized Stage A implementation commands now: `[]`.
-- Consumable Stage A dependency SHAs now: `[]`.
-- A later amendment may authorize only the smallest #7/#8-derived subset beneath
-  `apps/learning-portal/**` (including portal tests) and the issue fragment after revalidation
-  and readiness.
+```text
+apps/learning-portal/scripts/generate-static-routes.mjs
+apps/learning-portal/src/app/lesson-navigation.jsx
+apps/learning-portal/src/app/module-navigation.jsx
+apps/learning-portal/src/catalog/module-catalog.mjs
+apps/learning-portal/src/catalog/released-module-provider.mjs
+apps/learning-portal/src/features/promotion-trust/promotion-trust-lesson.jsx
+apps/learning-portal/src/render/static-document.mjs
+apps/learning-portal/src/routing/portal-router.mjs
+apps/learning-portal/tests/unit/module-catalog.test.mjs
+apps/learning-portal/tests/unit/portal-router.test.mjs
+apps/learning-portal/tests/unit/render.test.mjs
+```
 
 ## Tests Before
 
-1. Add PTP-RED-A-010..016 for facts, no attribution, non-completion, history, no-JS, status, focus,
-   reduced motion, and overflow.
-2. Add explicit mutations for a fifth source, changed grain, causal wording, altered decision,
-   raw row/identifier, false fresh-evidence label, enabled Run/Complete button, and missing static
-   fact.
-3. Start a JavaScript-disabled Chromium test and static parser test before implementing output.
+1. Retain PTP-RED-A-010..016 through the real provider/catalog/router/render paths.
+2. Retain PTP-RED-A-020/021 for unknown descriptors and static/React disagreement.
+3. Mutate a fifth source, grain, causal wording, decision, raw field, false fresh-evidence label,
+   enabled action, missing static fact, and route/history behavior.
+4. Start built-output parser and JavaScript-disabled browser assertions before output exists.
 
-## Refactor
+## Tests After and Regression
 
-Use stable released fact/step IDs rather than copying prose into tests. Share formatting helpers
-only where interactive/static equivalence requires them. No broad content engine or animation
-framework.
-
-## Tests After
-
-- Interactive and static modes expose identical required fact IDs and canonical outcome.
-- Back/forward/reload changes view only and makes zero mutation requests.
-- Stage A controls are links/navigation only; runner actions are unavailable with useful text.
-- Desktop/narrow, keyboard/focus, reduced-motion, live-region, and no-overflow checks pass.
-- No-JS Chromium and parser both understand the lesson without external services.
-
-## Regression Gate
-
-Run focused component/router/contract/accessibility/no-JS tests, the exact #7 locked Chromium,
-production build twice, static-output digest comparison, axe Critical/Serious gate, package/bundle
-scans, and `git diff --check`.
+- Provider/catalog accept exact registered released descriptors only.
+- Promotion-trust is visibly one vertical slice in a reusable foundation-to-mid shell.
+- Static and React stable fact IDs, values, ordering, routes, and escaping agree.
+- Back/forward/reload make zero mutation/network/storage effects.
+- Four grains/limitations and canonical decision are honest in every admitted route.
+- Unit/adapter/render/router/build/no-JS/axe/diff checks stay green.
 
 ## Implementation Steps
 
-1. Stop until the later amendment pins real dependencies and exact Stage A paths/commands, then
-   retain failing fact, mutation, history, accessibility, and no-JS assertions.
-2. Map the exact released #8 lesson and Issue #6 baseline evidence into the closed view model.
-3. Implement semantic business-question and four-mart context components.
-4. Implement controlled-versus-environmental failure and canonical decision presentation.
-5. Implement read-only router/history/reload behavior with validated released step IDs.
-6. Generate the static document and no-JavaScript redirect/link from the same model.
-7. Add responsive/focus/reduced-motion/live-region styling without motion-only meaning.
-8. Run regression/equivalence checks and record Stage A evidence.
+1. Write provider/catalog/router/render RED cases and mutation fixtures in memory.
+2. Implement released module provider and ordered catalog over the closed safe model.
+3. Implement generic module/lesson navigation and read-only router.
+4. Implement promotion-trust presentation as a feature renderer, not a portal-wide switch.
+5. Implement deterministic static document and route generation from the same model.
+6. Prove Vietnamese-first semantics, canonical English values, focus/reflow/reduced motion.
+7. Run equivalence/history/negative regression and verify only these 11 paths are added.
 
 ## Success Criteria
 
-- [ ] The exact business question and all four honest grains are understandable in both modes.
-- [ ] The only v1 decision shown is `insufficient-evidence / no-common-grain`.
-- [ ] Baseline fixture is never presented as fresh run/completion evidence.
-- [ ] Browser history/reload cannot replay or manufacture state.
-- [ ] One locked Chromium desktop+narrow and no-JS/static checks pass.
-- [ ] No runner, completion, cloud, Docker, optional profile, or external tool is required.
+- [ ] One honest promotion-trust vertical slice is useful with runner absent.
+- [ ] Shell/provider/router seams admit later released content without redesign.
+- [ ] Static and React modes expose equivalent released facts and navigation.
+- [ ] Navigation cannot execute, reset, verify, progress, evidence, or complete.
+- [ ] Only the 11 authorized files are added.
 
-## Risk Assessment
+## Risks and Rollback
 
 | Risk | Mitigation |
 |---|---|
-| Static copy drifts from React | Single validated model + stable fact-ID equivalence |
-| Grain cards imply joinability | Explicit independent-grain table and limitation adjacent to values |
-| Back navigation repeats action later | Router owns view only; mutation state excluded |
-| Animation hides content | Static DOM first; reduced motion; no animation dependency |
+| Promotion lesson hard-coded as whole course | generic provider/catalog/router plus copy tests |
+| Static copy drifts | one safe model and fact-ID equivalence |
+| Four cards imply joinability | adjacent independent-grain limitations and attribution negatives |
+| Future seam becomes permissive plugin system | exact registered release descriptors only |
 
-## Security Considerations
-
-Escape every content/error field, allow only approved links, forbid raw HTML/MDX execution, and
-apply the same CSP to interactive/static output. Fixture bytes remain read-only and are not
-embedded with private provenance.
+Rollback removes only these 11 unmerged additions.
 
 ## Next Steps
 
-Phase 4 runs the bounded Stage A verification/handoff without claiming the real journey.
+Phase 4 adds the bounded static server lifecycle, Chromium journey, review artifacts, and Make
+handoff.

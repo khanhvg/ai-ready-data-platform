@@ -11,119 +11,102 @@ effort: "M"
 
 ## Overview
 
-Fail closed before the first Stage A product write. Pin the exact merged Issue #7 Vite handoff,
-the exact released Issue #8 Stage A contracts, and the shipped Issue #6 data truth at a fresh
-readiness-authorized implementation input. This phase remains externally blocked today.
+Start a cook branch from pristine released integration
+`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` and fail closed before portal rendering. Re-prove
+remote release ancestry, every admitted dependency byte, exact toolchain/lock, protected hashes,
+command ownership, and the released #8 validators. Build the closed release binding and safe
+contract adapter through real RED tests.
 
 ## Context Links
 
-- [Plan](./plan.md)
+- [Stage A amendment](./stage-a-release-amendment.md)
 - [Dependency gates](./dependency-and-release-gates.md#gate-a--static-portal-authority)
-- [Requirements and exact hashes](./requirements-and-risk-traceability.md#issue-6-data-truth)
-- [Verification RED IDs](./verification-evidence-and-uat.md#tests-before-matrix)
-- [Issue #6 fixture handoff](../260721-006-freeze-golden-baseline/issue-7-fixture-and-merge-handoff.md)
+- [Protected identities](./requirements-and-risk-traceability.md#protected-data-and-contract-truth)
+- [TDD matrix](./verification-evidence-and-uat.md#tests-before-matrix)
 
 ## Requirements
 
 ### Functional
 
-- Prove GA-01..GA-05 with exact remote identities, ancestry, versions, paths, bytes, Git blobs,
-  SHA-256 digests, tools, package/lock, operation matrix, validators, completion protocol, and
-  rollback metadata.
-- Generate a closed app-owned release-binding manifest only from the released #7/#8 handoffs.
-- Preserve Issue #6 fixture/contract bytes and protected root `release-manifest.json`.
+- Re-prove GA-01..GA-05 from the cook tree and fresh remote release refs.
+- Through `verify-stage-a-release.mjs`, prepare/admit one exact-lock CPython 3.12.3 runtime, run
+  `learning-contracts-check`, `lesson-check LESSON=promotion-trust`, and `api-contracts-check`,
+  then remove only that runtime; require the released lesson/lab/manifest/registry and 16
+  operations.
+- Bind only exact current released #7/#8 paths, versions, blobs, bytes, hashes, operations, and
+  package graph.
+- Map released safe fields through the released validators; no schema/content copy.
 
 ### Non-functional
 
-- No future SHA/version/API is guessed.
-- Local HEAD, upstream, and fresh remote input are equal and the worktree is clean.
-- Missing tool/release/digest/lease result is typed `fail`.
-- Clean-checkout frozen-lock admission and declared post-acquisition offline checks pass without
-  an undeclared framework/runtime/package-manager fallback.
-- Changed paths stay under I5-05 ownership.
+- Local/upstream/fresh integration equality, clean input, no conflicting writer.
+- Frozen Node `22.22.3`/npm `10.9.8` lock v3 dependency graph; no install scripts or fallback.
+- Any missing/mismatched release/tool/field/path/version/hash fails before rendering.
+- No #9 value, BFF/API, browser state, or future identity.
 
-## Architecture
+## Authorized Files
 
-The later-amendment release gate reads release metadata and files only after readiness provides
-their exact locators. It verifies before generating any app-owned binding. The binding is an
-index of externally owned interfaces, not a schema copy or migration. The portal build and tests
-depend on this gate; no permissive default exists.
+Create only:
 
-## Related Code Files
+```text
+apps/learning-portal/package.json
+apps/learning-portal/package-lock.json
+apps/learning-portal/release-binding.stage-a.json
+apps/learning-portal/scripts/verify-stage-a-release.mjs
+apps/learning-portal/src/contracts/released-learning-adapter.mjs
+apps/learning-portal/src/contracts/safe-view-model.mjs
+apps/learning-portal/tests/unit/release-binding.test.mjs
+apps/learning-portal/tests/unit/released-learning-adapter.test.mjs
+```
 
-- Authorized Stage A create/modify/delete paths now: `[]`.
-- Authorized Stage A implementation commands now: `[]`.
-- Consumable Stage A dependency SHAs now: `[]`.
-- Later amendment ceiling: `apps/learning-portal/**` (including portal tests) and
-  `mk/issue-5/i5-05.mk`; the four Issue #6 handoff files remain read-only.
-- The amendment must derive exact paths from merged #7 and released #8, then pass revalidation
-  and readiness before this phase can execute.
+No modify/delete is authorized. Exact release sources are read-only.
 
 ## Tests Before
 
-1. Add PTP-RED-A-001 for absent, draft, non-ancestor, malformed, wrong-hash, wrong-version, wrong
-   operation, and changed package/lock release inputs.
-2. Add PTP-RED-A-002 for each Issue #6 SHA-256/Git blob and protected manifest drift.
-3. Assert the current unpublished #7/#8 candidate heads fail as consumable releases.
-4. Retain failure evidence with the exact implementation input and dependency observations.
+1. Retain PTP-RED-A-001 for wrong commit/tree/ancestry/blob/byte/hash/version/operation/lock.
+2. Retain PTP-RED-A-002 for every protected identity mutation.
+3. Retain PTP-RED-A-020 for unknown family/path/hash/version/field.
+4. Make failures traverse the real release verifier and adapter, not an unavailable import.
 
-## Refactor
+## Tests After and Regression
 
-Keep one release-gate reader and one digest/ancestry path. Do not add a portal-specific contract
-registry, schema fork, copied fixture, or generalized release framework.
-
-## Tests After
-
-- Valid released handoffs generate byte-stable bindings twice.
-- One-byte/path/version/operation/lock mutation fails with a stable code.
-- Bindings contain no runner API/registry at Stage A.
-- Changed-path/protected-path/credential/private-path checks pass.
-
-## Regression Gate
-
-Run only the exact locked contract/test/build commands pinned from merged #7 and released #8 by
-the later amendment, plus its focused I5-05 release-gate test. Record results in the exact
-portal-compatible #8 result/evidence schema; `fitness-result-v1` is not a fallback. Do not run
-Stage B or claim the Issue #10 Verify block.
+- Exact release input generates byte-stable bindings twice.
+- One-at-a-time mutations fail with stable closed codes.
+- Adapter output contains only safe released fields and rejects attribution/unknowns.
+- Binding contains two read compatibility operation identities and no HTTP/runner capability.
+- Frozen install, released #8 checks, protected/ownership checks, audit input, and
+  `git diff --check` pass within amendment ceilings.
 
 ## Implementation Steps
 
-1. Stop unless a later amendment pins exact #7/#8 SHAs and file/command allow-lists, then passes
-   fresh independent revalidation and Stage A readiness at one exact input.
-2. Fetch the authorized integration ref and prove local/tracking/fresh-live equality, clean state,
-   ancestry, ownership, and absence of conflicting leases.
-3. Verify GA-01, including human approval/merge, the bounded simple-Vite test/review scope, and
-   clean-checkout/offline runtime admission; copy/promote only the exact accepted Vite
-   foundation/path map and lock.
-4. Verify GA-02 and bind only the exact released #8 validators/types/operation/completion paths.
-5. Verify GA-04 Issue #6 hashes and schema-version identities read-only.
-6. Write and retain the RED failures before the smallest gate/binding implementation.
-7. Generate bindings twice, compare bytes, run mutations, and emit the dependency manifest.
-8. Recheck scope/protected hashes. Stop on any mismatch.
+1. Create branch from the exact integration and record equality/clean/lease evidence.
+2. Write RED tests and retain valid failure records.
+3. Add exact app package/lock derived from the released #7 graph; only root name/scripts differ.
+4. Add the closed release binding and verifier over cook-tree bytes, exact lock/freeze, admitted
+   runtime lifecycle, and released validator commands.
+5. Add the released validator adapter and closed safe model.
+6. Run mutation, determinism, protected-hash, command-owner, frozen-install, and audit gates.
+7. Confirm the phase diff equals these eight creates and no generated output is tracked.
 
 ## Success Criteria
 
-- [ ] GA-01..GA-05 pass at one exact readiness-authorized input.
-- [ ] PTP-RED-A-001/002 fail before implementation and pass after without weakened fixtures.
-- [ ] #7/#8 release bindings are deterministic, exact, and contain no #9 assumptions.
-- [ ] Issue #6 four handoff hashes/blobs and root protected manifest match.
-- [ ] No product behavior or Stage B runner integration precedes this gate.
+- [ ] Exact pristine integration and all enumerated released bytes are re-proved.
+- [ ] PTP-RED-A-001/002/020 have valid RED then GREEN evidence.
+- [ ] Frozen lock/toolchain and released validators pass without copied contract truth.
+- [ ] No Issue #9, API, mutation, progress, evidence, or completion authority exists.
+- [ ] Only the eight authorized files are added.
 
-## Risk Assessment
+## Risks and Rollback
 
 | Risk | Mitigation |
 |---|---|
-| Candidate plan mistaken for release | Require remotely observed merge/release and ancestry/blob equality |
-| Contract path differs from plan | Stop and return to #8; never guess |
-| Ignored app lock omitted | Verify exact tracked lock; force-add only its exact app path |
-| Gate script becomes shared release framework | Keep issue-local and delete duplication during review |
+| Feature/worktree bytes mistaken for release | Remote merge/tree proof plus cook-tree digest catalogue |
+| App binding becomes a second schema | Closed identity index and safe projection only |
+| Ignored app lock omitted | Inspect then force-add only the exact app lock |
+| Dependency acquisition drifts | Exact graph/integrity comparison, no scripts, audit |
 
-## Security Considerations
-
-Run PTP-S3-11/13/14, high-confidence credential/private-path scans, dependency audit, and exact
-path allow-list. No network/cloud action occurs beyond authorized Git/GitHub dependency checks and
-locked dependency installation.
+Rollback removes only these eight unmerged additions. Any released/protected drift is a STOP.
 
 ## Next Steps
 
-Only after this phase passes may Phase 2 create the tests-first Stage A portal foundation.
+Phase 2 may start only after this exact gate is green.
