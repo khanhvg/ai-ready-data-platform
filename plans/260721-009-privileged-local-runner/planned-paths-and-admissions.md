@@ -4,9 +4,9 @@
 
 This file expands every brace/glob shorthand used elsewhere in the plan. It is the exact future
 tracked-path allow-list for Issue #9. A path not listed here requires a new independently validated
-plan/readiness decision. This is planning only: none of the future-create paths exists at amendment
-input `5cea5ce248b49ff8741af1b1e65f8ac2eb64698f`. The current validation/readiness audit authorizes
-the whole ordered plan, subject to every phase-local RED, containment, evidence, and review gate.
+plan/readiness decision. This is planning only: none of the future-create paths exists at current
+capability input `dc8b6d2cb46c8101bd8f1309acc7f12e5da7e090`. The current capability amendment blocks every
+implementation phase; paths are retained future scope, not write authority.
 
 ## Exact Future Create Paths
 
@@ -26,6 +26,7 @@ the whole ordered plan, subject to every phase-local RED, containment, evidence,
 - `apps/lab-runner/src/lab_runner/transport.py`
 - `apps/lab-runner/src/lab_runner/containment.py`
 - `apps/lab-runner/src/lab_runner/launcher.py`
+- `apps/lab-runner/src/lab_runner/adapters.py`
 - `apps/lab-runner/src/lab_runner/workspace.py`
 - `apps/lab-runner/src/lab_runner/fence.py`
 - `apps/lab-runner/src/lab_runner/process.py`
@@ -196,7 +197,7 @@ Released admission at Stage A SHA:
 | Host | macOS `26.5.1` build `25F80`, Darwin arm64, `17179869184` bytes physical memory | Exact match required; any drift disables readiness pending re-attestation |
 | Python | `python3.12` is `3.12.3`; isolated mode, `LOCAL_PEERCRED`, `O_NOFOLLOW`, `O_DIRECTORY`, `RLIMIT_AS`, `RLIMIT_RSS` are exposed | Pin absolute runtime identity/hash and prove real entrypoint imports under `-I` |
 | Seatbelt | `/usr/bin/sandbox-exec` exists | Existence is insufficient; functional network/base-write/workspace/import/cleanup probe must pass |
-| Descendant control | Process group, PID/start identity and polling primitives exist; complete rapid reparent/`setsid` proof is not yet admitted | Phase 1 must prove a non-poll-only Darwin mechanism or STOP before RED/product cook |
+| Descendant prevention | `deny process-fork` passed 7/7 with no first child; same-process `setsid` exact PID/start reap passed; launchd failed its negative control | Candidate requires all eight operations in process; exact dbt creates a resource-tracker child, so STOP before RED/product cook |
 | Bandit | Not present in the validation shell | Must be pinned and hash-complete in the app lock; missing is gate failure |
 | pip-audit | Not present in the validation shell | Must be pinned and hash-complete in the app lock; missing is gate failure |
 | pytest | Present in the validation shell | Global presence grants no authority; future gates use only the pinned app lock |
@@ -210,6 +211,7 @@ descriptor identities, private modes, live fence epochs and the rollback rules i
 
 ## Unresolved Questions
 
-None for readiness. The activation path is exact, the private request ceiling is 16,384 bytes,
-and generated output is denied. Actual future file/head hashes are measured after the bytes exist;
-they are not placeholders or authority to predict a SHA.
+One blocking platform decision remains: supply an approved no-fork/no-exec dbt backend, prove a
+different documented no-sudo descendant-lifetime primitive, or explicitly rerelease a staged
+upstream command contract. Until then `COOK_SCOPE=none`. Actual future file/head hashes are
+measured only after bytes exist; none is predicted here.

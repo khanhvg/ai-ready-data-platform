@@ -1,5 +1,11 @@
 # Issue #9 Implementation Boundary and Design
 
+> **Current capability authority:** [capability-amendment.md](./capability-amendment.md) supersedes
+> the earlier process-tree cook route. Fork prevention and exact single-worker reap pass, but no
+> implementation strategy is admitted because `retail.dbt-build` requires a resource-tracker
+> child. `COOK_SCOPE=none`; the conditional single-worker/zero-descendant design becomes active
+> only after a separately approved backend preserves all eight released commands.
+
 ## Context and Non-Authority
 
 - Original planning base / Issue #6 release: `24be3b34c6b0fcdbd07c5800dcab349054e34713`.
@@ -27,7 +33,7 @@
 | Create | `apps/lab-runner/config/runtime-policy-v1.toml` | Host tuple, transport, command quotas, environment, and containment policy |
 | Create | `apps/lab-runner/config/released-contract-lock.json` | Exact Issue #6 and released Stage A SHA/tree/path/version/hash references; never copies contracts |
 | Create | `apps/lab-runner/config/command-owner-activation-i5-04-v1.json` | Issue #9-owned activation instance binding the actual I5-04 fragment hash to the three reserved commands and `fitness-result-v2` |
-| Create | `apps/lab-runner/src/lab_runner/{__init__,__main__,contract,registry,transport,containment,launcher,workspace,fence,process,state,release,evidence,service}.py` | Framework-independent runner implementation |
+| Create | `apps/lab-runner/src/lab_runner/{__init__,__main__,contract,registry,transport,containment,launcher,adapters,workspace,fence,process,state,release,evidence,service}.py` | Framework-independent runner implementation; `adapters.py` remains blocked until all eight fixed in-process adapters pass |
 | Create | `apps/lab-runner/tools/run-gate.py` | Non-interactive pinned bootstrap and `make` gate dispatcher |
 | Create | `apps/lab-runner/tests/{characterization,unit,security,race,integration}/**` | RED-first and regression suites |
 | Create | `apps/lab-runner/tests/fixtures/**` | Harmless malicious import/process/path/browser/fault helpers |
@@ -182,14 +188,18 @@ field, so Issue #9 must not add one. Unknown schema/API versions and command IDs
 descriptor lookup; there is no implicit latest, range, downgrade, coercion, or alias.
 
 Each resolved descriptor contains an app-owned execution policy: exact command ID/contract
-version, absolute interpreter/binary and entrypoint, Git blob/SHA-256, fixed argv template,
+version, absolute interpreter and fixed in-process adapter, Git blob/SHA-256, fixed argument template,
 allowed typed values, fixed CWD role, exact environment keys, timeout/resource class, write-set,
 network=`deny`, and expected artifacts. There is no raw executable, shell, free-form selector,
 working-directory, path, URL, environment, plugin, package-install, Terraform, Docker, or cloud
-override. `shell=False` and list argv are invariant.
+override. Fork, spawn, subprocess, multiprocessing process primitives and exec are unavailable in
+the conditional worker design. The current dbt adapter does not satisfy this rule, so no
+descriptor set is admitted.
 
-Python entrypoints run through the pinned private runtime as `python -I <absolute-entrypoint>`.
-Startup verifies the reviewed entrypoint blob/hash, Python `3.12.3`, complete wheel-only lock,
+The one operation worker runs through the pinned private runtime as
+`python -I <absolute-worker-entrypoint>` and imports only fixed reviewed adapter modules from
+verified read-only roots. Startup verifies the reviewed worker/adapter blobs and hashes, Python
+`3.12.3`, complete wheel-only lock,
 absence of unapproved `sitecustomize.py`/`usercustomize.py` and unexpected entry points, and the
 exact Issue #6/#8 contract digests. dbt uses the read-only project with generated workspace-local
 profiles, target, log, home, and package/cache paths; selectors are enums from the released
@@ -201,21 +211,22 @@ Initial supported host is intentionally narrow: Darwin arm64, macOS `26.5.1` bui
 physical memory exactly 16 GiB, Python `3.12.3`, and `/usr/bin/sandbox-exec` passing the functional
 probe suite. An OS/Python/build change is unsupported until re-attested. No Linux/Windows claim.
 
-The app-owned launcher is a separate child process. It receives only pre-opened workspace/fence
-descriptors, applies rlimits, `fchdir`s to the owned generation, closes all other descriptors,
-starts a new session/process group, and `execve`s `/usr/bin/sandbox-exec` with a generated profile.
+The app-owned operation worker is the parent's one allowed child. Before capability handoff it
+receives only pre-opened workspace/fence descriptors, applies rlimits, `fchdir`s to the owned
+generation, closes all other descriptors, starts a new session, and replaces its own image with
+`/usr/bin/sandbox-exec` plus the fixed reviewed worker/profile. No adapter may create another
+process after the fork-denied profile is active.
 The profile denies network, home/runtime-secret reads, and all writes outside the generation and
 staging/evidence write-set; the Git base and entrypoints are read-only. A startup probe must prove
 network denial, base-write denial, workspace write success, child cleanup, and required pipeline
 imports. Probe failure sets readiness false with `RUNNER_CONTAINMENT_UNAVAILABLE`.
 
-Before any runner RED or product cook, Phase 1 must admit one Darwin-native descendant-control
-mechanism by proving, with deterministic barriers, that it observes, accounts for, terminates, and
-reaps a fast-exit parent plus rapid double-fork/`setsid` descendants without relying on a lucky
-100 ms ancestry sample. Process-group cleanup and polling may be defense in depth, but polling alone is not an
-accepted capability. If the exact no-sudo/no-container host cannot provide this guarantee, STOP
-and re-plan a narrower disabled runner; do not claim aggregate CPU/RSS/process quotas or complete
-descendant cleanup.
+The exact host proves a stronger candidate than discovery: `deny process-fork` prevents all tested
+descendant-creation paths before the first child. The parent can own and reap one worker by exact
+PID/start identity after normal execution, `setsid`, image replacement, crash or timeout. Generic
+`deny process-exec` blocks Python bootstrap, so fixed adapters and static policy must reject any
+operation requiring exec. This candidate is not admitted because exact dbt creates a Python
+resource tracker; process-group cleanup, launchd and polling do not repair that incompatibility.
 
 One runner-wide mutation and one mutation per workspace are allowed concurrently. Exact hard
 bounds for a child operation on the 16 GiB host:
@@ -223,16 +234,17 @@ bounds for a child operation on the 16 GiB host:
 | Resource | Bound | Enforcement |
 |---|---:|---|
 | Wall time | 120 s per each of the eight released lab commands | monotonic deadline, TERM 5 s, KILL/reap 5 s; no command exceeds the released ceiling |
-| Aggregate process-tree CPU | 600 CPU-seconds maximum; descriptor may lower | `RLIMIT_CPU` per child plus admitted descendant accounting at ≤100 ms |
-| Aggregate process-tree RSS | 536,870,912 bytes per command | released lab bound plus admitted descendant accounting at ≤100 ms; immediate process-tree kill |
+| Worker CPU | 600 CPU-seconds maximum; descriptor may lower | conditional exact single-worker `RLIMIT_CPU`; blocked until eight adapters pass |
+| Worker RSS | 536,870,912 bytes per command | conditional exact single-worker measurement; blocked until eight adapters pass |
 | Workspace mutable allocation | 268,435,456 bytes logical **and** allocated; 6 GiB host free-space preflight | released lab quota; walk opened generation only; no file may exceed the workspace quota |
-| Descendants | 16 live processes | admitted fork/reparent tracking + PID/start identity; kill/reap escaped sessions too |
-| File descriptors | 256/process | `RLIMIT_NOFILE` |
+| Descendants | 0 | conditional Seatbelt `deny process-fork`; any fork/spawn need fails readiness before allocation |
+| File descriptors | 256/worker | `RLIMIT_NOFILE` |
 | stdout/stderr | 2 MiB each; retained sanitized preview 128 KiB each | descriptor-backed files, overflow kills run; full hash/count retained |
 
-`RLIMIT_AS` is defense in depth on Darwin; the aggregate tree monitor is authoritative. No
+`RLIMIT_AS` is defense in depth on Darwin; exact single-worker measurement is the conditional
+authority. No
 `RLIMIT_NPROC` because it could affect unrelated same-UID host processes. Quota breach is typed,
-kills/reaps the complete tracked tree, retains bounded sanitized failure evidence, and never
+kills/reaps the exact PID/start-identity worker, retains bounded sanitized failure evidence, and never
 advances state or release pointer.
 
 The environment is built from an empty mapping. Allowed keys are policy-generated `PATH`,
@@ -261,7 +273,7 @@ GitHub, MinIO/OpenMetadata, and matching token/password/secret/key/credential va
   request returns the original operation/result, including after restart. Same key/different
   request is a typed conflict. In-flight reset/export/verify conflicts serialize or fail without
   duplicate work.
-- Startup reconciles recorded PID/start-time/process groups, marks interrupted operations with a
+- Startup reconciles only the recorded worker PID/start identity, marks interrupted operations with a
   typed recoverable state, quarantines only marker-owned incomplete generations/releases, verifies
   committed evidence, and never fabricates completion. Repeated reconciliation/reset is safe.
 
@@ -290,8 +302,11 @@ staging is quarantined/reconciled; evidence is retained.
 
 ## Unresolved Questions
 
-None for plan readiness. The activation path and request ceiling are exact. Hashes of Issue
-#9-owned future files and the implementation head are evidence captured after those bytes exist;
-they are deliberately not future placeholders and may never be synthesized. Host containment,
+One owner/platform decision blocks readiness: an approved backend must preserve
+`retail.dbt-build` without child/exec/private-startup manipulation, another documented no-sudo
+lifetime primitive must be proven, or the upstream contract must be deliberately rereleased.
+The activation path and request ceiling are otherwise exact. Hashes of Issue #9-owned future files
+and the implementation head are evidence captured after those bytes exist; they are deliberately
+not future placeholders and may never be synthesized. Host containment,
 descendant control, RED/GREEN behavior, and exact-head review remain execution gates inside the
 ordered cook, not unresolved planning dependencies.

@@ -1,5 +1,10 @@
 # Issue #9 Verification, Evidence, and Rollback
 
+> Current readiness is `BLOCKED`; see [capability-amendment.md](./capability-amendment.md). The
+> exact future commands and 44 RED / 9 S3 IDs remain unchanged, but the descendant oracles below
+> require prevention before first child and exact single-worker reap. They cannot run as product
+> RED until all eight released operations have an admitted in-process backend.
+
 ## TDD Order
 
 1. Record exact implementation input, Issue #6 release, Stage A release
@@ -58,13 +63,13 @@ fixture/setup failure, skip, xfail, or failure before the named marker is not va
 | `RED-ENV-002` | Writable HOME/config/cache/startup path and env dump | Writes stay in generated private roles; raw env/home/private path is not persisted |
 | `RED-NET-001` | DNS, TCP and UDP outbound probes | Every network operation fails inside containment and produces no external side effect |
 | `RED-NET-002` | TCP/UDP listener probe | Child cannot bind/listen; runner exposes only its admitted private listener |
-| `RED-QUOTA-001` | Wall/CPU spin | Deadline or aggregate CPU bound terminates and reaps the owned tree; state/pointer does not advance |
-| `RED-QUOTA-002` | RSS allocator | Aggregate RSS bound terminates and reaps the owned tree with bounded evidence |
-| `RED-QUOTA-003` | Logical/allocated disk, sparse/large file, FD/process fan-out | First exact bound breach fails the operation; outside/base state and current pointer are unchanged |
+| `RED-QUOTA-001` | Wall/CPU spin | Deadline or worker CPU bound terminates and reaps the exact PID/start worker; state/pointer does not advance |
+| `RED-QUOTA-002` | RSS allocator | Worker RSS bound terminates and reaps the exact PID/start worker with bounded evidence |
+| `RED-QUOTA-003` | Logical/allocated disk, sparse/large file and FD fan-out | First exact bound breach fails the operation; outside/base state and current pointer are unchanged |
 | `RED-OUT-001` | stdout/stderr flood | Crossing either 2 MiB stream cap terminates the operation; retained preview is at most 128 KiB per stream |
 | `RED-OUT-002` | Binary, secret and private-path output canaries | Publication refuses raw content; only permitted digest/count/typed reason can remain |
-| `RED-DESC-001` | TERM-ignore grandchild | TERM then KILL reaps every admitted descendant; postcheck finds none |
-| `RED-DESC-002` | Fast-exit parent plus rapid double-fork/reparent and `setsid` barrier | Phase 1-admitted mechanism accounts for and reaps it without a lucky poll; otherwise readiness fails |
+| `RED-DESC-001` | `fork`, `posix_spawn`, subprocess, multiprocessing fork/spawn/forkserver and TERM-ignore child attempts | Each attempt is denied before the first child marker; exact worker PID/start cleanup and final inventory find zero survivors |
+| `RED-DESC-002` | Rapid double-fork/reparent/`setsid` attempt plus separate same-process `setsid` worker | First fork is denied before any child marker; TERM-ignoring same-process `setsid` worker retains identity, is KILLed and waited, and leaves zero survivors |
 | `RED-BASE-001` | Create/modify/chmod/delete/rename against Git base | Containment denies every mutation and protected hashes remain exact |
 | `RED-BASE-002` | Hardlink/symlink from workspace to base/protected file | Link operation/use refuses and both source and target identities/hashes remain exact |
 | `RED-BROWSER-001` | Forged/missing/duplicate Host and DNS-rebinding host | Request is rejected before body read and operation/audit allocation |
@@ -106,7 +111,8 @@ target. All are required and non-interactive; missing tools or dependencies are 
 
 - `runner-test`: released-contract pin/direct-reader/activation check, registry/unit/state/idempotency,
   existing seam characterization, one bounded real `small`/`42`
-  prepare→generate→load→dbt→export→verify→reset integration, and final no-child/no-base-diff.
+  prepare→generate→load→dbt→export→verify→reset integration through eight reviewed in-process
+  adapters, and final zero-descendant/no-base-diff. This gate is blocked by current dbt.
 - `runner-security-test`: all interpreter/import/startup/argv/path/env/network/quota/output/
   descendant/base/browser negatives; containment probe; secret/private-path evidence scan;
   dependency and static S3 scans.
@@ -164,7 +170,7 @@ Each public gate generates a collision-resistant run ID and writes only below:
 .artifacts/evidence/runner/<run-id>/
   manifest.json
   gates/<command-id>/result.json
-  artifacts/{junit,red-manifest,s3-scan,resource,process-tree,transport,race,crash,release,rollback}/**
+  artifacts/{junit,red-manifest,s3-scan,resource,single-worker-process,transport,race,crash,release,rollback}/**
 ```
 
 The released evidence contracts are authoritative and compatible without a shared write:
@@ -221,9 +227,9 @@ the Issue #9-owned `runner/<run-id>/` and uses relative locators; no shared regi
 
 Rollback is a future implementation/review operation, not authorization in this plan:
 
-1. Refuse new operations and verify the service owner marker, launch ID, PID/start time, process
-   group/tree, contract lock, workspace owner nonce and fence epoch.
-2. TERM/KILL/reap only the recorded runner-owned process tree. Verify no owned descendant/socket
+1. Refuse new operations and verify the service owner marker, launch ID, exact worker PID/start
+   identity, contract lock, workspace owner nonce and fence epoch.
+2. Apply bounded TERM→KILL→wait only to the recorded exact worker. Verify no descendant/socket
    remains. Never use broad `pkill`, recursive workspace-root deletion, `make clean`, sudo, or
    container cleanup.
 3. Disable/remove only `mk/issue-5/i5-04.mk` and app-owned startup integration in the reviewed
@@ -253,6 +259,7 @@ Rollback is a future implementation/review operation, not authorization in this 
 
 ## Unresolved Questions
 
-None for plan readiness. The activation path and 16,384-byte private request ceiling are exact;
-future content/head hashes are measured only after the bytes exist. No generated binding or
-shared-contract change is authorized.
+One owner/platform backend decision blocks readiness, as recorded by the capability amendment.
+The activation path and 16,384-byte private request ceiling are otherwise exact; future
+content/head hashes are measured only after the bytes exist. No generated binding or
+shared-contract change is authorized, and no current gate may claim all-eight execution.

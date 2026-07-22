@@ -11,10 +11,11 @@ effort: "1 implementation day"
 
 ## Overview
 
-Dependency-independent pre-implementation work. Freeze current expert behavior and design harmless
-malicious fixtures before any runner behavior exists. The release amendment has passed fresh
-strict validation and dependency-aware readiness; this phase is the mandatory first whole-plan
-cook step and still must satisfy its own fail-closed host capability admissions.
+Dependency-independent pre-implementation work, currently blocked before source/RED changes. The
+planning-only capability investigation proves fork prevention and exact same-worker reap but also
+proves the pinned dbt operation requires a denied resource-tracker child. This phase cannot resume
+until the owner/platform dependency decision in the capability amendment is released and freshly
+validated.
 
 ## Context Links
 
@@ -72,9 +73,10 @@ cook step and still must satisfy its own fail-closed host capability admissions.
 2. Characterize each existing seam with private temporary paths; do not run broad clean, Docker,
    Airflow service, network/cloud, or production-size data.
 3. Model generated workspace profile paths for dbt and prove the base project can remain read-only.
-4. Use deterministic barriers to design a rapid fork, double-fork/`setsid`, reparent, TERM-ignore,
-   and cleanup capability probe. STOP the future cook if no no-sudo/no-container mechanism can
-   account for and reap it without a lucky polling sample.
+4. Reproduce the capability amendment: all seven child-creation paths are denied before a first
+   marker and the same-process TERM-ignore/`setsid` worker is reaped by exact PID/start identity.
+   Then run the real all-eight adapter gate. STOP if any adapter—including dbt—needs a child,
+   exec, private startup-context override, or dynamic caller-selected plugin.
 5. Build only test fixtures and manifests. Fixture helpers never accept arbitrary host paths and
    terminate within their own hard timeout.
 6. Exercise namespace maps with no mutation: existing Make/Airflow defaults are `expert`; future

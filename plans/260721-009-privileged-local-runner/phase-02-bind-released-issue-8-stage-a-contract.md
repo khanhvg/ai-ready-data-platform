@@ -236,5 +236,6 @@ or locally patched schema copies are prohibited.
 
 ## Next Steps
 
-Phase 3 may begin after Phase 2 passes on the implementation tree. The current release amendment
-and independent readiness audit authorize the whole ordered plan; they do not waive any phase gate.
+The capability amendment supersedes the earlier cook authorization. Phase 3 cannot begin even
+after these release pins pass until the owner/platform resolves the exact dbt child requirement
+and fresh validation/readiness restores a non-empty cook scope.

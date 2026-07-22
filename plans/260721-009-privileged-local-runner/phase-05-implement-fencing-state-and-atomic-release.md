@@ -69,9 +69,10 @@ must have a deterministic barrier/fault point and an old-or-new-complete oracle.
    returns original operation/result; changed request conflicts; stale fence cannot commit.
 4. Append canonical audit events in the same transaction as state effects. Chain previous event
    digest, sequence, operation/request/contract identity and redacted result metadata.
-5. Implement startup reconciliation using PID + process start identity, owned process tree,
-   operation state, staging markers, audit chain and pointer/manifest validation. Reconciliation
-   is repeatable and cannot fabricate verification/completion.
+5. Implement startup reconciliation using the single worker PID + process start identity,
+   operation state, staging markers, audit chain and pointer/manifest validation. Exact-identity
+   TERM→KILL→wait is the only process cleanup authority; zero descendants is a required invariant.
+   Reconciliation is repeatable and cannot fabricate verification/completion.
 6. Implement atomic workspace reset: prepare/validate a new generation, commit selection under the
    live fence, preserve committed evidence/previous release, and quarantine only owned incomplete
    state. Never recursively clean a caller path.
