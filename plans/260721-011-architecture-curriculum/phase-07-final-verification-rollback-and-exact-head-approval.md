@@ -23,8 +23,8 @@ human exact-head approval, then hand off for a separately authorized PR/merge wo
 phase does not itself create a PR or merge.
 
 At the current planner output this phase is hard-blocked and has no file or command authority.
-The corrected Stage A plan is also awaiting independent validation/readiness; this final phase
-cannot treat the amendment author's structural checks as either implementation review or approval.
+The corrected Stage A plan passed independent validation but still awaits readiness; this final
+phase cannot treat plan validation as implementation review or approval.
 
 ## Requirements
 
@@ -58,8 +58,9 @@ tested head and stage outside the evidence producer.
 1. Fetch fresh; verify required branch, exact Stage B readiness input ancestry, current #8/#10/
    Stage A releases, active leases, clean status, and local = tracking = fresh-live.
 2. Run tests-before evidence audit: exact seven-path scaffold commit, direct-child five-path
-   complete tests/fixture commit, all four public entrypoints reached at the tests tree, and every
-   required named semantic RED failed before the first semantic commit for the intended reason.
+   complete tests/fixture commit, valid controls parsed/reached through all four exact `I11-EP-*`
+   public entrypoints at the tests tree, and every required named exact-code semantic RED failed
+   before the first semantic commit for the intended reason.
 3. Run the full practical acceptance line exactly, followed by every amendment-bound #8/#10,
    security, accessibility, lifecycle, renderer, compatibility, and rollback blast-radius command.
 4. Run two isolated deterministic expansion renders and semantic mutation/overlap/freshness tests.

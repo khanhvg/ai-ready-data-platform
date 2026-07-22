@@ -22,9 +22,9 @@ effort: "Gate; repeated before each staged cook"
 ## Overview
 
 Convert real released dependencies into one exact, closed stage authority. The corrected
-[scaffold-first amendment](./stage-a-release-amendment.md) is author output, not authority. Stage A
-remains blocked until a fresh independent validator and later readiness auditor pass the exact
-pushed plan head. A future v3 cook must start from clean
+[scaffold-first amendment](./stage-a-release-amendment.md) passed fresh independent validation but
+is still not implementation authority. Stage A remains blocked until a later fresh readiness
+auditor passes the exact pushed validation output. A future v3 cook must start from clean
 `c07c9a080be7be88447aac497bdf0a2b5fddd020` plus only that exact validated/audited plan-only diff
 and repeat the gate before its scaffold write.
 
@@ -87,9 +87,11 @@ Stage B starts a new chain; Stage A readiness cannot authorize Stage B.
    Structurizr or modify the hard-coded six-view toolchain.
 8. Verify the documented exact stage implementation file/command allow-lists, tool versions,
    time/resource/output bounds, dependency reads, evidence layout, and deny-list.
-9. Require fresh strict independent validation and a readiness auditor independent from this
-   amendment author and future cook actor. The audit binds the exact correction output; until then
-   `validatedAmendmentSha`, `auditedAmendmentSha`, and `stageAImplementationInputSha` stay null.
+9. Require the completed fresh strict independent validation and a fresh readiness auditor
+   independent from this amendment author and future cook actor. The readiness audit binds the
+   exact validation output; until then `validatedAmendmentSha`, `auditedAmendmentSha`, and
+   `stageAImplementationInputSha` stay null in tracked plan content, with the containing validation
+   commit attested externally after push.
 10. Apply only the passed plan-artifact diff to clean `c07c9a0…`, record the resulting exact
     implementation input, and before first scaffold write repeat steps 1-8 and stop on any change.
 

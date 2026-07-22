@@ -55,8 +55,10 @@ unindexed, stale, or recursively self-hashed bytes. Stage A never synthesizes an
 
 1. Repeat dependency, lease, exact allow-list, and protected preflight.
 2. Audit commit chronology and evidence: exact seven-path scaffold, direct-child five-path tests,
-   `scaffold-plus-tests semantic RED` through all four entrypoints, then semantic commits; reject
-   tests-only-from-pristine or precondition-only claims.
+   passing parse/reach for every valid control, then `scaffold-plus-tests semantic RED` through
+   `I11-EP-CURRICULUM`, `I11-EP-TRACE`, `I11-EP-EXPANSION`, and `I11-EP-HANDOFF` with absent exact
+   target-code assertions before semantic commits; reject generic-nonzero,
+   tests-only-from-pristine, or precondition-only claims.
 3. Run the exact 16 Stage A command shapes in order and enforce the 120-second focused and one
    180-second whole sequential expansion deadline, owned process groups, TERM→KILL→wait,
    aggregate RSS/output/file/process bounds, and complete measurements.

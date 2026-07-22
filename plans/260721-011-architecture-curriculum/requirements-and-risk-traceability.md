@@ -6,8 +6,8 @@
   release, closed file/command allow-list, architecture/ADR link, test, evidence, rollback, and
   clearing authority.
 - Every requirement below is a plan obligation. Current Stage A implementation authority is
-  `none`; the corrected amendment awaits fresh independent validation/readiness. Stage B remains
-  empty.
+  `none`; the corrected amendment passed fresh independent validation and awaits a separate fresh
+  readiness audit. Stage B remains empty.
 - Stable IDs are reciprocal: curriculum content, views, ADRs, tests, and evidence must point to
   each other. Filename or heading similarity is insufficient.
 - Stage A can prove static/schema/render/trace behavior only. Stage B alone can prove runtime
@@ -72,7 +72,10 @@ targets remain read-only and cannot be redefined.
 
 The exact fixture path is
 `tests/fixtures/learning/curriculum/invalid-cases-v1.json`; the amendment defines 22 stable RED
-IDs. These original semantic classes remain required, and the seven post-review additions follow:
+families, exact public entrypoint IDs, and a closed stable outcome-code catalogue. Every family
+contains a parseable `validControl` and one or more mutations with one exact `expectedCode`; the
+harness strips ID/code metadata before invoking implementation. These original semantic classes
+remain required, and the seven post-review additions follow:
 
 | ID | RED case | Required failure |
 |---|---|---|
@@ -103,8 +106,9 @@ IDs. These original semantic classes remain required, and the seven post-review 
 | I11-RED-TOPOLOGY-001 | Relation endpoints lack deployment topology binding | Topology rule fails |
 
 RED evidence is recorded at the direct-child scaffold-plus-tests tree before target semantic
-behavior. It records scaffold/tests/RED SHAs, all four real entrypoint reach/precondition results,
-and stable named rule assertions. It may not use a common behavior-absent guard, missing file/tool/
+behavior. It records scaffold/tests/RED SHAs, the four exact `I11-EP-*` reach/precondition results,
+valid-control results, mutation IDs, and absent exact-code assertions. A generic nonzero never
+satisfies an expected code. RED may not use a common behavior-absent guard, missing file/tool/
 import, not-implemented result, expected-value echo, mock, skip, fake pass data, or later-modified
 test to manufacture chronology.
 

@@ -40,11 +40,12 @@ plan-only diff and only within the amendment's 7/5/38 chronology.
 
 ## Architecture
 
-Tests invoke real Issue #11 scaffolded validator, trace, renderer/expansion, and evidence/clean-
-handoff entrypoints while consuming released Issue #8 validators and the proposed architecture
-extension seam read-only. The scaffold supplies only generic bounded parsing/routing/process/
-evidence plumbing. RED evidence binds exact plan input, scaffold commit, tests commit, tested tree,
-entrypoint reach/preconditions, dependency/tool hashes, and protected 33/33 state.
+Tests invoke the exact real scaffolded entrypoints `I11-EP-CURRICULUM`, `I11-EP-TRACE`,
+`I11-EP-EXPANSION`, and `I11-EP-HANDOFF` while consuming released Issue #8 validators and the
+proposed architecture extension seam read-only. The scaffold supplies only generic bounded
+parsing/routing/process/evidence plumbing. RED evidence binds exact plan input, scaffold commit,
+tests commit, tested tree, entrypoint reach/preconditions, dependency/tool hashes, and protected
+33/33 state.
 
 ## Related Code Files
 
@@ -62,15 +63,17 @@ entrypoint reach/preconditions, dependency/tool hashes, and protected 33/33 stat
    target acceptance rules, final content, fixture IDs, hardcoded pass/fail, expected-value echo,
    mocks, skips, and unconditional not-implemented behavior.
 3. In the direct child, commit the complete fixture and four test files containing all 22 stable
-   `I11-RED-*` cases from the amendment. Do not add any content/schema/view/render path.
+   `I11-RED-*` families from the amendment. Each family contains a parseable `validControl` and one
+   or more derived `mutations` with an exact catalogue `expectedCode`; the implementation receives
+   none of that test metadata. Do not add any content/schema/view/render path.
 4. Use exact released Issue #8 examples only when the release explicitly permits fixture
    consumption. Never carry ignored or another worktree’s runtime fixture.
 5. Run the 120-second focused controller at the tests commit. Require `parsed=true`,
-   `toolPreconditions=pass`, and reach records for curriculum validator, trace checker,
-   renderer/expansion, and evidence/clean-handoff. Assert named semantic rules fail because invalid
-   cases are admitted or required valid target behavior is absent. Any common precondition guard,
-   parser crash, missing file/import/tool, mock, skip, generic guard, or not-implemented result
-   invalidates RED.
+   `toolPreconditions=pass`, a passing precondition/reach record for every valid control, and reach
+   records for all four exact entrypoint IDs. Assert named semantic rules fail because mutations
+   are admitted or their exact target outcome code is absent. Any generic nonzero, common
+   precondition guard, parser crash, missing file/import/tool, mock, skip, expected-code echo,
+   generic guard, or not-implemented result invalidates RED.
 6. Add prerequisite graph mutations: unknown/self/cycle/unreachable/forged skip/optional-as-pass.
 7. Add trace mutations across every business-to-operations link and reciprocal edge, including
    reordered relation identity, changed topology identity, generic repeated steps, and conceptual
@@ -86,9 +89,10 @@ entrypoint reach/preconditions, dependency/tool hashes, and protected 33/33 stat
     exact reciprocal instance binding, unregistered copy, supersession, and removal mutations.
 13. Add resource descendants/TERM resistance/RSS/output/file/process mutations and cleanup
     nonignored evidence/unowned ignored bytes/nonempty porcelain mutations.
-14. Record `scaffoldCommitSha`, `testsCommitSha`, `redTestedTreeSha`, failing rule assertions, exit
-    status, bounded output hashes, exact resource measurements, input/dependency/tool hashes, and
-    protected pre-state before any semantic behavior change.
+14. Record `scaffoldCommitSha`, `testsCommitSha`, `redTestedTreeSha`, all four exact entrypoint IDs,
+    valid-control reach results, mutation IDs and absent exact outcome-code assertions, exit status,
+    bounded output hashes, exact resource measurements, input/dependency/tool hashes, and protected
+    pre-state before any semantic behavior change.
 
 ## Tests Before
 
@@ -117,8 +121,8 @@ commands; `architecture-lab-e2e` and `architecture-visual-review` remain exclude
 
 - [ ] Exact seven-path scaffold and direct-child five-path complete tests commit pass path/content
       inspection.
-- [ ] Every required failure fixture reaches its real public entrypoint and fails a named semantic
-      assertion before target behavior writes.
+- [ ] Every valid control parses/reaches, and every mutation reaches its exact public entrypoint and
+      fails the named exact-code assertion before target behavior writes.
 - [ ] RED evidence binds exact stage input, #8 release, tool/fixture hashes, and protected baseline.
 - [ ] No protected/shared/portal/root/cloud path changes.
 - [ ] No fixture uses fake pass data, expected-value echo, mocks, skips, ignored foreign state, or

@@ -23,11 +23,12 @@ or predicted SHA is never released implementation authority.
 | Master readiness report | `e440c5855732d5d8f5d634e3cc1359c010cc5ed3` | Fan-out authority only |
 | Audited mapping/integration handoff | `f9a87d0ebdb72c014a6f8c6eaae865dad4d2188c` | Ownership/dependency graph |
 | Owner parallelization decision | [Issue #5 comment 5036142770](https://github.com/khanhvg/ai-ready-data-platform/issues/5#issuecomment-5036142770) | Plan now; do not bypass dependencies |
-| Live Issue #11 | [Issue #11](https://github.com/khanhvg/ai-ready-data-platform/issues/11) | OPEN; post-correction label must be `ready for plan validation`; risk high/TDD/S3/architecture/curriculum |
+| Live Issue #11 | [Issue #11](https://github.com/khanhvg/ai-ready-data-platform/issues/11) | Validation input was OPEN with `ready for plan validation`; a passing validator must move it to `ready for plan audit`; risk high/TDD/S3/architecture/curriculum |
 | Stage A amendment start | `ab653f6edec73e5ef875723945d2e3cd7814b4e6` | Historical exact-release amendment input |
 | Post-review correction start | `1c62b68159ffc48cc2f063c137cb9072d8ed741f` | Exact clean local/upstream/fresh-live author input |
 | Fresh v3 clean base | `c07c9a080be7be88447aac497bdf0a2b5fddd020` | Descends from `fecf6bb8…`; all 50 paths absent; failed v1/v2 not ancestors |
 | Released integration / Issue #8 Stage A | `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` | Current read-only dependency and required ancestor of the v3 base |
+| Live integration after PR #28 merge | `5644f01b4c0443a81f3af0bcce80f44c847cd986` | First parent is `fecf6bb8…`; merged Vite-binding delta is not consumed and had no post-merge release handoff at validation time |
 | Released tree | `27fc3667ef37892dad5c3fbfd76769f65a0760be` | Independently recomputed commit tree |
 
 Primary repository inputs:
@@ -62,10 +63,12 @@ placeholders. The current release binding is the exact merge object below.
 
 Fresh Git and GitHub proof closes the Stage A dependency gate:
 
-1. `refs/heads/integration/issue-5-local-learning` resolves exactly to
-   `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`; its ordered parents are the PR #23 merge
-   `5c2244c2c860234d0df49cf0a42ad950c6495717` and composition head
-   `734cf637a20ae186597e23d96a194ed4e30220ea`.
+1. Released Stage A object `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` has ordered parents
+   PR #23 merge `5c2244c2c860234d0df49cf0a42ad950c6495717` and composition head
+   `734cf637a20ae186597e23d96a194ed4e30220ea`. During validation, the live integration ref
+   advanced to PR #28 merge `5644f01b4c0443a81f3af0bcce80f44c847cd986`, with `fecf6bb8…`
+   as first parent. Its 28-path Issue #8 Vite-binding delta overlaps none of the exact 50 future
+   paths, 33 protected identities, or 21 pinned contract-set paths and is not consumed.
 2. [Release evidence](https://github.com/khanhvg/ai-ready-data-platform/issues/8#issuecomment-5043195549)
    records `STAGE_A_MERGED_VERIFIED_RELEASED` and exact 56/56, invalid 65/65, API 16, final 4/4,
    inherited 19/19 + 1/1 + 13/13 results without inventing a CI-success claim.
@@ -80,13 +83,14 @@ Fresh Git and GitHub proof closes the Stage A dependency gate:
    Vite, or operation-matrix truth.
 6. The released dependency is consumable read-only. This does not pass Issue #11 plan readiness.
 
-## Gate A2 — Corrected Issue #11 Plan Validation and Readiness — BLOCKED
+## Gate A2 — Plan Validation PASS; Readiness BLOCKED
 
-The author correction proposes the exact 50-path/16-command scope and 7/5/38 scaffold-first
-chronology. Before implementation, a fresh xhigh context independent of this author must validate
-the exact pushed correction head and map all seven findings. A later fresh readiness auditor must
-bind the validator output, exact released dependencies, proposed view lease, paths/commands,
-resource/visual/evidence/cleanup rules and v3 base. Until both pass:
+Fresh xhigh independent validation of exact correction input `788ea45331a34e34b0d330e568a39ee6c6566e63`
+passed after bounded plan-only fixes and mapped all seven review findings. The
+[validation report](./validation/260722-stage-a-v3-independent-validation-report.md) confirms the
+exact 50-path/16-command scope, 7/5/38 chronology, released dependencies, view lease,
+resource/visual/evidence/cleanup rules, and v3 base. A separate fresh readiness auditor must still
+bind the validator's exact pushed output. Until readiness passes:
 
 ```yaml
 validatedAmendmentSha: null
@@ -95,7 +99,8 @@ stageAImplementationInputSha: null
 implementationAuthority: none
 ```
 
-A future v3 input is derived by applying only the exact passed plan-artifact diff to clean
+A future v3 input is derived by applying only the exact validation-and-readiness-passed
+plan-artifact diff to clean
 `c07c9a080be7be88447aac497bdf0a2b5fddd020`. No product/test/render/evidence commit from failed v1
 or v2 may be cherry-picked or copied. The derived SHA is recorded and preflighted, never predicted.
 
@@ -128,7 +133,7 @@ Graphviz fallback. The Issue #11 body and master graph retain “Structurizr exp
 ownership label. The current amendment reconciles that label against the released Issue #6
 toolchain:
 
-- proposed legal interpretation, pending Gate A2: additions-only expansion using the exact
+- proposed legal interpretation, pending fresh readiness: additions-only expansion using the exact
   released LikeC4 toolchain and an I5-06-owned extension seam beneath
   `architecture/expansions/i5-06/**`;
 - forbidden: alter the six local source files/rows/renders, tool lock, renderer/normalizer, or
@@ -139,7 +144,7 @@ toolchain:
 The amendment names the proposed lease start SHA, owner, exact 19 expansion paths, duration,
 conflict rule, separate base/extension manifest semantics, render commands, and rollback. The
 existing exact-six roots remain separate and byte-identical. The technical seam is valid, but the
-lease becomes implementation authority only after Gate A2 passes.
+lease becomes implementation authority only after fresh readiness passes.
 
 ## Current Authority Matrix
 
@@ -152,7 +157,7 @@ lease becomes implementation authority only after Gate A2 passes.
 | Contract bindings | Exact released paths/blobs/hashes; read-only | `[]` |
 | Portal renderer bindings | `[]`; not needed | `[]` |
 | Evidence binding | Existing `fitness-result-v1` command envelope only; no learner evidence | `[]` |
-| View lease | Proposed `i5-06-stage-a-architecture-expansion-v1`; exact additions only; pending Gate A2 | None |
+| View lease | Proposed `i5-06-stage-a-architecture-expansion-v1`; exact additions only; pending fresh readiness | None |
 | Cloud/AWS/Terraform authority | None | None |
 
 ## Dependency Preflight Algorithm
@@ -166,8 +171,9 @@ At each amendment/readiness and again before the first write:
    exact released blobs/hashes.
 4. Verify prior dependency commands/evidence against the release attestation; reject stale or
    mutable locators.
-5. Verify no active shared-contract, architecture-view, portal, generated-render, or Make lease
-   overlaps.
+5. Verify no active or newly merged shared-contract, architecture-view, portal, generated-render,
+   or Make change overlaps or becomes required; classify the exact live delta after the pinned
+   release rather than silently replacing the dependency authority.
 6. Recompute the Issue #6 protected baseline and fail on any byte/blob drift.
 7. Compare commit chronology and diff to the exact 7 scaffold / 5 complete tests / 38 semantic
    complement partition and final 50-path allow-list before and after each phase.
@@ -180,8 +186,7 @@ At each amendment/readiness and again before the first write:
   hash-inconsistent.
 - A plan/readiness/feature SHA is offered as a release.
 - Any future SHA, route, renderer, contract, schema, fixture, tool, or command is inferred.
-- Gate A2 is not PASS, exact derived v3 input is null/mismatched, or fresh validation/readiness is
-  missing.
+- Gate A2 is not PASS, exact derived v3 input is null/mismatched, or fresh readiness is missing.
 - Protected Issue #6 bytes drift or a view/tool/shared-contract lease overlaps.
 - Portal integration would require an unowned portal edit.
 - AWS credentials, cloud calls, Terraform plan/apply/destroy, or resource creation become required.

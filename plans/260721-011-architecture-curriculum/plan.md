@@ -16,7 +16,9 @@ modelProfile: "gpt-5.6-sol"
 modelReasoningEffort: "xhigh"
 inputSha: "1c62b68159ffc48cc2f063c137cb9072d8ed741f"
 originalPlanInputSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
-validationStatus: awaiting-fresh-independent-plan-validation
+validationStatus: passed-fresh-independent-plan-validation
+currentValidationReport: "validation/260722-stage-a-v3-independent-validation-report.md"
+validationOutputAttestation: "external-issue-comment-on-containing-commit"
 historicalValidationInputSha: "7620d168fb96cf9ae11e963501f65ea5a416af43"
 historicalValidationReport: "validation/independent-validation-report.md"
 historicalReadinessAuditInputSha: "1287fe35aa9ab29a97daa541f39a624d01a77d31"
@@ -30,9 +32,9 @@ stageAImplementationInputSha: null
 releasedStageASha: "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9"
 stageAAmendment: "stage-a-release-amendment.md"
 historicalStageAReadinessAudit: "audit/stage-a-readiness-audit-report.md"
-readinessVerdict: pending-fresh-independent-validation-and-readiness
+readinessVerdict: pending-fresh-plan-readiness-audit
 implementationAuthority: none
-stageAStatus: awaiting-independent-plan-validation
+stageAStatus: awaiting-fresh-plan-readiness-audit
 stageBStatus: blocked-on-issue10
 proposedStageAFileAuthority: "stage-a-release-amendment.md#exact-stage-a-tracked-write-allowlist"
 proposedStageACommandAuthority: "stage-a-release-amendment.md#exact-command-allowlist"
@@ -58,8 +60,9 @@ amendment's tests-only chronology impossible. Starting from exact clean local/up
 head `1c62b68159ffc48cc2f063c137cb9072d8ed741f`, the
 [post-review scaffold-first amendment](./stage-a-release-amendment.md) now proposes the corrected
 50 create-only paths, 16 commands, requirements, tests, resource/visual/evidence/cleanup bounds,
-and rollback gates. It is author output awaiting a fresh independent validator and readiness
-auditor; it is not cook authority.
+and rollback gates. Fresh independent validation passed after bounded plan-only corrections to
+live Issue #8 state, exact RED entrypoints/outcome codes/controls, and closed controller child-tool
+admission. A fresh readiness auditor is still required; this is not cook authority.
 
 Future v3 implementation begins only from exact clean
 `c07c9a080be7be88447aac497bdf0a2b5fddd020` plus the eventual exact independently
@@ -76,7 +79,7 @@ journey and released renderer; its file, command, dependency, and renderer lists
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 1 | [Freeze authority and dependency gates](./phase-01-freeze-authority-and-dependency-gates.md) | Awaiting independent plan validation/readiness |
+| 1 | [Freeze authority and dependency gates](./phase-01-freeze-authority-and-dependency-gates.md) | Independent validation passed; awaiting readiness audit |
 | 2 | [Stage A scaffold-first TDD contract and preservation](./phase-02-stage-a-tests-first-contract-and-preservation.md) | Blocked on Phase 1; scaffold-first protocol proposed |
 | 3 | [Stage A curriculum templates and static expansion](./phase-03-stage-a-curriculum-templates-and-static-expansion.md) | Blocked on recorded public-path RED |
 | 4 | [Stage A evidence and bounded handoff](./phase-04-stage-a-evidence-and-bounded-handoff.md) | Blocked on Phases 1-3 |
@@ -151,8 +154,8 @@ Stage A or Stage B allow-list.
 ## Workflow and Exit
 
 - Workflow: `ck:plan` post-review author correction through Herdr using `gpt-5.6-sol` at `xhigh`
-  reasoning, followed by a separate fresh xhigh independent plan-validation context and only then
-  a separate readiness audit.
+  reasoning, followed by the completed separate fresh xhigh independent plan validation and now a
+  separate fresh readiness audit.
 - Readiness checks cover CK status/strict validation, links/anchors, placeholders/future SHAs,
   dependency release objects, exact allow-list absence/overlap, requirements/scenario/RED/S3
   catalogues, 33 protected identities, architecture tool availability, diff hygiene, and a
@@ -283,6 +286,42 @@ data, S3, and blocked Stage B.
 
 #### Current Disposition
 
-- Author self-check only; no independent validation or readiness claim.
+- Historical author self-check only at `788ea45331a34e34b0d330e568a39ee6c6566e63`; Session 4 is
+  the current independent validation disposition.
 - Implementation authority: `none`.
-- Required next phase: fresh independent plan validation at the exact pushed correction head.
+- Required next phase: fresh plan-readiness audit at the exact pushed validation output.
+
+### Session 4 — 2026-07-22 — Fresh independent post-review validation
+
+**Trigger:** Validate exact clean local/upstream/live correction input
+`788ea45331a34e34b0d330e568a39ee6c6566e63` against PR #27 review comment `5046838991`, author
+correction comment `5047513123`, released integration `fecf6bb8…`, and clean v3 base `c07c9a0…`.
+
+#### Bounded Validation Corrections
+
+- Reconciled live Issue #8 twice: first from stale `ready to cook` to reviewed PR #28, then to its
+  during-validation merge `5644f01b…`. The merge has `fecf6bb8…` as first parent, no post-merge
+  release handoff at validation time, and zero overlap with the 50/33/21 Issue #11 closures, so it
+  remains an explicit non-authority while `fecf6bb8…` stays the pinned released dependency.
+- Named the exact four callable RED entrypoint IDs, required a parse/reach-valid control for every
+  case family, and closed 82 exact stable outcome codes across the 22 RED families. Fixture/test
+  metadata is stripped before the same final public callable is invoked.
+- Clarified that the exact 16 commands are top-level operator shapes and closed the controller's
+  internal Python/`ps`/Node/npm/LikeC4 child-tool admission without adding a command shape.
+
+#### Verification Results
+
+- **Tier:** Full (7 phases; all four verification roles plus semantic/security/resource review).
+- **Claims checked:** 105 phase claims plus exact catalog/identity/ancestry/link/status checks.
+- **Verified:** all after bounded fixes | **Failed:** 0 | **Unverified:** 0.
+- Detailed evidence: [Stage A v3 independent validation report](./validation/260722-stage-a-v3-independent-validation-report.md).
+
+### Whole-Plan Consistency Sweep — Session 4
+
+- Files reread: `plan.md`, all seven phase files, five companion contracts, the amendment, and
+  the current validation report.
+- Decision deltas checked: 4.
+- Reconciled stale references: live Issue #8 state, validation/readiness status, exact entrypoint
+  naming, and exact outcome/tool-admission language.
+- Unresolved contradictions: 0.
+- Recommendation: proceed only to a fresh plan-readiness audit; do not cook or begin Stage B.
