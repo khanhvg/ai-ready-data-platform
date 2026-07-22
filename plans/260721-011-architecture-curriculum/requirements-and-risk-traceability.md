@@ -22,7 +22,7 @@ blocked on a passing merged Issue #10 journey.
 | `I11-CUR-01` | Exactly 20 distinct Vietnamese-first modules preserve the fixed prerequisite progression | Set/graph/locale/level checks |
 | `I11-CUR-02` | Every module has starter, task, controlled failure, verify, evidence, reset, progressive hints, gated solution, trade-off reflection, operations consequences | Strict schema, reciprocal trace, nonempty type checks |
 | `I11-CUR-03` | Module learning signatures and meaningful lifecycle content are non-duplicate and level-appropriate | Canonical signature/body uniqueness and progression mutations |
-| `I11-TPL-01` | Exactly 12 registered v1 templates with exact ID/version/hash/schema/compatibility and reciprocal bindings | Discovery=set equality, canonical hashes, instance closure |
+| `I11-TPL-01` | Exactly 12 registered v1 templates; every instance has a stable unique ID and exact registry/template/version/hash/compatibility binding | Registry/instance discovery=set equality, canonical hashes, real ID/compatibility drift mutations |
 | `I11-TPL-02` | Monotonic successors, exact predecessor object, migration/rollback, readable deprecated predecessors, tombstoned removals | Real successor/removal/orphan repository mutations |
 | `I11-TRACE-01` | Outcome-to-operations trace is complete and reciprocal | Missing/stale/nonreciprocal real source mutations |
 | `I11-FLOW-01` | Exactly 11 distinct flows equal ordered dynamic relations and deployment topology | Relation source/target/label/technology/order and topology mutations |

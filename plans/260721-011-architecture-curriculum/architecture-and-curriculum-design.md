@@ -79,13 +79,17 @@ The one registry contains exactly `tpl-stakeholder-concern`, `tpl-fr-nfr-asr`,
 `tpl-pattern-admission`, `tpl-fitness-function`, `tpl-capacity-cost`, `tpl-dr-recovery`, and
 `tpl-security-review`. All v1 rows use `1.0.0`, exact schema/registry tokens, canonical
 hash-excluded body hashes, closed compatibility, active status, `supersedes=null`, and reciprocal
-instance bindings.
+instance bindings. Every consuming binding has one stable unique `instanceId` and repeats the
+exact registry ID, template ID, version, content hash, and registry-row compatibility object; the
+registry's sorted consuming-ID set and discovered instance-ID set are identical.
 
 Successors increase semantic version and bind exact predecessor ID/version/hash plus migration,
 rollback, and compatibility. Referenced predecessors remain readable/deprecated. Removal requires
 zero instances, a compatible replacement, successful migration/rollback, and a later tombstone.
 The [closed lifecycle contract](./stage-a-release-amendment.md#closed-template-lifecycle) defines
 the real 11/13/duplicate/hash/supersedes/removal/orphan fixtures.
+Those fixtures include independent duplicate/drifted instance-ID and instance-compatibility
+mutations through the existing nonreciprocal and compatibility codes.
 
 ## Exact Flows and Conceptual Bridges
 

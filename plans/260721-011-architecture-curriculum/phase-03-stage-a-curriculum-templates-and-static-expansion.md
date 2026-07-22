@@ -25,8 +25,9 @@ five useful source-derived views, and the frozen promotion decision.
 
 - Every module has the full lifecycle, unique meaningful bodies/signature, reciprocal trace, and
   level-appropriate progression.
-- Template discovery equals the closed 12-ID registry and every instance exact version/hash;
-  predecessor/successor/migration/rollback/tombstone rules are enforced on real repositories.
+- Template discovery equals the closed 12-ID registry and every instance has one stable unique ID
+  plus exact registry/template/version/hash/compatibility binding; predecessor/successor/
+  migration/rollback/tombstone rules are enforced on real repositories.
 - `BR-GOVERNANCE-01` binds protected `learning.adapters -> retail` and
   `adapters_instance -> retail_instance` reciprocally to expansion relations/topology.
 - SVG, fitted evidence HTML, and text derive solely from locked LikeC4 export/DOT/Graphviz and
@@ -49,7 +50,8 @@ create-only paths; protected/shared/docs/portal/cloud paths remain unchanged.
 ## Tests and Validation
 
 - Module missing/duplicate/progression mutations use existing REF/PREQ codes.
-- Template 11/13/duplicate/hash/orphan/supersedes/removal/tombstone mutations use seven exact codes.
+- Template 11/13/duplicate/hash/orphan/supersedes/removal/tombstone plus independent instance-ID
+  and instance-compatibility mutations use the seven exact codes.
 - Dynamic-only, deployment-only, both-wrong governance mutations fail production checks.
 - Relation source/target/label/technology/order mutation visibly changes SVG/HTML/text and hashes;
   hidden hash-only freshness fails.

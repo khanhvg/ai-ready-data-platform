@@ -20,8 +20,8 @@ effort: "Gate; repeated at every exact-head handoff"
 
 Create no product/test bytes. Establish exact integration `5644f01b…` as ancestor, plan-only
 provenance through the eventual readiness head, fresh local/upstream/fetched/live equality, exact
-50-path absence, and 33/21 byte equality. Independent validation and readiness remain separate
-future roles; this phase cannot pass from author self-checks.
+50-path absence, and 33/21 byte equality. Independent validation has passed; readiness remains a
+separate future role, and this phase still cannot pass from author checks or validation alone.
 
 ## Requirements
 
@@ -43,7 +43,7 @@ be separately validated. Historical reports are immutable.
 3. Parse exact 50/16 catalogues and prove the 50 paths absent.
 4. Compare 33 protected and 21 released identities per path/blob/content bytes.
 5. Run S3/private-path/secret/diff checks and record Stage B empty authority.
-6. Stop for fresh independent plan validation, then separate readiness.
+6. Bind the independent validation result and stop for separate fresh readiness.
 
 ## Tests and Validation
 

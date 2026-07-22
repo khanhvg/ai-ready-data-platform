@@ -2,10 +2,10 @@
 
 ## Current Authority
 
-The v4 plan is corrected but unvalidated. Implementation authority is `none`. Historical v1/v2/v3
-validation and readiness reports remain immutable evidence for old SHAs and cannot authorize this
-contract. The only next gate is fresh independent plan validation; a later fresh readiness audit
-must bind its exact pushed result before any cook.
+The v4 plan passed fresh independent validation with one bounded plan-only template-instance fix.
+Implementation authority remains `none`. Historical v1/v2/v3 validation and readiness reports
+remain immutable evidence for old SHAs and cannot authorize this contract. The only next gate is a
+fresh readiness audit that binds the exact pushed validation result before any cook.
 
 | Authority | Exact identity | Disposition |
 |---|---|---|
@@ -15,6 +15,8 @@ must bind its exact pushed result before any cook.
 | Issue #8 Stage A contract release | `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` | Read-only 21-contract authority inherited by integration |
 | PR #30 review | [comment 5050486239](https://github.com/khanhvg/ai-ready-data-platform/pull/30#issuecomment-5050486239) | Eight findings; prior v3 authority fails |
 | v4 recovery | [comment 5050513064](https://github.com/khanhvg/ai-ready-data-platform/issues/11#issuecomment-5050513064) | Plan-only reconstruction from integration |
+| Fresh v4 validation input | `dfd8e4c7704de5e1392d1028f5a25757a3e77166` | Independently validated; containing output is attested after push |
+| Fresh v4 validation report | [validation/260723-stage-a-v4-independent-validation-report.md](./validation/260723-stage-a-v4-independent-validation-report.md) | PASS with one bounded plan-only fix; not readiness |
 | Stage B dependency | Passing merged Issue #10 real journey and released renderer | Missing; Stage B blocked and empty |
 
 `c07c9a080be7be88447aac497bdf0a2b5fddd020` and every failed v1/v2/v3 product/test/render/evidence
@@ -41,9 +43,10 @@ conflict resolution, or product/test/evidence copy fails this gate.
 
 ## Gate A2 — Fresh Independent Plan Validation
 
-Status is pending. A fresh xhigh validator must start from the exact pushed v4 output in a clean
-checkout, prove local/upstream/fetch/live equality, re-read PR #30 and v4 authority, and validate
-the whole plan rather than only the correction report. Required checks include:
+Status is PASS with one bounded plan-only fix. The fresh xhigh validator started from exact clean
+input `dfd8e4c7704de5e1392d1028f5a25757a3e77166`, proved local/upstream/fetch/live equality,
+re-read PR #30 and v4 authority, and validated the whole plan rather than only the correction
+report. Reproduced checks include:
 
 - CK 4.5.2 strict plan validation and status;
 - links, anchors, frontmatter, placeholders, unresolved/future SHA claims;
@@ -55,12 +58,14 @@ the whole plan rather than only the correction report. Required checks include:
 - 33/33 protected and 21/21 released identities; and
 - private-path/secret/S3/diff consistency.
 
-The validator publishes a new plan-only report and exact-head attestation. It may return PASS or
-BLOCKED/FAIL. The author report is input, never the independent verdict.
+The independent result is the
+[Stage A v4 validation report](./validation/260723-stage-a-v4-independent-validation-report.md).
+Its containing output identity is attested externally after push to avoid a self-referential SHA.
+The author report was input, never the independent verdict.
 
 ## Gate A3 — Fresh Readiness
 
-Status is blocked on Gate A2 PASS. A different fresh reviewer binds the exact pushed validation
+Status is pending after Gate A2 PASS. A different fresh reviewer binds the exact pushed validation
 head, repeats live dependency/remote/diff/count/security checks, and decides whether one Stage A
 cook may start. Readiness must not infer cook authority from a label, author comment, historical
 report, or validation alone. Only a later explicit passing readiness output may fill

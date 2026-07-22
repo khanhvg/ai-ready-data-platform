@@ -1,6 +1,6 @@
 ---
 title: "I5-06 — Architecture curriculum, templates, and fitness functions"
-description: "Stage A v4 post-review correction awaiting fresh independent plan validation."
+description: "Stage A v4 correction independently validated; fresh readiness audit is next."
 status: pending
 priority: P1
 issue: 11
@@ -17,11 +17,12 @@ modelReasoningEffort: "xhigh"
 inputSha: "287dc08546f7013ca8c187b318e0a2f7cf832e55"
 integrationReleaseSha: "5644f01b4c0443a81f3af0bcce80f44c847cd986"
 integrationReleaseTree: "a38594d420fe7df2b30265a8a72bb5fad1698012"
-validationStatus: pending-fresh-independent-plan-validation
-currentValidationReport: null
+validationStatus: passed-independent-stage-a-v4-with-bounded-plan-fix
+validationInputSha: "dfd8e4c7704de5e1392d1028f5a25757a3e77166"
+currentValidationReport: "validation/260723-stage-a-v4-independent-validation-report.md"
 readinessVerdict: null
 implementationAuthority: none
-stageAStatus: plan-corrected-pending-independent-validation
+stageAStatus: plan-validated-pending-fresh-readiness-audit
 stageBStatus: blocked-on-passing-merged-issue-10-journey
 stageAAmendment: "stage-a-release-amendment.md"
 stageAFileAuthority: "stage-a-release-amendment.md#exact-stage-a-tracked-write-allowlist"
@@ -96,7 +97,7 @@ each validation, readiness, and cook handoff.
 
 | Phase | Name | Status |
 |---|---|---|
-| 1 | [Freeze authority and dependency gates](./phase-01-freeze-authority-and-dependency-gates.md) | Pending fresh independent validation/readiness |
+| 1 | [Freeze authority and dependency gates](./phase-01-freeze-authority-and-dependency-gates.md) | Validation passed; pending fresh readiness |
 | 2 | [Repository-level scaffold-first TDD](./phase-02-stage-a-tests-first-contract-and-preservation.md) | Blocked on Phase 1 |
 | 3 | [Curriculum, templates, and source-derived views](./phase-03-stage-a-curriculum-templates-and-static-expansion.md) | Blocked on recorded repository RED |
 | 4 | [Truthful evidence and bounded handoff](./phase-04-stage-a-evidence-and-bounded-handoff.md) | Blocked on Phases 1–3 |
@@ -118,15 +119,17 @@ the amendment.
 
 ## Validation and handoff gates
 
-Before any cook authority exists, a fresh independent validator must bind the exact pushed v4
-head and repeat CK 4.5.2 strict validation/status, link and anchor checks, placeholder/future-SHA
-checks, exact path/command/RED/template/render/trace/evidence counts, S3/private-path/secret scans,
-protected/released identity comparisons, and the direct integration diff. A separate fresh
-readiness reviewer must then bind the validated exact head. Author self-checks cannot satisfy
-either role.
+The fresh independent validator bound input `dfd8e4c7704de5e1392d1028f5a25757a3e77166`
+and completed CK 4.5.2 strict validation/status, link and anchor checks,
+placeholder/future-SHA checks, exact path/command/RED/template/render/trace/evidence counts,
+S3/private-path/secret scans, protected/released identity comparisons, and the direct integration
+diff. The result and one bounded template-instance correction are recorded in the
+[Stage A v4 independent validation report](./validation/260723-stage-a-v4-independent-validation-report.md).
+A separate fresh readiness reviewer must bind the exact pushed validation head. Author checks and
+independent validation do not themselves grant readiness or cook authority.
 
-The next authorized phase is only `fresh-independent-plan-validation`. The label may move from
-`ready for review` to `ready for plan validation`; it must not move to a cook/readiness label.
+The next authorized phase is only `fresh-plan-readiness-audit`. The Issue may move from
+`ready for plan validation` to `ready for plan audit`; it must not move to a cook label.
 
 ## Validation log
 
@@ -145,3 +148,15 @@ as v4 validation/readiness evidence.
 - Corrected all eight PR #30 findings while preserving the frozen Stage A counts and Stage B block.
 - Performed author/self plan checks only. Fresh independent validation and readiness remain future
   work and no implementation authority is claimed.
+
+### Session 7 — 2026-07-23 — fresh independent Stage A v4 validation
+
+- Bound exact clean local/upstream/live input
+  `dfd8e4c7704de5e1392d1028f5a25757a3e77166` and direct integration `5644f01b…` ancestry.
+- Reproduced the closed counts, 50-path absence, 33/33 protected and 21/21 released identities,
+  repository-level RED implementability, 16-command simulation, visible parity, governance,
+  evidence, S3, resource, Stage B, and active-lane separation checks.
+- Added the missing stable per-instance ID and exact compatibility binding to the template
+  lifecycle and its real repository mutations; frozen counts and public scope did not change.
+- Returned PASS for plan validation only. Fresh readiness remains separate and implementation
+  authority remains `none`.

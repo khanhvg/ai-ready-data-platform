@@ -313,7 +313,10 @@ For every row, the cook computes `contentSha256` from the canonical hash-exclude
 and writes that exact hash into the registry and every instance binding. Repository discovery must
 equal the 12-ID registry set exactly once; all v1 rows are active, have `supersedes=null`, declare
 the closed schema and compatibility object, and list sorted unique consuming instance IDs. Every
-instance reciprocally names exact `registryId`, `templateId`, `version`, and `contentSha256`.
+instance reciprocally declares a stable unique `instanceId`, exact `registryId`, `templateId`,
+`version`, `contentSha256`, and the exact registry-row `compatibility` object. Repository
+discovery by `instanceId` must equal every row's sorted `consumingInstanceIds` set with no
+duplicate, unbound, or multiply bound instance.
 
 Future successors must increase semantic version monotonically and contain a `supersedes` object
 with the predecessor's exact ID/version/hash, reader compatibility, migration proof, and rollback
@@ -322,6 +325,9 @@ instances, a registered compatible replacement, completed migration/rollback evi
 later release tombstone. Unknown copies, 11/13 rows, duplicates, unregistered versions, hash drift,
 invalid supersedes objects, unknown predecessors, removals without tombstones, and orphan/one-way
 instances are rejected through real repository fixtures using the seven existing template codes.
+The fixtures also independently duplicate or change `instanceId` and drift the instance
+compatibility object while leaving the registry row canonical; those mutations must fail
+`I11_TEMPLATE_NONRECIPROCAL` and `I11_TEMPLATE_COMPATIBILITY_INVALID`, respectively.
 
 ## Critical Flows and Governance Bridge
 
