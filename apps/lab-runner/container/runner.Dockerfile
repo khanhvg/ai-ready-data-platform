@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1.7
 FROM python@sha256:9bb659dc6d5218917236f3711e866a5634bb4c2f208de9d4533aa4863f57c1d3 AS builder
 ENV PATH=/opt/venv/bin:/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8
 COPY wheelhouse/ /wheelhouse/
