@@ -1044,6 +1044,7 @@ def _validate_owned_artifacts(evidence_root: Path) -> tuple[list[tuple[Path, dic
         raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
     caches = [path for path in (
         ROOT / "learning/curriculum/tools/__pycache__",
+        ROOT / "scripts/golden/__pycache__",
         ROOT / "tests/learning/curriculum/__pycache__",
     ) if path.exists()]
     if any(not path.is_dir() or path.is_symlink() or any(not item.is_file() or item.suffix != ".pyc" for item in path.iterdir()) for path in caches):
@@ -1179,6 +1180,23 @@ def _repository_handoff() -> CheckResult:
             "I11-EP-HANDOFF", True, ("I11_CLEAN_PORCELAIN_NONEMPTY",),
             {"testedTreeSha": head, "trackedCreates": len(rows), "protected": len(protected)},
         )
+    precleanup_ignored = [
+        row for row in _git("status", "--porcelain=v1", "--ignored", "--untracked-files=all", "-z").split(b"\0")
+        if row
+    ]
+    admitted_ignored_prefixes = (
+        b"?? .artifacts/",
+        b"!! .claude/",
+        b"!! .hermes/",
+        b"!! learning/curriculum/tools/__pycache__/",
+        b"!! scripts/golden/__pycache__/",
+        b"!! tests/learning/curriculum/__pycache__/",
+    )
+    if any(not row.startswith(admitted_ignored_prefixes) for row in precleanup_ignored):
+        return CheckResult(
+            "I11-EP-HANDOFF", True, ("I11_CLEAN_IGNORED_UNOWNED",),
+            {"testedTreeSha": head, "trackedCreates": len(rows), "protected": len(protected)},
+        )
     provenance_path = evidence_root / "red-provenance.json"
     raw_log = evidence_root / "red-raw.log"
     sanitized_log = evidence_root / "red-sanitized.log"
@@ -1221,12 +1239,21 @@ def _repository_handoff() -> CheckResult:
     if porcelain: codes.append("I11_CLEAN_PORCELAIN_NONEMPTY")
     ignored = _git("status", "--porcelain=v1", "--ignored", "--untracked-files=all", "-z").split(b"\0")
     ignored = [row for row in ignored if row]
-    if any(not row.startswith(b"!! .claude/") for row in ignored): codes.append("I11_CLEAN_IGNORED_UNOWNED")
+    preserved_ignored_prefixes = (b"!! .claude/", b"!! .hermes/")
+    if any(not row.startswith(preserved_ignored_prefixes) for row in ignored): codes.append("I11_CLEAN_IGNORED_UNOWNED")
     cleanup = {
         "schemaVersion": "i11-cleanup-result-v1", "issue": 11, "testedTreeSha": head,
         "trackedCreates": len(rows), "rollbackExact": rollback_exact,
         "protectedCount": len(protected), "protectedHashes": protected,
         "porcelainBytes": len(porcelain), "ignoredEntries": len(ignored),
+        "ignoredClassification": {
+            "evidenceRoot": ".claude/evidence/issue-11-stage-a/260722-cook-v3",
+            "appOwnedPreservedRoots": [".hermes"],
+            "ownedTemporaryRootsRemoved": [
+                ".artifacts", "learning/curriculum/tools/__pycache__",
+                "scripts/golden/__pycache__", "tests/learning/curriculum/__pycache__",
+            ],
+        },
         "artifactOwnershipInventorySha256": _sha(evidence_root / "artifact-ownership-inventory.json"),
         "copiedProtectedCommandResults": sorted(copied), "s3Findings": sorted(set(findings)),
         "stageB": "blocked", "cloudAction": "none",
