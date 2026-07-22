@@ -131,6 +131,8 @@ class Backend:
     def reconcile(self,run_id:str,status:str,container_id:str|None,image_digest:str|None,fence:int,daemon_identity:str|None)->None:
         if status=="admitted" and container_id is None:
             self.store.transition(run_id,fence,"failed");return
+        if status=="removed":
+            self.store.transition(run_id,fence,"failed");return
         if status=="creating" and container_id is None:
             if image_digest!=self.image or not daemon_identity or self._daemon_identity()!=daemon_identity:raise EngineError("RUNNER_STALE_IDENTITY")
             rows=self.engine.command(["ps","-a","--filter",f"name=^ai-ready-runner-{run_id}$","--format","{{.ID}} {{.Names}}"],check=True).stdout.splitlines()

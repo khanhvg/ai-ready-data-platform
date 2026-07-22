@@ -60,12 +60,12 @@ def _fixture(name:str,fixture_args:tuple[str,...])->dict[str,object]:
     old_argv=sys.argv;old_guard=os.environ.get("RUNNER_ADVERSARIAL_CONTAINER")
     try:
         sys.argv=[name,*fixture_args];os.environ["RUNNER_ADVERSARIAL_CONTAINER"]="1"
-        runpy.run_path(f"/opt/runner-fixtures/{name}",run_name="__main__")
+        namespace=runpy.run_path(f"/opt/runner-fixtures/{name}",run_name="__main__")
     finally:
         sys.argv=old_argv
         if old_guard is None:os.environ.pop("RUNNER_ADVERSARIAL_CONTAINER",None)
         else:os.environ["RUNNER_ADVERSARIAL_CONTAINER"]=old_guard
-    return {"fixture":name,"arguments":list(fixture_args)}
+    return {"fixture":name,"arguments":list(fixture_args),"observation":namespace.get("RESULT")}
 
 
 def _main(operation:str,fixture:tuple[str,tuple[str,...]]|None=None,execute_seconds:int=110)->int:
@@ -86,6 +86,7 @@ def _main(operation:str,fixture:tuple[str,tuple[str,...]]|None=None,execute_seco
             os.close(out_read);os.close(err_read);os.setsid();os.dup2(out_write,1);os.dup2(err_write,2);os.close(out_write);os.close(err_write)
             resource.setrlimit(resource.RLIMIT_FSIZE,(134217728,134217728))
             resource.setrlimit(resource.RLIMIT_NOFILE,(256,256))
+            resource.setrlimit(resource.RLIMIT_AS,(536870912,536870912))
             result=_fixture(*fixture) if fixture is not None else execute(operation)
             (RUN/"worker-result.json").write_text(json.dumps(result,sort_keys=True,separators=(",",":"))+"\n")
             os._exit(0)

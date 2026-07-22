@@ -53,8 +53,8 @@
     {
       "path": "app/src/lab_runner/container_backend.py",
       "mode": "0644",
-      "size": 10732,
-      "sha256": "d8d38ac69b83c3559f7ecb50208b6ccfa34891bda70387ba3931eac277dbd563"
+      "size": 10826,
+      "sha256": "fa1f973e4eb8d322d6e8903f655a557ffff7d35c6b6b5debb251583521ee52ba"
     },
     {
       "path": "app/src/lab_runner/container_protocol.py",
@@ -65,8 +65,8 @@
     {
       "path": "app/src/lab_runner/container_supervisor.py",
       "mode": "0644",
-      "size": 8761,
-      "sha256": "e77ceb2358ffe6d3bd84e89b3ebd966d150ef6ca2c2ee3d4572bc79f7d3cf100"
+      "size": 8882,
+      "sha256": "69505ddaf020496141ab5b91ea667dd268ef90f81be64292f0349dbed442b4f1"
     },
     {
       "path": "app/src/lab_runner/contract.py",
@@ -83,8 +83,8 @@
     {
       "path": "app/src/lab_runner/evidence.py",
       "mode": "0644",
-      "size": 1490,
-      "sha256": "3770f9c911f3960226bc77487423369d83acec5229223a0208ed80e45c857bfb"
+      "size": 2448,
+      "sha256": "95cc0779b9306afa49aa2171b954e0669d55e96783ec54d381c45020b5f39496"
     },
     {
       "path": "app/src/lab_runner/fence.py",
@@ -113,14 +113,14 @@
     {
       "path": "app/src/lab_runner/service.py",
       "mode": "0644",
-      "size": 3805,
-      "sha256": "d82e9f466a4c3ea1818da10a61b8b70383c24d091bc093aeda093261f4896a46"
+      "size": 5090,
+      "sha256": "2ab18390d5416e6ad12fa3d36f9e23eb762d35b1e10e109daf71031248fcad51"
     },
     {
       "path": "app/src/lab_runner/state.py",
       "mode": "0644",
-      "size": 10039,
-      "sha256": "d9e948d23fdd6c8f6215c10d9e379571279f52f849835c269b0e83228f9b2702"
+      "size": 12569,
+      "sha256": "66d10087288717707db6beedc58abbd40d7dbc294e6f2ca42da24807d4936e1d"
     },
     {
       "path": "app/src/lab_runner/transport.py",
@@ -215,8 +215,8 @@
     {
       "path": "app/tests/fixtures/resource_probe.py",
       "mode": "0644",
-      "size": 469,
-      "sha256": "ccb95e8cb804e60304df6c436f9955be7e05bfc8eb2a19b7c7e16abcf7151fa1"
+      "size": 928,
+      "sha256": "ad5693cd62076c5d6bfa023bbc92c2054c008995b2614f4f9adc6eb3005fe12c"
     },
     {
       "path": "project/contracts/data/curated-release-manifest.schema.json",

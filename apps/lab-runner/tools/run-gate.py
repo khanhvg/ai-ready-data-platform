@@ -69,6 +69,14 @@ def source_digest() -> str:
     return digest.hexdigest()
 
 
+def git_identity()->tuple[str,str,str]:
+    dirty=subprocess.run(["git","status","--porcelain=v1","--untracked-files=normal"],cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE).stdout
+    if dirty:raise RuntimeError("RUNNER_SOURCE_DIRTY")
+    head=subprocess.run(["git","rev-parse","HEAD"],cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE).stdout.strip()
+    tree=subprocess.run(["git","rev-parse","HEAD^{tree}"],cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE).stdout.strip()
+    return head,tree,source_digest()
+
+
 def expect_error(error: type[BaseException], code: str, call: Callable[[], object]) -> None:
     try:
         call()
@@ -81,6 +89,7 @@ def expect_error(error: type[BaseException], code: str, call: Callable[[], objec
 
 class Gate:
     def __init__(self) -> None:
+        self.initial_identity=git_identity()
         validate_released_contract(ROOT,APP/"config/released-contract-lock.json")
         self.engine = Engine()
         self.engine_info = self.engine.admit()
@@ -335,6 +344,7 @@ class Gate:
             ("main_crash.py", (), 3), ("fork_bomb.py", (), 2),
             ("output_flood.py", (), 3), ("resource_probe.py", ("fds",), 3),
             ("resource_probe.py", ("files",), 5), ("resource_probe.py", ("cpu",), 2),
+            ("resource_probe.py", ("memory",), 10),
         ):
             observations[f"{name}:{','.join(args)}"] = self.supervised(name, args, seconds)
 
@@ -348,9 +358,10 @@ class Gate:
         self.record("RED-PID-005", lambda: observations["fork_bomb.py:"] if 2 <= protocol("fork_bomb.py").get("descendantPeak", 0) <= 64 else (_ for _ in ()).throw(AssertionError("pids limit")))
         self.record("RED-PID-006", lambda: {"protocol":protocol("rapid_double_fork.py"),"containerAbsent":self._no_runner_containers(),"authority":"container-remove"} if protocol("rapid_double_fork.py").get("failureCode")=="RUNNER_DESCENDANT_SURVIVOR" and self._no_runner_containers() else (_ for _ in ()).throw(AssertionError("polling changed authority")))
 
-        exact_timeout = self.supervised("reparent_setsess_daemon.py", (), 110)
+        timeout_started=time.monotonic_ns();exact_timeout = self.supervised("reparent_setsess_daemon.py", (), 110);timeout_duration=time.monotonic_ns()-timeout_started
         exact_protocol = dict(exact_timeout.get("protocol") or {})
-        self.record("RED-TIM-001", lambda: exact_timeout if exact_protocol.get("failureCode") == "RUNNER_TIMEOUT" else (_ for _ in ()).throw(AssertionError("deadline")))
+        exact_timeout["wallDurationNs"]=timeout_duration
+        self.record("RED-TIM-001", lambda: exact_timeout if exact_protocol.get("failureCode") == "RUNNER_TIMEOUT" and 110_000_000_000<=timeout_duration<=120_000_000_000 else (_ for _ in ()).throw(AssertionError("deadline")))
 
         network = self.direct(["/opt/runner-fixtures/network_probe.py"])
         network_result = json.loads(str(network["stdout"]))
@@ -361,7 +372,8 @@ class Gate:
         self.record("RED-OUT-001", lambda: observations["output_flood.py:"] if protocol("output_flood.py").get("failureCode") == "RUNNER_OUTPUT_LIMIT" and protocol("output_flood.py").get("stdoutBytes") <= 2097152 else (_ for _ in ()).throw(AssertionError("stream cap")))
         self.record("RED-OUT-002", self._bounded_protocol_archive)
         effective = network["inspect"]["HostConfig"]
-        self.record("RED-RES-001", lambda: {"memory": effective["Memory"], "swap": effective["MemorySwap"], "pids": effective["PidsLimit"]} if (effective["Memory"], effective["MemorySwap"], effective["PidsLimit"]) == (536870912, 536870912, 64) else (_ for _ in ()).throw(AssertionError("cgroup")))
+        memory=dict(protocol("resource_probe.py",("memory",)).get("result") or {}).get("observation") or {}
+        self.record("RED-RES-001", lambda: {"memory": effective["Memory"], "swap": effective["MemorySwap"], "pids": effective["PidsLimit"],"pressure":memory} if (effective["Memory"], effective["MemorySwap"], effective["PidsLimit"]) == (536870912, 536870912, 64) and memory.get("rlimitAs")==536870912 and memory.get("memoryMax")=="536870912" and memory.get("memorySwapMax")=="0" and 0<int(memory.get("memoryPeak",0))<=536870912 else (_ for _ in ()).throw(AssertionError("cgroup")))
         self.record("RED-RES-002", lambda: observations["resource_probe.py:cpu"] if protocol("resource_probe.py", ("cpu",)).get("failureCode") == "RUNNER_TIMEOUT" and effective["NanoCpus"] == 2000000000 else (_ for _ in ()).throw(AssertionError("cpu")))
         self.record("RED-RES-003", lambda: {"fds": observations["resource_probe.py:fds"], "files": observations["resource_probe.py:files"], "tmpfs": effective["Tmpfs"]})
 
@@ -434,6 +446,7 @@ class Gate:
         self.dbt_tracker=bool(dbt_protocol and dbt_protocol["resourceTrackerObserved"]);self.dbt_peak=int(dbt_protocol["descendantPeak"] if dbt_protocol else 0)
         export=next(row for row in results if row["operationId"]=="retail.export")
         if [row["assetId"] for row in export["result"]["assets"]] != list(ASSETS):raise AssertionError("release order")
+        if export.get("releaseAssets")!=export["result"]["assets"]:raise AssertionError("host release validation")
 
         self.record("RED-OPS-001", lambda: {"operations": [row["operationId"] for row in results], "imageDigest": self.image})
         self.record("RED-OPS-002", lambda: {"models": dbt_run["result"]["models"], "assets": len(export["result"]["assets"]), "decision": next(row for row in results if row["operationId"]=="promotion.verify")["result"]["decision"]})
@@ -537,7 +550,12 @@ class Gate:
                 rejected.append(name)
             else:raise AssertionError(f"audit {name} accepted")
         db.close()
-        return {"updateDenied":True,"deleteDenied":True,"chainMutationsRejected":rejected}
+        recovered=[]
+        for mode in ("rollback-before-commit","commit-before-finalize"):
+            recovery=self.root/f"audit-recovery-{mode}-{time.monotonic_ns()}";store=Store(recovery);store.db.execute("BEGIN IMMEDIATE");store._append({"kind":"fault-injection","mode":mode});store._prepare_anchor();store.db.execute("ROLLBACK" if mode=="rollback-before-commit" else "COMMIT");store.db.close();reopened=Store(recovery);reopened.verify_audit()
+            if reopened.pending_anchor_path.exists():raise AssertionError("audit pending residue")
+            recovered.append(mode)
+        return {"updateDenied":True,"deleteDenied":True,"chainMutationsRejected":rejected,"crashWindowsRecovered":recovered}
 
     @staticmethod
     def _verified(store:Store)->bool:store.verify_audit();return True
@@ -555,7 +573,11 @@ class Gate:
         service.run({"operationId":"workspace.prepare","idempotencyKey":"recovery-next-key","workspaceRevision":0})
         status=service.store.db.execute("SELECT status FROM runs WHERE run_id=?",(admission.run_id,)).fetchone()[0]
         if status!="failed":raise AssertionError(status)
-        return {"recoveredStatus":status}
+        with acquire(root/"locks") as fence:
+            removed=service.store.admit(validate_request({"operationId":"workspace.prepare","idempotencyKey":"recovery-removed-key","workspaceRevision":1}),fence.epoch);daemon=service.backend._daemon_identity();service.store.transition(removed.run_id,fence.epoch,"creating",image_digest=self.image,daemon_identity=daemon);service.store.transition(removed.run_id,fence.epoch,"created",container_id="d"*64);service.store.transition(removed.run_id,fence.epoch,"removed");service.backend.reconcile(removed.run_id,"removed","d"*64,self.image,fence.epoch,daemon)
+        removed_status=service.store.db.execute("SELECT status FROM runs WHERE run_id=?",(removed.run_id,)).fetchone()[0]
+        if removed_status!="failed":raise AssertionError(removed_status)
+        return {"recoveredStatus":status,"removedRecoveredStatus":removed_status}
 
     def _stale_identity(self)->object:
         cid=self._probe_container(create_only=True)
@@ -740,6 +762,7 @@ class Gate:
 
     def run(self) -> dict[str, object]:
         self.transport();self.registry_engine_image();self.operations_state_release();self.process_network_resource();self.archives_files_env();self.source_s3();self.remaining_red()
+        if git_identity()!=self.initial_identity:raise RuntimeError("RUNNER_SOURCE_CHANGED_DURING_GATE")
         manifest=json.loads(MANIFEST.read_text())
         missing=[row["id"] for row in manifest["rows"] if row["id"] not in self.rows]
         if missing:raise RuntimeError("GATE_CASE_MISSING:"+",".join(missing))
@@ -747,20 +770,20 @@ class Gate:
         for row in manifest["rows"]:
             value={"id":row["id"],"oracle":row["oracle"],"fixtureMarker":{"fixture":row["fixture"],"sha256":sha256(APP/str(row["fixture"]))},**self.rows[row["id"]]}
             results.append(value)
-        head=subprocess.run(["git","rev-parse","HEAD"],cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE).stdout.strip()
-        tree=subprocess.run(["git","rev-parse","HEAD^{tree}"],cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE).stdout.strip()
+        head,tree,source=self.initial_identity
         policy_sha=sha256(APP/"container/seccomp-runner-v1.json")
         for row in results:
             row_path=self.root/"rows"/f"{row['id']}.json";row_path.parent.mkdir(mode=0o700,exist_ok=True)
             row_path.write_text(json.dumps(row,sort_keys=True,separators=(",",":"))+"\n");os.chmod(row_path,0o600)
         output={
-            "schemaVersion":"runner-gate-result-v1","cookInputSha":COOK_INPUT,"headSha":head,"treeSha":tree,"sourceDigest":source_digest(),"imageDigest":self.image,"policySha256":policy_sha,
+            "schemaVersion":"runner-gate-result-v1","cookInputSha":COOK_INPUT,"headSha":head,"treeSha":tree,"sourceDigest":source,"imageDigest":self.image,"policySha256":policy_sha,
             "manifestSha256":sha256(MANIFEST),"redRows":sum(row["id"].startswith("RED-") for row in results),
             "s3Rows":sum(row["id"].startswith("S3-") for row in results),"passed":sum(row["status"]=="pass" for row in results),
             "failed":sum(row["status"]!="pass" for row in results),"evidenceRole":self.root.relative_to(APP).as_posix(),"results":results,
         }
         raw=json.dumps(output,sort_keys=True,separators=(",",":"),allow_nan=False).encode()+b"\n"
         result_path=self.root/"gate-result.json";result_path.write_bytes(raw);os.chmod(result_path,0o600)
+        if git_identity()!=self.initial_identity:raise RuntimeError("RUNNER_SOURCE_CHANGED_DURING_GATE")
         latest=APP/".local-state/evidence/gates/latest.json";temporary=latest.with_name(f".latest.{os.getpid()}.tmp");temporary.write_bytes(raw);os.chmod(temporary,0o600);os.replace(temporary,latest)
         return output
 

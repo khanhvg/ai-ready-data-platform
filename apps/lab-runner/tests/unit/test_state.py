@@ -15,6 +15,22 @@ ROWS = {row["id"]: row for row in __import__("json").loads((APP / "tests/red-man
 
 
 class RedPublicPathTest(unittest.TestCase):
+    def test_removed_run_is_recovered_without_external_identity(self) -> None:
+        from lab_runner.container_backend import Backend
+        from lab_runner.state import Store
+
+        class EngineMustNotBeCalled:
+            def __getattr__(self,name: str) -> object:
+                raise AssertionError(f"engine called during durable recovery: {name}")
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root=pathlib.Path(temporary);store=Store(root/"state")
+            request={"operationId":"workspace.prepare","idempotencyKey":"removed-recovery-key","workspaceRevision":0}
+            admitted=store.admit(request,1);store.transition(admitted.run_id,1,"creating");store.transition(admitted.run_id,1,"created");store.transition(admitted.run_id,1,"removed")
+            backend=Backend(EngineMustNotBeCalled(),"sha256:"+"a"*64,root/"seccomp.json",root/"staging",store)
+            backend.reconcile(admitted.run_id,"removed",None,None,1,None)
+            self.assertEqual([],store.incomplete())
+
     def test_committed_run_is_terminal(self) -> None:
         from lab_runner.state import StateError, Store
 

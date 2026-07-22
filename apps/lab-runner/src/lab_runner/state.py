@@ -21,6 +21,7 @@ class Store:
         root.mkdir(mode=0o700, parents=True, exist_ok=True); os.chmod(root, 0o700)
         self.path = root / "runner.sqlite3"
         self.anchor_path = root / "audit-anchor.json"
+        self.pending_anchor_path = root / "audit-anchor.pending.json"
         self.db = sqlite3.connect(self.path, timeout=30, isolation_level=None)
         self.db.execute("PRAGMA foreign_keys=ON")
         self.db.execute("PRAGMA journal_mode=WAL")
@@ -62,19 +63,47 @@ class Store:
             previous=entry_digest;expected_sequence+=1
         try:anchor=json.loads(self.anchor_path.read_text())
         except (OSError,json.JSONDecodeError) as exc:raise StateError("RUNNER_AUDIT_TAMPERED") from exc
-        if anchor!={"schemaVersion":"runner-audit-anchor-v1","sequence":expected_sequence-1,"entrySha256":previous}:raise StateError("RUNNER_AUDIT_TAMPERED")
+        observed={"schemaVersion":"runner-audit-anchor-v1","sequence":expected_sequence-1,"entrySha256":previous}
+        pending=None
+        if self.pending_anchor_path.exists():
+            try:pending=json.loads(self.pending_anchor_path.read_text())
+            except (OSError,json.JSONDecodeError) as exc:raise StateError("RUNNER_AUDIT_TAMPERED") from exc
+        if anchor==observed:
+            if pending is not None:
+                if pending.get("previous")!=anchor:raise StateError("RUNNER_AUDIT_TAMPERED")
+                self.pending_anchor_path.unlink();self._fsync_parent()
+            return
+        if pending is not None and pending.get("previous")==anchor and pending.get("next")==observed:
+            self._write_document(self.anchor_path,observed);self.pending_anchor_path.unlink();self._fsync_parent();return
+        raise StateError("RUNNER_AUDIT_TAMPERED")
+
+    def _write_document(self,path:pathlib.Path,value:dict[str,object])->None:
+        raw=json.dumps(value,sort_keys=True,separators=(",",":")).encode()+b"\n";temporary=path.with_name(f".{path.name}.{os.getpid()}.tmp")
+        fd=os.open(temporary,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+        try:os.write(fd,raw);os.fsync(fd)
+        finally:os.close(fd)
+        os.replace(temporary,path);self._fsync_parent()
+
+    def _fsync_parent(self)->None:
+        parent=os.open(self.anchor_path.parent,os.O_RDONLY)
+        try:os.fsync(parent)
+        finally:os.close(parent)
 
     def _write_anchor(self) -> None:
         row=self.db.execute("SELECT sequence,entry_sha256 FROM audit ORDER BY sequence DESC LIMIT 1").fetchone()
         if row is None:raise StateError("RUNNER_AUDIT_TAMPERED")
-        raw=json.dumps({"schemaVersion":"runner-audit-anchor-v1","sequence":row[0],"entrySha256":row[1]},sort_keys=True,separators=(",",":")).encode()+b"\n"
-        temporary=self.anchor_path.with_name(f".{self.anchor_path.name}.{os.getpid()}.tmp")
-        fd=os.open(temporary,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
-        try:os.write(fd,raw);os.fsync(fd)
-        finally:os.close(fd)
-        os.replace(temporary,self.anchor_path);parent=os.open(self.anchor_path.parent,os.O_RDONLY)
-        try:os.fsync(parent)
-        finally:os.close(parent)
+        self._write_document(self.anchor_path,{"schemaVersion":"runner-audit-anchor-v1","sequence":row[0],"entrySha256":row[1]})
+
+    def _prepare_anchor(self)->None:
+        rows=list(self.db.execute("SELECT sequence,entry_sha256 FROM audit ORDER BY sequence DESC LIMIT 2"))
+        if not rows:raise StateError("RUNNER_AUDIT_TAMPERED")
+        next_value={"schemaVersion":"runner-audit-anchor-v1","sequence":rows[0][0],"entrySha256":rows[0][1]}
+        previous={"schemaVersion":"runner-audit-anchor-v1","sequence":rows[1][0],"entrySha256":rows[1][1]} if len(rows)==2 else {"schemaVersion":"runner-audit-anchor-v1","sequence":0,"entrySha256":"0"*64}
+        if json.loads(self.anchor_path.read_text())!=previous:raise StateError("RUNNER_AUDIT_TAMPERED")
+        self._write_document(self.pending_anchor_path,{"schemaVersion":"runner-audit-pending-v1","previous":previous,"next":next_value})
+
+    def _finalize_anchor(self)->None:
+        pending=json.loads(self.pending_anchor_path.read_text());self._write_document(self.anchor_path,pending["next"]);self.pending_anchor_path.unlink();self._fsync_parent()
 
     @staticmethod
     def digest(request: dict[str, object]) -> str:
@@ -98,9 +127,11 @@ class Store:
             run_id=hashlib.sha256(f"{key}:{digest}:{fence}".encode()).hexdigest()[:32]
             self.db.execute("INSERT INTO runs(run_id,idempotency_key,request_sha256,operation_id,requested_revision,fence,status,container_id,image_digest,result_json,created_ns,updated_ns,daemon_identity) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",(run_id,key,digest,request["operationId"],request["workspaceRevision"],fence,"admitted",None,None,None,now,now,None))
             self._append({"kind":"admitted","runId":run_id,"operationId":request["operationId"],"fence":fence})
-            self._write_anchor();self.db.execute("COMMIT"); return Admission(run_id,fence,None)
+            self._prepare_anchor();self.db.execute("COMMIT");self._finalize_anchor(); return Admission(run_id,fence,None)
         except Exception:
-            self.db.execute("ROLLBACK"); raise
+            if self.db.in_transaction:self.db.execute("ROLLBACK")
+            if self.pending_anchor_path.exists():self.verify_audit()
+            raise
 
     def transition(self, run_id: str, fence: int, status: str, *, container_id: str|None=None, image_digest: str|None=None, daemon_identity:str|None=None) -> None:
         self.verify_audit()
@@ -121,9 +152,11 @@ class Store:
             cur=self.db.execute("UPDATE runs SET status=?,container_id=COALESCE(?,container_id),image_digest=COALESCE(?,image_digest),daemon_identity=COALESCE(?,daemon_identity),updated_ns=? WHERE run_id=? AND fence=?",(status,container_id,image_digest,daemon_identity,now,run_id,fence))
             if cur.rowcount != 1: raise StateError("RUNNER_STALE_IDENTITY")
             self._append({"kind":"transition","runId":run_id,"status":status,"fence":fence})
-            self._write_anchor();self.db.execute("COMMIT")
+            self._prepare_anchor();self.db.execute("COMMIT");self._finalize_anchor()
         except Exception:
-            self.db.execute("ROLLBACK"); raise
+            if self.db.in_transaction:self.db.execute("ROLLBACK")
+            if self.pending_anchor_path.exists():self.verify_audit()
+            raise
 
     def commit(self, run_id: str, fence: int, result: dict[str, object], new_revision: int) -> None:
         self.verify_audit()
@@ -136,9 +169,11 @@ class Store:
             if cur.rowcount != 1: raise StateError("RUNNER_STALE_IDENTITY")
             self.db.execute("UPDATE runs SET status='committed',result_json=?,updated_ns=? WHERE run_id=?",(encoded,now,run_id))
             self._append({"kind":"committed","runId":run_id,"fence":fence,"revision":new_revision,"resultSha256":hashlib.sha256(encoded.encode()).hexdigest()})
-            self._write_anchor();self.db.execute("COMMIT")
+            self._prepare_anchor();self.db.execute("COMMIT");self._finalize_anchor()
         except Exception:
-            self.db.execute("ROLLBACK"); raise
+            if self.db.in_transaction:self.db.execute("ROLLBACK")
+            if self.pending_anchor_path.exists():self.verify_audit()
+            raise
 
     def _append(self, event: dict[str, object]) -> None:
         row=self.db.execute("SELECT sequence,entry_sha256 FROM audit ORDER BY sequence DESC LIMIT 1").fetchone()
@@ -157,3 +192,6 @@ class Store:
 
     def incomplete(self) -> list[tuple[str,str,str|None,str|None,int,str|None]]:
         return list(self.db.execute("SELECT run_id,status,container_id,image_digest,fence,daemon_identity FROM runs WHERE status NOT IN ('committed','failed')"))
+
+    def committed(self)->list[tuple[str,dict[str,object]]]:
+        return [(run_id,json.loads(result)) for run_id,result in self.db.execute("SELECT run_id,result_json FROM runs WHERE status='committed'")]

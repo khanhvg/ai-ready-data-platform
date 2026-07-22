@@ -16,6 +16,26 @@ ROWS = {row["id"]: row for row in __import__("json").loads((APP / "tests/red-man
 
 
 class RedPublicPathTest(unittest.TestCase):
+    def test_pending_anchor_is_discarded_after_database_rollback(self) -> None:
+        from lab_runner.state import Store
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root=pathlib.Path(temporary);store=Store(root)
+            store.db.execute("BEGIN IMMEDIATE");store._append({"kind":"fault-before-commit"});store._prepare_anchor();store.db.execute("ROLLBACK");store.db.close()
+            recovered=Store(root)
+            self.assertFalse(recovered.pending_anchor_path.exists())
+            recovered.verify_audit()
+
+    def test_pending_anchor_completes_after_database_commit(self) -> None:
+        from lab_runner.state import Store
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root=pathlib.Path(temporary);store=Store(root)
+            store.db.execute("BEGIN IMMEDIATE");store._append({"kind":"fault-after-commit"});store._prepare_anchor();store.db.execute("COMMIT");store.db.close()
+            recovered=Store(root)
+            self.assertFalse(recovered.pending_anchor_path.exists())
+            recovered.verify_audit()
+
     def test_external_anchor_rejects_whole_audit_truncation(self) -> None:
         from lab_runner.state import StateError, Store
 

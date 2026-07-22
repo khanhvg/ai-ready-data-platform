@@ -1,6 +1,8 @@
 from __future__ import annotations
 import importlib.util
+import json
 import pathlib
+import tempfile
 import unittest
 
 APP = pathlib.Path(__file__).resolve()
@@ -14,6 +16,25 @@ ROWS = {row["id"]: row for row in __import__("json").loads((APP / "tests/red-man
 
 
 class RedPublicPathTest(unittest.TestCase):
+    def test_staged_evidence_is_not_published_until_commit(self) -> None:
+        from lab_runner.evidence import publish, stage
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root=pathlib.Path(temporary)/"evidence";run_id="a"*32
+            staged=stage(root,run_id,{"status":"pass"})
+            self.assertFalse((root/run_id).exists())
+            index=publish(root,run_id,staged)
+            self.assertEqual(run_id,json.loads(index.read_text())["runId"])
+
+    def test_committed_staged_evidence_is_reconciled(self) -> None:
+        from lab_runner.evidence import reconcile, stage
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root=pathlib.Path(temporary)/"evidence";run_id="b"*32
+            stage(root,run_id,{"status":"pass"})
+            index=reconcile(root,run_id)
+            self.assertEqual(run_id,json.loads(index.read_text())["runId"])
+
     def test_named_behavior_is_not_yet_implemented(self) -> None:
         for case_id in ["S3-EVD-001"]:
             with self.subTest(case_id=case_id):
