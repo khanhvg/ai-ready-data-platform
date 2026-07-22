@@ -432,8 +432,19 @@ def _safe_extract_node(archive: Path, destination: Path) -> None:
 
 
 def _tree_measure(path: Path) -> tuple[int, int]:
-    files = [item for item in path.rglob("*") if item.is_file()]
-    return len(files), sum(item.stat().st_size for item in files)
+    file_count = file_bytes = 0
+    try:
+        for item in path.rglob("*"):
+            try:
+                observed = item.lstat()
+            except FileNotFoundError:
+                continue
+            if stat.S_ISREG(observed.st_mode):
+                file_count += 1
+                file_bytes += observed.st_size
+    except FileNotFoundError:
+        pass
+    return file_count, file_bytes
 
 
 JOURNEY_STEPS = ("load", "start", "run", "record-controlled-failure", "diagnose", "reset", "verify", "retain-evidence", "complete")
