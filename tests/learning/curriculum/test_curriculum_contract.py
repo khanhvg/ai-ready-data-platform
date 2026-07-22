@@ -109,11 +109,8 @@ def run_public(module: str, root: pathlib.Path, *arguments: str) -> subprocess.C
 
 
 class CurriculumContractTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        require_stage_a_behavior()
-
     def test_public_curriculum_validator_accepts_all_real_files(self) -> None:
+        require_stage_a_behavior()
         result = run_public("learning.curriculum.tools.check_curriculum", ROOT, "--no-evidence", "--json")
         self.assertEqual(result.returncode, 0, result.stdout)
         summary = json.loads(result.stdout)
@@ -122,6 +119,7 @@ class CurriculumContractTests(unittest.TestCase):
         self.assertEqual(summary["validatedFileCount"], 18)
 
     def test_curriculum_invalid_cases_reach_public_validator(self) -> None:
+        require_stage_a_behavior()
         for case in cases("curriculum"):
             with self.subTest(case=case["id"]), candidate_root() as temporary:
                 root = pathlib.Path(temporary)

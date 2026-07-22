@@ -8,11 +8,8 @@ from test_curriculum_contract import apply_mutation, candidate_root, cases, requ
 
 
 class TraceabilityTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        require_stage_a_behavior()
-
     def test_public_trace_checker_closes_every_node_and_edge(self) -> None:
+        require_stage_a_behavior()
         from test_curriculum_contract import ROOT
 
         result = run_public("learning.curriculum.tools.check_traceability", ROOT, "--no-evidence", "--json")
@@ -26,6 +23,7 @@ class TraceabilityTests(unittest.TestCase):
         self.assertGreater(summary["edgeCount"], 400)
 
     def test_trace_invalid_cases_reach_public_checker(self) -> None:
+        require_stage_a_behavior()
         for case in cases("trace"):
             with self.subTest(case=case["id"]), candidate_root() as temporary:
                 root = pathlib.Path(temporary)

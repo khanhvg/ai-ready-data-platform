@@ -19,11 +19,8 @@ def tree_hash(root: pathlib.Path) -> str:
 
 
 class ArchitectureExpansionTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        require_stage_a_behavior()
-
     def test_public_renderer_is_two_run_deterministic(self) -> None:
+        require_stage_a_behavior()
         with tempfile.TemporaryDirectory(prefix="i11-render-a-") as first, tempfile.TemporaryDirectory(prefix="i11-render-b-") as second:
             a = run_public("learning.curriculum.tools.architecture_expansion", ROOT, "render", "--output", first)
             b = run_public("learning.curriculum.tools.architecture_expansion", ROOT, "render", "--output", second)
@@ -32,6 +29,7 @@ class ArchitectureExpansionTests(unittest.TestCase):
             self.assertEqual(tree_hash(pathlib.Path(first)), tree_hash(pathlib.Path(second)))
 
     def test_architecture_invalid_cases_reach_real_checker_and_renderer(self) -> None:
+        require_stage_a_behavior()
         for case in cases("architecture"):
             with self.subTest(case=case["id"]), candidate_root() as temporary:
                 root = pathlib.Path(temporary)
@@ -48,6 +46,7 @@ class ArchitectureExpansionTests(unittest.TestCase):
                 self.assertIn(str(case["expectedCode"]), result.stdout)
 
     def test_tracked_expansion_is_accessible_and_fresh(self) -> None:
+        require_stage_a_behavior()
         result = run_public("learning.curriculum.tools.architecture_expansion", ROOT, "check", "--json")
         self.assertEqual(result.returncode, 0, result.stdout)
         summary = json.loads(result.stdout)

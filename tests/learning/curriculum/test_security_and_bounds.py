@@ -10,11 +10,8 @@ from test_curriculum_contract import ROOT, apply_mutation, candidate_root, cases
 
 
 class SecurityAndEvidenceTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        require_stage_a_behavior()
-
     def test_security_and_bounds_cases_use_public_curriculum_validator(self) -> None:
+        require_stage_a_behavior()
         for case in cases("security"):
             with self.subTest(case=case["id"]), candidate_root() as temporary:
                 root = pathlib.Path(temporary)
@@ -24,6 +21,7 @@ class SecurityAndEvidenceTests(unittest.TestCase):
                 self.assertIn(str(case["expectedCode"]), result.stdout)
 
     def test_public_command_emits_and_verifies_closed_evidence(self) -> None:
+        require_stage_a_behavior()
         case = cases("evidence")[0]
         emitted = subprocess.run(
             ["make", "curriculum-check"],
