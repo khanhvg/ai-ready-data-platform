@@ -12,6 +12,10 @@ import json
 import os
 import pathlib
 import py_compile
+import shutil
+import signal
+import socket
+import stat
 import sqlite3
 import struct
 import subprocess
@@ -131,7 +135,8 @@ class Gate:
         def trn1() -> object:
             for changed in ([x for x in headers if x[0] != "Host"], [*headers, ("Host", "evil")]):
                 expect_error(TransportError, "RUNNER_HOST_FORBIDDEN" if len(changed) == len(headers)-1 else "RUNNER_HEADER_AMBIGUOUS", lambda c=changed: admit(method="POST", headers=c, body=body, bearer="bearer", csrf="csrf", peer_uid=os.geteuid(), effective_uid=os.geteuid()))
-            return {"rejected": ["missing-host", "duplicate-host"]}
+            expect_error(TransportError,"RUNNER_HEADER_FORBIDDEN",lambda:admit(method="POST",headers=[*headers,("X-Unexpected","value")],body=body,bearer="bearer",csrf="csrf",peer_uid=os.geteuid(),effective_uid=os.geteuid()))
+            return {"rejected": ["missing-host", "duplicate-host","unexpected-header"]}
 
         def trn2() -> object:
             for name, value in (("Origin", "http://evil"), ("Cookie", "x=y"), ("Sec-Fetch-Site", "cross-site"), ("Access-Control-Request-Method", "POST")):
@@ -153,7 +158,33 @@ class Gate:
 
         def trn5() -> object:
             expect_error(TransportError, "RUNNER_PEER_FORBIDDEN", lambda: admit(method="POST", headers=headers, body=body, bearer="bearer", csrf="csrf", peer_uid=os.geteuid()+1, effective_uid=os.geteuid()))
-            return {"effectiveUid": os.geteuid()}
+            control_root=self.root/"uds-control";control_root.mkdir(mode=0o700);control=control_root/"control.json"
+            program="from lab_runner.transport import serve_uds\nclass Service:\n def run(self,request):return {'status':'pass','operationId':request['operationId']}\nserve_uds(Service(),__import__('pathlib').Path(__import__('sys').argv[1]))"
+            process=subprocess.Popen([sys.executable,"-c",program,str(control)],cwd=ROOT,env={"PATH":"/usr/bin:/bin:/usr/local/bin","PYTHONPATH":str(SRC),"PYTHONDONTWRITEBYTECODE":"1"},stdout=subprocess.DEVNULL,stderr=subprocess.PIPE,text=True)
+            try:
+                deadline=time.monotonic()+5
+                while not control.is_file() and time.monotonic()<deadline:
+                    if process.poll() is not None:raise AssertionError("UDS server exited")
+                    time.sleep(.02)
+                value=json.loads(control.read_text());socket_path=control_root/value["socket"]
+                if stat.S_IMODE(control.stat().st_mode)!=0o600 or stat.S_IMODE(socket_path.stat().st_mode)!=0o600:raise AssertionError("UDS mode")
+                def exchange(raw:bytes)->bytes:
+                    client=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);client.settimeout(2);client.connect(str(socket_path));client.sendall(raw);chunks=[]
+                    while True:
+                        child=client.recv(65536)
+                        if not child:break
+                        chunks.append(child)
+                    client.close();return b"".join(chunks)
+                if b" 405 " not in exchange(b"GET / HTTP/1.1\r\nHost: runner.local\r\nConnection: close\r\n\r\n"):raise AssertionError("UDS method boundary")
+                uds_headers=[("Host","runner.local"),("Authorization",f"Bearer {value['bearer']}"),("X-Runner-CSRF",value["csrf"]),("Content-Type","application/json"),("Content-Length",str(len(body)))]
+                request_raw=b"POST / HTTP/1.0\r\n"+b"".join(f"{key}: {child}\r\n".encode() for key,child in uds_headers)+b"\r\n"+body
+                if b" 200 " not in exchange(request_raw):raise AssertionError("UDS admission")
+            finally:
+                if process.poll() is None:process.send_signal(signal.SIGINT)
+                try:process.wait(timeout=5)
+                except subprocess.TimeoutExpired:process.kill();process.wait();raise AssertionError("UDS shutdown timeout")
+            if control.exists() or any(control_root.iterdir()):raise AssertionError("UDS residue")
+            return {"effectiveUid": os.geteuid(),"transport":"unix","mode":"0600","cleanup":True}
 
         for case_id, call in (("RED-TRN-001", trn1), ("RED-TRN-002", trn2), ("RED-TRN-003", trn3), ("RED-TRN-004", trn4), ("RED-TRN-005", trn5)):
             self.record(case_id, call)
@@ -488,12 +519,22 @@ class Gate:
         return {"epochs":epochs}
 
     def _audit_immutable(self, runtime:pathlib.Path)->object:
-        db=sqlite3.connect(runtime/"state/runner.sqlite3")
+        state_root=runtime/"state";db=sqlite3.connect(state_root/"runner.sqlite3")
         for statement in ("UPDATE audit SET previous_sha256='x' WHERE sequence=1","DELETE FROM audit WHERE sequence=1"):
             try:db.execute(statement)
             except sqlite3.IntegrityError:continue
             raise AssertionError("audit mutable")
-        return {"updateDenied":True,"deleteDenied":True}
+        db.rollback()
+        rejected=[]
+        for name,statement in (("payload","UPDATE audit SET payload=x'00' WHERE sequence=1"),("sequence","UPDATE audit SET sequence=99 WHERE sequence=1"),("tail","DELETE FROM audit WHERE sequence=(SELECT MAX(sequence) FROM audit)"),("truncation","DELETE FROM audit")):
+            copy_root=self.root/f"audit-copy-{name}-{time.monotonic_ns()}";copy_root.mkdir(mode=0o700);copy_db=sqlite3.connect(copy_root/"runner.sqlite3");db.backup(copy_db);copy_db.executescript("DROP TRIGGER audit_no_update; DROP TRIGGER audit_no_delete;");copy_db.execute(statement);copy_db.commit();copy_db.close();shutil.copyfile(state_root/"audit-anchor.json",copy_root/"audit-anchor.json");os.chmod(copy_root/"audit-anchor.json",0o600)
+            try:Store(copy_root)
+            except StateError as exc:
+                if str(exc)!="RUNNER_AUDIT_TAMPERED":raise
+                rejected.append(name)
+            else:raise AssertionError(f"audit {name} accepted")
+        db.close()
+        return {"updateDenied":True,"deleteDenied":True,"chainMutationsRejected":rejected}
 
     @staticmethod
     def _verified(store:Store)->bool:store.verify_audit();return True
@@ -548,6 +589,7 @@ class Gate:
             return {"changed":changed,"protected":True,"releasedPins":38}
 
         def supply() -> object:
+            build_lock=json.loads((APP/"config/container-build-lock-v1.json").read_text());release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
             path=ROOT/".artifacts/build/issue-9/vulnerability-grype-current.json"
             if not path.is_file():raise AssertionError("vulnerability evidence missing")
             value=json.loads(path.read_text());findings=sorted({row["vulnerability"]["id"] for row in value["matches"] if row["vulnerability"]["severity"] in ("High","Critical")})
@@ -556,13 +598,20 @@ class Gate:
             product=f"pkg:oci/ai-ready-lab-runner@{self.image}"
             unresolved=[finding for finding in findings if finding not in statements or statements[finding].get("status")!="not_affected" or statements[finding].get("justification") not in ("vulnerable_code_not_in_execute_path","component_not_present") or statements[finding].get("products")!= [{"component":{"@id":product}}] or not statements[finding].get("references")]
             if unresolved:raise AssertionError("unresolved:"+",".join(unresolved))
-            return {"scannerCriticalHigh":len(findings),"vexNotAffected":len(findings),"unresolved":0,"scanSha256":sha256(path),"vexSha256":sha256(vex_path)}
+            sbom_path=ROOT/".artifacts/build/issue-9/sbom-spdx-current.json";observed={"sbomSha256":sha256(sbom_path),"vulnerabilityScanSha256":sha256(path),"openVexSha256":sha256(vex_path)}
+            expected={key:build_lock[key] for key in observed}
+            if observed!=expected or release["sbom"]["sha256"]!=observed["sbomSha256"] or release["vulnerability"]["scanSha256"]!=observed["vulnerabilityScanSha256"] or release["vulnerability"]["openVexSha256"]!=observed["openVexSha256"]:raise AssertionError("supply evidence lock mismatch")
+            sbom=json.loads(sbom_path.read_text());packages=sbom.get("packages",[])
+            if sbom.get("spdxVersion")!="SPDX-2.3" or len(packages)!=release["sbom"]["packages"]:raise AssertionError("SBOM closure")
+            return {"scannerCriticalHigh":len(findings),"vexNotAffected":len(findings),"unresolved":0,"packages":len(packages),**observed}
 
         def provenance() -> object:
-            context=ROOT/".artifacts/build/issue-9/runner-context.tar"
-            image=self.image_observation
+            context=ROOT/".artifacts/build/issue-9/runner-context.tar";provenance_path=ROOT/".artifacts/build/issue-9/provenance-current.json"
+            image=self.image_observation;provenance_value=json.loads(provenance_path.read_text());build_lock=json.loads((APP/"config/container-build-lock-v1.json").read_text());release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
             if image["Config"]["User"]!="65532:65532" or image["Config"]["Entrypoint"]!=["python3.12","-I","-m","lab_runner.container_supervisor"]:raise AssertionError("OCI config")
-            return {"image":self.image,"contextSha256":sha256(context),"layers":image["RootFS"]["Layers"]}
+            expected={"imageManifestDigest":self.image,"imageConfigDigest":release["imageConfigDigest"],"baseManifestDigest":build_lock["baseManifestDigest"],"contextTarSha256":build_lock["contextTarSha256"],"buildNetwork":"none","runtimePull":"never","sourceDateEpoch":0,"reproducibleBuilds":2}
+            if any(provenance_value.get(key)!=value for key,value in expected.items()) or sha256(context)!=build_lock["contextTarSha256"] or sha256(provenance_path)!=build_lock["provenanceSha256"] or release["provenance"]["sha256"]!=build_lock["provenanceSha256"] or len(image["RootFS"]["Layers"])!=release["layerCount"]:raise AssertionError("provenance closure")
+            return {"image":self.image,"config":release["imageConfigDigest"],"contextSha256":sha256(context),"layers":image["RootFS"]["Layers"],"provenanceSha256":sha256(provenance_path)}
 
         def licenses() -> object:
             code="""import importlib.metadata,json,pathlib\nrows=[]\nfor d in importlib.metadata.distributions():\n m=d.metadata;rows.append({'name':m.get('Name'),'version':m.get('Version'),'licenseExpression':m.get('License-Expression'),'license':m.get('License'),'classifiers':[v for v in m.get_all('Classifier',[]) if v.startswith('License ::')]})\nnotices=sum(1 for p in pathlib.Path('/usr/share/doc').rglob('copyright') if p.is_file())\nprint(json.dumps({'packages':sorted(rows,key=lambda x:(x['name'] or '').lower()),'noticeFiles':notices},sort_keys=True,separators=(',',':')))\n"""
@@ -578,8 +627,9 @@ class Gate:
                 else:license_id=""
                 if license_id not in allowed:unresolved.append(str(row["name"]))
                 else:resolved[str(row["name"])]=license_id
-            if unresolved or len(resolved)!=55 or observed["noticeFiles"]<1:raise AssertionError("license closure:"+",".join(unresolved))
-            return {"runtimePackages":len(resolved),"noticeFiles":observed["noticeFiles"],"unknown":0,"denied":0}
+            metadata=ROOT/".artifacts/build/issue-9/python-license-metadata-current.json";build_lock=json.loads((APP/"config/container-build-lock-v1.json").read_text());release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
+            if unresolved or len(resolved)!=55 or observed["noticeFiles"]<1 or sha256(metadata)!=build_lock["licenseMetadataSha256"] or release["licenses"]["metadataSha256"]!=build_lock["licenseMetadataSha256"] or json.loads(metadata.read_text())!=observed["packages"]:raise AssertionError("license closure:"+",".join(unresolved))
+            return {"runtimePackages":len(resolved),"noticeFiles":observed["noticeFiles"],"metadataSha256":sha256(metadata),"unknown":0,"denied":0}
 
         def policy() -> object:
             paths=sorted((APP/"src/lab_runner").glob("*.py"))+sorted((APP/"tools").glob("*.py"));sources={path:path.read_text() for path in paths}
@@ -599,15 +649,34 @@ class Gate:
             scan=subprocess.run([sys.executable,"-m","bandit","-r",str(APP/"src"),"-f","json","-o",str(bandit_output)],cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,env={"PATH":"/usr/bin:/bin:/usr/local/bin","PYTHONPATH":str(bandit_root)},timeout=30)
             if scan.returncode not in (0,1) or not bandit_output.is_file():raise AssertionError("pinned static scan failed")
             bandit=json.loads(bandit_output.read_text());blocking=[row for row in bandit["results"] if row["issue_severity"] in ("MEDIUM","HIGH")]
+            bandit["generated_at"]="1970-01-01T00:00:00Z";bandit_output.write_text(json.dumps(bandit,sort_keys=True,separators=(",",":"))+"\n");os.chmod(bandit_output,0o600)
             version=(bandit_root/"bandit-1.8.6.dist-info/METADATA").read_text()
-            if "Version: 1.8.6\n" not in version or blocking or unsafe or seccomp.get("defaultAction")!="SCMP_ACT_ERRNO" or denied!={2,10,16,17}:raise AssertionError(f"policy:{blocking}:{unsafe}:{denied}")
+            build_lock=json.loads((APP/"config/container-build-lock-v1.json").read_text());release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
+            if "Version: 1.8.6\n" not in version or blocking or unsafe or seccomp.get("defaultAction")!="SCMP_ACT_ERRNO" or denied!={2,10,16,17} or sha256(bandit_output)!=build_lock["staticSecuritySha256"] or release["staticSecurity"]["sha256"]!=build_lock["staticSecuritySha256"]:raise AssertionError(f"policy:{blocking}:{unsafe}:{denied}")
             return {"fixedArrays":True,"forbidden":[],"astFiles":len(paths),"banditVersion":"1.8.6","banditFindings":{"high":0,"medium":0,"low":sum(row["issue_severity"]=="LOW" for row in bandit["results"])},"banditSha256":sha256(bandit_output),"seccompDefault":"SCMP_ACT_ERRNO","deniedInternetFamilies":sorted(denied),"seccompSha256":sha256(APP/"container/seccomp-runner-v1.json")}
 
         def evidence() -> object:
             target=write_evidence(self.root/"evidence-test","e"*32,{"schemaVersion":"runner-operation-result-v1","status":"pass"})
             index=json.loads(target.read_text());artifact=index["artifacts"][0];result=target.parent/artifact["locator"]
             if sha256(result)!=artifact["sha256"] or result.stat().st_size!=artifact["size"]:raise AssertionError("evidence index")
-            return {"indexSha256":sha256(target),"artifact":artifact}
+            from scripts.learning_contracts.canonical import canonical_bytes
+            from scripts.learning_contracts.fitness import verify_fitness
+            from scripts.learning_contracts.schema import LearningContractError
+            from scripts.golden.fitness import passed
+            import jsonschema
+            contract_root=self.root/"fitness-contract";contract_root.mkdir(mode=0o700)
+            raw=contract_root/"result.json";raw.write_bytes(b'{"result":"pass"}\n');os.chmod(raw,0o600)
+            contract_artifact={"locator":"result.json","mediaType":"application/json","size":raw.stat().st_size,"sha256":sha256(raw)}
+            value={"schemaVersion":"fitness-result-v2","commandId":"runner-test","owner":"I5-04","requested":{"subjectType":"contract-set","subjectId":"issue-9-container-runner","parameters":[]},"status":"pass","failureCode":None,"remediation":None,"inputSha":"1"*40,"testedTreeSha":"2"*40,"dependencyMergeShas":["3"*40],"contractHashes":[{"name":"runner-contract","sha256":"4"*64}],"fixtureHashes":[{"name":"runner-fixture","sha256":"5"*64}],"schemaHashes":[{"name":"fitness-result-v2","sha256":sha256(ROOT/"learning/contracts/fitness-result-v2.schema.json")}],"toolchain":[{"name":"python","version":"3.12"}],"lockSha256":sha256(APP/"requirements/runner-py312-linux-arm64.lock"),"invocation":{"publicArgv":["make","runner-test"],"canonicalChildArgv":["python3.12","apps/lab-runner/tools/run-gate.py"],"actualChildArgvSha256":"6"*64,"cwdRole":"repository-root"},"startedAt":"2026-07-22T00:00:00Z","finishedAt":"2026-07-22T00:00:01Z","durationMs":1000,"rawLocator":"result.json","projectionLocator":None,"envelopeLocator":None,"projectionSha256":None,"artifacts":[contract_artifact],"redactionClass":"public-contract-evidence","retentionClass":"review-bundle","rollback":{"supported":True,"preserveEvidence":True},"canonicalization":"RFC8785"}
+            value["payloadSha256"]=hashlib.sha256(canonical_bytes(value)).hexdigest();activation=json.loads((APP/"config/command-owner-activation-i5-04-v1.json").read_text());verify_fitness(value,root=contract_root,activation=activation)
+            tampered=dict(value);tampered["durationMs"]=999
+            try:verify_fitness(tampered,root=contract_root,activation=activation)
+            except LearningContractError as exc:
+                if exc.code!="FITNESS_PAYLOAD_TAMPER":raise
+            else:raise AssertionError("fitness v2 tamper accepted")
+            v1=passed(command_id="data-contracts-check",tested_tree_sha="7"*40,projection_sha256="8"*64,started_at=datetime.datetime(2026,7,22,tzinfo=datetime.UTC),duration_ms=1)
+            jsonschema.Draft202012Validator(json.loads((ROOT/"learning/contracts/fitness-result-v1.schema.json").read_text())).validate(v1)
+            return {"indexSha256":sha256(target),"artifact":artifact,"fitnessV2":"verified-and-tamper-rejected","fitnessV1":"schema-valid"}
 
         def secret() -> object:
             canaries=("ISSUE9-CREDENTIAL-CANARY",str(pathlib.Path.home()),"169.254.169.254/latest/meta-data")

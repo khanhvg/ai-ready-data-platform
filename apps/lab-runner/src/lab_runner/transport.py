@@ -32,6 +32,9 @@ def admit(*, method: str, headers: list[tuple[str, str]], body: bytes, bearer: s
         raise TransportError("RUNNER_CONTENT_TYPE_INVALID")
     if "transfer-encoding" in h or "content-length" not in h:
         raise TransportError("RUNNER_FRAMING_INVALID")
+    allowed={"host","authorization","x-runner-csrf","content-type","content-length"}
+    if set(h)!=allowed:
+        raise TransportError("RUNNER_HEADER_FORBIDDEN")
     try:
         length = int(h["content-length"])
     except ValueError as exc:

@@ -20,6 +20,7 @@ class Store:
     def __init__(self, root: pathlib.Path):
         root.mkdir(mode=0o700, parents=True, exist_ok=True); os.chmod(root, 0o700)
         self.path = root / "runner.sqlite3"
+        self.anchor_path = root / "audit-anchor.json"
         self.db = sqlite3.connect(self.path, timeout=30, isolation_level=None)
         self.db.execute("PRAGMA foreign_keys=ON")
         self.db.execute("PRAGMA journal_mode=WAL")
@@ -42,8 +43,10 @@ class Store:
             self.db.execute("ALTER TABLE runs ADD COLUMN daemon_identity TEXT")
         os.chmod(self.path, 0o600)
         if self.db.execute("SELECT COUNT(*) FROM audit").fetchone()[0]==0:
+            if self.anchor_path.exists():raise StateError("RUNNER_AUDIT_TAMPERED")
             self.db.execute("BEGIN IMMEDIATE")
             self._append({"kind":"genesis"})
+            self._write_anchor()
             self.db.execute("COMMIT")
         self.verify_audit()
 
@@ -57,6 +60,21 @@ class Store:
             if value.get("sequence")!=sequence or value.get("previousSha256")!=previous or set(value)!={"sequence","previousSha256","event"}:
                 raise StateError("RUNNER_AUDIT_TAMPERED")
             previous=entry_digest;expected_sequence+=1
+        try:anchor=json.loads(self.anchor_path.read_text())
+        except (OSError,json.JSONDecodeError) as exc:raise StateError("RUNNER_AUDIT_TAMPERED") from exc
+        if anchor!={"schemaVersion":"runner-audit-anchor-v1","sequence":expected_sequence-1,"entrySha256":previous}:raise StateError("RUNNER_AUDIT_TAMPERED")
+
+    def _write_anchor(self) -> None:
+        row=self.db.execute("SELECT sequence,entry_sha256 FROM audit ORDER BY sequence DESC LIMIT 1").fetchone()
+        if row is None:raise StateError("RUNNER_AUDIT_TAMPERED")
+        raw=json.dumps({"schemaVersion":"runner-audit-anchor-v1","sequence":row[0],"entrySha256":row[1]},sort_keys=True,separators=(",",":")).encode()+b"\n"
+        temporary=self.anchor_path.with_name(f".{self.anchor_path.name}.{os.getpid()}.tmp")
+        fd=os.open(temporary,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+        try:os.write(fd,raw);os.fsync(fd)
+        finally:os.close(fd)
+        os.replace(temporary,self.anchor_path);parent=os.open(self.anchor_path.parent,os.O_RDONLY)
+        try:os.fsync(parent)
+        finally:os.close(parent)
 
     @staticmethod
     def digest(request: dict[str, object]) -> str:
@@ -80,7 +98,7 @@ class Store:
             run_id=hashlib.sha256(f"{key}:{digest}:{fence}".encode()).hexdigest()[:32]
             self.db.execute("INSERT INTO runs(run_id,idempotency_key,request_sha256,operation_id,requested_revision,fence,status,container_id,image_digest,result_json,created_ns,updated_ns,daemon_identity) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",(run_id,key,digest,request["operationId"],request["workspaceRevision"],fence,"admitted",None,None,None,now,now,None))
             self._append({"kind":"admitted","runId":run_id,"operationId":request["operationId"],"fence":fence})
-            self.db.execute("COMMIT"); return Admission(run_id,fence,None)
+            self._write_anchor();self.db.execute("COMMIT"); return Admission(run_id,fence,None)
         except Exception:
             self.db.execute("ROLLBACK"); raise
 
@@ -103,7 +121,7 @@ class Store:
             cur=self.db.execute("UPDATE runs SET status=?,container_id=COALESCE(?,container_id),image_digest=COALESCE(?,image_digest),daemon_identity=COALESCE(?,daemon_identity),updated_ns=? WHERE run_id=? AND fence=?",(status,container_id,image_digest,daemon_identity,now,run_id,fence))
             if cur.rowcount != 1: raise StateError("RUNNER_STALE_IDENTITY")
             self._append({"kind":"transition","runId":run_id,"status":status,"fence":fence})
-            self.db.execute("COMMIT")
+            self._write_anchor();self.db.execute("COMMIT")
         except Exception:
             self.db.execute("ROLLBACK"); raise
 
@@ -118,7 +136,7 @@ class Store:
             if cur.rowcount != 1: raise StateError("RUNNER_STALE_IDENTITY")
             self.db.execute("UPDATE runs SET status='committed',result_json=?,updated_ns=? WHERE run_id=?",(encoded,now,run_id))
             self._append({"kind":"committed","runId":run_id,"fence":fence,"revision":new_revision,"resultSha256":hashlib.sha256(encoded.encode()).hexdigest()})
-            self.db.execute("COMMIT")
+            self._write_anchor();self.db.execute("COMMIT")
         except Exception:
             self.db.execute("ROLLBACK"); raise
 

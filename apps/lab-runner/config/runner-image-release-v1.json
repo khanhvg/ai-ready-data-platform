@@ -3,7 +3,7 @@
   "cookInputSha": "f6791555dc8b2ada6fa44747ca829a3d9cd87667",
   "integrationReleaseSha": "5644f01b4c0443a81f3af0bcce80f44c847cd986",
   "releasedStageASha": "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9",
-  "imageDigest": "sha256:6fb0a3ffa8c6dcddb0aff6593bb665ed8b3fe7a23e69f9eb8f0d005b6cb6c106",
+  "imageDigest": "sha256:f3e3ebfc9f33c6732989c7e7563be3179bcbbc07435a7bf4c4ff4f6c71f88779",
   "platform": "linux/arm64",
   "user": "65532:65532",
   "workdir": "/workspace",
@@ -24,16 +24,16 @@
   "sbom": {
     "format": "SPDX-2.3",
     "packages": 61,
-    "sha256": "6e8413f8db54ea8df9efd9f3c7ea74275f6756eab649aa449a663507b2c65ab6"
+    "sha256": "8f05efe36652f7e7aaaadd9796788a619fc992494775aeba56690c9f6985fd20"
   },
   "vulnerability": {
     "scanner": "grype@0.116.0",
     "databaseSchema": "v6.1.9",
     "databaseBuilt": "2026-07-22T07:06:24Z",
-    "scanSha256": "5a74fcb35aa0dd26a711bd0621cc1af719e399f5f14a2576a141e90785f05aec",
+    "scanSha256": "7a235cc1f956768678301664d04fd3f210039b7ebb5a4b4ad8fa3dd754c12ab2",
     "scannerCriticalHigh": 10,
     "openVexNotAffected": 10,
-    "openVexSha256": "66fc757dbfa47237264fc5f7ff95f5d26f79d3bd63b58984457af34d968f47ca",
+    "openVexSha256": "626a0cd6a9cc7ad23f5a6f9e6066ccb7e9d63f373b4af7bfe03928aae9838eca",
     "unresolvedCriticalHigh": 0
   },
   "operations": [
@@ -46,8 +46,8 @@
     "promotion.verify",
     "workspace.reset"
   ],
-  "imageManifestDigest": "sha256:6fb0a3ffa8c6dcddb0aff6593bb665ed8b3fe7a23e69f9eb8f0d005b6cb6c106",
-  "imageConfigDigest": "sha256:4f9cf20e890480d119e1f19bef3709fcff6e44bea9dd070c2a98883c593316f9",
+  "imageManifestDigest": "sha256:f3e3ebfc9f33c6732989c7e7563be3179bcbbc07435a7bf4c4ff4f6c71f88779",
+  "imageConfigDigest": "sha256:a3eda541fa91a522c262c3cf9910988a0114a3146af5a08d4c36a507616c334c",
   "seccompSha256": "ad19b56e07dd87ad4375c1ecbc600704767308520290e17bb00cf04fdce54fc5",
   "assetResults": [
     {
@@ -94,5 +94,22 @@
       "assetId": "mart_data_quality",
       "sha256": "351fb7b4051bc7e1c28a7b3b426a86fc0367102c53ecaf39e82fa79255a90f0e"
     }
-  ]
+  ],
+  "staticSecurity": {
+    "tool": "bandit@1.8.6",
+    "sha256": "fe380ec691a6cc4fb0ea6b8abcd70599242b5a1579d373e5ecd1f20a4cad69ea",
+    "unresolvedHigh": 0,
+    "unresolvedMedium": 0
+  },
+  "provenance": {
+    "format": "runner-build-provenance-v1",
+    "sha256": "ea49e411854bc5989784911456811f167343368698c188dd84f46974aabfe228"
+  },
+  "licenses": {
+    "pythonPackages": 55,
+    "osInventory": "SPDX-2.3",
+    "metadataSha256": "3b07f116a270f93323dc12a4a746689129b97000159fe0d739d7d39a2f910dc0",
+    "unknown": 0,
+    "denied": 0
+  }
 }

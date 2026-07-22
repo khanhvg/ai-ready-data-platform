@@ -119,14 +119,14 @@
     {
       "path": "app/src/lab_runner/state.py",
       "mode": "0644",
-      "size": 8704,
-      "sha256": "7b9d6f169e1726e3c43489cb609742c9b450bd8487a0acc5cea0b734ec0d925e"
+      "size": 10039,
+      "sha256": "d9e948d23fdd6c8f6215c10d9e379571279f52f849835c269b0e83228f9b2702"
     },
     {
       "path": "app/src/lab_runner/transport.py",
       "mode": "0644",
-      "size": 7285,
-      "sha256": "a2e4d34a948d30d15c1bd19c88a3217c43cd2dc2b0da4abd3f42d263633d6eb5"
+      "size": 7450,
+      "sha256": "d9b92c1b9784c173c9e6416b7e25751a2eb50037bea2bcd61aed4cde9eaf8dd9"
     },
     {
       "path": "app/src/lab_runner/workspace.py",

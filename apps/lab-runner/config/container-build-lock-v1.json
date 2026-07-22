@@ -2,8 +2,8 @@
   "schemaVersion": "container-build-lock-v1",
   "platform": "linux/arm64",
   "baseManifestDigest": "sha256:55842c72c6b3584d06ec84c731fc516b30b8a53ad262ebd085e47ab568b3bfc1",
-  "contextManifestSha256": "3e48bb046398a242d3300fd1ed4e83e65ef0380dbc6e486988597336e56d9ca2",
-  "contextTarSha256": "2867ce4f0a3d21a200bb94e9533f3e7372663453880f968794a6517dfc3979d7",
+  "contextManifestSha256": "dfbfb472dfbf76310a448578bd69aac46549f1184a0b5451ca4fdddbe6ce9f8b",
+  "contextTarSha256": "1228bb4e77906cbf96c2e33af6908ae2db20297c7e209df84070e6d1f00b70d3",
   "wheelhouseManifestSha256": "6381419faa9d95f38f774eb0b6e61e65449b7bd829ebc514b6c73900301b2be3",
   "requirementsLockSha256": "f41c727b39f99106f95b7937b2811e8d27db89d1d5106e9f1d9effd4403143d2",
   "dockerClientVersion": "29.4.0",
@@ -12,14 +12,20 @@
   "buildNetwork": "none",
   "runtimePull": "never",
   "sourceDateEpoch": 0,
-  "imageDigest": "sha256:6fb0a3ffa8c6dcddb0aff6593bb665ed8b3fe7a23e69f9eb8f0d005b6cb6c106",
+  "imageDigest": "sha256:f3e3ebfc9f33c6732989c7e7563be3179bcbbc07435a7bf4c4ff4f6c71f88779",
   "reproducibleBuilds": 2,
-  "reproducibleDigest": "sha256:6fb0a3ffa8c6dcddb0aff6593bb665ed8b3fe7a23e69f9eb8f0d005b6cb6c106",
-  "imageManifestDigest": "sha256:6fb0a3ffa8c6dcddb0aff6593bb665ed8b3fe7a23e69f9eb8f0d005b6cb6c106",
-  "imageConfigDigest": "sha256:4f9cf20e890480d119e1f19bef3709fcff6e44bea9dd070c2a98883c593316f9",
+  "reproducibleDigest": "sha256:f3e3ebfc9f33c6732989c7e7563be3179bcbbc07435a7bf4c4ff4f6c71f88779",
+  "imageManifestDigest": "sha256:f3e3ebfc9f33c6732989c7e7563be3179bcbbc07435a7bf4c4ff4f6c71f88779",
+  "imageConfigDigest": "sha256:a3eda541fa91a522c262c3cf9910988a0114a3146af5a08d4c36a507616c334c",
   "seccompSha256": "ad19b56e07dd87ad4375c1ecbc600704767308520290e17bb00cf04fdce54fc5",
   "seccompBaseline": {
     "source": "moby/profiles seccomp/v0.2.1",
     "sha256": "536529b665dd0972c37bfb569f5d4ac8a53592e7b00752bc39ff063ca9864c74"
-  }
+  },
+  "sbomSha256": "8f05efe36652f7e7aaaadd9796788a619fc992494775aeba56690c9f6985fd20",
+  "vulnerabilityScanSha256": "7a235cc1f956768678301664d04fd3f210039b7ebb5a4b4ad8fa3dd754c12ab2",
+  "openVexSha256": "626a0cd6a9cc7ad23f5a6f9e6066ccb7e9d63f373b4af7bfe03928aae9838eca",
+  "provenanceSha256": "ea49e411854bc5989784911456811f167343368698c188dd84f46974aabfe228",
+  "licenseMetadataSha256": "3b07f116a270f93323dc12a4a746689129b97000159fe0d739d7d39a2f910dc0",
+  "staticSecuritySha256": "fe380ec691a6cc4fb0ea6b8abcd70599242b5a1579d373e5ecd1f20a4cad69ea"
 }

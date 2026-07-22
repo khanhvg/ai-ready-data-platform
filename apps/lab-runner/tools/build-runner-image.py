@@ -74,6 +74,8 @@ def main()->int:
     if a.build:
         home=pathlib.Path(pwd.getpwuid(os.geteuid()).pw_dir);config=BUILD/"buildx-config";config.mkdir(mode=0o700,exist_ok=True)
         with TAR.open("rb") as stream:
+            # Runnable-image reproducibility is proved independently from the
+            # hash-closed Syft SBOM and provenance evidence in the release gate.
             subprocess.run([str(home/".docker/cli-plugins/docker-buildx"),"build","--output","type=docker","--provenance=false","--sbom=false","--platform","linux/arm64","--network","none","--pull=false","--build-arg","SOURCE_DATE_EPOCH=0","--tag","ai-ready-lab-runner:issue9","-"],stdin=stream,check=True,env={"PATH":"/usr/local/bin:/usr/bin:/bin","HOME":str(BUILD),"DOCKER_CONFIG":str(config),"BUILDX_CONFIG":str(config),"DOCKER_HOST":f"unix://{home}/.orbstack/run/docker.sock"})
     return 0
 
