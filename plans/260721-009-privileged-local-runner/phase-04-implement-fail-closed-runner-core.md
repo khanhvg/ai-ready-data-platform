@@ -12,8 +12,11 @@ effort: "2.5 implementation days"
 ## Overview
 
 Implement the app-owned typed registry, private transport, secure workspace allocator, exact
-environment, macOS containment launcher, bounded process tree and service readiness. Keep existing
+environment, macOS containment launcher, bounded single worker and service readiness. Keep existing
 pipeline seams read-only and turn the corresponding Phase 3 security RED families GREEN.
+
+`BLOCKED`: exact dbt currently requires a resource-tracker child. No source step in this phase is
+authorized until all eight reviewed fixed in-process adapters pass the capability amendment gate.
 
 ## Context Links
 
@@ -29,9 +32,9 @@ pipeline seams read-only and turn the corresponding Phase 3 security RED familie
   only; no synthetic command-version or generated binding.
 - Pinned read-only entrypoints, Python `-I`, generated workspace dbt configuration.
 - Descriptor-owned workspace paths, Seatbelt write/read/network policy and fail-closed probe.
-- Complete bounded process-tree execution and sanitized output.
-- Phase 1-admitted Darwin descendant control; no aggregate quota or cleanup claim based only on
-  periodic ancestry polling.
+- Conditional exact single-worker execution with zero descendants and sanitized output.
+- Seatbelt denial before first child plus exact PID/start TERM→KILL→wait; no process-tree discovery,
+  process-group, launchd, or polling cleanup authority.
 - Released per-command ceilings are 120 seconds and 536,870,912 bytes; released workspace quota is
   268,435,456 bytes. The runner may be stricter but never wider.
 - Keep service not-ready unless the exact I5-04 activation path validates with measured
@@ -47,8 +50,8 @@ BFF-only request
   -> descriptor-owned workspace + generated exact env
   -> launcher (fchdir, rlimits, close FDs, new session)
   -> sandbox-exec profile
-  -> pinned Python -I / fixed entrypoint
-  -> process-tree/resource/output monitor
+  -> pinned Python -I / fixed in-process adapter
+  -> exact single-worker resource/output monitor (zero descendants)
 ```
 
 ## Related Code Files
@@ -58,7 +61,7 @@ BFF-only request
 - Consume/verify: `apps/lab-runner/requirements/runner-py312-macos-arm64.{in,lock,metadata.json}`
 - Extend only with re-attested RED: `apps/lab-runner/config/runtime-policy-v1.toml`
 - Consume/rehash: `apps/lab-runner/config/command-owner-activation-i5-04-v1.json`
-- Create: `apps/lab-runner/src/lab_runner/{__init__,__main__,contract,registry,transport,containment,launcher,workspace,process,service}.py`
+- Create: `apps/lab-runner/src/lab_runner/{__init__,__main__,contract,registry,transport,containment,launcher,adapters,workspace,process,service}.py`
 - Create: `apps/lab-runner/tests/integration/test_bounded_pipeline.py`
 - Conditional modify: `orchestration/airflow/callables/pipeline.py` only if Phase 1 still proves
   the characterized runner-reserved path refusal is necessary before `_run`
@@ -91,15 +94,19 @@ then quotas/output/descendants. A later class cannot be used to hide an earlier 
    audit/operation allocation; bind secrets to launch only and exclude them from child/evidence
    roots.
 6. Implement the separate launcher: inherit only approved descriptors, `fchdir`, apply rlimits,
-   close other FDs, start session/process group, and `execve` Seatbelt + pinned command.
-7. Generate minimal Seatbelt profiles from fixed policy paths. Startup functional probes prove
-   base read-only, workspace write, home/secret/network denial, required imports and child cleanup.
-8. Implement the Phase 1-admitted fork/reparent control, PID/start tracking, ≤100 ms aggregate
-   CPU/RSS/disk/process monitoring, output limits, secret/private-path detection, TERM/KILL/reap
-   and typed failure results. Enforce the released memory/workspace ceilings and fail readiness if
-   any descendant becomes unaccounted.
-9. Add adapters that invoke current generator/loader/dbt/export with workspace paths only. Generate
-   a dbt profile below the generation; never write base profiles/targets/logs/packages.
+   close other FDs, and launch exactly one fixed Python worker through Seatbelt. Record exact
+   PID/start identity before capability handoff.
+7. Generate minimal Seatbelt profiles from fixed policy paths, including `deny process-fork`.
+   Startup functional probes prove base read-only, workspace write, home/secret/network denial,
+   all child attempts denied before first marker, and exact same-worker reap.
+8. Implement exact worker CPU/RSS/disk/FD/output monitoring, protocol/image-failure detection,
+   secret/private-path detection and bounded TERM→KILL→wait. Zero descendants is invariant; any
+   fork/spawn/exec need makes readiness false before operation allocation.
+9. Add eight fixed in-process adapters only after the capability gate passes. Current generator,
+   loader, exporter and promotion verifier have feasible callables; current Airflow wrappers are
+   expert-only. Exact dbt remains the blocker. Generate workspace-local dbt configuration and
+   never mutate private multiprocessing context, start method, plugins, startup hooks, base
+   profiles/targets/logs/packages, or the released command set.
 10. If Phase 1 still proves the Airflow seam necessary, add the characterized guard for every
     explicit mutable/config path. Reject lexical or resolved runner-reserved paths before `_run`;
     preserve expert defaults and DAG import/task order. Otherwise leave the file byte-identical.

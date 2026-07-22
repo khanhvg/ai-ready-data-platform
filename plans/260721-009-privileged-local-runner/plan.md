@@ -27,10 +27,15 @@ runnerRequestBodyLimitBytes: 16384
 implementationHeadPolicy: "record-the-actual-clean-remote-equal-descendant-after-it-exists"
 priorValidationInputSha: "de66ad3da6a4f6ed49059e547689462f8269bca5"
 validationStatus: "PASS"
-validationReport: "validation/release-amendment-validation-report.md"
-readinessAuditReport: "audit/release-readiness-audit-2026-07-22.md"
-implementationReadiness: "READY_TO_COOK"
-cookScope: "whole-plan"
+validationReport: "validation/capability-amendment-validation-report.md"
+readinessAuditReport: "audit/capability-readiness-audit-2026-07-22.md"
+implementationReadiness: "BLOCKED_DEPENDENCY_BACKEND_IN_PROCESS_UNAVAILABLE"
+cookScope: "none"
+capabilityAmendmentInputSha: "dc8b6d2cb46c8101bd8f1309acc7f12e5da7e090"
+blockedCookInputSha: "9eb31075aeb0e7b974ad15645460ab4987570f20"
+hostForkPrevention: "PASS_7_OF_7"
+setsidExactWorkerReap: "PASS"
+releasedOperationFeasibility: "FAIL_7_OF_8_DBT_RESOURCE_TRACKER_CHILD"
 sharedContractLease: "NO_WRITE_OVERLAP_READ_ONLY_STAGE_A_CONSUMPTION"
 ---
 
@@ -45,12 +50,13 @@ entrypoints, confines children with a functional macOS Seatbelt (`sandbox-exec`)
 all mutation below an owned private workspace. Unsupported containment means disabled runner,
 never a weaker fallback.
 
-This dependency-release amendment and fresh independent readiness audit are planning/audit only.
-The prior validation and blocked readiness reports remain immutable historical evidence. The
-amended plan now passes strict validation and is ready to cook as one six-phase sequence from an
-implementation base that contains exact released Stage A. Readiness does not implement behavior,
-waive RED-first ordering, authorize a shared-contract write, or approve a future implementation
-head.
+The dependency-release amendment and prior validation/readiness reports remain immutable
+historical evidence. The current [host capability amendment](./capability-amendment.md) supersedes
+their cook-readiness decision: descendant prevention and exact single-worker reap pass, but the
+released `retail.dbt-build` operation requires a Python resource-tracker child and fails under the
+required fork-denied profile. The plan is therefore blocked before RED/source cook. Readiness does
+not narrow the released eight-command contract, accept a private dbt startup hook, authorize a
+shared-contract write, or approve a future implementation head.
 
 ## Phases
 
@@ -75,6 +81,11 @@ head.
 - **Dependency compatibility:** PASS for read-only command-owner activation, version, operation,
   completion, lab, OpenAPI, and evidence seams. `fitness-result-v2` is reusable by I5-04 through an
   I5-04-owned activation instance; no shared-contract write or generated binding is required.
+- **Plan-only ancestry:** this plan branch intentionally remains at the requested plan lineage and
+  does not yet descend from Stage A. Exact planning reads use the immutable release object. A
+  future dependency-resolved implementation base must pass the existing clean remote-equal
+  Stage-A-descendant gate before any RED/source write; this blocked amendment does not merge or
+  rebase release history.
 - **Runner-local bindings:** the activation instance is exactly
   `apps/lab-runner/config/command-owner-activation-i5-04-v1.json`; it binds the released registry
   hash to the actual I5-04 fragment hash only after that fragment exists. The private transport
@@ -96,16 +107,21 @@ head.
 - [Verification, evidence, and rollback](./verification-evidence-and-rollback.md)
 - [Exact planned paths and admission gates](./planned-paths-and-admissions.md)
 - [Dependency-release amendment](./release-amendment.md)
+- [Host capability and operation readiness amendment](./capability-amendment.md)
 - [Independent validation report](./validation/independent-validation-report.md)
 - [Release-amendment validation](./validation/release-amendment-validation-report.md)
 - [Fresh release readiness audit](./audit/release-readiness-audit-2026-07-22.md)
+- [Capability-amendment validation](./validation/capability-amendment-validation-report.md)
+- [Current capability readiness audit](./audit/capability-readiness-audit-2026-07-22.md)
 
 ## Phase Split and Cook Gate
 
-- `COOK_SCOPE=whole-plan`: all six phases may proceed in order from an exact clean implementation
-  base containing `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`.
-- Phase 1 must first prove the host containment and non-poll-only descendant-control admissions.
-  Phase 2 then locks released bytes plus the two exact runner-local policy decisions above.
+- `COOK_SCOPE=none`: no phase may resume until an owner-approved released backend runs all eight
+  commands in process under fork denial, or another documented no-sudo lifetime primitive is
+  independently proven. A shared-contract rerelease is required for any staged command scope.
+- The planning-only host probe already proves seven child-creation denials and exact same-process
+  `setsid` cleanup. It also proves the exact pinned dbt API fails closed, so that partial host
+  result cannot authorize Phase 1 RED or source changes.
 - Phase 3 must commit contemporaneous RED assertions through the real public runner paths before
   any Phase 4/5 behavior. Every later phase remains gated by its predecessor; readiness is not
   permission to skip, parallelize, or weaken those gates.
@@ -168,8 +184,23 @@ head.
   generated path is allowed.
 - **Historical reports:** `validation/independent-validation-report.md` and
   `audit/readiness-audit-report.md` describe their exact earlier inputs and are not rewritten.
-- **Validation/readiness:** strict amendment validation and a fresh dependency-aware audit PASS;
-  the whole ordered plan is ready to cook. See the two current reports linked above.
+- **Historical validation/readiness at that input:** strict amendment validation and a fresh
+  dependency-aware audit passed and then authorized the whole ordered plan. The later host
+  capability amendment supersedes that cook decision.
 - **Boundary:** plan/audit only; implementation, product tests, PR/merge, credentials, and
   cloud/AWS/Terraform actions were not performed.
-- **Next:** `$ck:cook` Phase 1 from a clean exact Stage A-containing implementation base.
+- **Historical next step:** `$ck:cook` Phase 1 was attempted from the exact input and stopped
+  before RED/source. It is not the current next step.
+
+### Host Capability Amendment — 2026-07-22
+
+- **Input:** exact clean local/upstream/live plan head
+  `dc8b6d2cb46c8101bd8f1309acc7f12e5da7e090` after the first cook stopped before RED/source.
+- **Host primitive:** Seatbelt `deny process-fork` passed 7/7 child-creation negatives; exact
+  PID/start cleanup passed for a TERM-ignoring same-process `setsid` worker and direct image
+  replacement; before/after inventories were empty.
+- **Operation preservation:** seven fixed in-process command adapters are feasible. Exact
+  `dbtRunner` requires a resource-tracker child and fails `EPERM`; a private multiprocessing
+  override is explicitly rejected.
+- **Current result:** `BLOCKED`, `COOK_SCOPE=none`, next decision is owner/platform backend or
+  upstream contract scope. See the capability amendment and current validation/audit reports.

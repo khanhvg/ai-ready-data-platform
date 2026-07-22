@@ -1,5 +1,10 @@
 # Issue #9 Requirements, Risks, and Threat Traceability
 
+Current capability status is `BLOCKED` by the exact operation table in
+[capability-amendment.md](./capability-amendment.md): descendant prevention passes, but the pinned
+dbt API requires a child. The prevention language below is conditional on a future approved
+all-eight-command backend and grants no cook scope now.
+
 ## Traceability Rules
 
 - Every row is future implementation work unless marked planning/preflight.
@@ -22,8 +27,8 @@
 | RUN-CMD-02 | Python/dbt entrypoints, interpreter, runtime lock, Git blob and file digest are pinned; isolated imports/startup hooks cannot alter execution | interpreter/import/sitecustomize/usercustomize/plugin/hash-swap negatives | PH-C05; PH-H02; SC-02 | Refuse readiness; restore exact reviewed runtime |
 | RUN-FS-01 | Private per-run workspace, read-only base, descriptor/no-follow containment, type/link/identity checks and use-time revalidation prevent path/symlink/hardlink/TOCTOU escape | path fuzz, parent/symlink swap, hardlink, FIFO/device/socket, base-write and cleanup races | PH-C05; PH-H13; SC-02 | Quarantine owned state; disable runner; never delete foreign target |
 | RUN-ENV-01 | Child env starts empty and contains only fixed policy values; no ambient credentials, home config, proxy, plugin, Docker, cloud, or trace variables | canary/env-dump/import tests and persisted-output scan | PH-C05; SC-06/11 | Kill operation; retain only typed hash/reason |
-| RUN-NET-01 | Child process tree has no outbound/listen network; runner itself exposes only UDS or explicit 127.0.0.1 ephemeral fallback | DNS/TCP/UDP/listen/network inheritance negatives; containment probe | PH-C05; SC-06 | `RUNNER_CONTAINMENT_UNAVAILABLE`; static/direct mode only |
-| RUN-RES-01 | 16 GiB host policy enforces the released 120-second, 536,870,912-byte command-memory and 268,435,456-byte workspace ceilings plus runner CPU/file/FD/process/output caps; complete descendant cleanup requires a non-poll-only Darwin fork/reparent mechanism | CPU spin, memory, sparse/disk, file-size, FD, output flood, TERM-ignore, fast-exit-parent/double-fork/reparent/setsid tests | PH-H01; PH-C05; SC-04 | Admission STOP or TERM/KILL/reap; no state/pointer advancement |
+| RUN-NET-01 | The one operation worker has no outbound/listen network and can create zero descendants; runner itself exposes only UDS or explicit 127.0.0.1 ephemeral fallback | DNS/TCP/UDP/listen negatives, fork-denial inventory, containment probe | PH-C05; SC-06 | `RUNNER_CONTAINMENT_UNAVAILABLE`; static/direct mode only |
+| RUN-RES-01 | Conditional 16 GiB policy enforces the released 120-second, 536,870,912-byte worker-memory and 268,435,456-byte workspace ceilings plus CPU/file/FD/output caps; `deny process-fork` requires zero descendants and parent ownership of one PID/start identity. Exact dbt currently violates the no-child precondition, so readiness is blocked | CPU spin, memory, sparse/disk, file-size, FD, output flood, all seven child-creation denials, same-worker TERM-ignore/setsid/exec-image exact reap, before/after inventory | PH-H01; PH-C05; SC-04 | Backend admission STOP or exact worker TERM→KILL→wait; no state/pointer advancement |
 | RUN-FEN-01 | One per-workspace and runner-wide mutation uses OS lock + monotonic fence epoch; stale owner cannot commit | two-runner barriers, stale epoch, lock swap, crash/restart | PH-C06; SC-03/14 | Typed conflict/reconcile; prior state remains current |
 | RUN-FEN-02 | Direct Make/Airflow expert namespace cannot overlap learner namespace; any learner-targeted direct callable lacks the inherited fence capability and refuses before write | runner-vs-Make non-overlap, runner-vs-callable denial, DuckDB/current-pointer oracles | PH-C06; PH-H13; SC-03 | Preserve direct expert tools; disable runner integration |
 | RUN-STA-01 | Released state transitions and idempotency survive duplicate, conflicting, crash and restart paths; runner never writes portal completion | request digest replay/conflict, kill at transactions, startup reconciliation | ADR-007; PH-C06; SC-03/14/16 | Recover last commit or reset; no fabricated completion |
@@ -69,7 +74,7 @@
 | THR-ENV-01 | AWS/token/proxy/PYTHONPATH/home config leaks or changes behavior | env from empty map; child cannot read service secret/home | canary absent from child/evidence; persistence fails on match | Same-account process outside child sandbox remains out of claim |
 | THR-NET-01 | Child exfiltrates or starts listener | Seatbelt default network deny; no proxy/env | TCP/UDP/DNS/listen fail; no network artifact | Runner loopback/UDS transport itself is intended local IPC |
 | THR-BRW-01 | CSRF, DNS rebinding, CORS, forged Host/Origin, browser direct request | UDS, exact Host, reject Origin/cookies/preflight, bearer + CSRF | every browser-shaped mutation rejected before allocation | Future BFF compromise handled by later portal issue |
-| THR-RES-01 | CPU/memory/disk/FD/output/process bomb; descendant escapes group | rlimits + admitted non-poll-only fork/reparent control + ≤100 ms accounting + PID/start identity + TERM/KILL/reap | bounded typed failure; no remaining descendant; pointer unchanged | Accounting interval permits bounded transient overshoot only after complete descendant admission is proven |
+| THR-RES-01 | CPU/memory/disk/FD/output bomb; fork/spawn/setsid escape attempt | conditional `deny process-fork` + exact single-worker rlimits/measurement + PID/start identity + TERM/KILL/wait | every child attempt denied before first marker; same-process setsid worker reaped; zero survivors; pointer unchanged | Exact dbt is incompatible and keeps the runner disabled; generic process-exec denial cannot launch Python |
 | THR-RAC-01 | reset/export/verify or two runners commit mixed state | OS lock, monotonic fence, transactional CAS | one commit or typed conflict; old/new complete state only | Filesystem/SQLite corruption requires quarantine/manual recovery |
 | THR-XEP-01 | Make/Airflow writes learner paths during runner operation | disjoint expert namespace; learner fence requires inherited descriptor | expert path may proceed independently; learner-targeted direct call refuses | Expert with same UID can intentionally bypass outside product API; not a browser capability |
 | THR-CRS-01 | Crash between audit/state/blob/manifest/pointer boundaries | transaction/fsync/atomic replace; startup reconciliation | last committed state visible; incomplete owned state quarantined | Crash may leave bounded owned state for manual cleanup |
@@ -87,7 +92,7 @@
 | Oversized or ambiguous private request reaches allocation | Low / High | Exact 16,384-byte pre-parse ceiling plus duplicate/framing/streaming negatives | Transport RED evidence |
 | `sandbox-exec` is unavailable or behavior changes on a macOS update | Medium / Critical | Exact tested host tuple + functional startup probes; runner stays disabled | S3 containment evidence |
 | Existing CLI performs undeclared write despite explicit path args | Medium / High | Phase 1 syscall/path characterization; do not broaden write set; re-plan narrow seam if proven | characterization manifest |
-| Exact host cannot provide complete rapid fork/reparent/`setsid` control | Medium / Critical | Phase 1 non-poll-only admission; rlimits, process groups and ≤100 ms accounting are defense in depth; STOP before RED/product behavior if proof fails | capability + quota/descendant evidence |
+| Exact released operation requires child creation under fork-denied worker | Observed / Critical | Keep cook blocked; require released fixed in-process backend, separately proven lifetime primitive, or owner-approved upstream contract rerelease | 7/7 child denials + 7/8 operation feasibility + exact dbt `EPERM` evidence |
 | Same-UID expert intentionally tampers with local state | Medium / High | Honest local threat statement, hash detection, fresh live verification, later hosted authority | audit/evidence residual statement |
 | SQLite/filesystem crash leaves ambiguous partial state | Low / High | FULL sync, transactions, fsync/rename, fence epochs, quarantine and repeated recovery | crash matrix |
 | Evidence leaks a token/private path through output | Medium / Critical | secret absent from child, structured allow-list, fail-on-detection scan, bounded previews | S3 scan + canary report |
@@ -102,8 +107,8 @@
 - I5-04 activation is absent from its exact owned path, any measured registry/fragment/instance
   hash mismatches, the 16,384-byte request ceiling is not active, or the implementation head does
   not descend from the release.
-- Required host containment, filesystem no-follow/atomicity, process-tree cleanup, or exact runtime
-  lock cannot be proven.
+- Required host containment, filesystem no-follow/atomicity, all-eight in-process adapter closure,
+  zero-descendant prevention, exact single-worker reap, or exact runtime lock cannot be proven.
 - Any required RED assertion is missing, passes before behavior for the wrong reason, or lacks a
   stable ID and exact SHA.
 - Any path escape, base write, credential/network leak, descendant leak, mixed release, stale-fence
@@ -113,6 +118,7 @@
 
 ## Unresolved Questions
 
-None for plan readiness. Stage A compatibility, the activation path, private request ceiling, and
-write ownership are exact. Actual future hashes and review heads are captured contemporaneously
-after they exist; all execution-time mismatch and security conditions above remain fail-closed.
+One owner/platform question blocks readiness: which separately reviewed backend preserves
+`retail.dbt-build` without child/exec/private-startup manipulation, or whether the upstream
+released command contract will be deliberately rereleased. Stage A identity, activation path,
+private request ceiling, and write ownership otherwise remain exact.

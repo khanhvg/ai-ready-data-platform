@@ -15,6 +15,9 @@ Finalize only the three issue-owned Make targets, run the exact verification and
 released evidence envelopes, rehearse safe rollback, and prepare two independent exact-head review
 handoffs plus human approval. This phase creates no PR/merge/cloud action by implication.
 
+This phase remains unreachable while the capability amendment is `BLOCKED`; no gate or evidence
+may claim an all-eight lifecycle until exact dbt runs under the admitted zero-descendant backend.
+
 ## Context Links
 
 - [Exact commands and S3 scans](./verification-evidence-and-rollback.md#exact-future-commands)
@@ -70,8 +73,9 @@ handoffs plus human approval. This phase creates no PR/merge/cloud action by imp
    suppression as failure.
 5. Execute the exact commands individually and as the requested aggregate:
    `make runner-test runner-security-test runner-race-test data-contracts-check`.
-6. Run one bounded real `small`/42 lifecycle with containment, all eleven assets, verification,
-   repeated reset/restart and final process/base/pointer/evidence checks.
+6. Run one bounded real `small`/42 lifecycle through eight reviewed in-process adapters with
+   `deny process-fork`, all eleven assets, verification, repeated reset/restart, exact worker
+   PID/start reap, zero descendants and final base/pointer/evidence checks.
 7. Rehearse rollback twice, including active/incomplete/crashed states and adversarial foreign
    markers. Restore only a previously validated pointer; preserve evidence/audit.
 8. From a fresh clean checkout of the exact candidate head, run final changed-path/protected-hash/

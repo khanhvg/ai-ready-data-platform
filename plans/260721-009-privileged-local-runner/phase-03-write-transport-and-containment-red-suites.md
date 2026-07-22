@@ -18,6 +18,9 @@ enters through the real public `make runner-test`, `make runner-security-test`, 
 failure is not evidence. Required absence/tool/dependency conditions fail explicitly and cannot be
 converted to skips.
 
+This phase is not admitted at the current plan head. Exact dbt operation feasibility is 7/8; the
+future all-eight backend gate must pass before these product RED files may be created.
+
 ## Context Links
 
 - [RED assertion families](./verification-evidence-and-rollback.md#red-assertion-families)
@@ -77,10 +80,11 @@ This phase is the tests-before phase. Each family must:
 4. Add import/startup/entrypoint/env tests with canary modules/configs and an argv/env spy.
 5. Add descriptor/path/TOCTOU/base tests with barriers that swap parent, child, pointer and temp
    entries between check and use.
-6. Add CPU/RSS/disk/file/FD/process/output/descendant tests, including TERM-ignore, rapid
-   fast-exit parents, double-fork/reparent and new-session descendants, with no host-wide limit or
-   kill primitive.
-   The suite must fail admission if Phase 1 did not prove a non-poll-only descendant mechanism.
+6. Add CPU/RSS/disk/file/FD/output/single-worker tests. All fork/spawn/subprocess/multiprocessing
+   child attempts and rapid double-fork/setsid attempts must be denied before their first child
+   marker. Separately, exact PID/start TERM→KILL→wait must reap a TERM-ignore main worker after
+   same-process `setsid`. The suite fails admission if any released adapter requires child/exec or
+   if before/after inventory is non-empty.
 7. Add deterministic OS containment probes for network denial, base write denial, workspace write,
    required import and process cleanup.
 8. Add runner/runner, reset/export/verify, Make expert non-overlap and learner-targeted Airflow
