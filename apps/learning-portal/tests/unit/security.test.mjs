@@ -270,6 +270,7 @@ test("PTP-S3 public verifier rejects lock drift and cloud/proxy/runtime injectio
 
 test("PTP-S3 Stage B negatives emit released-schema-valid fitness-result-v2 on stderr", () => {
   const schema = JSON.parse(fs.readFileSync(path.join(repo, "learning/contracts/fitness-result-v2.schema.json"), "utf8"));
+  const qaInputSha = "7d12dbce7cc6b60bc74970b0d1a1e74a14fdac6b";
   for (const args of [["lesson-e2e", "LESSON=promotion-trust"], ["local-journey-e2e"]]) {
     const result = run("make", args);
     assert.equal(result.status, 2, `${args[0]} must remain blocked with exit 2`);
@@ -278,6 +279,7 @@ test("PTP-S3 Stage B negatives emit released-schema-valid fitness-result-v2 on s
     assert.deepEqual(Object.keys(value).sort(), [...schema.required].sort(), `${args[0]} omitted or invented fitness fields`);
     assert.equal(value.status, "fail");
     assert.equal(value.failureCode, "STAGE_B_DEPENDENCY_UNAVAILABLE");
+    assert.equal(value.inputSha, qaInputSha, `${args[0]} is not bound to the reviewed QA input`);
     const checked = run("python3.12", ["-c", "import json,pathlib,sys; from jsonschema import Draft202012Validator,FormatChecker; schema=json.loads(pathlib.Path('learning/contracts/fitness-result-v2.schema.json').read_text()); Draft202012Validator(schema, format_checker=FormatChecker()).validate(json.loads(sys.stdin.read()))"], { env: process.env, timeout: 30_000, cwd: repo, input: JSON.stringify(value) });
     assert.equal(checked.status, 0, `${args[0]} failed the released fitness validator: ${checked.stderr}`);
     assert.doesNotMatch(JSON.stringify(value), /runnerAction|completion|implemented/);
@@ -331,6 +333,8 @@ test("PTP-S3 artifact root, alias, type, residue, size, and privacy bounds are e
     const published = await finalizeEvidence(work);
     const pointer = `${root}.current`; const pointerStat = await fsp.lstat(pointer); assert.equal(pointerStat.isFile(), true); assert.equal(pointerStat.isSymbolicLink(), false); assert.equal(pointerStat.nlink, 1);
     assert.match(path.basename(published), /^\.evidence\.generation-[0-9a-f]{64}$/);
+    const index = JSON.parse(await fsp.readFile(path.join(published, "evidence-index.json"), "utf8"));
+    assert.equal(index.inputSha, "7d12dbce7cc6b60bc74970b0d1a1e74a14fdac6b", "review evidence is not bound to the reviewed QA input");
     const verified = run(process.execPath, [path.join(appRoot, "scripts/write-review-artifacts.mjs")], { env: { ...process.env, PORTAL_EVIDENCE_ROOT: root } }); assert.equal(verified.status, 0, verified.stderr);
     const retained = await fsp.readFile(path.join(published, "hash-manifest.sha256")); const retainedPointer = await fsp.readFile(pointer);
     const interrupted = await prepareEvidenceRoot(root, { reset: true });
