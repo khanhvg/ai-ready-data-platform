@@ -14,13 +14,13 @@ source: skill
 mode: fast-tdd-no-tasks
 integrationBaseSha: "5644f01b4c0443a81f3af0bcce80f44c847cd986"
 correctionInputSha: "2f278eb25aaff9e050314b01d1be155b76793f11"
-planningValidation: v3-correction-pending-independent-validation
+planningValidation: v3-independent-validation-pass
 readinessVerdict: invalidated-by-pr29-review
 cookScope: none
 dependencyIssue7: RELEASED_PR22_MERGE_1806B6D
 dependencyIssue8: RELEASED_FINAL_INTEGRATION_5644F01
 dependencyIssue9: BLOCKED_UNRELEASED
-stageAStatus: ready-for-fresh-independent-plan-validation-only
+stageAStatus: validated-pending-fresh-readiness-audit
 stageBStatus: blocked-on-issue-9
 ---
 
@@ -40,8 +40,8 @@ slice with the released promotion-trust lesson and
 `insufficient-evidence/no-common-grain`; runner, progress, completion, fresh learner evidence,
 and the full product remain unavailable. Stage B remains blocked on Issue #9.
 
-This output is a plan correction only. It is not independently validated, readiness-audited, or
-cook authority.
+This output now includes its fresh independent validation. It is not readiness-audited or cook
+authority; the separate fresh readiness audit remains mandatory.
 
 ## Review Findings and Corrections
 
@@ -94,6 +94,7 @@ The normative details are in the
 - [Stage A v3 Recovery Amendment](./stage-a-release-amendment.md)
 - [Historical Stage A Readiness Audit](./audit/stage-a-readiness-audit-report.md)
 - [V3 Post-Review Correction Report](./audit/stage-a-v3-post-review-correction-report.md)
+- [V3 Independent Validation Report](./validation/stage-a-v3-independent-validation-report.md)
 
 ## Exact Stage Claims
 
@@ -145,19 +146,32 @@ the failed PR #29 review and cannot authorize v3.
 - Required next gates: fresh independent plan validation, then fresh independent readiness audit.
 - Cook authority: none.
 
+### Session 5 — Fresh independent Stage A v3 validation
+
+- Exact validation input: `a9e5ee26eacaec1b07ce9a25ac4b86da15f0b9a1`.
+- Review findings independently accepted: 3/3 at plan level.
+- Bounded validation fixes: exact same-run Chrome identity admission; explicit author-versus-
+  independent evidence roles and PII/raw-record/remote-import privacy scans; removal of stale
+  mutable-PID wording from the blocked Stage B phase.
+- Scope unchanged: 33/33 paths = 22/22 scaffold + 8/8 tests + 3/3 later creates; 18/18 commands;
+  85/85 released read-only inputs.
+- Validation verdict: PASS. Readiness and cook authority: none until the separate fresh readiness
+  audit passes at its exact output.
+
 ### Whole-Plan Consistency Sweep
 
 - Decision deltas: v3 branch/recovery, scaffold-first chronology, released-registry authority,
-  authenticated self-shutdown, blocked result schema, and current-generation trace/evidence
-  closure.
-- Files in scope: `plan.md`, all seven phase files, six current companion contracts, the
-  historical readiness banner, and the v3 correction report.
+  authenticated self-shutdown, blocked result schema, same-run Chrome admission, truthful evidence
+  roles/privacy classes, and current-generation trace/evidence closure.
+- Files in scope: all 19 Markdown artifacts in this plan directory: `plan.md`, all seven phase
+  files, current companion contracts, superseded historical reports, the v3 correction report,
+  and the current independent validation report.
 - Unresolved contradictions permitted before publication: zero.
 
 ## Plan Exit
 
-Publish this correction only after CK 4.5.2 strict validation/status, links/anchors, scope,
-command, RED, evidence, trace, protected/private-path/secret/diff, and local/upstream/live checks
-pass. Then move Issue #10 from `ready for review` to `ready for plan validation` and request a
-fresh independent validation. Do not claim readiness, cook authority, review approval, merge, or
-release.
+The fresh independent validation has passed after CK 4.5.2 strict validation/status,
+links/anchors, scope, command, RED, evidence, trace, protected/privacy/diff, and exact-input checks.
+Move Issue #10 to `ready for plan audit` only after the validation output is committed, pushed, and
+local/upstream/live equality is proved. Do not claim readiness, cook authority, review approval,
+merge, or release.

@@ -2,6 +2,7 @@
 issue: 10
 validation: independent-initial
 verdict: PASS_WITH_FIXES
+historicalStatus: superseded-by-stage-a-v3-validation
 inputSha: ad87c3f6090129dd30cfb626c6f396567f567a42
 integrationBaseSha: 24be3b34c6b0fcdbd07c5800dcab349054e34713
 branch: plan/issue-10-promotion-portal
@@ -12,6 +13,11 @@ date: 2026-07-22
 ---
 
 # Independent Validation Report — Issue #10 Promotion-Trust Portal
+
+> Historical input-specific record: later dependency releases and the failed PR #29 review
+> superseded this report as current authority. It cannot authorize v3 implementation or readiness.
+> The current result is the
+> [Stage A v3 independent validation](./stage-a-v3-independent-validation-report.md).
 
 ## Summary
 

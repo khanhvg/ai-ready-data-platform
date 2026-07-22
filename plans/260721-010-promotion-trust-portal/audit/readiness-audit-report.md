@@ -2,6 +2,7 @@
 issue: 10
 audit: fresh-independent-dependency-aware-readiness
 verdict: BLOCKED
+historicalStatus: superseded-by-releases-and-stage-a-v3-review
 readiness: BLOCKED_FOR_COOK
 cookScope: none
 inputSha: e2bba33deff76985eb3bdae361d494d162c854f8
@@ -16,6 +17,11 @@ date: 2026-07-22
 ---
 
 # Fresh Independent Readiness Audit — Issue #10 Promotion-Trust Portal
+
+> Historical input-specific record: later Issue #7/#8 releases superseded its dependency facts,
+> and failed PR #29 invalidated the later Stage A readiness conclusion. It cannot authorize v3
+> cook. Current authority is the
+> [Stage A v3 amendment](../stage-a-release-amendment.md) and its fresh validation/readiness chain.
 
 ## Summary
 

@@ -47,11 +47,15 @@ merge approval, Issue completion, or Stage B authority.
 - Carry the contemporaneous RED logs forward by hash and verify they predate first semantics.
 - Bind base/derived/scaffold/tests/RED/first-semantic/later-semantic/final commits and trees, all
   85 inputs, locks/tools, browser, command argv/exits, resource and S3 results.
+- Bind exact Playwright/Chrome channel plus one identical measured browser product/version/
+  executable SHA-256 across RED and GREEN; keep the executable path local-private.
 - Capture exactly one successful real Chromium trace with mode on and sources false; inspect its
   archive/privacy/count/size and hash it into the closed inventory.
 - Use non-self `inventory.json` → `generation-index.json` → atomic regular
   `current-generation.json` closure. Every current entry verifies.
 - Classify stale/failed/prior generations as negative history; never use them as current evidence.
+- Label current evidence as author/cook-generated with independent review and human approval false;
+  later independent records bind the exact head/tree and generation index without rewriting it.
 - Inject publication interruption and prove the selector exposes only a prior verified generation
   or none, never partial bytes.
 
@@ -74,8 +78,9 @@ S3 families. A stale v2 log or detached reconstruction cannot satisfy any row.
 2. Implement exact blocked v2 result generation/validation and no-action process/network gates.
 3. Finalize deterministic build inventory, static request policy, runtime/lock/env admission, and
    exact activation/Make fragment hash binding.
-4. Configure the single journey project trace with mode on, sources false, one worker, zero retry;
-   keep visual capture separate and produce at most eight named screenshots.
+4. Configure the single journey project with exact Chromium/Chrome-channel admission, trace mode
+   on, sources false, one worker, zero retry, and same measured RED/GREEN browser identity; keep
+   visual capture separate and produce at most eight named screenshots.
 5. Implement pending-generation closure, non-self hashes, privacy/resource/S3 records, atomic
    selector, negative-history classification, and interruption recovery.
 6. Commit the final behavior. Record actual final commit/tree; any later code change requires a
@@ -83,8 +88,9 @@ S3 families. A stale v2 log or detached reconstruction cannot satisfy any row.
 7. Run all 18 commands, two builds, Chromium desktop/narrow/no-JS/axe, lifecycle/down twice,
    Stage B negatives, audit, S3/resource, cleanup/interruption, and rollback rehearsal.
 8. Verify all current manifest entries, exact 33/18/85 closure, root Make composition/direct
-   denial, #9/#11/#12/#13 non-overlap, secret/private-path/source-map/cloud scans, package-lock
-   tracking, ignored-inclusive classification, diff check, and clean state.
+   denial, #9/#11/#12/#13 non-overlap, secret/private-locator/PII/raw-record/source-map/
+   remote-import/cloud scans, package-lock tracking, ignored-inclusive classification, diff check,
+   and clean state.
 9. Obtain two fresh independent final-head implementation reviews and named human exact-head UAT/
    approval before any later merge workflow. A later commit invalidates them.
 
