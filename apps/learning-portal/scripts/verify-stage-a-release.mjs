@@ -79,7 +79,7 @@ async function stageBBlocked(commandId, admission) {
     schemaVersion: "fitness-result-v2", commandId, owner: "I5-05",
     requested: { subjectType: commandId === "lesson-e2e" ? "lesson" : "contract-set", subjectId: commandId === "lesson-e2e" ? "promotion-trust" : "stage-b-issue-9", parameters: [] },
     status: "fail", failureCode: "STAGE_B_DEPENDENCY_UNAVAILABLE", remediation: "Keep Stage B blocked until Issue 9 has an independently approved exact-head release.",
-    inputSha: "7cd01679c40bb014d6ea0f6f0403d50c97e82572", testedTreeSha: gitTree,
+    inputSha: "7d12dbce7cc6b60bc74970b0d1a1e74a14fdac6b", testedTreeSha: gitTree,
     dependencyMergeShas: ["5644f01b4c0443a81f3af0bcce80f44c847cd986"],
     contractHashes: [{ name: "command-owner-activation", sha256: sha256(activationBytes) }],
     fixtureHashes: [{ name: "promotion-trust-vite-binding", sha256: sha256(bindingBytes) }],
