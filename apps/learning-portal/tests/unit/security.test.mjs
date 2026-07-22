@@ -19,6 +19,7 @@ const statePath = path.join(runtime, "portal.json");
 const securityHeaders = ["content-security-policy", "referrer-policy", "x-content-type-options", "cross-origin-opener-policy", "permissions-policy", "cache-control"];
 
 const run = (command, args, options = {}) => spawnSync(command, args, { cwd: options.cwd ?? repo, encoding: "utf8", timeout: options.timeout ?? 30_000, env: options.env ?? process.env, input: options.input });
+const runAsync = (command, args, options = {}) => new Promise((resolve, reject) => { const child = spawn(command, args, { cwd: options.cwd ?? repo, env: options.env ?? process.env, stdio: ["ignore", "pipe", "pipe"] }); let stdout = ""; let stderr = ""; const timer = setTimeout(() => child.kill("SIGKILL"), options.timeout ?? 30_000); child.stdout.on("data", (chunk) => { stdout += chunk; }); child.stderr.on("data", (chunk) => { stderr += chunk; }); child.on("error", reject); child.on("exit", (status) => { clearTimeout(timer); resolve({ status, stdout, stderr }); }); });
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const processStart = (pid) => run("ps", ["-o", "lstart=", "-p", String(pid)]).stdout.trim();
 
@@ -145,7 +146,7 @@ test("PTP-S3 protocol-aware socket replacement cannot impersonate the spawned ch
     impostor = net.createServer((socket) => { let raw = ""; socket.setEncoding("utf8"); socket.on("data", (chunk) => { raw += chunk; try { const request = JSON.parse(raw); socket.end(JSON.stringify({ ok: true, status: "running", url: state.url, requestNonce: request.requestNonce }) + "\n"); } catch {} }); });
     await new Promise((resolve, reject) => { impostor.once("error", reject); impostor.listen(controlPath, resolve); }); await fsp.chmod(controlPath, 0o700);
     const foreignStat = await fsp.lstat(controlPath); await fsp.writeFile(statePath, JSON.stringify({ ...state, control: { dev: foreignStat.dev, ino: foreignStat.ino } }));
-    const rejected = run(process.execPath, [lifecycle, "status"], { timeout: 10_000 });
+    const rejected = await runAsync(process.execPath, [lifecycle, "status"], { timeout: 10_000 });
     assert.notEqual(rejected.status, 0, "protocol-aware impostor authenticated through mutable portal.json");
     assert.match(rejected.stderr, /CHILD_AUTHENTICATION_FAILED/);
     assert.equal((await fetch(state.url)).status, 200, "protocol-aware impostor stopped the real child");
