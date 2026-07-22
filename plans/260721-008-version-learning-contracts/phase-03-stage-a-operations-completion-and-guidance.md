@@ -1,15 +1,16 @@
 ---
 phase: 3
-title: "Stage A operations completion and guidance"
-status: pending
+title: Stage A operations completion and guidance
+status: completed
 priority: P1
-dependencies: [2]
-stage: "A"
+dependencies:
+  - 2
+stage: A
 ---
 
 # Phase 3: Stage A Operations, Completion, and Guidance
 
-<!-- Updated: Validation Session 1 - neutral roles and deterministic completion/conflict protocol. -->
+<!-- Historical Stage A execution plan; released through PR #23 and PR #25, with current disposition in plan.md. -->
 
 ## Context Links
 

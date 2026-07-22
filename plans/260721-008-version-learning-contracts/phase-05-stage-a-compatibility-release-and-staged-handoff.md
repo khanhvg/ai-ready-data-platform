@@ -1,15 +1,16 @@
 ---
 phase: 5
-title: "Stage A compatibility release and staged handoff"
-status: pending
+title: Stage A compatibility release and staged handoff
+status: completed
 priority: P1
-dependencies: [4]
-stage: "A"
+dependencies:
+  - 4
+stage: A
 ---
 
 # Phase 5: Stage A Compatibility, Release, and Staged Handoff
 
-<!-- Updated: Validation Session 1 - truthful fitness v2, exact gates, rollback and review authority. -->
+<!-- Historical Stage A execution plan; released through PR #23 and PR #25, then dispositioned by the post-release audit. -->
 
 ## Context Links
 
@@ -19,11 +20,13 @@ stage: "A"
 
 ## Overview
 
-Close all Stage A RED assertions, expose the registered Issue #8 commands through its disjoint Make
-fragment, prove backward reading and Issue #6 immutability, run the full local blast radius, and
-produce a non-recursive Stage A contract-set/evidence handoff. Then stop for fresh independent
-exact-head implementation review and human pre-merge approval. The current readiness authorizes
-one serialized Stage A cook; this phase does not approve a PR or merge.
+This was the execution contract for closing all Stage A RED assertions, exposing the registered
+Issue #8 commands through its disjoint Make fragment, proving backward reading and Issue #6
+immutability, running the local blast radius, and producing a non-recursive Stage A contract-set/
+evidence handoff. Those gates were completed and released through PR #23 merge
+`5c2244c2c860234d0df49cf0a42ad950c6495717`, then composed by PR #25 at
+`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`. Current release disposition is maintained in
+[the post-release requirement audit](../260722-008-stage-b-release/audit/post-stage-a-requirement-audit.md).
 
 ## Requirements
 
@@ -84,8 +87,11 @@ check runner must validate the overlay as the sole I5-03 availability/evidence-v
   declare a STOP/new fixture decision, and dual-run before an owner-scoped emit-version change.
 - `learning-contract-set-v1.json` records path/family/version/schema/content hashes of the release
   inputs. Its own byte hash and the tested tree/attestation/merge SHAs live outside that document.
-- A Stage A merge, if separately authorized, gets one externally recorded
-  `STAGE_A_CONTRACT_RELEASE_SHA`. It does not complete Stage B or Issue #8.
+- Stage A received the externally observed release identity
+  `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`. The pre-release plan intentionally did not presume
+  whether a conditional Stage B would remain. The post-release authority audit found one exact
+  Issue #8-owned consumer-identifier binding gap. Stage A remains released/immutable; the bounded
+  additive binding is planned separately.
 
 ## Related Code Files
 
@@ -193,7 +199,7 @@ are forbidden.
    fresh independent exact-head read-only implementation review and a separate human exact-head
    pre-merge approval are mandatory before PR merge; neither may be synthesized.
 
-## Stage A Independent-Merge Decision Record
+## Historical Stage A Independent-Merge Decision Record
 
 Readiness answer: **Stage A is authorized for one serialized cook and can become an independently
 merged candidate**, because every planned input is present at the shipped Issue #6 integration and
@@ -208,8 +214,8 @@ staged merge, all must hold:
   exact-head read-only review passes unconditionally;
 - repository-required checks and a repository-authorized human approve that exact head;
 - Stage A merge/release SHA is observed remotely and recorded externally;
-- Issue #8 remains incomplete and Stage B/downstream authorization stays blocked unless separately
-  cleared.
+- at planning time, Issue #8 completion and downstream authorization remained pending a separate
+  post-release dependency/ownership decision.
 
 Any missing post-cook condition means “not mergeable/releasable yet,” not a readiness waiver or a
 reason to extend the bounded cook.
@@ -232,8 +238,9 @@ reason to extend the bounded cook.
   record provenance; fail rather than install or trust ambient `.venv`.
 - A release-set hash can become recursively impossible. Mitigation: exclude own byte/commit hash;
   external evidence binds it to tested/attestation/merge identities.
-- Staged merge can be confused with full I5-03 completion. Mitigation: explicit external status,
-  no Vite binding, and continued Stage B/dependency gate.
+- Staged merge could have been confused with full I5-03 completion. Resolution: the exact released
+  dependency and current downstream authority were later audited; a missing lossless key/grain
+  alias binding was found and is isolated in the fresh Stage B plan without rewriting Stage A.
 
 ## Security and Rollback
 
@@ -243,5 +250,6 @@ fixture rewrite, old-reader deletion or protected-path mutation.
 
 ## Next Steps
 
-If and only if independent gates later authorize and publish Stage A, wait for the exact merged
-Issue #7 Vite ADR/handoff before Phase 6. No work may bridge the gap using provisional bytes.
+Stage A and the exact Issue #7 Vite handoff are now released in the same integration ancestry.
+Proceed to [Phase 6](./phase-06-stage-b-vite-binding-and-final-handoff.md) for the completed
+dependency decision and then use only the linked fresh Stage B plan for the additive binding cook.

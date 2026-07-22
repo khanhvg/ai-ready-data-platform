@@ -1,219 +1,135 @@
 ---
 title: "Issue #8: Version lesson, lab, progress, and evidence contracts"
-description: "TDD plan for a framework-neutral learning-contract release followed by an exact-SHA-gated Vite binding, with an Issue #8-owned additive version overlay and no second completion authority."
-status: pending
+description: "Released Stage A contract core plus the completed post-release decision that a bounded Stage B consumer-binding release is required."
+status: completed
 priority: P1
 issue: 8
-branch: "plan/issue-8-version-learning-contracts"
+branch: "plan/issue-8-stage-b-amendment"
 tags: [feature, api, shared-core, contracts, tdd, security-s3, migration]
 blockedBy: []
-blocks: []
+blocks: [9, 10]
 created: "2026-07-21"
 createdBy: "ck:plan"
 source: skill
-planningMode: "issue-pipeline-staged-tdd-planner-only"
-inputSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
-plannerBoundary: "PLANNER_ONLY_NOT_VALIDATED"
-validationInputSha: "93837667326cb7a298c21921ac04e602ea7313d0"
-validationBoundary: "INDEPENDENT_VALIDATION_PASS_NOT_READINESS"
-validationReport: "validation/independent-validation-report.md"
-readinessInputSha: "6e488a410081f12726375ca7aa2f27f62c0105cc"
-readinessBoundary: "STAGE_A_READINESS_PASS_NOT_IMPLEMENTATION"
-readinessReport: "audit/stage-a-readiness-audit-report.md"
-stageAReadiness: "ready-with-gates"
-stageBReadiness: "blocked-on-issue-7-merged-sha"
+planningMode: "post-stage-a-release-audit"
+inputSha: "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9"
+releaseIntegrationSha: "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9"
+stageARelease: "pass"
+stageBReadiness: "required-planned-separately"
+sharedContractLease: "active"
+stageBPlan: "../260722-008-stage-b-release/plan.md"
+stageBRequirementAudit: "../260722-008-stage-b-release/audit/post-stage-a-requirement-audit.md"
 ---
 
-# Issue #8: Version lesson, lab, progress, and evidence contracts
+# Issue #8: Version Lesson, Lab, Progress, and Evidence Contracts
 
 ## Outcome
 
-Plan the full I5-03 contract release from the shipped Issue #6 integration input. Stage A creates
-the framework-neutral JSON Schema, validation, state, evidence, OpenAPI, migration, first-manifest,
-and Make surfaces. It also adds the minimum Issue #8-owned `fitness-result-v2` extension required
-because shipped `fitness-result-v1` is closed to `owner: I5-01`. V2 binds `owner` to the active
-hash-bound command-activation row rather than another fixed owner, so I5-03 can emit truthfully and
-later command owners such as I5-04 can consume the released seam without another shared-contract
-write; the shipped registry, fixture and reader bytes remain unchanged.
-Stage B binds immutable Stage A outputs to the owner-selected web stack only after Issue #7
-publishes an accepted Vite ADR/handoff at an exact merged SHA.
+Stage A is a valid released core at integration
+`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`. It delivered the I5-03-owned framework-neutral
+schemas, version/readers, 16-operation OpenAPI matrix, completion/evidence rules, promotion-trust
+lesson/lab/manifest, public checks, compatibility behavior, and 21-entry contract set. The public
+release evidence remains passing and the released Stage A bytes remain immutable.
 
-This directory contains planning, independent-validation and staged-readiness artifacts only; it
-contains no implementation, contract or configuration change and does not validate or audit
-itself. The externally published readiness result authorizes only the exact serialized Stage A
-cook described below. It grants no PR, merge, release, Stage B/downstream cook, cloud action,
-Terraform action, destructive migration or synthetic human approval.
+The post-release dependency audit found one bounded consumer incompatibility that Stage A did not
+test: its promotion-trust manifest calls two analytical keys `region` and `category`, while the
+hash-pinned Issue #6 evidence and released Issue #7 Vite contract use `region_name` and
+`category_name`. The grain ID `dq` is also presented as `data-quality` by the Vite contract. There
+is no released alias/binding document. Issue #10 may consume shared contracts read-only and cannot
+invent that mapping inside the portal.
+
+Stage B is therefore required, but only as the additive, hash-bound, presentation-identifier
+binding defined by the fresh [Stage B release plan](../260722-008-stage-b-release/plan.md). It does
+not reopen Stage A, add portal/runner behavior, or create a second completion/validation authority.
 
 ## Stage Decision
 
-| Stage | Scope | Dependency | Planner assessment |
-|---|---|---|---|
-| A — framework-neutral contract core | Phases 1-5 | Shipped Issue #6 input only | **READY_WITH_GATES for one serialized Stage A TDD cook.** The fresh audit of `6e488a410081f12726375ca7aa2f27f62c0105cc` authorizes only the exact 121-path allow-list from the externally published audit output commit. One actor executes Phases 1-5 in order with no shared-core parallel writer. Implementation evidence, independent exact-head review, repository checks, and human exact-head approval still follow. |
-| B — selected-web-stack binding/handoff | Phase 6 | Exact merged Issue #7 Vite ADR/handoff SHA plus accepted Stage A contract release SHA | **Hard blocked and non-cookable.** Issue #7 is OPEN and unmerged at validation time. The owner’s Vite direction is not a merge SHA or accepted ADR. No placeholder adapter, guessed dependency path/hash/command, or future SHA is recorded. |
-
-Stage A merging, if later authorized, would not complete Issue #8 or automatically unblock any
-downstream issue. This readiness decision authorizes implementation only, not PR creation or merge.
-Dependency owners separately verify and pin the released Stage A SHA before downstream cook.
+| Stage | Released authority | Disposition |
+|---|---|---|
+| A — framework-neutral contract core | PR #23 merge `5c2244c2c860234d0df49cf0a42ad950c6495717`, composed by PR #25 into `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` | **Released/pass.** Evidence: 56/56, 65/65 invalid fixtures, 16 operations, final 4/4, inherited 19/19 + 1/1 + 13/13. Existing bytes stay immutable/readable. |
+| B — Vite consumer identifier binding | Issue #7 PR #22 merge `1806b6d515f2f7a2ace2be7077af84a745ff221f`, Stage A release, exact Issue #6 fixture/Vite hashes | **Required and separately planned.** Add one closed binding schema/document plus reader/check/tests; no manifest/registry/OpenAPI/Make/UI/runner mutation. |
 
 ## Phases
 
 | Phase | Name | Status |
-|-------|------|--------|
-| 1 | [Authority freeze and Stage A TDD RED](./phase-01-authority-freeze-and-stage-a-tdd-red.md) | Pending |
-| 2 | [Stage A schemas validators and canonicalization](./phase-02-stage-a-schemas-validators-and-canonicalization.md) | Pending |
-| 3 | [Stage A operations completion and guidance](./phase-03-stage-a-operations-completion-and-guidance.md) | Pending |
-| 4 | [Stage A OpenAPI evidence and promotion manifest](./phase-04-stage-a-openapi-evidence-and-promotion-manifest.md) | Pending |
-| 5 | [Stage A compatibility release and staged handoff](./phase-05-stage-a-compatibility-release-and-staged-handoff.md) | Pending |
-| 6 | [Stage B Vite binding and final handoff](./phase-06-stage-b-vite-binding-and-final-handoff.md) | **Blocked — non-cookable until exact merged Issue #7 handoff SHA** |
+|---|---|---|
+| 1 | [Authority freeze and Stage A TDD RED](./phase-01-authority-freeze-and-stage-a-tdd-red.md) | Completed |
+| 2 | [Stage A schemas validators and canonicalization](./phase-02-stage-a-schemas-validators-and-canonicalization.md) | Completed |
+| 3 | [Stage A operations completion and guidance](./phase-03-stage-a-operations-completion-and-guidance.md) | Completed |
+| 4 | [Stage A OpenAPI evidence and promotion manifest](./phase-04-stage-a-openapi-evidence-and-promotion-manifest.md) | Completed |
+| 5 | [Stage A compatibility release and staged handoff](./phase-05-stage-a-compatibility-release-and-staged-handoff.md) | Completed |
+| 6 | [Post-release Stage B dependency decision](./phase-06-stage-b-vite-binding-and-final-handoff.md) | Completed — Stage B required |
 
-## Dependencies and Authority
+## Current Authority
 
-- Immutable planning input: `24be3b34c6b0fcdbd07c5800dcab349054e34713`, the remotely
-  observed `origin/integration/issue-5-local-learning` Issue #6 handoff merge.
-- Immutable independent-validation input: `93837667326cb7a298c21921ac04e602ea7313d0`,
-  proven equal to local HEAD, tracking and fresh live remote before validation edits.
-- Immutable staged-readiness input: `6e488a410081f12726375ca7aa2f27f62c0105cc`, proven
-  equal to local HEAD, tracking and fresh live remote before readiness edits. The non-recursive
-  implementation input is the externally published containing audit commit.
-- Issue #6 contract files, registry, readers, locks, Make fragment, and tracked promotion-trust
-  fixtures are read-only inputs. Their exact bytes are captured in Phase 1 and must be unchanged by
-  every stage.
-- Owner parallelization authority:
-  `https://github.com/khanhvg/ai-ready-data-platform/issues/5#issuecomment-5036142770`.
-  It permits dependency-aware planning and later bounded staged scopes; it does not authorize this
-  planner to cook or merge Stage A.
-- Stage B requires a freshly fetched, exact merged Issue #7 commit whose accepted handoff names
-  Vite, the ADR/lock/tool paths, commands, hashes, and residual risks. An owner comment, unmerged
-  branch head, proposed ADR, or guessed hash cannot clear the gate.
-- The repository contains no same-scope Issue #7 plan directory at this input. Therefore no
-  unresolved local `blockedBy` reference is added. The external Stage B gate is normative in this
-  plan and in Phase 6.
-- Master issue #5 and historical issue #3 plans remain accepted/read-only inputs. Their `pending`
-  metadata does not authorize cross-plan edits from this issue worktree.
+- Exact audit/release input: `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`, freshly proven as
+  local HEAD, live remote integration head, and PR #25 merge commit.
+- Issue #7 is closed/shipped. PR #22 merge
+  `1806b6d515f2f7a2ace2be7077af84a745ff221f` and Issue #8 PR #23 merge
+  `5c2244c2c860234d0df49cf0a42ad950c6495717` are ancestors of the input.
+- Stage A release evidence is Issue #8 comment
+  [5043195549](https://github.com/khanhvg/ai-ready-data-platform/issues/8#issuecomment-5043195549).
+- The current conflict report is Issue #8 comment
+  [5043335319](https://github.com/khanhvg/ai-ready-data-platform/issues/8#issuecomment-5043335319).
+- Issue #8 owns shared lesson/lab and first-manifest contract seams. Issue #9 owns the runner and
+  Issue #10 owns the portal; both consume the released shared surface read-only.
+- Historical validation/readiness reports remain provenance for Stage A. Their pre-merge Stage B
+  wording is superseded by the exact post-release dependency decision.
 
-## Public Contract Boundary
+## Immutable Stage A Surface
 
-- JSON Schema Draft 2020-12 is authoritative for executable learning documents.
-- OpenAPI 3.2.0 describes only the synchronous HTTP admission/read boundary. V1 uses `202` plus
-  bounded `GET` polling for long operations. No channel or broker exists, so no AsyncAPI artifact
-  is created.
-- The one mutable completion authority is the framework-neutral `learning-progress-authority-v1`
-  compare-and-set transaction. Browser state, operation-result journals, evidence blobs, and Vite
-  bindings are projections/references and cannot independently mark completion.
-- Learner evidence and command fitness evidence are distinct versioned records. Both use strict
-  I-JSON plus the existing RFC 8785/SHA-256 profile, but neither claims same-host authenticity or
-  non-repudiation.
-- Stage B may generate a Vite-facing hash/ID binding only. It cannot change Stage A schemas,
-  operation semantics, completion authority, evidence canonical bytes, or migration rules.
-
-## Verification Contract
-
-Primary required commands at the future implementation head, exactly as one make invocation:
+- Contract set: `learning/contracts/learning-contract-set-v1.json`, 21 entries, byte SHA-256
+  `92aaf9a573f5d23b5bf5d8d7db1e68150d4b0944f0e6ab6e651b1a3d34408638`.
+- Version registry: `learning/contracts/learning-contract-version-registry-v1.json`, SHA-256
+  `a34c907e8870e89a182a180250a284f1a3c2ab3b6f1c4217c087cbc57775f9cb`.
+- Promotion manifest: `learning/manifests/promotion-trust-v1.json`, SHA-256
+  `553b97ed5dc44b77564ae50b1a2211205cbd1a759f3578e5e4dfcefef99044ac`.
+- Completion authority: `learning-progress-authority-v1`; browser state/bindings remain
+  non-authoritative projections.
+- Existing public command contract remains:
 
 ```bash
 make learning-contracts-check api-contracts-check evidence-contracts-check
-```
-
-Blast-radius gates:
-
-```bash
 make lesson-check LESSON=promotion-trust
 make data-contracts-check migration-contracts-check
 make help
 git diff --check
+make evidence-verify EVIDENCE="$EVIDENCE_LOCATOR"
 ```
 
-`make evidence-verify` runs against the evidence locator emitted by the preceding contract check;
-the evidence path is discovered from the result rather than hard-coded. Required missing tools,
-schemas, refs, commands, hashes, or evidence are `fail`, never an optional skip. Commands run
-locally, use the existing manifest-admitted Python 3.12 lock, and remain safe for a 16 GiB laptop.
-After dependencies are available, the contract checks must pass with network and cloud credentials
-absent. No Docker, AWS, Terraform, browser, or heavy profile is part of Stage A.
+## Stage B Boundary
 
-## Ownership and Protected Surfaces
+The fresh Stage B package is authoritative for new scope. In summary:
 
-- Future issue-owned writes are limited to the exact Stage A files in
-  [the implementation allow-list](./requirements-and-risk-traceability.md#exact-stage-a-implementation-allow-list),
-  not directory-wide globs. Every new path is I5-03-owned.
-- Existing Issue #6 files under `learning/contracts/**`, `scripts/golden/**`,
-  `tests/contracts/**`, `tests/golden/**`, `tests/fixtures/learning/promotion-trust/**`,
-  `requirements/golden-*`, and `mk/issue-5/i5-01.mk` remain byte-for-byte read-only.
-- There is no protected-file exception. `learning-contract-version-registry-v1.json` is an
-  Issue #8-owned additive overlay bound to shipped registry SHA-256
-  `8e18588f63b5d99c0b60a229758575e8badf0f055bfcb4f89908f9fa2684a57e`. It adds fitness v2 as a
-  readable version without changing the base current version. The generic
-  `command-owner-activation-v1` schema plus the I5-03 activation instance bind emission to the
-  exact base-registry row, owner, fragment and evidence version. V1 is readable compatibility, not
-  an I5-03 emission fallback. No shipped registry, schema, reader, fixture, lock, Make or
-  canonicalization byte changes.
-- Root `Makefile` already includes `mk/issue-5/*.mk`; Issue #8 must not edit it or duplicate the
-  I5-01-owned `evidence-contracts-check` target.
-- Protected deny-list: `release-manifest.json`, `docs/code-standards.md`, `.gitignore`, raw
-  discovery/audit history, Issue #7 `spikes/web/**` and ADR files, portal/runner/data-platform
-  implementation, other issue fragments, ignored runtime fixtures, cloud/AWS/Terraform paths,
-  and unrelated user work.
+- create one closed `promotion-trust-vite-binding-v1` schema/document that pins the exact Stage A,
+  Issue #6 fixture, and Issue #7 Vite identities and carries only the proven identifier aliases;
+- add a read-only v1 binding reader and integrate it into the existing I5-03 contract check;
+- add exact real-path RED fixtures/tests before behavior;
+- preserve the Stage A set/registry/manifest, OpenAPI/operation matrix, completion authority,
+  command activation/Make fragment, Issue #6/#7 paths, root Make, runner, portal, and data pipeline;
+- publish the Stage A set hash and binding hash as two immutable components. No tracked artifact
+  embeds its own future containing commit.
 
-## Release, Migration, and Rollback
+Generated TypeScript or portal modules are deliberately absent: Vite can import the closed JSON
+binding, while any portal-local types/codegen belong to Issue #10. The Stage B binding may select
+presentation field names only; it cannot validate requests, authorize actions, mutate data, or
+complete progress.
 
-- New families start at v1. Do not publish a fictional predecessor. The reader/migration engine is
-  exercised with private reversible vectors; every future released version must retain old readers
-  and explicit additive migration edges.
-- The existing `fitness-result` family is the one deliberate non-new family: v2 is required because
-  v1 fixes `owner: I5-01`. V2 is closed and registry-bound: `owner`, `commandId`, fragment and
-  evidence version must match one active command row. The I5-03 activation selects v2 for its four
-  commands; a later owner may publish only its own hash-bound activation instance against the same
-  released schema. V1 stays readable and unchanged. Rollback disables the I5-03 activation while
-  retaining both v1/v2 schemas, readability and evidence; it never falls back to emitting v1.
-- A lossy migration, field drop, registry-family collision, canonical-byte change, or need to edit
-  an Issue #6 contract is a STOP requiring a new version and authority decision.
-- `STAGE_A_CONTRACT_RELEASE_SHA` and the final contract release SHA are externally recorded remote
-  merge identities after the applicable exact-head human approval. A tracked artifact never embeds
-  its own containing commit.
-- Rollback reselects the prior readable version/binding and removes only marker-verified Issue #8
-  generated workspace state. It never rewrites retained evidence, deletes old schemas/readers, or
-  mutates Issue #6 fixtures.
+## Lease, Migration, and Rollback
 
-## Traceability and Open Questions
-
-- Detailed requirements, threats, risks, commands, and source links:
-  [Requirements and risk traceability](./requirements-and-risk-traceability.md).
-- Open product or architecture questions: none for Stage A. Stage B’s exact input identity and
-  accepted handoff contents are unresolved by design and are a hard dependency gate, not a planner
-  choice.
-
-## Validation Log
-
-### Session 1 — 2026-07-21
-
-- Trigger: fresh independent Issue #8 validation of exact input
-  `93837667326cb7a298c21921ac04e602ea7313d0`.
-- Questions asked: 0; the user supplied the exact stage, security, compatibility, testing and
-  authority decisions. Objective defects were corrected without reopening product choices.
-- Verification tier: Full (6 phases; fact checker, flow tracer, scope auditor and contract verifier).
-- Result: PASS_WITH_FIXES; detailed evidence is in
-  [the independent validation report](./validation/independent-validation-report.md).
-- Phase propagation: all six phase files plus traceability were reconciled.
-
-### Whole-Plan Consistency Sweep
-
-- Files reread: `plan.md`, all six `phase-*.md` files, and
-  `requirements-and-risk-traceability.md`.
-- Decision deltas checked: Stage A independence, TDD RED order, fitness evidence version,
-  completion authority, OpenAPI wire contract, Stage B placeholder removal, review/authority gates.
-- Reconciled stale references: recorded in the validation report.
-- Unresolved contradictions: 0.
-
-### Staged Readiness — 2026-07-22
-
-- Trigger: fresh independent staged-readiness audit of exact input
-  `6e488a410081f12726375ca7aa2f27f62c0105cc`.
-- Result: `STAGE_A_READY_WITH_GATES`; four plan-only readiness defects fixed and zero unresolved.
-- Boundary: `STAGE_A_READINESS_PASS_NOT_IMPLEMENTATION`; Stage B remains hard-blocked.
-- Evidence: [the Stage A readiness audit](./audit/stage-a-readiness-audit-report.md).
+- The I5-03 shared-contract lease remains active and exclusive only through the bounded Stage B
+  binding release. It is released after exact-head review, human approval, remote merge/release
+  identity, and final handoff.
+- The binding is a new v1 family with no fictional predecessor. Stage A v1 readers remain intact;
+  the new reader is additive. Future binding versions retain v1 readability and explicit lossless
+  migration edges.
+- Rollback deselects the binding and retains Stage A, binding schema/reader, evidence, and every old
+  reader. It never rewrites the Stage A manifest, falls back to an unverified alias, or deletes
+  downstream/product state.
 
 ## Next Gate
 
-Serialized Stage A TDD cook only, from the exact externally published readiness output commit and
-under the audit report's gates. This grants no PR, merge, release or downstream cook authority.
-Stage B remains non-cookable until a real merged Issue #7 Vite ADR/handoff SHA exists and this plan
-is amended, independently revalidated and freshly readiness-audited against it.
+Use the fresh [Stage B plan](../260722-008-stage-b-release/plan.md) as the only cook scope. Stage B
+implementation remains subject to tests-first execution, fresh exact-head independent review,
+repository checks, separate human exact-head approval, and a remotely observed release SHA. No
+product implementation, PR merge, or cloud action is authorized by this planning commit.

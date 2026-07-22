@@ -1,15 +1,15 @@
 ---
 phase: 1
-title: "Authority freeze and Stage A TDD RED"
-status: pending
+title: Authority freeze and Stage A TDD RED
+status: completed
 priority: P1
 dependencies: []
-stage: "A"
+stage: A
 ---
 
 # Phase 1: Authority Freeze and Stage A TDD RED
 
-<!-- Updated: Validation Session 1 - complete RED-first corpus and independence audit boundary. -->
+<!-- Historical Stage A execution plan; released through PR #23 and PR #25, with current disposition in plan.md. -->
 
 ## Context Links
 
