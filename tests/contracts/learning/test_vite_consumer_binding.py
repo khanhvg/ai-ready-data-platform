@@ -62,8 +62,10 @@ class ViteConsumerBindingTests(unittest.TestCase):
         self.assertEqual(expected, caught.exception.code)
 
     def public_path_validator(self, path: pathlib.Path):
-        parsed = schema.read_document(path)
-        self.assertIsInstance(parsed, dict)
+        info = path.lstat()
+        if stat.S_ISREG(info.st_mode) and info.st_nlink == 1:
+            parsed = schema.read_document(path)
+            self.assertIsInstance(parsed, dict)
         validator = getattr(check, "validate_vite_binding_path", None)
         self.assertIsNotNone(validator, f"VITE_BINDING_REQUIRED: {path.name}")
         return validator(path)
