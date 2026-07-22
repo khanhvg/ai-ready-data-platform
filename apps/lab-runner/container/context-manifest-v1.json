@@ -125,8 +125,8 @@
     {
       "path": "app/src/lab_runner/transport.py",
       "mode": "0644",
-      "size": 7450,
-      "sha256": "d9b92c1b9784c173c9e6416b7e25751a2eb50037bea2bcd61aed4cde9eaf8dd9"
+      "size": 7577,
+      "sha256": "137e61a3b430b7368c0dd6d190267799877ce564bac19707a6a0a2cf34cbab7e"
     },
     {
       "path": "app/src/lab_runner/workspace.py",

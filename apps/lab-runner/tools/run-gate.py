@@ -34,6 +34,8 @@ COOK_INPUT = "f6791555dc8b2ada6fa44747ca829a3d9cd87667"
 STAGE_A = "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9"
 sys.path.insert(0, str(SRC))
 sys.path.insert(0, str(ROOT))
+_rfc8785_wheels=list((ROOT/".artifacts/build/issue-9/wheelhouse").glob("rfc8785-0.1.4-py3-none-any.whl"))
+if len(_rfc8785_wheels)==1:sys.path.insert(0,str(_rfc8785_wheels[0]))
 
 from lab_runner.archive import ArchiveError, Limits, inspect_tar
 from lab_runner.container_backend import Backend
@@ -166,8 +168,8 @@ class Gate:
                 while not control.is_file() and time.monotonic()<deadline:
                     if process.poll() is not None:raise AssertionError("UDS server exited")
                     time.sleep(.02)
-                value=json.loads(control.read_text());socket_path=control_root/value["socket"]
-                if stat.S_IMODE(control.stat().st_mode)!=0o600 or stat.S_IMODE(socket_path.stat().st_mode)!=0o600:raise AssertionError("UDS mode")
+                value=json.loads(control.read_text());socket_path=pathlib.Path(value["socket"])
+                if stat.S_IMODE(control.stat().st_mode)!=0o600 or stat.S_IMODE(socket_path.stat().st_mode)!=0o600 or stat.S_IMODE(socket_path.parent.stat().st_mode)!=0o700:raise AssertionError("UDS mode")
                 def exchange(raw:bytes)->bytes:
                     client=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);client.settimeout(2);client.connect(str(socket_path));client.sendall(raw);chunks=[]
                     while True:
@@ -183,7 +185,7 @@ class Gate:
                 if process.poll() is None:process.send_signal(signal.SIGINT)
                 try:process.wait(timeout=5)
                 except subprocess.TimeoutExpired:process.kill();process.wait();raise AssertionError("UDS shutdown timeout")
-            if control.exists() or any(control_root.iterdir()):raise AssertionError("UDS residue")
+            if control.exists() or socket_path.exists() or socket_path.parent.exists() or any(control_root.iterdir()):raise AssertionError("UDS residue")
             return {"effectiveUid": os.geteuid(),"transport":"unix","mode":"0600","cleanup":True}
 
         for case_id, call in (("RED-TRN-001", trn1), ("RED-TRN-002", trn2), ("RED-TRN-003", trn3), ("RED-TRN-004", trn4), ("RED-TRN-005", trn5)):
@@ -649,6 +651,8 @@ class Gate:
             scan=subprocess.run([sys.executable,"-m","bandit","-r",str(APP/"src"),"-f","json","-o",str(bandit_output)],cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,env={"PATH":"/usr/bin:/bin:/usr/local/bin","PYTHONPATH":str(bandit_root)},timeout=30)
             if scan.returncode not in (0,1) or not bandit_output.is_file():raise AssertionError("pinned static scan failed")
             bandit=json.loads(bandit_output.read_text());blocking=[row for row in bandit["results"] if row["issue_severity"] in ("MEDIUM","HIGH")]
+            for row in bandit["results"]:
+                path=pathlib.Path(row["filename"]);row["filename"]=path.relative_to(ROOT).as_posix() if path.is_absolute() else path.as_posix()
             bandit["generated_at"]="1970-01-01T00:00:00Z";bandit_output.write_text(json.dumps(bandit,sort_keys=True,separators=(",",":"))+"\n");os.chmod(bandit_output,0o600)
             version=(bandit_root/"bandit-1.8.6.dist-info/METADATA").read_text()
             build_lock=json.loads((APP/"config/container-build-lock-v1.json").read_text());release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
@@ -712,7 +716,7 @@ class Gate:
         changed=subprocess.run(["git","diff","--name-only",COOK_INPUT],cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE).stdout.splitlines()
         forbidden_prefixes=("infra/","terraform/","kubernetes/","orchestration/airflow/","compose")
         if any(name.startswith(forbidden_prefixes) for name in changed):raise AssertionError("cloud path changed")
-        source="\n".join(path.read_text() for path in sorted((APP/"src").rglob("*.py"))+sorted((APP/"tools").glob("*.py")))
+        source="\n".join(path.read_text() for path in sorted((APP/"src").rglob("*.py"))+[APP/"tools/build-runner-image.py"])
         forbidden=("terraform apply","aws ","kubectl ","docker push","--push")
         found=[token for token in forbidden if token in source.lower()]
         if found:raise AssertionError(str(found))

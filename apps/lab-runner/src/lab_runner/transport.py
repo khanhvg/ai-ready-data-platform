@@ -1,6 +1,6 @@
 """Private HTTP admission independent of the later portal/BFF."""
 from __future__ import annotations
-import ctypes, http.server, json, os, pathlib, secrets, socket, socketserver, struct, sys
+import ctypes, http.server, json, os, pathlib, secrets, socket, socketserver, struct, sys, tempfile
 from collections import Counter
 from .registry import validate_request
 
@@ -95,9 +95,9 @@ def _peer_uid(connection: socket.socket) -> int:
 
 
 def serve_uds(service: object, control_file: pathlib.Path) -> None:
-    bearer=secrets.token_urlsafe(32);csrf=secrets.token_urlsafe(32);socket_path=control_file.with_suffix(".sock")
+    bearer=secrets.token_urlsafe(32);csrf=secrets.token_urlsafe(32)
     control_file.parent.mkdir(mode=0o700,parents=True,exist_ok=True);os.chmod(control_file.parent,0o700)
-    socket_path.unlink(missing_ok=True)
+    socket_root=pathlib.Path(tempfile.mkdtemp(prefix=f"ai-ready-runner-{os.geteuid()}-",dir=tempfile.gettempdir()));os.chmod(socket_root,0o700);socket_path=socket_root/"control.sock"
     class Handler(http.server.BaseHTTPRequestHandler):
         server_version="";sys_version=""
         def setup(self)->None:super().setup();self.connection.settimeout(5)
@@ -115,7 +115,7 @@ def serve_uds(service: object, control_file: pathlib.Path) -> None:
             raw=json.dumps(value,sort_keys=True,separators=(",",":")).encode()+b"\n";self.send_response(status);self.send_header("Content-Type","application/json");self.send_header("Content-Length",str(len(raw)));self.send_header("Cache-Control","no-store");self.end_headers();self.wfile.write(raw)
         def log_message(self,*_:object)->None:return
     server=socketserver.UnixStreamServer(str(socket_path),Handler);os.chmod(socket_path,0o600)
-    value={"schemaVersion":"runner-private-control-v1","transport":"unix","socket":socket_path.name,"bearer":bearer,"csrf":csrf}
+    value={"schemaVersion":"runner-private-control-v1","transport":"unix","socket":str(socket_path),"bearer":bearer,"csrf":csrf}
     control_file.write_text(json.dumps(value,sort_keys=True,separators=(",",":"))+"\n");os.chmod(control_file,0o600)
     try:server.serve_forever(poll_interval=.1)
-    finally:server.server_close();socket_path.unlink(missing_ok=True);control_file.unlink(missing_ok=True)
+    finally:server.server_close();socket_path.unlink(missing_ok=True);control_file.unlink(missing_ok=True);socket_root.rmdir()
