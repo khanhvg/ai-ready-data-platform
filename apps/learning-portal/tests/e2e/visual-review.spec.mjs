@@ -4,7 +4,7 @@ import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 
-const appRoot = path.resolve(import.meta.dirname, "../.."); const repo = path.resolve(appRoot, "../.."); const evidence = path.join(repo, ".artifacts/evidence/local-journey"); let server; let baseURL;
+const appRoot = path.resolve(import.meta.dirname, "../.."); const repo = path.resolve(appRoot, "../.."); const evidence = process.env.PORTAL_EVIDENCE_ROOT ? path.resolve(process.env.PORTAL_EVIDENCE_ROOT) : path.join(repo, ".hermes/issue-10-stage-a-v2/evidence/local-journey"); let server; let baseURL;
 test.beforeAll(async () => { await fs.mkdir(evidence, { recursive: true }); server = spawn(process.execPath, ["scripts/serve-built-portal.mjs"], { cwd: appRoot, stdio: ["ignore", "pipe", "pipe"] }); baseURL = await new Promise((resolve, reject) => { const timer = setTimeout(() => reject(new Error("server readiness timeout")), 15_000); server.stdout.on("data", (chunk) => { const match = chunk.toString().match(/PORTAL_URL=(http:\/\/127\.0\.0\.1:\d+)/); if (match) { clearTimeout(timer); resolve(match[1]); } }); }); });
 test.afterAll(async () => { if (server?.exitCode === null) { server.kill("SIGTERM"); await new Promise((resolve) => server.once("exit", resolve)); } });
 
@@ -20,5 +20,6 @@ test("bounded deterministic Stage A visual evidence", async () => {
   await context.tracing.stop({ path: path.join(evidence, "stage-a-trace.zip") }); await context.close();
   const noJs = await chromium.launchPersistentContext("", { channel: "chrome", headless: true, javaScriptEnabled: false }); const noJsPage = await noJs.newPage(); for (const route of ["/", "/module", "/lesson/promotion-trust", ...["frame", "inspect", "run", "fail", "trace", "decide", "reset", "configure", "verify", "reflect"].map((id) => `/lesson/promotion-trust/step/${id}`)]) { const response = await noJsPage.goto(`${baseURL}${route}`); inventory.push({ route, status: response.status(), decision: await noJsPage.locator("body").getByText(/decision=insufficient-evidence/).count() }); } await noJs.close();
   await fs.writeFile(path.join(evidence, "axe.json"), JSON.stringify(axe, null, 2)); await fs.writeFile(path.join(evidence, "no-js-inventory.json"), JSON.stringify(inventory, null, 2)); await fs.writeFile(path.join(evidence, "console-csp.json"), JSON.stringify({ consoleErrors, csp: "strict-self-no-connect" }, null, 2));
+  await expect(fs.lstat(path.join(evidence, "stage-a-trace.zip"))).rejects.toThrow(/ENOENT/, "retained evidence must not contain ZIP/source bundles");
   expect(axe.flatMap((entry) => entry.violations).filter((item) => ["critical", "serious"].includes(item.impact))).toEqual([]); expect(consoleErrors).toEqual([]);
 });

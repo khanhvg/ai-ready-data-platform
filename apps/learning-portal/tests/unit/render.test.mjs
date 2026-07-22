@@ -12,3 +12,15 @@ test("PTP-RED-A-014/021 static output carries facts, navigation, and non-claims"
   }
   assert.doesNotMatch(html, /<button|dangerouslySetInnerHTML|data-progress=\"enabled\"/);
 });
+
+test("SA-R11 static rendering selects the requested descriptor instead of modules[0]", () => {
+  const model = { grains: [], lesson: { title: "Synthetic selected", summary: "Selected", stakeholderQuestion: "Synthetic question", controlledFailure: { code: "SYNTHETIC", symptom: "Synthetic" }, decision: { value: "insufficient-evidence", reason: "no-common-grain" }, reflection: "Synthetic reflection" } };
+  const catalog = createModuleCatalog([
+    { title: "First", description: "First", lessons: [{ id: "first-safe", title: "Wrong first lesson", summary: "Wrong", adapterId: "promotion-trust", steps: [{ id: "only", label: "Only" }], model }] },
+    { title: "Second", description: "Second", lessons: [{ id: "synthetic-safe", title: "Synthetic selected", summary: "Selected", adapterId: "promotion-trust", steps: [{ id: "open", label: "Open" }, { id: "close", label: "Close" }], model }] },
+  ]);
+  const html = renderStaticDocument({ kind: "lesson", path: "/lesson/synthetic-safe", lessonId: "synthetic-safe" }, catalog);
+  assert.match(html, /Synthetic selected/);
+  assert.match(html, /\/lesson\/synthetic-safe\/step\/open/);
+  assert.doesNotMatch(html, /Wrong first lesson/);
+});
