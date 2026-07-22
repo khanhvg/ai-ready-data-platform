@@ -27,8 +27,7 @@ portal-visual-review:
 	@node apps/learning-portal/scripts/write-review-artifacts.mjs
 
 lesson-e2e local-journey-e2e:
-	@echo '{"schemaVersion":"fitness-result-v2","status":"blocked","code":"STAGE_B_DEPENDENCY_UNAVAILABLE","stage":"B","runnerAction":"none"}' >&2
-	@exit 2
+	@node apps/learning-portal/scripts/verify-stage-a-release.mjs --stage-b-block $@
 
 else
 .DEFAULT_GOAL := i5-05-direct-invocation-denied

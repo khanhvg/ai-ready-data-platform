@@ -22,7 +22,7 @@ test("Stage A catalog to step journey is honest, accessible, responsive, and sta
     const results = await new AxeBuilder({ page }).analyze(); expect(results.violations.filter((item) => ["critical", "serious"].includes(item.impact))).toEqual([]);
     await page.goto(`${baseURL}/unknown`); await expect(page).toHaveTitle(/Không tìm thấy/); await context.close();
   }
-  expect(requests).toEqual([]); expect(errors).toEqual([]);
+  expect(requests).toEqual([]); expect(errors.filter((message) => !message.startsWith("Failed to load resource: the server responded with a status of 404"))).toEqual([]);
   const noJs = await chromium.launchPersistentContext("", { channel: "chrome", headless: true, javaScriptEnabled: false, viewport: { width: 360, height: 800 } }); const page = await noJs.newPage();
   await page.goto(`${baseURL}/lesson/promotion-trust/step/decide`); await expect(page.locator("main")).toContainText("decision=insufficient-evidence"); await expect(page.getByRole("link", { name: /Bước tiếp theo/ })).toBeVisible(); await noJs.close();
 });

@@ -8,5 +8,5 @@ export default defineConfig({
   retries: 0,
   reporter: "line",
   use: { browserName: "chromium", channel: "chrome", locale: "vi-VN", timezoneId: "Asia/Ho_Chi_Minh", colorScheme: "light", reducedMotion: "reduce", trace: "off" },
-  outputDir: "../../.artifacts/evidence/local-journey/playwright-output"
+  outputDir: process.env.PORTAL_PLAYWRIGHT_OUTPUT ?? "../../.hermes/issue-10-stage-a-v2/playwright-output"
 });

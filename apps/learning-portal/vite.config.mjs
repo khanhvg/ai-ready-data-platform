@@ -1,9 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { provideReleasedModules } from "./src/catalog/released-module-provider.mjs";
-import { createModuleCatalog } from "./src/catalog/module-catalog.mjs";
 
-const catalog = createModuleCatalog(await provideReleasedModules());
+const catalog = { modules: await provideReleasedModules() };
 
 export default defineConfig({
   plugins: [react()],

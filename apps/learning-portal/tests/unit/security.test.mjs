@@ -7,6 +7,7 @@ import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 import { spawn, spawnSync } from "node:child_process";
+import { prepareEvidenceRoot, writeOwnedEvidence, finalizeEvidence } from "../../scripts/write-review-artifacts.mjs";
 
 const appRoot = path.resolve(import.meta.dirname, "../..");
 const repo = path.resolve(appRoot, "../..");
@@ -94,6 +95,53 @@ test("PTP-S3 lifecycle rejects stale challenge, alias, type, mode, and foreign s
   }
 });
 
+test("PTP-S3 stale challenge and socket mode fail closed while the authenticated child stays live", async () => {
+  assert.equal(fs.existsSync(runtime), false);
+  assert.equal(run(process.execPath, [lifecycle, "start"], { timeout: 30_000 }).status, 0);
+  const original = await fsp.readFile(statePath, "utf8"); const state = JSON.parse(original); const controlPath = path.join("/private/tmp", `i5-05-portal-${state.runId}`, "control.sock");
+  try {
+    await fsp.writeFile(statePath, JSON.stringify({ ...state, challenge: "00".repeat(32) }));
+    const stale = run(process.execPath, [lifecycle, "down"], { timeout: 10_000 });
+    assert.notEqual(stale.status, 0); assert.match(stale.stderr, /CONTROL_CHALLENGE_STALE/);
+    assert.equal((await fetch(state.url)).status, 200, "stale challenge stopped the authenticated child");
+    await fsp.writeFile(statePath, original); await fsp.chmod(controlPath, 0o777);
+    const mode = run(process.execPath, [lifecycle, "status"], { timeout: 10_000 });
+    assert.notEqual(mode.status, 0); assert.match(mode.stderr, /CONTROL_SOCKET_FOREIGN/);
+  } finally {
+    await fsp.chmod(controlPath, 0o700); await fsp.writeFile(statePath, original);
+    assert.equal(run(process.execPath, [lifecycle, "down"], { timeout: 10_000 }).status, 0);
+  }
+});
+
+test("PTP-S3 foreign socket, state alias, and runtime mode never gain lifecycle authority", async () => {
+  assert.equal(fs.existsSync(runtime), false);
+  assert.equal(run(process.execPath, [lifecycle, "start"], { timeout: 30_000 }).status, 0);
+  const original = await fsp.readFile(statePath, "utf8"); const state = JSON.parse(original); const controlDirectory = path.join("/private/tmp", `i5-05-portal-${state.runId}`); const controlPath = path.join(controlDirectory, "control.sock"); const ownedPath = path.join(controlDirectory, "owned.sock");
+  let foreign;
+  try {
+    await fsp.rename(controlPath, ownedPath);
+    foreign = net.createServer((socket) => { socket.on("error", () => {}); socket.resume(); });
+    await new Promise((resolve, reject) => { foreign.once("error", reject); foreign.listen(controlPath, resolve); }); await fsp.chmod(controlPath, 0o700);
+    const foreignStat = await fsp.lstat(controlPath); await fsp.writeFile(statePath, JSON.stringify({ ...state, control: { dev: foreignStat.dev, ino: foreignStat.ino } }));
+    const rejected = run(process.execPath, [lifecycle, "down"], { timeout: 10_000 }); assert.notEqual(rejected.status, 0); assert.match(rejected.stderr, /CONTROL_PROTOCOL_INVALID|CONTROL_TIMEOUT/);
+    assert.equal((await fetch(state.url)).status, 200, "foreign control socket stopped the authenticated child");
+    await new Promise((resolve) => foreign.close(resolve)); foreign = null; await fsp.rm(controlPath, { force: true }); await fsp.rename(ownedPath, controlPath); await fsp.writeFile(statePath, original);
+    await fsp.chmod(runtime, 0o755); const mode = run(process.execPath, [lifecycle, "status"]); assert.notEqual(mode.status, 0); assert.match(mode.stderr, /LIFECYCLE_ROOT_MODE/); await fsp.chmod(runtime, 0o700);
+    const saved = `${statePath}.owned`; await fsp.rename(statePath, saved); await fsp.symlink(path.basename(saved), statePath); const alias = run(process.execPath, [lifecycle, "status"]); assert.notEqual(alias.status, 0); assert.match(alias.stderr, /STATE_FILE_UNSAFE/); await fsp.rm(statePath); await fsp.rename(saved, statePath);
+  } finally {
+    if (foreign) await new Promise((resolve) => foreign.close(resolve));
+    await fsp.chmod(runtime, 0o700).catch(() => {}); if (fs.existsSync(ownedPath)) { await fsp.rm(controlPath, { force: true }); await fsp.rename(ownedPath, controlPath); } await fsp.writeFile(statePath, original);
+    assert.equal(run(process.execPath, [lifecycle, "down"], { timeout: 10_000 }).status, 0);
+  }
+});
+
+test("PTP-S3 authenticated shutdown is self-directed and removes only owned control state", async () => {
+  assert.equal(run(process.execPath, [lifecycle, "start"], { timeout: 30_000 }).status, 0);
+  const state = JSON.parse(await fsp.readFile(statePath, "utf8")); const controlDirectory = path.join("/private/tmp", `i5-05-portal-${state.runId}`);
+  const stopped = run(process.execPath, [lifecycle, "down"], { timeout: 10_000 });
+  assert.equal(stopped.status, 0, stopped.stderr); assert.match(stopped.stdout, /portal=stopped review-evidence=preserved/); assert.equal(fs.existsSync(runtime), false); assert.equal(fs.existsSync(controlDirectory), false);
+});
+
 test("PTP-S3 server admits a closed manifest and rejects post-admission files and aliases", async () => {
   const inventoryPath = path.join(appRoot, "dist/.portal-build-inventory.json");
   assert.equal(fs.existsSync(inventoryPath), true, "closed build inventory was not emitted");
@@ -147,6 +195,16 @@ test("PTP-S3 admitted GET and HEAD responses are exact and deterministic", async
   } finally { await stopDirectChild(child); }
 });
 
+test("PTP-S3 admitted bytes survive pathname inode replacement and a fresh server rejects drift", async () => {
+  const indexPath = path.join(appRoot, "dist/index.html"); const original = await fsp.readFile(indexPath); const { child, url } = await startServer();
+  try {
+    await fsp.writeFile(indexPath, "BUILD_REOPEN_CANARY");
+    const response = await fetch(url); assert.equal(response.status, 200); assert.doesNotMatch(await response.text(), /BUILD_REOPEN_CANARY/, "server reopened a replaced admitted pathname");
+  } finally { await fsp.writeFile(indexPath, original); await stopDirectChild(child); }
+  await fsp.writeFile(indexPath, "BUILD_HASH_DRIFT");
+  try { await assert.rejects(startServer(), /SERVER_EXITED:1|SERVER_READINESS_TIMEOUT/, "fresh server admitted build hash drift"); } finally { await fsp.writeFile(indexPath, original); }
+});
+
 test("PTP-S3 public verifier rejects lock drift and cloud/proxy/runtime injection", async () => {
   const lockPath = path.join(appRoot, "package-lock.json");
   const original = await fsp.readFile(lockPath);
@@ -159,6 +217,8 @@ test("PTP-S3 public verifier rejects lock drift and cloud/proxy/runtime injectio
     const injected = run(process.execPath, [verifier, "--local-only"], { env: { ...process.env, [name]: value } });
     assert.notEqual(injected.status, 0, `${name} injection passed the public verifier`);
   }
+  const installedPackage = path.join(appRoot, "node_modules/react/package.json"); const installed = await fsp.readFile(installedPackage);
+  try { const value = JSON.parse(installed); value.version = "0.0.0-drift"; await fsp.writeFile(installedPackage, JSON.stringify(value)); const graph = run(process.execPath, [verifier, "--local-only"]); assert.notEqual(graph.status, 0, "installed package graph drift passed the public verifier"); } finally { await fsp.writeFile(installedPackage, installed); }
   const packageValue = JSON.parse(await fsp.readFile(path.join(appRoot, "package.json"), "utf8"));
   assert.equal(packageValue.packageManager, "npm@10.9.8", "npm runtime is not frozen");
   assert.deepEqual(packageValue.engines, { node: "22.22.3", npm: "10.9.8" }, "Node/npm runtime admission is not exact");
@@ -174,7 +234,7 @@ test("PTP-S3 Stage B negatives emit released-schema-valid fitness-result-v2 on s
     assert.deepEqual(Object.keys(value).sort(), [...schema.required].sort(), `${args[0]} omitted or invented fitness fields`);
     assert.equal(value.status, "fail");
     assert.equal(value.failureCode, "STAGE_B_DEPENDENCY_UNAVAILABLE");
-    const checked = run("python3.12", ["-c", "import json,sys; from scripts.learning_contracts.schema import validate_document; validate_document(json.loads(sys.stdin.read()), family='fitness-result')"], { env: process.env, timeout: 30_000, cwd: repo, input: JSON.stringify(value) });
+    const checked = run("python3.12", ["-c", "import json,pathlib,sys; from jsonschema import Draft202012Validator,FormatChecker; schema=json.loads(pathlib.Path('learning/contracts/fitness-result-v2.schema.json').read_text()); Draft202012Validator(schema, format_checker=FormatChecker()).validate(json.loads(sys.stdin.read()))"], { env: process.env, timeout: 30_000, cwd: repo, input: JSON.stringify(value) });
     assert.equal(checked.status, 0, `${args[0]} failed the released fitness validator: ${checked.stderr}`);
     assert.doesNotMatch(JSON.stringify(value), /runnerAction|completion|implemented/);
   }
@@ -207,6 +267,23 @@ test("PTP-S3 evidence writer refuses foreign outputs and enforces a closed bound
   const writerSource = fs.readFileSync(path.join(appRoot, "scripts/write-review-artifacts.mjs"), "utf8");
   for (const behavior of ["EVIDENCE_OWNER_MISMATCH", "EVIDENCE_INVENTORY_UNEXPECTED", "EVIDENCE_FILE_LIMIT", "EVIDENCE_AGGREGATE_LIMIT", "EVIDENCE_PRIVACY_REJECTED", "EVIDENCE_ALIAS_FORBIDDEN"]) assert.match(writerSource, new RegExp(behavior));
   assert.doesNotMatch(writerSource, /\.zip/);
+});
+
+test("PTP-S3 artifact root, alias, type, residue, size, and privacy bounds are executable", async () => {
+  const parent = await fsp.mkdtemp(path.join("/private/tmp", "portal-evidence-bounds-")); const root = path.join(parent, "evidence"); await fsp.mkdir(root, { mode: 0o700 });
+  try {
+    await fsp.chmod(root, 0o755); await assert.rejects(prepareEvidenceRoot(root), /EVIDENCE_OWNER_MISMATCH/); await fsp.chmod(root, 0o700);
+    await prepareEvidenceRoot(root);
+    await assert.rejects(writeOwnedEvidence("unexpected.json", "{}", root), /EVIDENCE_INVENTORY_UNEXPECTED/);
+    await assert.rejects(writeOwnedEvidence("axe.json", `{"raw_record":"${"x".repeat(16)}"}`, root), /EVIDENCE_PRIVACY_REJECTED/);
+    await assert.rejects(writeOwnedEvidence("axe.json", "x".repeat(2 * 1024 * 1024 + 1), root), /EVIDENCE_FILE_LIMIT/);
+    const outside = path.join(parent, "outside"); await fsp.writeFile(outside, "foreign"); await fsp.link(outside, path.join(root, "axe.json"));
+    await assert.rejects(writeOwnedEvidence("axe.json", "{}", root)); await fsp.rm(path.join(root, "axe.json"));
+    for (const name of ["axe.json", "console-csp.json", "dom-inventory.json", "no-js-inventory.json"]) await writeOwnedEvidence(name, "[]", root);
+    for (const name of ["desktop-catalog.png", "desktop-decision.png", "desktop-grains.png", "desktop-unavailable.png", "narrow-catalog.png", "narrow-decision.png", "narrow-grains.png", "narrow-unavailable.png"]) await writeOwnedEvidence(name, Buffer.from([0x89, 0x50, 0x4e, 0x47]), root);
+    await finalizeEvidence(root);
+    const verified = run(process.execPath, [path.join(appRoot, "scripts/write-review-artifacts.mjs")], { env: { ...process.env, PORTAL_EVIDENCE_ROOT: root } }); assert.equal(verified.status, 0, verified.stderr);
+  } finally { await fsp.rm(parent, { recursive: true, force: true }); }
 });
 
 test("PTP-RED-A-016 styles prove visible focus and 360px reflow", () => {

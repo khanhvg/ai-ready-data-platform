@@ -12,6 +12,11 @@ const EXPECTED = Object.freeze({
   evidence: ["tests/fixtures/learning/promotion-trust/evidence-v1.json", "2f4d90228fa2ea8859a8db630ff587b6cebdc10a0bf6b7db25e46c3dc27181d5"]
 });
 
+export const PROMOTION_TRUST_PRESENTATION = Object.freeze({
+  stepLabels: Object.freeze({ frame: "Đặt câu hỏi", inspect: "Kiểm tra bằng chứng", run: "Hiểu lượt chạy", fail: "Đọc lỗi có kiểm soát", trace: "Truy vết giới hạn", decide: "Ra quyết định", reset: "Hiểu đặt lại", configure: "Cấu hình giả định", verify: "Hiểu xác minh", reflect: "Phản tư kiến trúc" }),
+  boundarySteps: Object.freeze(["run", "reset", "configure", "verify"]),
+});
+
 function repoRoot() {
   return path.resolve(import.meta.dirname, "../../../..");
 }

@@ -5,7 +5,7 @@
   "owner": "I5-05",
   "fragment": {
     "path": "mk/issue-5/i5-05.mk",
-    "sha256": "573b9b9e0ae554b91e0d0e83c576eec7cce66dad9e4ac9bafd73a59e886b8cbe"
+    "sha256": "e76b619925f65731bac5a33962a91a28c02546008beb13276ed6d85c16e14920"
   },
   "commands": [
     { "commandId": "learn", "availability": "implemented", "evidenceVersion": "fitness-result-v2" },
@@ -14,8 +14,8 @@
     { "commandId": "portal-test", "availability": "implemented", "evidenceVersion": "fitness-result-v2" },
     { "commandId": "portal-a11y", "availability": "implemented", "evidenceVersion": "fitness-result-v2" },
     { "commandId": "portal-e2e", "availability": "implemented", "evidenceVersion": "fitness-result-v2" },
-    { "commandId": "lesson-e2e", "availability": "implemented", "evidenceVersion": "fitness-result-v2" },
-    { "commandId": "local-journey-e2e", "availability": "implemented", "evidenceVersion": "fitness-result-v2" },
+    { "commandId": "lesson-e2e", "availability": "unavailable", "evidenceVersion": "fitness-result-v2" },
+    { "commandId": "local-journey-e2e", "availability": "unavailable", "evidenceVersion": "fitness-result-v2" },
     { "commandId": "portal-visual-review", "availability": "implemented", "evidenceVersion": "fitness-result-v2" }
   ]
 }
