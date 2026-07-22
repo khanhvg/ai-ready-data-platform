@@ -1,150 +1,70 @@
 ---
 phase: 2
-title: "Stage A scaffold-first TDD contract and preservation"
+title: "Repository-level scaffold-first TDD and preservation"
 status: pending
 priority: P1
 dependencies: [1]
-effort: "M after Stage A readiness"
+effort: "Exact C1/C2 and complete 22-family RED"
 ---
 
-# Phase 2: Stage A scaffold-first TDD contract and preservation
-
-<!-- Updated: Validation Session 1 - added template-version and evidence-index RED obligations. -->
+# Phase 2: Repository-level scaffold-first TDD and preservation
 
 ## Context Links
 
-- [Plan](./plan.md)
-- [Architecture and Curriculum Design](./architecture-and-curriculum-design.md)
-- [Threat Model](./threat-model-and-security.md)
-- [Verification and Protected Assets](./verification-evidence-and-protected-assets.md)
+- [Repository-level TDD](./stage-a-release-amendment.md#repository-level-scaffold-first-tdd)
+- [Requirements](./requirements-and-risk-traceability.md)
+- [Threat model](./threat-model-and-security.md)
 
 ## Overview
 
-After independent validation/readiness, create one minimal public-path scaffold, then the complete
-tests/fixture corpus, then record a genuine semantic RED before any target curriculum semantics or
-final content. Prove the exact released Issue #8 consumer boundary and freeze Issue #6 local
-architecture bytes, rows, IDs, semantics, and renders.
-
-This phase is ready after Phase 1 records the exact derived input from clean `c07c9a0…`, the exact
-`-x` plan applications, and the one `5644f01b…` integration reconciliation. It remains blocked
-until that Phase 1 preflight completes and may proceed only within the amendment's 7/5/38
-chronology.
+Create the seven-path generic callable scaffold only because the public paths are absent, then the
+direct-child five-path complete tests/fixture commit. Before semantic code, record real repository
+RED for all 22 families and 82 exact codes through production callables and matching CLI/Make
+routes.
 
 ## Requirements
 
-- Functional: exact seven-file executable scaffold; complete 22-case RED corpus for reference,
-  prerequisite, promotion, template, view, ADR, pattern-without-failure, relation/topology/bridge,
-  render/visual, resource, evidence/cleanup, read-only protection, API/channel, assessment, bounds,
-  and S3 scans.
-- Non-functional: deterministic failure codes; bounded fixtures; no fake pass; exact contract
-  versions/hashes; protected pre-state captured before any behavior write.
-- Security: negative content/path/secret/cloud-action/render cases fail before publication.
+- C1 contains generic repository traversal, bounded parsing/process/render/evidence/cleanup
+  plumbing only; it contains no target code, module/template/flow constants, fixture dispatch, or
+  pass/fail oracle.
+- C2 contains complete immutable tests/fixtures. Every valid control is a complete bounded
+  repository that passes at GREEN; every mutation changes actual file/schema/source/render/
+  process/evidence/Git state.
+- Production routes are `check_repository()`, `_verify_repository()`,
+  `_toolchain_verification()`, and `_repository_handoff()` plus exact public CLI/Make commands.
+- Expected-code metadata is stripped. Booleans/dictionaries, echo/fallback, mocks, monkeypatches,
+  skips, predicate-only checks, injected porcelain, and missing tools are forbidden.
 
-## Architecture
+## Files
 
-Tests invoke the exact real scaffolded entrypoints `I11-EP-CURRICULUM`, `I11-EP-TRACE`,
-`I11-EP-EXPANSION`, and `I11-EP-HANDOFF` while consuming released Issue #8 validators and the
-proposed architecture extension seam read-only. The scaffold supplies only generic bounded
-parsing/routing/process/evidence plumbing. RED evidence binds exact plan input, scaffold commit,
-tests commit, tested tree, entrypoint reach/preconditions, dependency/tool hashes, and protected
-33/33 state.
-
-## Related Code Files
-
-- Scaffold commit Create: exactly seven public/tool/Make paths enumerated by the amendment.
-- Direct-child tests commit Create: the one fixture and four test paths enumerated by the amendment.
-- Semantic complement Create: exact remaining 38 paths only after recorded RED.
-- Current Modify/Delete: none (`[]`).
-- “Tests somewhere under the repository” or a wildcard outside that exact list is invalid.
+- C1: exact seven scaffold paths named in the amendment.
+- C2: exact four tests and `invalid-cases-v1.json` fixture.
+- No other product/test path exists before the RED bundle closes.
 
 ## Implementation Steps
 
-1. Re-run Phase 1 preflight and capture exact v3 implementation input plus protected pre-hashes/
-   blob IDs.
-2. Commit exactly the seven semantics-free scaffold paths. Inspect its diff/AST/tokens to reject
-   target acceptance rules, final content, fixture IDs, hardcoded pass/fail, expected-value echo,
-   mocks, skips, and unconditional not-implemented behavior.
-3. In the direct child, commit the complete fixture and four test files containing all 22 stable
-   `I11-RED-*` families from the amendment. Each family contains a parseable `validControl` and one
-   or more derived `mutations` with an exact catalogue `expectedCode`; the implementation receives
-   none of that test metadata. Do not add any content/schema/view/render path.
-4. Use exact released Issue #8 examples only when the release explicitly permits fixture
-   consumption. Never carry ignored or another worktree’s runtime fixture.
-5. Run the 120-second focused controller at the tests commit. Require `parsed=true`,
-   `toolPreconditions=pass`, a passing precondition/reach record for every valid control, and reach
-   records for all four exact entrypoint IDs. Assert named semantic rules fail because mutations
-   are admitted or their exact target outcome code is absent. Any generic nonzero, common
-   precondition guard, parser crash, missing file/import/tool, mock, skip, expected-code echo,
-   generic guard, or not-implemented result invalidates RED.
-6. Add prerequisite graph mutations: unknown/self/cycle/unreachable/forged skip/optional-as-pass.
-7. Add trace mutations across every business-to-operations link and reciprocal edge, including
-   reordered relation identity, changed topology identity, generic repeated steps, and conceptual
-   bridge used as runtime proof.
-8. Add pattern mutations, including the mandatory plausible pattern with no failure/verifier.
-9. Add view/render mutations for ID/key/path overlap, missing concern/text, stale output,
-   nondeterminism, semantic erasure, script/external URL/private path, and protected byte drift.
-10. Add visual mutations for Vietnamese-first title/labels, single numbering, exact fitted fonts,
-    contrast, aspect/canvas, overlap/clipping/off-canvas geometry, and text-order parity.
-11. Add OpenAPI/AsyncAPI teaching admission mutations: no real operation/channel and logical
-   taxonomy misrepresented as physical services.
-12. Add independent promotion decision/reason drift and template schema token, compatibility,
-    exact reciprocal instance binding, unregistered copy, supersession, and removal mutations.
-13. Add resource descendants/TERM resistance/RSS/output/file/process mutations and cleanup
-    nonignored evidence/unowned ignored bytes/nonempty porcelain mutations.
-14. Record `scaffoldCommitSha`, `testsCommitSha`, `redTestedTreeSha`, all four exact entrypoint IDs,
-    valid-control reach results, mutation IDs and absent exact outcome-code assertions, exit status,
-    bounded output hashes, exact resource measurements, input/dependency/tool hashes, and protected
-    pre-state before any semantic behavior change.
+1. Re-run Phase 1 and create/inspect C1.
+2. Create C2 as direct child; hash all five test/fixture files.
+3. Allocate real temporary repository copies or bounded Git repositories under private ownership.
+4. Run complete valid controls and single real mutations through callables and public routes.
+5. Retain contemporaneous raw stdout/stderr, sanitized logs, source/tree/fixture/tool hashes, and
+   exact absent-code assertions at C2.
+6. Freeze C2 bytes through the first semantic GREEN.
 
-## Tests Before
+## Tests and Validation
 
-All 22 `I11-RED-*` cases. The scaffold is executable infrastructure, not behavior. No target
-curriculum rule, schema/content/template/trace/view/render, or semantic acceptance implementation
-is written until the RED bundle is complete.
+Real cases include relation/topology mutations, 11/13/duplicate/orphan template repositories,
+visible render changes, spawned descendants/TERM resistance/RSS/output/files, raw-evidence/index
+changes, and initialized-Git tracked/untracked/ignored dirt.
 
-## Refactor
+## Acceptance Criteria
 
-None. Do not refactor Issue #6 sources/checkers or released Issue #8 contracts. If the exact
-extension seam cannot host the fixtures without a protected edit, stop and return to Phase 1.
+- [ ] C1=7 creates; direct-child C2=5 creates; all other Stage A paths absent.
+- [ ] All 22 families and 82 codes have a full valid control and named real mutation.
+- [ ] All four production callables and matching public routes are reached with preconditions pass.
+- [ ] Raw RED evidence is closed, truthful, bounded, private, and tests remain unchanged.
 
-## Tests After
+## Risks and Rollback
 
-After Phase 3, rerun every fixture and prove each remains rejected while the matching valid
-content passes. Compare protected hashes/blobs and ensure no test weakens an existing six-view
-assertion.
-
-## Regression Gate
-
-Exact commands come only from the Stage A amendment. Stage A runs `curriculum-check`,
-`traceability-check`, and the protected `architecture-check`/`architecture-render` regression
-commands; `architecture-lab-e2e` and `architecture-visual-review` remain excluded.
-
-## Success Criteria
-
-- [ ] Exact seven-path scaffold and direct-child five-path complete tests commit pass path/content
-      inspection.
-- [ ] Every valid control parses/reaches, and every mutation reaches its exact public entrypoint and
-      fails the named exact-code assertion before target behavior writes.
-- [ ] RED evidence binds exact stage input, #8 release, tool/fixture hashes, and protected baseline.
-- [ ] No protected/shared/portal/root/cloud path changes.
-- [ ] No fixture uses fake pass data, expected-value echo, mocks, skips, ignored foreign state, or
-      duplicate contract truth.
-- [ ] Stage A remains non-runtime and makes no lab/portal/completion claim.
-
-## Risk Assessment
-
-Fixtures can overfit syntax instead of architecture semantics. Require semantic mutation classes
-and reciprocal trace checks. Implement Issue #11 rules only in the seven authorized public
-scaffold paths after RED; if that cannot express a required assertion without modifying a released
-validator or adding another path, stop for amendment/owner resolution rather than adding a shadow
-validator.
-
-## Security Considerations
-
-Malicious fixture bytes stay bounded and isolated. Secret/path canaries are synthetic and must
-never resemble live credentials. Failure output is scanned before retention.
-
-## Next Steps
-
-Proceed to Phase 3 only with complete scaffold-plus-tests semantic RED evidence and unchanged
-protected bytes. Never describe this as tests-only-from-pristine-input.
+False RED or fixture-driven behavior blocks implementation. Rollback removes only verified C1/C2
+creates and owned temporary state, preserves raw evidence, and re-proves integration/33/21 bytes.

@@ -1,159 +1,67 @@
 ---
 phase: 3
-title: "Stage A curriculum templates and static expansion"
+title: "Stage A curriculum templates and source-derived expansion"
 status: pending
 priority: P1
 dependencies: [2]
-effort: "L after RED"
+effort: "Thirty-eight semantic paths after complete RED"
 ---
 
-# Phase 3: Stage A curriculum templates and static expansion
-
-<!-- Updated: Validation Session 1 - restored competency identity and versioned critical-flow templates. -->
+# Phase 3: Stage A curriculum templates and source-derived expansion
 
 ## Context Links
 
-- [Architecture and Curriculum Design](./architecture-and-curriculum-design.md)
-- [Requirements and Risk Traceability](./requirements-and-risk-traceability.md)
-- [Protected Assets](./verification-evidence-and-protected-assets.md)
+- [Architecture and curriculum design](./architecture-and-curriculum-design.md)
+- [Closed template lifecycle](./stage-a-release-amendment.md#closed-template-lifecycle)
+- [Visible render parity](./stage-a-release-amendment.md#visible-render-parity)
 
 ## Overview
 
-Create the Vietnamese-first curriculum graph, structured templates, architecture-system-design
-coverage, pattern admission data, and deterministic static architecture expansion under the
-exact Stage A amendment. Stage A is a candidate learning-content release only. It cannot
-claim portal delivery or executable failure/reset/verify/evidence.
-
-This phase is blocked until Phase 2 records genuine public-path semantic RED. It may then add the
-exact 38-path complement and semantic changes to the seven scaffold files; the complete tests/
-fixture bytes remain unchanged through the first semantic pass.
+After complete repository RED, implement target rules and the 38-path semantic complement. Final
+scope is exactly 20 meaningful modules, 12 lifecycle-governed templates, 11 flows, eight bridges,
+five useful source-derived views, and the frozen promotion decision.
 
 ## Requirements
 
-- Functional: foundation-to-mid graph; complete module loop; required templates; system-design
-  coverage; real-contract OpenAPI/AsyncAPI teaching; local/AWS mapping; candidate expansion views.
-- Non-functional: Vietnamese-first, accessible structured text, deterministic render, stable IDs,
-  no decorative views/patterns, all trace links reciprocal.
-- Security: content-only AWS mapping, no credentials/endpoints/apply; S3 scan all source/render.
+- Every module has the full lifecycle, unique meaningful bodies/signature, reciprocal trace, and
+  level-appropriate progression.
+- Template discovery equals the closed 12-ID registry and every instance exact version/hash;
+  predecessor/successor/migration/rollback/tombstone rules are enforced on real repositories.
+- `BR-GOVERNANCE-01` binds protected `learning.adapters -> retail` and
+  `adapters_instance -> retail_instance` reciprocally to expansion relations/topology.
+- SVG, fitted evidence HTML, and text derive solely from locked LikeC4 export/DOT/Graphviz and
+  visibly change on real relation mutations.
 
-## Architecture
+## Files
 
-Issue #11 content references exact released #8 IDs/validators and exact protected #6 view IDs.
-Static expansion is additions-only through the proposed architecture lease after Phase 1 passes.
-It does not modify the portal, execute a lab, or create a second renderer/contract authority.
-
-## Related Code Files
-
-- Proposed final Create: exact amendment paths beneath `learning/curriculum/**`,
-  `architecture/expansions/i5-06/**`, `mk/issue-5/i5-06.mk`, and exact tests/fixture paths.
-- Current Modify/Delete: none (`[]`). The directory names are ceilings, not wildcard authority;
-  the 50-path enumeration controls.
+Create only the exact remaining 38 paths in the amendment. Final candidate is exactly the 50
+create-only paths; protected/shared/docs/portal/cloud paths remain unchanged.
 
 ## Implementation Steps
 
-1. Re-run Phase 1 and confirm Phase 2 RED evidence at the exact authorized input.
-2. Encode F01-F04, J01-J06, D01-D06, and M01-M04 as a reachable acyclic graph using exact
-   released #8 fields/status/ID references; Vietnamese-first learner copy, stable machine IDs.
-   Preserve accepted ID intent (`J06` remains service-extraction criteria). `D02`/`D03` are
-   graph/trace content only and cannot claim the separately owned I5-07 data-lab runtime.
-3. For every module, provide outcome, concern, prerequisites/probes, starter, task, controlled
-   failure definition, verify/evidence requirement, reset contract, hints, solution policy,
-   reflection, remediation, and next path. Mark runtime fields honestly unexecuted in Stage A.
-4. Encode structured templates for stakeholder concern, FR/NFR/ASR, option matrix, C4,
-   dynamic/deployment, ADR, pattern admission, fitness, capacity/cost, DR, and security review.
-   Use exact `schemaVersion=i5-06-architecture-template-registry-v1`, registry ID/version,
-   compatibility declaration, immutable canonical hash, reciprocal sorted instance list and
-   per-instance exact ID/version/hash binding. Enforce predecessor/successor readability,
-   supersession and zero-reference migration/rollback removal rules; reject unregistered copies.
-5. Encode exactly the 11 amendment-named critical flows with distinct ordered step vectors. Bind
-   every step to the exact canonical dynamic relation identity and deployment topology nodes/
-   edges; compare full order, never nonempty arrays/prefixes. Encode the eight local/AWS bridge
-   IDs with invariants, divergences, and `claimClass=conceptual-only`; reject their use for local or
-   hosted runtime claims. Do not force C4 L1/L2/L3 without a concern.
-6. Add the full system-design force/failure/evidence matrix: API/auth, networking, scaling,
-   queue/backpressure, cache, partitioning, timeouts/retry/jitter, circuit breaker, bulkhead,
-   graceful degradation, SLI/SLO, DR, capacity/cost.
-7. Apply the pattern admission predicate to every named pattern. Include removal/rejection
-   criteria; do not add a pattern catalogue detached from failures.
-8. Teach OpenAPI only through operations present in the exact #8 operation matrix. Include
-   AsyncAPI content only if a real released channel exists; otherwise teach why it is absent.
-9. Add local DuckDB/Rill/OpenMetadata/Iceberg and AWS ClickHouse/Superset/OpenMetadata/S3/
-   ECS-EC2 mapping as design content. Label shared invariants and explicit differences; no live
-   prices, credentials, resources, provider calls, or deployment claims.
-10. Set the promotion example's separate exact fields to `decision=insufficient-evidence` and
-    `reason=no-common-grain`; validate against the pinned released schema and reject field drift.
-11. Under the exact additions-only view lease, add only authorized candidate expansion source
-   semantics for DYN-PUBLISH, C4-L2-AWS, DEP-AWS, DYN-OFFICE, and DYN-RESTORE. If the lease does
-   not authorize one, omit and block its claim; do not edit protected six.
-12. Generate authorized expansion SVG/text twice in clean isolated staging under the one 180-second
-    controller. Enforce owned PGID TERM→KILL→wait, aggregate RSS/output/file/process bounds and
-    measured evidence. Validate byte determinism, computed semantic projection, freshness, and
-    safety.
-13. Enforce Vietnamese-first titles/primary labels, renderer-only single sequence numbering,
-    fitted 1440/1024 font thresholds, aspect/canvas, WCAG contrast, no overlap/clipping/off-canvas,
-    and exact ordered text-alternative parity. Retain machine metrics; independent human inspection
-    remains required in Phase 4.
-14. Close every outcome/capability/concern/requirement/option/view/ADR/pattern/intent/test/evidence/
-    operations link and rerun all valid plus invalid fixture cases.
-15. Run exact changed-path, protected-hash/blob, secret/private-path, cloud-action, formatting, and
-    clean-status gates.
+1. Add schemas and strict module/template/trace/bridge/promotion semantics.
+2. Add 20 distinct module contents and the closed 12-template registry/instances.
+3. Add exact 11 flow and eight bridge bindings, including reciprocal governance topology.
+4. Add five LikeC4 views and one sole-source render adapter.
+5. Render twice in isolated locked roots; validate visible SVG/HTML/text parity and 1440/1024.
+6. Run all repository controls/mutations and exact public commands to GREEN.
 
-## Tests Before
+## Tests and Validation
 
-Phase 2’s complete RED bundle must already exist. Do not add content first or backfill tests later.
+- Module missing/duplicate/progression mutations use existing REF/PREQ codes.
+- Template 11/13/duplicate/hash/orphan/supersedes/removal/tombstone mutations use seven exact codes.
+- Dynamic-only, deployment-only, both-wrong governance mutations fail production checks.
+- Relation source/target/label/technology/order mutation visibly changes SVG/HTML/text and hashes;
+  hidden hash-only freshness fails.
 
-## Refactor
+## Acceptance Criteria
 
-No protected or dependency refactor. Consolidate only Issue #11-owned duplicate content when it
-removes real complexity and preserves stable IDs/released contract semantics.
+- [ ] Exactly 20/20 modules and 12/12 templates satisfy their machine lifecycle.
+- [ ] Exactly 11 flows, eight bridges, five views, and frozen promotion fields pass.
+- [ ] Two runs are deterministic; visible parity/Vietnamese/1440/1024/text gates pass.
+- [ ] Candidate is exactly 50 creates; 33/33 and 21/21 remain byte-identical.
 
-## Tests After
+## Risks and Rollback
 
-- Valid graph/template/module/pattern/trace cases.
-- Every Phase 2 invalid case stays red.
-- Frozen promotion decision/reason and reciprocal template registry/instance cases.
-- Exact critical-flow relation order, deployment topology, and conceptual bridge cases.
-- Two-run render/text/semantic mutation/overlap/freshness/resource/visual checks.
-- Vietnamese-first field presence and stable language-neutral IDs.
-- No portal imports, completion mutation, runtime evidence, AWS credentials/calls, or Terraform.
-- Protected Issue #6 SHA-256/blob identities unchanged.
-
-## Regression Gate
-
-Amendment-authorized Stage A subset:
-
-```bash
-make curriculum-check architecture-check architecture-render traceability-check
-```
-
-`make architecture-lab-e2e` is not a Stage A command and cannot be reported pass.
-
-## Success Criteria
-
-- [ ] Curriculum is Vietnamese-first, foundation-to-mid, modular, acyclic, reachable, and
-  competency-based.
-- [ ] Every module and template closes required fields and trace links.
-- [ ] Promotion, template compatibility/registry/instance, 11 critical-flow, topology, and bridge
-      contracts pass their exact positive and negative cases.
-- [ ] Every pattern/topic names forces, failure, evidence, and trade-offs.
-- [ ] Protected six remain byte/semantic identical; only authorized expansion assets exist.
-- [ ] Expansion renders/text are deterministic, safe, fresh, semantically non-overlapping,
-      Vietnamese-first, singly numbered, fitted-readable, contrast-clean, and geometry-clean.
-- [ ] Local/AWS/API content is honest and non-executing; no pattern theater.
-- [ ] Stage A claims only static/schema/render/trace success.
-
-## Risk Assessment
-
-Main risks are breadth, decorative architecture, and an absent expansion seam. Limit content to
-the fixed graph and one trace spine; reject unmotivated views/patterns. An absent seam blocks the
-phase instead of authorizing a protected toolchain change.
-
-## Security Considerations
-
-No executable snippets may create cloud resources or expose credentials. Generated SVG/text is
-treated as untrusted until safety and private-path scans pass.
-
-## Next Steps
-
-Proceed to Phase 4 for evidence, rollback, and bounded Stage A handoff. Do not start Phase 5 from
-an unmerged/unapproved Stage A candidate.
+Any count-only, duplicate, nominal bridge, parallel render truth, hidden-only mutation, or protected
+drift blocks handoff. Rollback is exact-owner scoped and retains Phase 2/3 evidence.
