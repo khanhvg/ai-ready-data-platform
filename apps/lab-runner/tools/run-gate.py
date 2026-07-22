@@ -653,6 +653,10 @@ class Gate:
             bandit=json.loads(bandit_output.read_text());blocking=[row for row in bandit["results"] if row["issue_severity"] in ("MEDIUM","HIGH")]
             for row in bandit["results"]:
                 path=pathlib.Path(row["filename"]);row["filename"]=path.relative_to(ROOT).as_posix() if path.is_absolute() else path.as_posix()
+            metrics={}
+            for name,value in bandit["metrics"].items():
+                path=pathlib.Path(name);metrics[path.relative_to(ROOT).as_posix() if name!="_totals" and path.is_absolute() else name]=value
+            bandit["metrics"]=metrics
             bandit["generated_at"]="1970-01-01T00:00:00Z";bandit_output.write_text(json.dumps(bandit,sort_keys=True,separators=(",",":"))+"\n");os.chmod(bandit_output,0o600)
             version=(bandit_root/"bandit-1.8.6.dist-info/METADATA").read_text()
             build_lock=json.loads((APP/"config/container-build-lock-v1.json").read_text());release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
