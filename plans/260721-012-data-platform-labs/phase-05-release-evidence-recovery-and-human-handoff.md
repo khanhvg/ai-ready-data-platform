@@ -36,6 +36,12 @@ thành pass.
 - Prove cleanup deletes only run-owned bytes/entities and preserves evidence/foreign sentinels.
 - Produce evidence hash/index bound to exact input/tested tree, #6/#8/#9/#10 SHAs, content,
   registry, verifier and service versions.
+- Prove a pristine detached checkout can reproduce required gates without prior workspace,
+  generated data or retained runtime evidence.
+- Retain a redacted observability projection binding run/operation/fault boundary, typed failure,
+  resource ceilings, remediation and final result to the evidence index.
+- Record docs/release impact as `none` or exact separately owned paths/review gates; protected root
+  release/code-standard files remain untouched without separate authority.
 
 ### Non-functional
 
@@ -73,9 +79,11 @@ state.
 6. Run final four-command contract and exact released #6/#8/#9/#10 blast radius serially.
 7. Verify changed paths, protected objects, private/credential/PII scan, no AWS/Terraform/cloud
    action, and clean run-owned cleanup.
-8. Obtain fresh independent implementation/security review (`DL-REV-001`) bound to the exact
+8. Run the exact required gates from a pristine detached checkout, verify observability closure,
+   and complete the docs/release-impact disposition (`DL-CLEAN-001`, `DL-OBS-001`, `DL-DOC-001`).
+9. Obtain fresh independent implementation/security review (`DL-REV-001`) bound to the exact
    reviewed 40-hex head with zero unresolved Critical/High.
-9. Obtain human approval naming exact reviewed head; recheck remote head/mergeability/tests
+10. Obtain human approval naming exact reviewed head; recheck remote head/mergeability/tests
    immediately before merge in the later authorized phase.
 
 ## Final verify contract
@@ -113,6 +121,8 @@ contracts and exact leases; preserve N-1 readers/adapters until compatibility pr
 - [ ] Core is serial/Docker-free/cloud-free; optional status is honest.
 - [ ] Additive migration, old readers, atomic rollback and run-only cleanup are proven.
 - [ ] Evidence hash/index detects tamper/replay and contains no secrets/PII/private paths.
+- [ ] Pristine-checkout reproduction, redacted observability closure and explicit docs/release
+      impact disposition pass.
 - [ ] Human exact-head pre-merge approval is recorded after independent review.
 
 ## Risk assessment
@@ -122,6 +132,8 @@ contracts and exact leases; preserve N-1 readers/adapters until compatibility pr
 | Core pass hides skipped service labs | False release | Separate service-backed publication gate; `not-run-optional` is non-pass |
 | Evidence retained but mutable/incomplete | False completion | Append-only artifacts + hash index + live verifier |
 | Rollback deletes foreign state | Data loss | Exact run ownership; refusal on mismatch |
+| Local artifacts make the gate pass only in the author workspace | Non-reproducible release | Pristine detached checkout with exact released setup/test authority |
+| Missing telemetry or implicit docs/release ownership hides failure | Unreviewable handoff or protected-path drift | Redacted observability projection plus explicit `none`/exact owner disposition |
 | Approval applied to changed head | Unreviewed merge | Exact 40-hex approval + immediate head equality check |
 | Final command omits dependency regressions | Blast-radius escape | Append released exact commands from all four dependencies |
 

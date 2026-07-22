@@ -86,6 +86,9 @@ viết GREEN trước rồi dựng lại RED, hoặc chỉ lưu expected code m�
 | `DL-EVD-003` | Hint/solution/reflection/time/scroll/file presence alone cannot mark completion |
 | `DL-RES-001` | Serial core lane remains within admitted 16GB/resource bounds without Docker/cloud |
 | `DL-MIG-001` | Additive N/N-1 readers dual-read, atomic switch and prior-state rollback pass |
+| `DL-CLEAN-001` | Pristine detached exact-head checkout starts without generated/runtime evidence and reproduces released required gates using only recorded setup/test authority |
+| `DL-OBS-001` | Redacted run/operation/fault/resource/remediation/result projection is complete, ordered and hash-bound to the evidence index |
+| `DL-DOC-001` | Docs/release impact is explicitly `none` or names exact owner/path/review gate; changed-path scan finds no implicit protected-root mutation |
 | `DL-PUB-001` | Only fresh Stage C real journey + live valid evidence can set completion |
 | `DL-PUB-002` | Reload/back-forward/reset/replay/accessibility paths preserve legal state/evidence authority |
 | `DL-REV-001` | Fresh independent implementation/security review binds exact 40-hex head and has zero unresolved Critical/High |
@@ -109,6 +112,8 @@ Required semantic fields, mapped to exact #8 schema names only after release:
 - artifact media type, relative locator, byte size and SHA-256;
 - release/manifest/pointer/snapshot/catalog/namespace identities when applicable;
 - cleanup/rollback result, redaction/retention class and evidence index hash.
+- pristine-checkout identity/artifact preflight, observable operation/fault/resource/result
+  projection and explicit docs/release-impact disposition.
 
 Evidence never stores token, full env, raw PII/customer/order rows, absolute host path, private URL
 or learner raw SQL. Local hashes prove integrity only, not publisher authenticity.

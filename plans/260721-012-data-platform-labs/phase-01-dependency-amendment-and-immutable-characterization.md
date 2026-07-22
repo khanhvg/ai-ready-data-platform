@@ -34,6 +34,8 @@ từng Stage A/B/C khi dependency thật được release. Plan/label/open branc
   fixture/contract hashes.
 - Stage amendment phải điền exact 40-hex dependency SHA, exact released paths/commands, tree/blob
   hashes, compatibility, blast radius và lease.
+- Stage amendment phải khai báo pristine-checkout setup/test behavior, observability mapping và
+  docs/release impact (`none` hoặc exact owner/path/gate) từ authority đã release.
 - #8, #9, #10 resolution fields hiện tại giữ rỗng.
 
 ### Non-functional
@@ -79,7 +81,9 @@ tục blocked; không tạo adapter hay “equivalent” path trong lúc cook.
 5. Map released schema/registry/API/renderer fields to stable requirements without renaming
    behavior IDs.
 6. Run independent plan revalidation and fresh readiness audit for that amended stage.
-7. Produce an exact implementation-input SHA; only then may the stage enter cook.
+7. Reproduce the amended gate from a pristine detached checkout with no hidden generated/runtime
+   evidence; fail if released setup/test commands or required cache assumptions are incomplete.
+8. Produce an exact implementation-input SHA; only then may the stage enter cook.
 
 ## Tests before
 
@@ -97,6 +101,7 @@ checks after each amendment.
 - [ ] Immutable baseline facts, including exact six-view semantics, match Issue #6 without
       mutation.
 - [ ] Every stage owns a separate exact-SHA amendment/revalidation/readiness chain.
+- [ ] Every amended stage defines pristine-checkout, observability and docs/release-impact gates.
 - [ ] No guessed schema, registry, API, renderer, command or implementation path appears.
 
 ## Risk assessment

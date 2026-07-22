@@ -98,6 +98,10 @@ verify, immutable evidence, reset, gated solution và reflection. Reflection/hin
   [test and evidence strategy](./test-and-evidence-strategy.md).
 - Additive migration, reader cũ, atomic rollback và cleanup chỉ run-owned bytes là bắt buộc; xem
   [data architecture and recovery](./data-architecture-and-recovery.md).
+- Mỗi stage chỉ được handoff sau khi exact tested head chạy từ pristine detached checkout không có
+  generated/runtime artifact ẩn; observability phải bind run/operation/fault/resource/result vào
+  evidence đã redact; docs/release impact phải ghi `none` hoặc exact owner/path/gate, không tự sửa
+  protected `release-manifest.json` hay `docs/code-standards.md`.
 
 ## Final verify contract
 
@@ -119,6 +123,7 @@ không được dùng để claim lab service-backed đã pass.
 - [ ] Stage A/B/C có STOP, independent revalidation và readiness gate riêng.
 - [ ] Stable test IDs bao phủ ingest/model/quality, orchestration, metrics, 11-asset atomicity,
       Iceberg, OpenMetadata, evidence, exact six-view oracle và protected semantics.
+- [ ] Pristine-checkout, observability và docs/release-impact gates có stable IDs và evidence.
 - [ ] Human exact-head pre-merge approval bắt buộc; approval của SHA khác không chuyển tiếp.
 
 ## Companion artifacts
@@ -182,3 +187,15 @@ outputs remain unresolved gates rather than questions to guess.
 - Unresolved contradictions: 0.
 - Recommendation: pass initial validation with fixes; do not cook. Move to plan audit, then run a
   fresh dependency-aware readiness audit that remains blocked until exact releases/lease exist.
+
+## Readiness Audit Log
+
+### Fresh dependency-aware audit — 2026-07-22
+
+- Exact audit input: `975e7c93fbe2cbdb883ca8b28e1635cdd69f460c`.
+- Verdict: `BLOCKED_DEPENDENCIES`; implementation authority remains `none`.
+- Bounded plan fixes: added explicit pristine-checkout, observability and docs/release-impact
+  trace/gates without resolving any dependency-derived field.
+- Report: [Fresh readiness audit](./audit/readiness-audit-report.md).
+- Next legal phase: wait for exact dependency releases/lease, then amend only the eligible stage
+  and run fresh independent revalidation plus readiness audit.

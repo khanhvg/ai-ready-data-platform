@@ -60,7 +60,12 @@ invented compatibility adapter hoặc browser-to-command fallback.
 5. Obtain any serialized shared-contract/data/pipeline lease with exact paths and expiry/owner.
 6. Run a fresh independent plan revalidation, then fresh readiness audit. Planner/cook identity
    cannot validate itself.
-7. Cook only the amended stage. Later stages remain blocked and their fields remain empty.
+7. Prove the exact amended head from a pristine detached checkout with no pre-existing generated
+   or runtime evidence; use only dependency-released setup/test commands and record any required
+   cache/offline assumptions instead of relying on local machine state.
+8. Record observability and docs/release impact as `none` or exact released schema/owner/path/gate;
+   no implicit log format, docs writer or release-manifest mutation is authority.
+9. Cook only the amended stage. Later stages remain blocked and their fields remain empty.
 
 ## STOP conditions
 
