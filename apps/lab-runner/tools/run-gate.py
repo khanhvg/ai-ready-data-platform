@@ -111,7 +111,7 @@ class Gate:
         started = time.monotonic_ns()
         try:
             detail = call()
-            self.rows[case_id] = {"status": "pass", "detail": detail, "durationNs": time.monotonic_ns() - started}
+            self.rows[case_id] = {"status": "pass", "failureCode": None, "detail": detail, "durationNs": time.monotonic_ns() - started}
         except BaseException as exc:
             self.rows[case_id] = {
                 "status": "fail", "failureCode": f"{type(exc).__name__}:{str(exc)[:160]}",
