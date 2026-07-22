@@ -34,11 +34,23 @@ class ArchitectureExpansionTests(unittest.TestCase):
             with self.subTest(case=case["id"]), candidate_root() as temporary:
                 root = pathlib.Path(temporary)
                 if case["mutation"]["kind"] == "render-source-set":
-                    with tempfile.TemporaryDirectory(prefix="i11-stale-render-") as output:
+                    with tempfile.TemporaryDirectory(prefix="i11-stale-render-") as output, tempfile.TemporaryDirectory(prefix="i11-mutated-render-") as mutated_output:
                         rendered = run_public("learning.curriculum.tools.architecture_expansion", root, "render", "--output", output)
                         self.assertEqual(rendered.returncode, 0, rendered.stdout)
                         apply_mutation(root, case["mutation"])
                         result = run_public("learning.curriculum.tools.architecture_expansion", root, "check", "--rendered", output)
+                        mutated = run_public("learning.curriculum.tools.architecture_expansion", root, "render", "--output", mutated_output)
+                        self.assertEqual(mutated.returncode, 0, mutated.stdout)
+                        original_manifest = json.loads((pathlib.Path(output) / "render-manifest.json").read_text())
+                        mutated_manifest = json.loads((pathlib.Path(mutated_output) / "render-manifest.json").read_text())
+                        self.assertNotEqual(original_manifest["sourceClosureSha256"], mutated_manifest["sourceClosureSha256"])
+                        changed = {
+                            row["id"] for row in original_manifest["views"]
+                            if row["semanticSha256"] != next(item["semanticSha256"] for item in mutated_manifest["views"] if item["id"] == row["id"])
+                            and (pathlib.Path(output) / f"{row['id']}.svg").read_bytes() != (pathlib.Path(mutated_output) / f"{row['id']}.svg").read_bytes()
+                            and (pathlib.Path(output) / f"{row['id']}.txt").read_bytes() != (pathlib.Path(mutated_output) / f"{row['id']}.txt").read_bytes()
+                        }
+                        self.assertTrue(changed, "semantic mutation must change semantic, SVG, and text hashes")
                 else:
                     apply_mutation(root, case["mutation"])
                     result = run_public("learning.curriculum.tools.architecture_expansion", root, "check")
