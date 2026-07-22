@@ -3,7 +3,7 @@
   "baseRegistryPath": "learning/contracts/command-owner-registry-v1.json",
   "baseRegistrySha256": "a94ac86bda0b70643edef9f144a59d8753d91f963b83d22cd510adbc31970e80",
   "owner": "I5-06",
-  "fragment": {"path": "mk/issue-5/i5-06.mk", "sha256": "d2808d5edc4582870d03a5eb0163f15c7dbbf4f7b1b50551ab8c42840371b8e2"},
+  "fragment": {"path": "mk/issue-5/i5-06.mk", "sha256": "cb65a8253ed5ca9befe4fa8e849c9b60849da74d7322778664c98ae0802e8b8e"},
   "commands": [
     {"commandId": "curriculum-check", "availability": "implemented", "evidenceVersion": "fitness-result-v1"},
     {"commandId": "traceability-check", "availability": "implemented", "evidenceVersion": "fitness-result-v1"}

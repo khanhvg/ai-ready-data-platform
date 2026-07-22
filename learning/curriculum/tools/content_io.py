@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import argparse
 import hashlib
 import json
 import math
@@ -236,3 +237,71 @@ def emit_evidence(command: str, projection: dict[str, Any], started_at: datetime
         return directory.relative_to(ROOT)
     finally:
         owner.close()
+
+
+def launch_admitted(command: str) -> int:
+    """Run a fixed curriculum command with the sole released admitted runtime."""
+    from scripts.learning_contracts import LearningContractError
+    from scripts.learning_contracts import runtime
+
+    modules = {
+        "curriculum": "learning.curriculum.tools.check_curriculum",
+        "traceability": "learning.curriculum.tools.check_traceability",
+    }
+    if command not in modules:
+        raise ContentError("CURRICULUM_COMMAND_INVALID")
+    runtime_root = ROOT / ".artifacts/workspaces/golden"
+    markers = runtime._admission_markers(runtime_root)
+    if len(markers) != 1:
+        raise ContentError("RUNTIME_ADMISSION_COUNT")
+    marker = load_json_evidence_marker(markers[0])
+    interpreter_hash = marker.get("interpreterSha256")
+    if not isinstance(interpreter_hash, str):
+        raise ContentError("RUNTIME_ADMISSION_MISMATCH")
+    expected = runtime.expected_runtime_identity(interpreter_hash)
+    interpreter = runtime.select_admitted_runtime(runtime_root, expected)
+    try:
+        output = runtime.run_bounded(
+            [str(interpreter), "-m", modules[command]],
+            cwd=ROOT,
+            timeout=120,
+            output_limit=1024 * 1024,
+            max_rss_bytes=512 * 1024 * 1024,
+        )
+    except LearningContractError as exc:
+        raise ContentError(exc.code) from exc
+    os.write(sys.stdout.fileno(), output)
+    return 0
+
+
+def load_json_evidence_marker(path: pathlib.Path) -> dict[str, Any]:
+    try:
+        info = path.lstat()
+        raw = path.read_bytes()
+    except OSError as exc:
+        raise ContentError("RUNTIME_ADMISSION_MISMATCH") from exc
+    if not stat.S_ISREG(info.st_mode) or stat.S_ISLNK(info.st_mode) or info.st_nlink != 1 or stat.S_IMODE(info.st_mode) != 0o600 or len(raw) > MAX_JSON_BYTES:
+        raise ContentError("RUNTIME_ADMISSION_MISMATCH")
+    try:
+        value = json.loads(raw, object_pairs_hook=_pairs)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ContentError("RUNTIME_ADMISSION_MISMATCH") from exc
+    if not isinstance(value, dict):
+        raise ContentError("RUNTIME_ADMISSION_MISMATCH")
+    return value
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("action", choices=("launch",))
+    parser.add_argument("command", choices=("curriculum", "traceability"))
+    args = parser.parse_args(argv)
+    try:
+        return launch_admitted(args.command)
+    except (ContentError, OSError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
