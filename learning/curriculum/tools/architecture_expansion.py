@@ -1037,11 +1037,21 @@ def _validate_owned_artifacts(evidence_root: Path) -> tuple[list[tuple[Path, dic
     ):
         raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
     owned_roots = [plan[0] for plan in plans] + [runtime_root]
-    if any(
-        not any(path == root or path.is_relative_to(root) or root.is_relative_to(path) for root in owned_roots)
-        for path in artifacts.rglob("*")
-    ):
-        raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
+    admitted_nodes = {artifacts, *owned_roots}
+    for owned_root in owned_roots:
+        admitted_nodes.update(
+            ancestor for ancestor in owned_root.parents
+            if ancestor == artifacts or ancestor.is_relative_to(artifacts)
+        )
+    for current, directories, files in os.walk(artifacts, topdown=True, followlinks=False):
+        current_path = Path(current)
+        if current_path in owned_roots:
+            directories.clear()
+            continue
+        if current_path not in admitted_nodes or any(
+            current_path / name not in admitted_nodes for name in (*directories, *files)
+        ):
+            raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
     caches = [path for path in (
         ROOT / "learning/curriculum/tools/__pycache__",
         ROOT / "scripts/golden/__pycache__",
