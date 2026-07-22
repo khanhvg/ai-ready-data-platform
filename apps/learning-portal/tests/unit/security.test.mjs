@@ -16,6 +16,7 @@ const serverScript = path.join(appRoot, "scripts/serve-built-portal.mjs");
 const verifier = path.join(appRoot, "scripts/verify-stage-a-release.mjs");
 const runtime = path.join(repo, ".artifacts/runtime/i5-05-stage-a");
 const statePath = path.join(runtime, "portal.json");
+const fixedControlDirectory = path.join("/private/tmp", `i5-05-portal-${crypto.createHash("sha256").update(repo).digest("hex").slice(0, 24)}`);
 const securityHeaders = ["content-security-policy", "referrer-policy", "x-content-type-options", "cross-origin-opener-policy", "permissions-policy", "cache-control"];
 
 const run = (command, args, options = {}) => spawnSync(command, args, { cwd: options.cwd ?? repo, encoding: "utf8", timeout: options.timeout ?? 30_000, env: options.env ?? process.env, input: options.input });
@@ -99,7 +100,7 @@ test("PTP-S3 lifecycle rejects stale challenge, alias, type, mode, and foreign s
 test("PTP-S3 stale challenge and socket mode fail closed while the authenticated child stays live", async () => {
   assert.equal(fs.existsSync(runtime), false);
   assert.equal(run(process.execPath, [lifecycle, "start"], { timeout: 30_000 }).status, 0);
-  const original = await fsp.readFile(statePath, "utf8"); const state = JSON.parse(original); const controlPath = path.join("/private/tmp", `i5-05-portal-${state.runId}`, "control.sock");
+  const original = await fsp.readFile(statePath, "utf8"); const state = JSON.parse(original); const controlPath = path.join(fixedControlDirectory, "control.sock");
   try {
     await fsp.writeFile(statePath, JSON.stringify({ ...state, challenge: "00".repeat(32) }));
     const stale = run(process.execPath, [lifecycle, "down"], { timeout: 10_000 });
@@ -107,7 +108,7 @@ test("PTP-S3 stale challenge and socket mode fail closed while the authenticated
     assert.equal((await fetch(state.url)).status, 200, "stale challenge stopped the authenticated child");
     await fsp.writeFile(statePath, original); await fsp.chmod(controlPath, 0o777);
     const mode = run(process.execPath, [lifecycle, "status"], { timeout: 10_000 });
-    assert.notEqual(mode.status, 0); assert.match(mode.stderr, /CONTROL_SOCKET_FOREIGN/);
+    assert.notEqual(mode.status, 0); assert.match(mode.stderr, /CONTROL_SOCKET_FOREIGN|FIXED_CONTROL_LOCATOR_MISMATCH/);
   } finally {
     await fsp.chmod(controlPath, 0o700); await fsp.writeFile(statePath, original);
     assert.equal(run(process.execPath, [lifecycle, "down"], { timeout: 10_000 }).status, 0);
@@ -117,7 +118,7 @@ test("PTP-S3 stale challenge and socket mode fail closed while the authenticated
 test("PTP-S3 foreign socket, state alias, and runtime mode never gain lifecycle authority", async () => {
   assert.equal(fs.existsSync(runtime), false);
   assert.equal(run(process.execPath, [lifecycle, "start"], { timeout: 30_000 }).status, 0);
-  const original = await fsp.readFile(statePath, "utf8"); const state = JSON.parse(original); const controlDirectory = path.join("/private/tmp", `i5-05-portal-${state.runId}`); const controlPath = path.join(controlDirectory, "control.sock"); const ownedPath = path.join(controlDirectory, "owned.sock");
+  const original = await fsp.readFile(statePath, "utf8"); const state = JSON.parse(original); const controlDirectory = fixedControlDirectory; const controlPath = path.join(controlDirectory, "control.sock"); const ownedPath = path.join(controlDirectory, "owned.sock");
   assert.equal("authority" in state, false, "child identity remains replaceable through portal.json");
   assert.equal("publicKey" in state, false, "child public key leaked into mutable portal.json");
   let foreign;
@@ -125,7 +126,6 @@ test("PTP-S3 foreign socket, state alias, and runtime mode never gain lifecycle 
     await fsp.rename(controlPath, ownedPath);
     foreign = net.createServer((socket) => { socket.on("error", () => {}); socket.resume(); });
     await new Promise((resolve, reject) => { foreign.once("error", reject); foreign.listen(controlPath, resolve); }); await fsp.chmod(controlPath, 0o700);
-    const foreignStat = await fsp.lstat(controlPath); await fsp.writeFile(statePath, JSON.stringify({ ...state, control: { dev: foreignStat.dev, ino: foreignStat.ino } }));
     const rejected = run(process.execPath, [lifecycle, "down"], { timeout: 10_000 }); assert.notEqual(rejected.status, 0); assert.match(rejected.stderr, /CONTROL_PROTOCOL_INVALID|CONTROL_TIMEOUT/);
     assert.equal((await fetch(state.url)).status, 200, "foreign control socket stopped the authenticated child");
     await new Promise((resolve) => foreign.close(resolve)); foreign = null; await fsp.rm(controlPath, { force: true }); await fsp.rename(ownedPath, controlPath); await fsp.writeFile(statePath, original);
@@ -141,13 +141,12 @@ test("PTP-S3 foreign socket, state alias, and runtime mode never gain lifecycle 
 test("PTP-S3 protocol-aware socket replacement cannot impersonate the spawned child", async () => {
   assert.equal(fs.existsSync(runtime), false);
   assert.equal(run(process.execPath, [lifecycle, "start"], { timeout: 30_000 }).status, 0);
-  const original = await fsp.readFile(statePath, "utf8"); const state = JSON.parse(original); const controlDirectory = path.join("/private/tmp", `i5-05-portal-${state.runId}`); const controlPath = path.join(controlDirectory, "control.sock"); const ownedPath = path.join(controlDirectory, "owned.sock");
+  const original = await fsp.readFile(statePath, "utf8"); const state = JSON.parse(original); const controlDirectory = fixedControlDirectory; const controlPath = path.join(controlDirectory, "control.sock"); const ownedPath = path.join(controlDirectory, "owned.sock");
   let impostor;
   try {
     await fsp.rename(controlPath, ownedPath);
     impostor = net.createServer((socket) => { let raw = ""; socket.setEncoding("utf8"); socket.on("data", (chunk) => { raw += chunk; try { const request = JSON.parse(raw); socket.end(JSON.stringify({ ok: true, status: "running", url: state.url, requestNonce: request.requestNonce }) + "\n"); } catch {} }); });
     await new Promise((resolve, reject) => { impostor.once("error", reject); impostor.listen(controlPath, resolve); }); await fsp.chmod(controlPath, 0o700);
-    const foreignStat = await fsp.lstat(controlPath); await fsp.writeFile(statePath, JSON.stringify({ ...state, control: { dev: foreignStat.dev, ino: foreignStat.ino } }));
     const rejected = await runAsync(process.execPath, [lifecycle, "status"], { timeout: 10_000 });
     assert.notEqual(rejected.status, 0, "protocol-aware impostor authenticated through mutable portal.json");
     assert.match(rejected.stderr, /CHILD_AUTHENTICATION_FAILED/);
@@ -182,7 +181,7 @@ test("PTP-S3 mutable runId cannot redirect the fixed child authority locator", a
 
 test("PTP-S3 authenticated shutdown is self-directed and removes only owned control state", async () => {
   assert.equal(run(process.execPath, [lifecycle, "start"], { timeout: 30_000 }).status, 0);
-  const state = JSON.parse(await fsp.readFile(statePath, "utf8")); const controlDirectory = path.join("/private/tmp", `i5-05-portal-${state.runId}`);
+  const state = JSON.parse(await fsp.readFile(statePath, "utf8")); const controlDirectory = fixedControlDirectory;
   const stopped = run(process.execPath, [lifecycle, "down"], { timeout: 10_000 });
   assert.equal(stopped.status, 0, stopped.stderr); assert.match(stopped.stdout, /portal=stopped review-evidence=preserved/); assert.equal(fs.existsSync(runtime), false); assert.equal(fs.existsSync(controlDirectory), false);
 });

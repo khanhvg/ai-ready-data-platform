@@ -9,9 +9,14 @@ const repo = path.resolve(import.meta.dirname, "../../..");
 const artifacts = path.join(repo, ".artifacts");
 const runtimeParent = path.join(artifacts, "runtime");
 const runtime = path.join(runtimeParent, "i5-05-stage-a");
+const runDirectory = path.join(runtime, "run");
+const controlDirectory = path.join("/private/tmp", `i5-05-portal-${crypto.createHash("sha256").update(repo).digest("hex").slice(0, 24)}`);
+const controlPath = path.join(controlDirectory, "control.sock");
+const authorityPath = path.join(runDirectory, "child-authority.json");
+const logPath = path.join(runDirectory, "portal.log");
 const statePath = path.join(runtime, "portal.json");
 const inventoryPath = path.join(repo, "apps/learning-portal/dist/.portal-build-inventory.json");
-const STATE_KEYS = ["buildInventorySha256", "challenge", "control", "controlRoot", "log", "maturity", "run", "runId", "schemaVersion", "url"];
+const STATE_KEYS = ["buildInventorySha256", "challenge", "maturity", "runId", "schemaVersion", "url"];
 const sha256 = (bytes) => crypto.createHash("sha256").update(bytes).digest("hex");
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
@@ -42,28 +47,24 @@ async function pinnedAuthority(file) {
   try { const opened = await handle.stat(); if (opened.dev !== before.dev || opened.ino !== before.ino || opened.nlink !== 1) throw new Error("CHILD_AUTHENTICATION_FAILED"); return { bytes: await handle.readFile(), stat: opened }; } finally { await handle.close(); }
 }
 
-function validateIdentity(identity) {
-  return identity && Number.isSafeInteger(identity.dev) && Number.isSafeInteger(identity.ino) && identity.dev >= 0 && identity.ino > 0;
-}
-
 async function readState() {
   const root = await privateDirectory(runtime, false);
   if (!root) return null;
   let pinned;
   try { pinned = await pinnedRegular(statePath); } catch (error) { if (error.code === "ENOENT") return null; throw error; }
   let value; try { value = JSON.parse(pinned.bytes.toString("utf8")); } catch { throw new Error("STATE_FILE_UNSAFE"); }
-  if (!value || Object.keys(value).sort().join(",") !== STATE_KEYS.join(",") || value.schemaVersion !== "portal-lifecycle-state-v3" || value.maturity !== "static-portal-stage-a" || !/^[0-9a-f]{32}$/.test(value.runId) || !/^[0-9a-f]{64}$/.test(value.challenge) || !/^http:\/\/127\.0\.0\.1:\d+$/.test(value.url) || !/^[0-9a-f]{64}$/.test(value.buildInventorySha256) || !validateIdentity(value.control) || !validateIdentity(value.controlRoot) || !validateIdentity(value.log) || !validateIdentity(value.run)) throw new Error("STATE_FILE_UNSAFE");
-  const runDirectory = path.join(runtime, `run-${value.runId}`);
-  await privateDirectory(runDirectory, false).then((stat) => { if (!stat) throw new Error("LIFECYCLE_STATE_STALE"); if (stat.dev !== value.run.dev || stat.ino !== value.run.ino) throw new Error("LIFECYCLE_STATE_INODE"); });
-  const controlDirectory = path.join("/private/tmp", `i5-05-portal-${value.runId}`);
-  await privateDirectory(controlDirectory, false).then((stat) => { if (!stat || stat.dev !== value.controlRoot.dev || stat.ino !== value.controlRoot.ino) throw new Error("CONTROL_SOCKET_FOREIGN"); });
-  const authorityPath = path.join(runDirectory, "child-authority.json"); const authority = await pinnedAuthority(authorityPath);
-  return { value, stat: pinned.stat, runDirectory, controlDirectory, controlPath: path.join(controlDirectory, "control.sock"), authorityPath, authorityStat: authority.stat, logPath: path.join(runDirectory, "portal.log") };
+  if (!value || Object.keys(value).sort().join(",") !== STATE_KEYS.join(",") || value.schemaVersion !== "portal-lifecycle-state-v4" || value.maturity !== "static-portal-stage-a" || !/^[0-9a-f]{32}$/.test(value.runId) || !/^[0-9a-f]{64}$/.test(value.challenge) || !/^http:\/\/127\.0\.0\.1:\d+$/.test(value.url) || !/^[0-9a-f]{64}$/.test(value.buildInventorySha256)) throw new Error("STATE_FILE_UNSAFE");
+  if (!(await privateDirectory(runDirectory, false)) || !(await privateDirectory(controlDirectory, false))) throw new Error("FIXED_CONTROL_LOCATOR_MISMATCH");
+  const authority = await pinnedAuthority(authorityPath); const log = await pinnedRegular(logPath); const socket = await fs.lstat(controlPath).catch(() => { throw new Error("FIXED_CONTROL_LOCATOR_MISMATCH"); });
+  if (!socket.isSocket() || socket.isSymbolicLink() || socket.uid !== process.getuid() || socket.nlink !== 1 || (socket.mode & 0o777) !== 0o700) throw new Error("FIXED_CONTROL_LOCATOR_MISMATCH");
+  let authorityValue; try { authorityValue = JSON.parse(authority.bytes.toString("utf8")); } catch { throw new Error("CHILD_AUTHENTICATION_FAILED"); }
+  if (authorityValue.runId !== value.runId) throw new Error("FIXED_CONTROL_LOCATOR_MISMATCH");
+  return { value, stat: pinned.stat, runDirectory, controlDirectory, controlPath, controlStat: socket, authorityPath, authorityStat: authority.stat, logPath, logStat: log.stat };
 }
 
 async function validateSocket(record) {
   const stat = await fs.lstat(record.controlPath).catch((error) => { if (error.code === "ENOENT") throw new Error("LIFECYCLE_STATE_STALE"); throw error; });
-  if (!stat.isSocket() || stat.isSymbolicLink() || stat.uid !== process.getuid() || stat.nlink !== 1 || (stat.mode & 0o777) !== 0o700 || stat.dev !== record.value.control.dev || stat.ino !== record.value.control.ino) throw new Error("CONTROL_SOCKET_FOREIGN");
+  if (!stat.isSocket() || stat.isSymbolicLink() || stat.uid !== process.getuid() || stat.nlink !== 1 || (stat.mode & 0o777) !== 0o700 || stat.dev !== record.controlStat.dev || stat.ino !== record.controlStat.ino) throw new Error("CONTROL_SOCKET_FOREIGN");
 }
 
 async function control(record, action) {
@@ -105,10 +106,9 @@ async function start() {
   if (existing) { await control(existing, "status"); console.log(`${existing.value.url}\nrunner=unavailable completion=disabled`); return; }
   await ensureRuntime();
   const runId = crypto.randomBytes(16).toString("hex"); const challenge = crypto.randomBytes(32).toString("hex");
-  const runDirectory = path.join(runtime, `run-${runId}`); await fs.mkdir(runDirectory, { mode: 0o700 }); const runStat = await privateDirectory(runDirectory);
-  const controlDirectory = path.join("/private/tmp", `i5-05-portal-${runId}`); await fs.mkdir(controlDirectory, { mode: 0o700 }); const controlRootStat = await privateDirectory(controlDirectory);
-  const controlPath = path.join(controlDirectory, "control.sock"); const authorityPath = path.join(runDirectory, "child-authority.json"); const logPath = path.join(runDirectory, "portal.log");
-  const logHandle = await fs.open(logPath, "wx", 0o600); const logStat = await logHandle.stat();
+  await fs.mkdir(runDirectory, { mode: 0o700 }); await privateDirectory(runDirectory);
+  await fs.mkdir(controlDirectory, { mode: 0o700 }); await privateDirectory(controlDirectory);
+  const logHandle = await fs.open(logPath, "wx", 0o600);
   const childEnvironment = Object.freeze({ PATH: process.env.PATH ?? "/usr/bin:/bin", LANG: "C.UTF-8", LC_ALL: "C.UTF-8", TZ: "UTC" });
   let child;
   try {
@@ -120,7 +120,7 @@ async function start() {
     if (!url || child.exitCode !== null || child.signalCode !== null) throw new Error("PORTAL_READINESS_TIMEOUT");
     const socketStat = await fs.lstat(controlPath); if (!socketStat.isSocket() || socketStat.isSymbolicLink() || socketStat.uid !== process.getuid() || socketStat.nlink !== 1 || (socketStat.mode & 0o777) !== 0o700) throw new Error("CONTROL_SOCKET_FOREIGN");
     await pinnedAuthority(authorityPath);
-    const inventory = await pinnedRegular(inventoryPath); const value = { schemaVersion: "portal-lifecycle-state-v3", runId, challenge, url, maturity: "static-portal-stage-a", buildInventorySha256: sha256(inventory.bytes), run: { dev: runStat.dev, ino: runStat.ino }, controlRoot: { dev: controlRootStat.dev, ino: controlRootStat.ino }, control: { dev: socketStat.dev, ino: socketStat.ino }, log: { dev: logStat.dev, ino: logStat.ino } };
+    const inventory = await pinnedRegular(inventoryPath); const value = { schemaVersion: "portal-lifecycle-state-v4", runId, challenge, url, maturity: "static-portal-stage-a", buildInventorySha256: sha256(inventory.bytes) };
     const stateHandle = await fs.open(statePath, "wx", 0o600); try { await stateHandle.writeFile(JSON.stringify(value)); } finally { await stateHandle.close(); }
     child.unref(); console.log(`${url}\nrunner=unavailable completion=disabled`);
   } catch (error) { await cleanupDirectChild(child); await fs.rm(controlPath, { force: true }); await fs.rm(authorityPath, { force: true }); await fs.rm(logPath, { force: true }); await fs.rmdir(controlDirectory).catch(() => {}); await fs.rmdir(runDirectory).catch(() => {}); await removeEmptyParents(); throw error; }
@@ -140,7 +140,7 @@ async function down() {
   for (let index = 0; index < 50; index++) { try { await fs.lstat(record.controlPath); await sleep(100); } catch (error) { if (error.code === "ENOENT") break; throw error; } }
   try { await fs.lstat(record.controlPath); throw new Error("CONTROL_SHUTDOWN_TIMEOUT"); } catch (error) { if (error.code !== "ENOENT") throw error; }
   const state = await fs.lstat(statePath); if (state.dev !== record.stat.dev || state.ino !== record.stat.ino || state.nlink !== 1) throw new Error("LIFECYCLE_STATE_INODE");
-  const log = await fs.lstat(record.logPath); if (!log.isFile() || log.isSymbolicLink() || log.uid !== process.getuid() || log.nlink !== 1 || log.dev !== record.value.log.dev || log.ino !== record.value.log.ino) throw new Error("LOG_IDENTITY_MISMATCH");
+  const log = await fs.lstat(record.logPath); if (!log.isFile() || log.isSymbolicLink() || log.uid !== process.getuid() || log.nlink !== 1 || log.dev !== record.logStat.dev || log.ino !== record.logStat.ino) throw new Error("LOG_IDENTITY_MISMATCH");
   const authority = await pinnedAuthority(record.authorityPath); if (authority.stat.dev !== record.authorityStat.dev || authority.stat.ino !== record.authorityStat.ino) throw new Error("CHILD_AUTHENTICATION_FAILED");
   await fs.rm(record.logPath); await fs.rm(record.authorityPath); await fs.rm(statePath); await fs.rmdir(record.controlDirectory); await fs.rmdir(record.runDirectory); await removeEmptyParents();
   console.log("portal=stopped review-evidence=preserved");
