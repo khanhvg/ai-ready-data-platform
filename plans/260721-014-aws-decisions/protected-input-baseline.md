@@ -59,8 +59,10 @@ git ls-tree -r -z HEAD -- <protected group> | sha256
 
 Allowed diff names are exact regular files below `plans/260721-014-aws-decisions/` only. No
 symlink, hardlink, special file, submodule, or path escaping the repository is allowed. Because
-`plans/**/*` is ignored, publication force-adds each enumerated file separately; broad
-`git add -f plans` or directory force-add is forbidden.
+`plans/**/*` is ignored, Issue #14 plan/validation/audit publication may force-add only the exact
+`plans/260721-014-aws-decisions/` directory after enumerating and reviewing every staged name,
+mode, and diff. Force-adding the parent `plans/` tree or any path outside the exact Issue #14 plan
+directory is forbidden.
 
 ## Future implementation blast-radius check
 

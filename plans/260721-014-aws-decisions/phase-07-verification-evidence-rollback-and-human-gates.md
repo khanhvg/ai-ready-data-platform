@@ -124,8 +124,9 @@ Issue #14-owned additions; real cloud rollback remains outside scope and authori
 ## Security considerations
 
 Before publication, inspect staged names and content for credentials, account IDs, ARNs, private
-paths, PII, malicious URLs and unsafe file modes. Force-add only each exact ignored plan or later
-approved path; never force-add a directory.
+paths, PII, malicious URLs and unsafe file modes. Plan/validation/audit publication may force-add
+only the exact `plans/260721-014-aws-decisions/` directory after staged-name and staged-diff
+inspection; never force-add the parent `plans/` tree or an unapproved implementation path.
 
 ## Next steps
 

@@ -44,6 +44,21 @@ below is complete.
 
 If any step changes the exact head, repeat the downstream exact-head gates.
 
+## Integration and compatibility strategy
+
+- Future issue-start evidence must bind the exact readiness-audit output and exact merged
+  dependency release SHAs. An unmerged dependency feature, planner, validator, or blocked-audit
+  head is never an implementation base.
+- Before final implementation verification, reconcile the current integration tip under the
+  released repository merge/rebase policy, record the resulting exact input, and rerun the full
+  issue and dependency blast radius. Never force-push shared integration or main.
+- If reconciliation changes a dependency contract, protected baseline, allow-list, concern map,
+  or accepted interface, STOP and repeat the plan amendment, independent revalidation, and
+  dependency-aware readiness audit before implementation resumes.
+- Shared contracts and readers remain additive-first and backward-compatible until dual-read,
+  migration, rollback, and exact release evidence pass. A dependent issue starts only from a
+  merged integration release SHA, never an unmerged Issue #14 implementation head.
+
 ## Amendment contents
 
 The amendment must convert each empty field into an exact, reviewable value or keep it
