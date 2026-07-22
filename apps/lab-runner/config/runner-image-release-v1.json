@@ -3,7 +3,7 @@
   "cookInputSha": "f6791555dc8b2ada6fa44747ca829a3d9cd87667",
   "integrationReleaseSha": "5644f01b4c0443a81f3af0bcce80f44c847cd986",
   "releasedStageASha": "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9",
-  "imageDigest": "sha256:f265548e82a9c4e3ab50281036c630bac71b754d7c2ad9db75117a5f21287ca6",
+  "imageDigest": "sha256:6fbaea7820aa88ec04165c3d000f97e288ecec56577376df33216191d86c4a96",
   "platform": "linux/arm64",
   "user": "65532:65532",
   "workdir": "/workspace",
@@ -24,16 +24,16 @@
   "sbom": {
     "format": "SPDX-2.3",
     "packages": 61,
-    "sha256": "2c1d18ca2ff4dcb582293cfbe693def49b0cd3ca959b1ee5b9c51c10b2cbefd7"
+    "sha256": "ec5443ed6e857efc1dd53cdc4f8c0903365f05079f27bcbfb99d211a3baf8d11"
   },
   "vulnerability": {
     "scanner": "grype@0.116.0",
     "databaseSchema": "v6.1.9",
     "databaseBuilt": "2026-07-22T07:06:24Z",
-    "scanSha256": "dd4feb3f2561cc6005f5af45ad31efe0b9aec74100ac4ceeba52835bb5ec4df9",
+    "scanSha256": "f649b0e2c6a9b974d6d63c049c5f5c481e50dfad34d874d4dc2146a075b464f7",
     "scannerCriticalHigh": 10,
     "openVexNotAffected": 10,
-    "openVexSha256": "da9200d9c8f401f1d8fb8a8f653bbe33d4a6efbdd120b8c7d265e77eaa144995",
+    "openVexSha256": "a7c072b7e895ca576f17770e74e4a8e911b440bd69b264f8e2639d17eeabd2f1",
     "unresolvedCriticalHigh": 0
   },
   "operations": [
@@ -46,8 +46,8 @@
     "promotion.verify",
     "workspace.reset"
   ],
-  "imageManifestDigest": "sha256:f265548e82a9c4e3ab50281036c630bac71b754d7c2ad9db75117a5f21287ca6",
-  "imageConfigDigest": "sha256:056742b8bd7b9462b2b9641c6b9c2277da7ff941d3091cd1e82dc61a6e5d3298",
+  "imageManifestDigest": "sha256:6fbaea7820aa88ec04165c3d000f97e288ecec56577376df33216191d86c4a96",
+  "imageConfigDigest": "sha256:be74845e5c32ae11bf1a1db8a0ed11620626a174431c454306ba6d4128064774",
   "seccompSha256": "ad19b56e07dd87ad4375c1ecbc600704767308520290e17bb00cf04fdce54fc5",
   "assetResults": [
     {
@@ -97,13 +97,13 @@
   ],
   "staticSecurity": {
     "tool": "bandit@1.8.6",
-    "sha256": "fe380ec691a6cc4fb0ea6b8abcd70599242b5a1579d373e5ecd1f20a4cad69ea",
+    "sha256": "1c6b00614cf127db7a54527035c62a8bc42877e6a172ba5f428651c55f48d236",
     "unresolvedHigh": 0,
     "unresolvedMedium": 0
   },
   "provenance": {
     "format": "runner-build-provenance-v1",
-    "sha256": "6a86de96a50da88028d08d41263570df09abc172531e9a32c6da9dae0e1faca2"
+    "sha256": "f933adcb52f7cd4d3c6330680853369cde99f183af2e1a08d08b3719de5a2c82"
   },
   "licenses": {
     "pythonPackages": 55,
