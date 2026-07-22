@@ -9,6 +9,8 @@ effort: "L"
 
 # Phase 3: Topology Persistence Options and ADRs
 
+<!-- Updated: Validation Session 1 - made every option outcome's compatibility, operability, residual-cost, recovery, rollback, and exit evidence explicit. -->
+
 ## Context links
 
 - [Required option analysis](./decision-state-and-cost-contract.md#required-option-analysis)
@@ -25,7 +27,8 @@ require them. No Terraform resource path or compatibility claim is created here.
 
 - Functional: FR-003..009.
 - Non-functional: NFR-002/005..008/012..014.
-- Compare forces/trade-offs, state/cost/security/recovery consequences and exit/migration.
+- Compare forces/trade-offs, state/cost/security/compatibility/operability/residual-cost/recovery/
+  rollback consequences and exit/migration.
 - Current mutable product documentation must be refreshed at implementation time and pinned to
   exact tested versions before `selected`.
 - NAT/endpoints/load balancer/EBS/EFS/RDS/OpenSearch/cache/workflow/AgentCore are optional
@@ -35,7 +38,7 @@ require them. No Terraform resource path or compatibility claim is created here.
 
 ```text
 released concerns + state obligations + failure/NFR forces
-  -> bounded option scorecards -> compatibility/recovery/cost evidence
+  -> bounded option scorecards -> compatibility/operability/residual-cost/recovery/rollback evidence
   -> selected/rejected/deferred/blocked-tbc ADR outcome
   -> candidate topology interfaces (not Terraform resources)
 ```
@@ -52,7 +55,8 @@ replaceable compute, metadata/search authorities and readiness dependencies rema
 
 ## Tests before
 
-- Option missing forces/trade-offs/failure/cost/state/security/recovery/exit evidence.
+- Option missing forces/trade-offs/failure/cost/state/security/compatibility/operability/residual-
+  cost/recovery/rollback/exit evidence or its exact per-option outcome.
 - Selected option with TBC, no released concern, no owner evidence, or incompatible state row.
 - Multiple selected authorities for one scope.
 - Service appears in topology/BOM only through symmetry or “best practice.”
@@ -68,7 +72,8 @@ or introduce a generic architecture framework. Reuse only exact released concern
 ## Tests after
 
 - All required decision scopes have a valid outcome and explicit reopen trigger.
-- Every selected option has complete state/cost/security/recovery and released concern links.
+- Every selected option has complete state/cost/security/compatibility/operability/residual-cost/
+  recovery/rollback/exit evidence and released concern links.
 - Every rejected option has evidence-based rejection; every deferred option contributes no BOM.
 - Cross-option incompatibilities and double ownership fail.
 - Exact versions/compatibility remain `blocked-tbc` unless measured in authorized conditions.

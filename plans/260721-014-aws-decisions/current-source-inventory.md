@@ -2,9 +2,11 @@
 
 ## Purpose
 
-Freeze what this planner actually observed. This is not a pricing snapshot, compatibility proof,
-release manifest, AWS inventory, or account record. Retrieval time for web/GitHub inspection:
-`2026-07-22T00:32:50Z` (`2026-07-22T07:32:50+07:00`).
+Freeze what the planner and independent validator actually observed, with the observation phase
+named on every time-sensitive row. This is not a pricing snapshot, compatibility proof, release
+manifest, AWS inventory, or account record. Planner retrieval time for web/GitHub inspection:
+`2026-07-22T00:32:50Z` (`2026-07-22T07:32:50+07:00`). Independent-validation retrieval time:
+`2026-07-22T01:04:11Z` (`2026-07-22T08:04:11+07:00`).
 
 ## Repository and GitHub authority
 
@@ -13,18 +15,57 @@ release manifest, AWS inventory, or account record. Retrieval time for web/GitHu
 | Local branch | `plan/issue-14-aws-decisions` | Required planner branch |
 | Clean input | `24be3b34c6b0fcdbd07c5800dcab349054e34713` | Exact immutable plan input |
 | GitHub repository | `khanhvg/ai-ready-data-platform` | Issue/comment and publication source |
-| Issue #14 | OPEN; exact labels `triaged`, `risk:high`, `tdd`, `security:S3`, `decision-gate`, `recovery`, `aws`, `finops` | Current issue scope and workflow authority |
-| Issue #14 body/comment | Audited Phase 9 scope; only the 2026-07-20 audited integration handoff comment existed at retrieval | Source of truth for owned scope, tests, evidence, and no-cloud boundary |
+| Issue #14 at planner retrieval | OPEN; exact labels `triaged`, `risk:high`, `tdd`, `security:S3`, `decision-gate`, `recovery`, `aws`, `finops` | Historical planner input; not the post-publication workflow state |
+| Issue #14 body/comment at planner retrieval | Audited Phase 9 scope; only the 2026-07-20 audited integration handoff comment existed | Historical source of the owned scope, tests, evidence, and no-cloud boundary |
+| Issue #14 at independent-validation input | OPEN; exact labels `ready for plan validation`, `risk:high`, `tdd`, `security:S3`, `decision-gate`, `recovery`, `aws`, `finops`; planner authority comment `5040589180`; local/tracking/fresh-live SHA `51a45b54633e3c34ff39876ed9ddb8b9e675b3d1` | Exact validation workflow and byte input; no readiness or implementation authority |
 | Issue #6 | CLOSED and `shipped`; merge verification names `24be3b34c6b0fcdbd07c5800dcab349054e34713` | Released read-only golden baseline |
 | Issue #11 | OPEN at `ready for plan audit`; blocked audit output `ab653f6edec73e5ef875723945d2e3cd7814b4e6` with `IMPLEMENTATION_AUTHORITY=none` | Dependency state only; not a released concern-ID authority |
 | Issue #11 planner/validation SHAs | `7620d168...` / `1287fe35...` | Historical current-branch provenance only; never consumed as release |
-| Current upstream before publish | `origin/integration/issue-5-local-learning` | Not assumed to be the Issue #14 publication target |
+| Planner upstream before publish | `origin/integration/issue-5-local-learning` | Historical planner state; not assumed to be the Issue #14 publication target |
 
 Issue URLs:
 
 - `https://github.com/khanhvg/ai-ready-data-platform/issues/14`
 - `https://github.com/khanhvg/ai-ready-data-platform/issues/11`
 - `https://github.com/khanhvg/ai-ready-data-platform/issues/6`
+
+## Byte-grounded repository sources
+
+The following identities were recomputed from actual Git bytes. Git blob IDs and SHA-256 values
+are complementary byte identities; neither upgrades a planning or dependency artifact into release
+authority.
+
+### Released Issue #6 authority
+
+All rows are read from exact released commit
+`24be3b34c6b0fcdbd07c5800dcab349054e34713`.
+
+| Source path | Git blob | SHA-256 | Authority use |
+|---|---|---|---|
+| `README.md` | `a600847c8f2685b4d65b9c3be0c1aa80a226ae34` | `c9c0e9fb8a85b9f63b47f3e0a1717715d2e74af54a5f6db3edcfde070783c171` | Released local behavior inventory |
+| `docs/system-architecture.md` | `1fa5e72974c60e007a78db17855138988fb1901e` | `dcb26c853e9f8f58d40a6f472cd1f72617b6a807ac907157e88397638322e8e1` | Released logical/physical architecture distinction |
+| `plans/260721-005-enterprise-learning-sandbox/phase-09-aws-state-cost-and-persistence-decisions.md` | `62c5c9283c8f5b8369215a33cb62f1fcb20e8d0a` | `fc8ec4e849e63444294d4c60d3168767d6b473a10332f7316f0408839a47b4c4` | Historical Issue #14 planning provenance only |
+| `plans/260721-005-enterprise-learning-sandbox/execution-authority-and-release-contract.md` | `b2ed27959dad6ee4c163e9e73911e88964fbb541` | `0050199985cac7b5f9cd78b9fb691afec20f7705b20dd29d33b8fb1f44787d95` | Released workflow/ownership boundary |
+| `learning/contracts/command-owner-registry-v1.json` | `18d05a010da0d462c4e146954a18560c6b826af4` | `a94ac86bda0b70643edef9f144a59d8753d91f963b83d22cd510adbc31970e80` | Released future-name declarations only |
+| `learning/contracts/fitness-result-v1.schema.json` | `0212ca96614aea02dbb60434d67a0cbb379a8213` | `a104ad6330bcfc22bda0fb661fef96f067c09153da7dc2f306103e5f93a4ab6d` | Released read-only evidence contract candidate |
+| `Makefile` | `e1a4332a9645ccbd37bec4be1f70372241e16b7b` | `12926b16a797fded79b0b11b00147887258721f145c79e66472f44c5f0228458` | Released wildcard fragment seam; protected |
+| `mk/issue-5/i5-01.mk` | `ba8646eda060f7b609b2e7a054a3f552e48e2ee5` | `d38dfb497161aa20761de7fcef7ae0fb09015adfdee885331ee1fba9403f9028` | Read-only fragment convention |
+
+### Issue #11 discovery input, never release authority
+
+These rows are read from blocked plan/audit head
+`ab653f6edec73e5ef875723945d2e3cd7814b4e6` only to prove the dependency remains unresolved.
+
+| Source path | Git blob | SHA-256 | Allowed use |
+|---|---|---|---|
+| `plans/260721-011-architecture-curriculum/plan.md` | `ddd0fa360b92b8aac6e65c4c826ba6023bb923f0` | `180a77fd58391b2c07e99be132d15bbfa2fd00e43482e3ea85cf37304bc80086` | Discover explicit empty implementation/dependency authority |
+| `plans/260721-011-architecture-curriculum/dependency-and-release-gates.md` | `b2755ecb812d6f55df2bd0eb1b63b720e6b66708` | `bf39bab233717d10c7f99a7787fa3e7d3cba0a91b0984427adeb3fb7bdc7c088` | Discover unresolved dependency gates only |
+| `plans/260721-011-architecture-curriculum/audit/readiness-audit-report.md` | `4ebc6b64a95287e7ce861647a54f1d76c81faa68` | `845ca39081551e0bc45b5c140c617e9424a1fddcf381668679d1602de13f4773` | Discover `IMPLEMENTATION_AUTHORITY=none` and blocked audit only |
+
+The 14 current Issue #14 Markdown artifacts are bound to validation input
+`51a45b54633e3c34ff39876ed9ddb8b9e675b3d1`. They are future-plan contracts, not current
+implementation files. All future Issue #14-owned model/test/ADR/Make paths remain absent or
+non-exact candidate families until the dependency-release amendment.
 
 ## Local source inventory
 

@@ -9,6 +9,8 @@ effort: "M"
 
 # Phase 7: Verification Evidence Rollback and Human Gates
 
+<!-- Updated: Validation Session 1 - required clean-checkout replay and explicit amended S3 scans. -->
+
 ## Context links
 
 - [Future verification contract](./implementation-handoff.md#required-future-verification)
@@ -26,14 +28,16 @@ decision boundary `blocked-tbc`; they can never be suppressed to claim AWS readi
 
 - Functional: all FR-001..020.
 - Non-functional: all NFR-001..014.
-- Required targets and exact dependency blast radius run at one clean exact tested tree.
+- Required targets and exact dependency blast radius run at one clean exact tested tree and replay
+  from a fresh clean checkout of that tree.
 - Evidence and rollback remain compact, redacted, hash-indexed and repeatable offline.
 - Independent exact-head review and human pre-merge approval remain external gates.
 
 ## Architecture
 
 ```text
-clean exact head -> required offline targets + dependency/protected blast radius
+clean exact head -> required offline targets + dependency/protected blast radius + S3 scans
+  -> fresh clean-checkout replay of the exact tested tree
   -> evidence manifest/hash/redaction/replay verification
   -> issue-owned rollback rehearsal -> exact-head independent review
   -> human pre-merge approval -> merge workflow
@@ -59,6 +63,8 @@ requires independent review and human approval.
 - Extra/missing/duplicate artifact, non-canonical bytes, replayed/expired authority.
 - Sensitive/account/private/PII canary or absolute locator in evidence.
 - Protected path/hash/absence drift or changed path outside exact allow-list.
+- Clean-checkout replay drift or an S3 scan that misses credential/account/private-path/PII,
+  malicious input, unsafe command/path, link/special-file, protected-scope, or tamper/replay cases.
 - Rollback removes evidence, prior ADR/snapshot, protected/unrelated file, or leaves command drift.
 - Human approval/comment references a different exact head.
 
@@ -72,7 +78,9 @@ the canonical upstream model and rerun all affected gates; do not patch the repo
 - All required deterministic target groups pass or correctly return `blocked-tbc` for only the
   declared apply boundary.
 - Optional live source refresh is clearly `not-run-optional` and cannot satisfy required gates.
-- Exact Issue #6 and released Issue #11 hashes/commands/semantics pass from the amended contract.
+- Exact Issue #6 and released Issue #11 hashes/commands/semantics and the named S3 scans pass from
+  the amended contract.
+- The complete required suite replays from a fresh clean checkout at the exact tested tree.
 - Evidence replay succeeds offline and tamper/replay/redaction negatives fail.
 - Issue-owned rollback restores pre-implementation behavior and preserves safe evidence.
 
@@ -88,17 +96,19 @@ Plus the exact amended Issue #6/#11 blast-radius commands. No guessed command is
 
 1. Verify clean exact tested tree, input/dependency ancestry, allow-list and protected baseline.
 2. Run the three required targets in a credential-free network-denied environment.
-3. Run exact dependency/blast-radius and static/security checks from the amended authority.
-4. Finalize the compact manifest and verify every artifact/hash/redaction/status offline.
-5. Rehearse issue-owned rollback and prove protected/unrelated/retained evidence is unchanged.
-6. Commit/push only exact implementation artifacts after staged-name/diff/security inspection.
-7. Request fresh independent exact-head code/security review and resolve evidence-backed findings.
-8. Obtain mandatory human exact-head pre-merge approval and use the repository merge workflow.
-9. Keep AWS apply blocked; any later cloud work starts a separate named authorization process.
+3. Run exact dependency/blast-radius and amended S3/static/security checks.
+4. Replay the complete required suite from a fresh clean checkout of the exact tested tree.
+5. Finalize the compact manifest and verify every artifact/hash/redaction/status offline.
+6. Rehearse issue-owned rollback and prove protected/unrelated/retained evidence is unchanged.
+7. Commit/push only exact implementation artifacts after staged-name/diff/security inspection.
+8. Request fresh independent exact-head code/security review and resolve evidence-backed findings.
+9. Obtain mandatory human exact-head pre-merge approval and use the repository merge workflow.
+10. Keep AWS apply blocked; any later cloud work starts a separate named authorization process.
 
 ## Success criteria
 
 - [ ] Required commands and exact dependency/protected blast radius are truthfully complete.
+- [ ] Fresh clean-checkout replay and the exact amended S3 scans pass at the tested tree.
 - [ ] Evidence is compact, replayable, tamper-detecting and contains no prohibited data.
 - [ ] Rollback is proven without touching protected/unrelated state or deleting evidence.
 - [ ] Independent exact-head review has zero unresolved Critical/High findings.

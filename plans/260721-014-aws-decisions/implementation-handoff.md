@@ -3,7 +3,8 @@
 ## Current disposition
 
 ```yaml
-planStatus: planner-only-not-validated
+planStatus: independent-validation-pass-with-fixes-not-readiness
+initialValidationReport: plans/260721-014-aws-decisions/validation/independent-validation-report.md
 implementationAuthority: none
 implementationFileAllowlist: []
 commandAllowlist: []
@@ -76,15 +77,49 @@ adapter, root Make change, or other path, STOP and request the serialized owner 
 
 ## Tests-first sequence
 
+### Genuine RED provenance contract
+
+Every negative behavior uses a stable `behaviorId`, not a line number or phase label, and records
+expected versus actual failure before its production/model implementation exists:
+
+```yaml
+behaviorId: stable-kebab-id
+requirementIds: []
+threatOrScenarioIds: []
+fixtureId: stable-kebab-id
+fixtureSha256: exact
+inputSha: exact
+dependencyReleaseShas: []
+productionArtifactState: absent
+expected:
+  status: fail | blocked-tbc
+  failureCode: exact
+  rejectedFieldOrInvariant: exact
+actual:
+  status: exact-observed
+  failureCode: exact-observed
+  rejectedFieldOrInvariant: exact-observed
+  exitCode: exact-observed
+redactedOutputSha256: exact
+```
+
+The RED gate passes only when expected and actual status/code/invariant match and the named
+production behavior is absent. Unexpected pass, wrong failure reason, disabled/expected-failure
+test, missing required tool/data, or pre-existing production behavior fails the provenance gate.
+The same `behaviorId` must bind the later GREEN and regression evidence without rewriting the RED
+record.
+
 ### RED-A — authority and schema completeness
 
 Write failing fixtures first for empty/duplicate/contradictory authority, state, option, BOM,
-price, cost, TBC, schedule, teardown, and evidence rows. Record stable assertion IDs and prove
-each failure occurs before production/model code exists.
+price, cost, TBC, schedule, teardown, and evidence rows. Record stable behavior IDs with exact
+expected-versus-actual failure outcomes and prove each failure occurs before production/model code
+exists.
 
 ### RED-B — cost and CostGuard golden cases
 
-Write offline golden fixtures for:
+Write offline golden fixtures whose quantities and rates are labelled synthetic test inputs, never
+current prices or a pricing snapshot, for:
 
 - 730-hour baseline and schedule-derived demo hours;
 - compute stopped with every selected persistent/fixed dimension retained;
@@ -160,9 +195,12 @@ make state-matrix-check cost-model-check aws-decision-check
 ```
 
 Then run the exact Issue #6 and released Issue #11 blast-radius commands and protected hashes named
-by the amended allow-list. Do not guess those Issue #11 commands now. Required missing tools are
-fail. Optional live source refresh is `not-run-optional`; it cannot replace offline accepted
-snapshot tests.
+by the amended allow-list, replay the complete required suite from a fresh clean checkout at the
+exact tested tree, run the issue-owned rollback rehearsal, and run the amended S3 scans for
+credentials/account IDs/private paths/PII, unsafe URLs/paths/commands, malicious structured input,
+symlinks/hardlinks/special files, protected paths, and evidence tamper/replay. Do not guess Issue
+#11 commands now. Required missing tools or data are fail. Optional live source refresh is
+`not-run-optional`; it cannot replace offline accepted snapshot tests.
 
 No default command may call AWS, `terraform plan`, `terraform apply`, `terraform destroy`, read
 credentials/account state, create/delete resources, or prompt for destructive confirmation.

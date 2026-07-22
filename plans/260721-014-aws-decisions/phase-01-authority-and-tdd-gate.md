@@ -9,6 +9,8 @@ effort: "M"
 
 # Phase 1: Authority and TDD Gate
 
+<!-- Updated: Validation Session 1 - bound genuine RED evidence to stable behavior IDs and expected-versus-actual outcomes. -->
+
 ## Context links
 
 - [Plan authority boundary](./plan.md#planner-boundary-and-current-authority)
@@ -24,7 +26,8 @@ behavior. This phase never calls AWS or Terraform.
 
 ## Requirements
 
-- Functional: satisfy FR-001, FR-017..020 and establish stable assertion IDs for FR-002..016.
+- Functional: satisfy FR-001, FR-017..020 and establish stable behavior IDs with expected-versus-
+  actual RED outcomes for FR-002..016.
 - Non-functional: NFR-001/002/004/010/011/012/014.
 - Dependency: exact released Issue #11 SHA/concern IDs, amended allow-lists, independent
   revalidation, and fresh readiness must exist before this phase can start.
@@ -36,7 +39,7 @@ behavior. This phase never calls AWS or Terraform.
 ```text
 exact authority ledger
   -> strict schema registry and duplicate-aware parsers
-  -> failing fixtures grouped by stable RED assertion IDs
+  -> failing fixtures grouped by stable RED behavior IDs
   -> protected/changed-path guard
   -> only then production decision/model work
 ```
@@ -63,7 +66,9 @@ values as typed blockers rather than defaulting them.
 5. Credential/account/private-path/PII and path/link/special-file/process-injection fixtures.
 6. Attempted network/AWS/credential/account access by a deterministic core test.
 
-Each test must fail for its named reason while all product/model outputs are still absent.
+Each test must fail for its named expected status/code/invariant while all product/model outputs
+are still absent; the observed status/code/invariant and redacted output hash are retained as the
+actual RED result.
 
 ## Refactor
 
@@ -76,7 +81,7 @@ exact compatibility mapping; do not edit shared contracts or golden code.
   every negative case.
 - Network-denied/no-credential deterministic test process passes.
 - Exact changed-path and protected tree/absence checks pass.
-- Every RED assertion ID is registered to later GREEN work; no disabled or expected-failure test
+- Every RED behavior ID is registered to later GREEN work; no disabled or expected-failure test
   may satisfy the gate.
 
 ## Regression gate
@@ -96,7 +101,7 @@ They remain non-runnable at the current planner SHA.
 1. Re-read GitHub Issue #14 and the exact released Issue #11 handoff from fresh remote state.
 2. Verify exact input/ancestry/cleanliness and regenerate protected baselines.
 3. Apply the independently validated/readiness-approved exact file and command allow-lists.
-4. Define stable schema/assertion/error/status vocabulary without changing released shared
+4. Define stable schema/behavior/error/status vocabulary without changing released shared
    contracts.
 5. Write RED-A and RED-E fixtures before model/ADR code.
 6. Add deterministic execution containment and safe failure-evidence finalization.

@@ -9,6 +9,8 @@ effort: "L"
 
 # Phase 4: Cost Model CostGuard and Scheduling
 
+<!-- Updated: Validation Session 1 - labelled offline golden values as synthetic test inputs, never current prices. -->
+
 ## Context links
 
 - [Pricing, formulas, CostGuard and schedule contract](./decision-state-and-cost-contract.md#pricing-snapshot-schema)
@@ -20,6 +22,9 @@ effort: "L"
 Implement the strict offline pricing/cost model, 730-hour and scheduled-demo scenarios,
 fail-closed CostGuard, and start/stop decision model. No rate is fabricated and no live refresh,
 AWS API, account, or cloud scheduler is required by deterministic tests.
+
+Offline golden rates and quantities are synthetic test inputs only. They prove arithmetic and
+failure behavior and cannot be presented as a current pricing snapshot or AWS estimate.
 
 ## Requirements
 

@@ -2,10 +2,11 @@
 
 ## Scope
 
-This planner may add only files below `plans/260721-014-aws-decisions/`. The groups below freeze
-the read-only input at `24be3b34c6b0fcdbd07c5800dcab349054e34713` for planner-static checks and
-the future exact-SHA amendment. Group digests are SHA-256 over the NUL-delimited `git ls-tree -r`
-records for the named paths; individual-file digests are SHA-256 over file bytes.
+This initial planning/validation phase may add only files below
+`plans/260721-014-aws-decisions/`. The groups below freeze the read-only input at
+`24be3b34c6b0fcdbd07c5800dcab349054e34713` for plan/validation-static checks and the future
+exact-SHA amendment. Group digests are SHA-256 over the NUL-delimited `git ls-tree -r` records for
+the named paths; individual-file digests are SHA-256 over file bytes.
 
 These hashes prove path/mode/blob preservation at this Git input. They do not substitute for the
 future released Issue #11 concern handoff or human review.
@@ -25,8 +26,8 @@ future released Issue #11 concern handoff or human review.
 
 ## Protected absences
 
-The following were absent from the input Git tree and must remain absent during this planner
-phase:
+The following were absent from the input Git tree and must remain absent during this initial
+planning/validation phase:
 
 ```text
 docs/code-standards.md
@@ -45,9 +46,9 @@ The last four are expected candidate ownership families for later Issue #14 impl
 their absence now is intentional. No exact implementation path may be authorized until the
 dependency amendment.
 
-## Planner-static preservation checks
+## Plan/validation-static preservation checks
 
-After plan commit, the planner checks:
+After the planner and validator commits, each phase checks its exact head:
 
 ```text
 git diff --name-only 24be3b34c6b0fcdbd07c5800dcab349054e34713...HEAD

@@ -13,14 +13,22 @@ releasedConcernIds: []
 nfrIds: []
 options:
   - optionId: stable-kebab-id
+    outcome: selected | rejected | deferred | blocked-tbc
+    forces: []
+    releasedConcernIds: []
+    nfrIds: []
     advantages: []
     disadvantages: []
     failureModes: []
+    testEvidence: []
     costDimensions: []
     stateRows: []
     securityControls: []
     compatibilityEvidence: []
+    operabilityEvidence: []
+    residualCostDisposition: []
     recoveryEvidence: []
+    rollbackEvidence: []
     exitAndMigration: []
 decisionOwnerEvidence: null
 effectiveAt: null
@@ -30,10 +38,17 @@ supersedes: null
 Rules:
 
 - `selected` requires non-empty forces, released concern IDs, test evidence, state rows, cost
-  dimensions, recovery/exit plan, and owner evidence. It does not authorize apply.
+  dimensions, compatibility and operability evidence, residual-cost disposition, recovery,
+  rollback/exit plan, and owner evidence. It does not authorize apply.
 - `rejected` identifies the exact violated force/test; preference language is insufficient.
 - `deferred` names the event/evidence that would reopen it and contributes no BOM/resource.
 - `blocked-tbc` names every missing field and blocks dependent selections.
+- `status` summarizes the decision scope; each `options[].outcome` records the disposition of that
+  exact candidate. They must reconcile, and at most one option in a scope may be `selected`.
+- Every option outcome, including `rejected`, `deferred`, and `blocked-tbc`, records its named forces,
+  released concern IDs once available (or the explicit missing-ID blocker), compatibility,
+  operability, residual-cost, rollback, and exit/migration disposition. Empty evidence is a typed
+  blocker or explicit evidence-backed not-applicable result, never an omitted consideration.
 - One scope may have at most one selected authority. Duplicate authority is a hard failure.
 - An ADR narrative cannot override the machine-readable row. Contradiction fails.
 
@@ -296,6 +311,9 @@ rounding rule. Unit conversions are explicit formula-registry entries with dimen
 
 ## Scenario semantics
 
+- Offline golden quantities and rates are explicitly labelled **synthetic test inputs**. They test
+  formulas, units, failure handling, and invariants only; they are not current AWS prices, a pricing
+  snapshot, a budget decision, or compatibility evidence.
 - `baseline-730h`: 730 hours for every selected always-on or retained hourly dimension; event and
   storage/request/transfer quantities come from explicit scenario inputs.
 - `scheduled-demo`: compute-active hours are derived from the caller schedule; startup,

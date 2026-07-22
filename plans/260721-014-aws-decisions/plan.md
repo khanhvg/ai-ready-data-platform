@@ -22,9 +22,9 @@ implementationDependency: "issue-11-released-architecture-concern-ids"
 
 This is the fresh initial plan for GitHub Issue #14. It defines how a later implementation will
 produce decision models, ADRs, tests, and compact evidence for AWS state authority, cost,
-persistence, office-hour scheduling, recovery, and security. It performs no implementation,
-independent validation, readiness audit, AWS call, Terraform action, resource creation, PR, or
-merge.
+persistence, office-hour scheduling, recovery, and security. The planner creation step performed
+no implementation, independent validation, readiness audit, AWS call, Terraform action, resource
+creation, PR, or merge.
 
 The current planning input is the clean Issue #6 release merge
 `24be3b34c6b0fcdbd07c5800dcab349054e34713`. Issue #11 is not release authority: its current
@@ -118,6 +118,7 @@ All named people, account identifiers, owner budgets, RPO/RTO values, and approv
 - [Security, recovery, observability, rollback, and evidence](./security-recovery-and-evidence.md)
 - [Implementation amendment and execution handoff](./implementation-handoff.md)
 - [Protected input baseline](./protected-input-baseline.md)
+- [Independent validation report](./validation/independent-validation-report.md)
 
 ## Phases
 
@@ -181,6 +182,9 @@ zero. A selected decision is still not AWS apply authority.
   symlink, hardlink, and special-file attacks.
 - Exact Issue #6 and released Issue #11 blast radii, protected tree digests, changed paths, and
   absent protected paths remain unchanged.
+- Genuine RED evidence binds stable behavior IDs to exact expected-versus-actual status, failure
+  code and invariant while production/model behavior is absent; offline price/cost goldens are
+  labelled synthetic test inputs, never current price evidence.
 
 ## Future public command contract
 
@@ -232,10 +236,64 @@ default, stale/unreconciled cost, evidence leak/tamper, or absent human exact-he
 
 ## Planner handoff and self-verdict
 
-The next permitted phase after this artifact is a **fresh independent plan validation** at the
-exact published planner SHA. It may correct plan artifacts only. It may not perform readiness,
+At the published planner SHA, the next permitted phase was a **fresh independent plan validation**
+at that exact SHA. It could correct plan artifacts only and could not perform readiness,
 implementation, AWS/Terraform actions, PR, or merge.
 
 Planner self-verdict: `PASS` for plan creation only. This verdict asserts scope, traceability, and
 planner-static checks; it is explicitly `PLANNER_ONLY_NOT_VALIDATED` and grants no implementation
 or cloud authority.
+
+## Validation Log
+
+### Session 1 — 2026-07-22
+
+**Trigger:** Fresh independent initial `$ck:plan validate` workflow-equivalent at exact input
+`51a45b54633e3c34ff39876ed9ddb8b9e675b3d1`.
+
+**Questions asked:** `0`. The immutable user/GitHub authorities resolved every current decision;
+missing dependency, owner, pricing, region/account, budget, recovery, review, and apply values must
+remain TBC rather than be solicited or invented during initial validation.
+
+#### Confirmed decisions
+
+- Validation may pass while implementation remains blocked on released Issue #11 concern IDs.
+- Issue #6 is released read-only authority; Issue #11 head is discovery-only.
+- Implementation/cloud authority stays empty; future commands remain non-runnable names.
+- Exact-head human merge review and separate named cloud authorization remain mandatory.
+
+#### Objective corrections
+
+- [x] Ground current sources in exact Git bytes and distinguish released, discovery-only, and
+  future ownership classes.
+- [x] Make option operability, residual cost, rollback, and exit dispositions explicit.
+- [x] Bind genuine RED evidence to stable behavior IDs and expected-versus-actual results.
+- [x] Label offline cost goldens synthetic and add clean-checkout/S3 future verification gates.
+
+#### Impact on phases
+
+- Phase 1: genuine RED provenance contract clarified.
+- Phase 3: per-option outcome and evidence completeness clarified.
+- Phase 4: synthetic offline golden boundary clarified.
+- Phase 7: fresh clean-checkout replay and S3 scans made explicit.
+- Other phases: reread with no propagation change required.
+
+### Verification Results
+
+- **Tier:** Full
+- **Claims checked:** 105
+- **Verified:** 105 | **Failed:** 0 | **Unverified:** 0
+
+### Whole-Plan Consistency Sweep
+
+- Files reread: `plan.md`, all seven phase files, all six original companion contracts, and the
+  independent validation report.
+- Decision deltas checked: 6.
+- Reconciled stale or incomplete references: 6 fix groups.
+- Unresolved contradictions: 0.
+
+The verdict is `PASS_WITH_FIXES_NOT_READINESS`. Implementation authority, released Issue #11
+concern IDs, pricing, BOM, region/account, budget, RPO/RTO/retention, review, apply approval, and
+cloud authority remain empty/TBC. The next workflow state is plan audit; the later dependency-
+release amendment, fresh independent revalidation, and fresh dependency-aware readiness audit
+remain mandatory before any cook scope can exist.
