@@ -1083,6 +1083,14 @@ def _commit_owned_artifacts(
     return copied
 
 
+def _canonical_repository_identity() -> str:
+    remote = _git("remote", "get-url", "origin").decode().strip()
+    canonical_repository = remote.removeprefix("https://").removeprefix("ssh://git@").removeprefix("git@").replace("github.com:", "github.com/").removesuffix(".git")
+    if canonical_repository != "github.com/khanhvg/ai-ready-data-platform" or Path(_git("rev-parse", "--show-toplevel").decode().strip()).resolve() != ROOT.resolve():
+        raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
+    return canonical_repository
+
+
 def _close_evidence(evidence_root: Path, head: str, cleanup: dict[str, object]) -> tuple[int, str]:
     for stale in evidence_root.glob("previews/*/*.svg.png"):
         stale.unlink()
@@ -1096,10 +1104,7 @@ def _close_evidence(evidence_root: Path, head: str, cleanup: dict[str, object]) 
     provenance["firstSemanticCommitSha"] = "5f214b644642aedd27f9ffd91f7ce5e07af3aef2"
     provenance["finalSemanticHeadSha"] = head
     provenance_path.write_text(json.dumps(provenance, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    remote = _git("remote", "get-url", "origin").decode().strip()
-    canonical_repository = remote.removeprefix("https://").removeprefix("ssh://git@").removeprefix("git@").replace("github.com:", "github.com/").removesuffix(".git")
-    if canonical_repository != "github.com/khanhvg/ai-ready-data-platform" or Path(_git("rev-parse", "--show-toplevel").decode().strip()).resolve() != ROOT.resolve():
-        raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
+    canonical_repository = _canonical_repository_identity()
     repository_identity_sha = hashlib.sha256(canonical_repository.encode("utf-8")).hexdigest()
     root_id_sha = hashlib.sha256(f"{repository_identity_sha}:repository-root:5f28f83bc2062e0bc7b8792d9aaa744a0b7e175b".encode("ascii")).hexdigest()
     owner = {
@@ -1174,6 +1179,7 @@ def _repository_handoff() -> CheckResult:
             {"testedTreeSha": head, "trackedCreates": len(rows), "protected": len(protected)},
         )
     plans, runtime_root, caches = _validate_owned_artifacts(evidence_root)
+    _canonical_repository_identity()
     precleanup_porcelain = _git("status", "--porcelain=v1", "--untracked-files=all").decode().splitlines()
     if any(not row.startswith("?? .artifacts/") for row in precleanup_porcelain):
         return CheckResult(
@@ -1186,6 +1192,7 @@ def _repository_handoff() -> CheckResult:
     ]
     admitted_ignored_prefixes = (
         b"?? .artifacts/",
+        b"!! .artifacts/",
         b"!! .claude/",
         b"!! .hermes/",
         b"!! learning/curriculum/tools/__pycache__/",
