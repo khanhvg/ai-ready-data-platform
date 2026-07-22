@@ -42,7 +42,7 @@ async function rawRequest(url, request) {
   const { port } = new URL(url);
   return await new Promise((resolve, reject) => {
     const chunks = [];
-    const socket = net.createConnection({ host: "127.0.0.1", port: Number(port) }, () => socket.end(request));
+    const socket = net.createConnection({ host: "127.0.0.1", port: Number(port) }, () => socket.write(request));
     socket.setTimeout(5_000, () => socket.destroy(new Error("RAW_REQUEST_TIMEOUT")));
     socket.on("data", (chunk) => chunks.push(chunk));
     socket.on("end", () => resolve(Buffer.concat(chunks).toString("latin1")));
@@ -77,7 +77,8 @@ test("PTP-S3 lifecycle state replacement never terminates a foreign process", as
     const stopped = run(process.execPath, [lifecycle, "down"], { timeout: 10_000 });
     await sleep(100);
     assert.notEqual(stopped.status, 0, "replaced lifecycle state was accepted");
-    assert.equal(sentinel.exitCode, null, "foreign sentinel was terminated from mutable lifecycle state");
+    assert.equal(sentinel.exitCode, null, "foreign sentinel exited from mutable lifecycle state");
+    assert.equal(sentinel.signalCode, null, "foreign sentinel was terminated from mutable lifecycle state");
   } finally {
     await fsp.writeFile(statePath, original);
     const cleaned = run(process.execPath, [lifecycle, "down"], { timeout: 10_000 });
