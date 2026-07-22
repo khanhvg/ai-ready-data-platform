@@ -6,7 +6,9 @@ priority: P1
 issue: 13
 branch: "plan/issue-13-local-profiles"
 tags: [feature, infra, critical, compose, performance, security-s3, tdd]
-blockedBy: []
+blockedBy:
+  - "260721-010-promotion-trust-portal"
+  - "260721-012-data-platform-labs"
 blocks: []
 created: "2026-07-21T19:42:06.747Z"
 createdBy: "ck:plan"
@@ -55,6 +57,8 @@ requires the exact Stage A head and an admitted local engine, platform-resolved 
   and implementation input SHA must be recorded, never inferred.
 - Stage B: exact Stage A head plus admitted engine allocation, image digests/SBOM/signature or
   provenance decisions, Compose/tool versions, and host normalization.
+- Native `blockedBy` entries name the exact published dependency plan directories for discovery
+  only. Missing local copies remain `not found`; neither plan head is merge/release authority.
 - The historical Issue #5 master plan is the audited source, not a same-scope CLI plan blocker.
   Its pending metadata and older plans are not edited by this issue plan.
 
