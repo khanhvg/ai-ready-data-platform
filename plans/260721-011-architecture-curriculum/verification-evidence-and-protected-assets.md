@@ -2,10 +2,10 @@
 
 ## Verification Boundary
 
-This post-review author correction and fresh independent validation run plan/static/link/
-dependency/protected-hash and installed-tool availability checks only. They do not validate
-readiness and do not run new curriculum or expansion implementation, lab, portal, native GUI,
-cloud, or Terraform gates.
+The post-review author correction, fresh independent validation, and current readiness audit run
+plan/static/link/dependency/protected-hash and installed-tool availability checks only. Readiness
+passes for one whole Stage A cook after exact derived-input handoff; no new curriculum or expansion
+implementation, lab, portal, native GUI, cloud, or Terraform gate ran.
 
 Whole-product practical acceptance remains:
 
@@ -26,8 +26,8 @@ human inspection at fitted widths 1440/1024.
 | Check | Expected result |
 |---|---|
 | Branch/input/fresh remote | Author correction began at clean `1c62b68159ffc48cc2f063c137cb9072d8ed741f`; independent validation began with required branch and clean local/upstream/fresh-live equality at `788ea45331a34e34b0d330e568a39ee6c6566e63` |
-| Live Issue #11 | Validation input was OPEN with `ready for plan validation`; a passing validator moves it to `ready for plan audit`; risk high/TDD/S3/architecture/curriculum |
-| Dependencies | #8 Stage A remains pinned at released `fecf6bb8…`; live PR #28 merge `5644f01b…` is non-overlapping and unconsumed pending its own release handoff; #10 not released and Stage B empty |
+| Live Issue #11 | Readiness input is OPEN with `ready for plan audit`; a passing readiness output moves only that label to `ready to cook`; risk high/TDD/S3/architecture/curriculum remain |
+| Dependencies | #8 Stage A contracts remain pinned at `fecf6bb8…`; PR #28 is pristine-released at `5644f01b…`, non-overlapping and unconsumed by Issue #11; #10 not released and Stage B empty |
 | `ck plan status` | Seven pending phases, valid frontmatter/dependency DAG |
 | Markdown structure | One H1 per file; required sections; no empty placeholders |
 | Local links/anchors | All repo-relative plan links and anchors resolve |
@@ -39,8 +39,9 @@ human inspection at fitted widths 1440/1024.
 
 ## Protected Issue #6 Source Closure
 
-Baseline remains identical at released integration `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`
-and clean v3 base `c07c9a080be7be88447aac497bdf0a2b5fddd020`:
+Baseline remains identical at Stage A authority `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`,
+clean v3 base `c07c9a080be7be88447aac497bdf0a2b5fddd020`, and current integration release
+`5644f01b4c0443a81f3af0bcce80f44c847cd986`:
 
 | Path | Git blob | SHA-256 |
 |---|---|---|
@@ -51,9 +52,9 @@ and clean v3 base `c07c9a080be7be88447aac497bdf0a2b5fddd020`:
 | `architecture/likec4/model/local-deployment.c4` | `552e1af0dddb219f5c8fa0d7542678caf6ea1025` | `58e6fbc72e3ea41b826057a60f096f50a42b75550f1d35e0378edee59f0006ad` |
 | `architecture/likec4/view-manifest.yaml` | `ff8f59a76440561d0de17a08b3d79fc580d2e043` | `1659c51389718f2799581550ab17fd31c4dd30639723d5b443ac088944178169` |
 
-All source-closure bytes remain read-only. The proposed Stage A lease, if fresh readiness passes, adds
-exact sources/rows only beneath the separate extension root; it may not normalize, reserialize,
-or append the protected files.
+All source-closure bytes remain read-only. The readiness-authorized Stage A lease, after the exact
+derived-input preflight, adds exact sources/rows only beneath the separate extension root; it may
+not normalize, reserialize, or append the protected files.
 
 ## Protected Six Views and Renders
 
@@ -70,7 +71,7 @@ or append the protected files.
 `c116d89ab5d1768894fce101e2eb1d1b9896e97c`; SHA-256 is
 `7934c00f9f7bd772f0f2eec4730332b6b6a8b5907f2d7547673fbef9718a04e6`.
 
-The proposed Stage A lease preserves the six manifest rows’ ordered ID/key/type/audience/concern/
+The Stage A lease preserves the six manifest rows’ ordered ID/key/type/audience/concern/
 scope semantics and all original blobs. It does not permit any whole-file base manifest or
 render-manifest change; extension manifests remain separate.
 
@@ -206,7 +207,8 @@ command allow-list.
    `git status --porcelain=v1 --ignored --untracked-files=all -z` and classify every ignored entry
    as pre-existing unchanged or exact retained-owned evidence.
 7. Any ambiguity, foreign byte, missing evidence, or protected drift fails rollback and blocks
-   merge. No broad `make clean`, recursive workspace delete, reset/rebase, or worktree removal.
+   merge. No broad `make clean`, recursive workspace delete, reset/rebase/rewrite, worktree
+   removal, or merge other than the pre-cook exact integration reconciliation.
 
 ## Human Exact-Head Pre-Merge Gate
 

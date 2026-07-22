@@ -23,9 +23,9 @@ discovery, rendering, lifecycle, reset, verifier, evidence, completion, and clea
 editing portal source or duplicating Issue #8/#10 truth.
 
 At the current planner output this phase is hard-blocked and has no file or command authority.
-The post-review Stage A amendment passed independent validation but still awaits readiness, so even
-an Issue #10 release cannot advance this phase until the corrected Stage A plan and implementation
-have separately passed their gates.
+The post-review Stage A amendment passed independent validation and readiness, but Stage A has not
+yet been implemented/released. Even an Issue #10 release cannot advance this phase until the
+corrected Stage A implementation separately passes its release gates.
 
 ## Requirements
 

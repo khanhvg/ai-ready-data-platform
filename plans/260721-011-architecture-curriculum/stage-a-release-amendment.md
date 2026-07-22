@@ -2,14 +2,17 @@
 
 ## Decision
 
-Issue #11 Stage A is **not ready to cook**. This corrected amendment is the author output for a
-fresh independent plan-validation and readiness cycle. A future v3 implementation may begin only
-from exact clean `c07c9a080be7be88447aac497bdf0a2b5fddd020` plus the exact net plan-only diff of
-this amendment after an independent validator and a later readiness auditor both pass it. No
-failed v1/v2 product commit, test, render, evidence bundle, or PR #27 commit may be reused as
+Issue #11 Stage A is **ready to cook as one whole Stage A plan** after the exact derived-input
+handoff. The corrected amendment passed fresh independent validation at exact output
+`4add8e1b45c62279141c018a9748b473b49b2b2f` and the current fresh readiness audit. The future v3
+implementation uses exact clean `c07c9a080be7be88447aac497bdf0a2b5fddd020`, applies the exact
+correction, validation, and externally attested readiness plan commits with `git cherry-pick -x`,
+then performs the one authorized non-fast-forward reconciliation merge with released integration
+`5644f01b4c0443a81f3af0bcce80f44c847cd986` before recording and preflighting the derived input.
+No failed v1/v2 product commit, test, render, evidence bundle, or PR #27 commit may be reused as
 implementation authority.
 
-The proposed Stage A result remains a Vietnamese-first, foundation-to-mid architecture curriculum
+The planned Stage A result remains a Vietnamese-first, foundation-to-mid architecture curriculum
 with machine-valid modules, templates, trace data, assessment/reflection metadata, and five
 deterministic static architecture view expansions. The final diff from the v3 input remains
 exactly 50 create-only product/test paths, but implementation chronology is now explicitly
@@ -28,14 +31,15 @@ negative evidence at their recorded SHAs. They are not current authority.
 Fresh independent validation of exact input `788ea45331a34e34b0d330e568a39ee6c6566e63`
 passed after bounded plan-only corrections documented in
 [the Stage A v3 validation report](./validation/260722-stage-a-v3-independent-validation-report.md).
-Implementation authority remains `none`; a fresh readiness audit of the exact pushed validation
-output is the next gate.
+The [fresh Stage A v3 readiness audit](./audit/260722-stage-a-v3-readiness-audit-report.md) binds
+exact validation output `4add8e1b45c62279141c018a9748b473b49b2b2f`, passes the whole plan, and
+authorizes the 50-path/16-command Stage A cook only after the exact derived input is recorded.
 
 ## Explicitly Superseded Rules
 
 | Superseded rule or claim | Replacement |
 |---|---|
-| Stage A is `ready to cook` from pristine `fecf6bb8…` | Stage A v3 starts from clean `c07c9a0…` plus the validated/audited plan-only diff; independent validation has passed and fresh readiness remains required |
+| Stage A is `ready to cook` from pristine `fecf6bb8…` | Stage A v3 starts from clean `c07c9a0…`, applies the exact validated/readiness plan commits, reconciles exact integration `5644f01b…` without rewrite, and records the derived input; fresh validation and readiness have passed |
 | Complete tests-only commit must run from the pristine input | One minimal public-path scaffold commit precedes the complete tests/fixture commit |
 | RED may fail because all Issue #11 behavior paths are absent | RED must parse and reach real scaffolded validator, trace, renderer, and evidence entrypoints, then fail named missing semantic rules |
 | `.artifacts/evidence/**` may be retained while `git status --short` exits 0 | Retained evidence uses the existing ignored app-owned `.claude/evidence/issue-11-stage-a/**` root or an explicitly approved external root; nonignored porcelain stdout must be empty and ignored bytes must be ownership-classified |
@@ -60,21 +64,22 @@ output is the next gate.
 |---|---|---|
 | Original exact-release amendment start | `ab653f6edec73e5ef875723945d2e3cd7814b4e6` | Historical Stage A amendment input |
 | Post-review correction start | `1c62b68159ffc48cc2f063c137cb9072d8ed741f` | Local HEAD, upstream, fresh live ref, required branch, and clean worktree matched before this correction |
-| Fresh v3 product base | `c07c9a080be7be88447aac497bdf0a2b5fddd020` | Descends from released integration; all 50 product/test paths absent; failed v1/v2 heads are not ancestors |
+| Fresh v3 product base | `c07c9a080be7be88447aac497bdf0a2b5fddd020` | Descends from Stage A authority `fecf6bb8…`; all 50 product/test paths absent; failed v1/v2 heads are not ancestors |
 | Issue #8 Stage A PR #23 merge | `5c2244c2c860234d0df49cf0a42ad950c6495717` | Parent 2 is reviewed Stage A head `8bdf8ec39c6f21423284a11f7a8ab38c75eeadfa` |
 | Composition PR #25 merge / released integration | `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` | Ordered parents `5c2244c2…`, `734cf637…`; tree `27fc3667ef37892dad5c3fbfd76769f65a0760be` |
-| Live integration ref | `refs/heads/integration/issue-5-local-learning` = `5644f01b4c0443a81f3af0bcce80f44c847cd986` | Advanced during validation by merged PR #28; `fecf6bb8…` is first parent and remains the pinned released Stage A authority |
+| Current integration release | `refs/heads/integration/issue-5-local-learning` = `5644f01b4c0443a81f3af0bcce80f44c847cd986` | PR #28 release; ordered parents `fecf6bb8…`, `12e1742…`; tree `a38594d420fe7df2b30265a8a72bb5fad1698012` |
 | Release evidence | [Issue #8 comment 5043195549](https://github.com/khanhvg/ai-ready-data-platform/issues/8#issuecomment-5043195549) | 56/56, 65/65 invalid fixtures, 16 operations, final 4/4, inherited 19/19 + 1/1 + 13/13; no CI-success invention |
 | Released tree | `27fc3667ef37892dad5c3fbfd76769f65a0760be` | Remote commit identity and local Git object agree |
+| PR #28 pristine release | [PR #28 comment 5047954510](https://github.com/khanhvg/ai-ready-data-platform/pull/28#issuecomment-5047954510) | Terminal PASS; Issue #8 closed with `shipped`; released tree `a38594d…` |
 
-The future v3 cook branch/worktree starts from exact clean `c07c9a080be7be88447aac497bdf0a2b5fddd020`,
-then receives only the exact plan-artifact diff whose source and output SHAs are passed by the
-fresh independent plan validation and readiness audit. The resulting implementation-input SHA is
-`null` until those gates complete and must never be guessed. Fresh preflight must re-prove
-`fecf6bb8…` as an ancestor of clean `c07c9a0…`, plan-branch local/tracking/live equality, the
-absence of all 50 paths, and the non-ancestry of failed v1 `0f765d3…` and v2 `482591d…` before the
-scaffold commit. It also classifies any live integration delta after `fecf6bb8…` and rejects an
-overlap with the 50 paths, 33 protected identities, or 21 pinned contract paths.
+The existing v3 cook branch/worktree starts exact, clean, local-only, and writer-free at
+`c07c9a080be7be88447aac497bdf0a2b5fddd020`. Apply exact plan commits `788ea453…`, `4add8e1b…`,
+and the externally attested readiness output with `git cherry-pick -x`; then merge exact released
+integration `5644f01b…` with `git merge --no-ff`. Record every source/result pair plus the merge
+parents/tree and resulting implementation-input SHA. Before the scaffold commit, require the
+derived non-plan bytes to match `5644f01b…`, all 50 paths absent, all 33/21 identities equal, and
+failed v1 `0f765d3…` / v2 `482591d…` non-ancestry. No reset, rebase, rewrite, force-push, worktree
+replacement/deletion, alternate merge, or unrecorded conflict resolution is allowed.
 
 ## Released Read-Only Dependency Binding
 
@@ -193,23 +198,25 @@ registry adds `fitness-result-v2` as a readable family extension for I5-03 and e
 - `architecture-visual-review` and `architecture-lab-e2e` remain unactivated and non-runnable;
 - no compatibility object, schema copy, shared registry write, or guessed fallback is created.
 
-### Merged Issue #8 Stage B change is a non-authority
+### Released Issue #8 Stage B change is a non-authority
 
 During validation, PR #28 head `12e17427076fb31de85534bfbbbedca7e901e76c` merged as
-`5644f01b4c0443a81f3af0bcce80f44c847cd986`, whose first parent is the pinned released Stage A
-authority `fecf6bb8…`. Issue #8 remains OPEN with `ready for human review`, and no pristine
-post-merge verification/release handoff was published at validation time. The 28-path delta from
-`fecf6bb8…` is confined to Issue #8 plan artifacts, the Vite binding/schema/validator, and its
-tests/fixtures. It overlaps none of Issue #11's 50 future paths, 33 protected identities, or 21
-pinned contract-set paths.
+`5644f01b4c0443a81f3af0bcce80f44c847cd986`, whose ordered parents are the pinned Stage A
+authority `fecf6bb8…` and the reviewed head; its exact tree is `a38594d…`. After validation, a
+brand-new pristine checkout passed the terminal release gate in PR #28 comment `5047954510`, and
+Issue #8 closed with `shipped`. The 28-path delta from `fecf6bb8…` is confined to Issue #8 plan
+artifacts, the Vite binding/schema/validator, and its tests/fixtures. It overlaps none of Issue
+#11's 50 future paths, 33 protected identities, or 21 pinned contract-set paths. The retained
+release bundle remains closed at 31 indexed files / 99,876 bytes plus the self-excluded index,
+with exact summary/index/aggregate hashes pinned in the dependency gate.
 
 The exclusive shared-contract lease originated in
 [comment 5043661272](https://github.com/khanhvg/ai-ready-data-platform/issues/8#issuecomment-5043661272).
-Its merged bytes remain unconsumed and non-authoritative for this plan. Issue #11 Stage A neither
+Its released bytes remain unconsumed and non-authoritative for this plan. Issue #11 Stage A neither
 reads Vite source identifiers nor writes `learning/contracts/**`, `contracts/**`, OpenAPI, Vite,
 portal, runner, or shared registries. Any later need for the new binding/validator is a new exact
-dependency amendment, never an inferred alias. Fresh readiness must recheck live release state and
-delta overlap without changing the required clean `c07c9a0…` future base.
+dependency amendment, never an inferred alias. Cook preflight must recheck live release state and
+delta overlap while preserving the exact non-rewriting v3 derivation above.
 
 ## Additions-Only Architecture View Lease
 
@@ -249,9 +256,10 @@ this non-overlapping static expansion.
 |---|---|
 | Lease ID | `i5-06-stage-a-architecture-expansion-v1` |
 | Owner | Issue #11 / I5-06 architecture-curriculum owner |
-| Released protected base | `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` |
+| Stage A protected authority | `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` |
+| Current integration release | `5644f01b4c0443a81f3af0bcce80f44c847cd986` |
 | Clean v3 product base | `c07c9a080be7be88447aac497bdf0a2b5fddd020` |
-| Derived implementation input | `null` until fresh independent validation and readiness both pass the exact plan-only diff |
+| Derived implementation input | Recorded externally after exact `-x` plan applications and the one `5644f01b…` no-ff reconciliation merge |
 | Write set | Exact new `architecture/expansions/i5-06/**` paths in the tracked allow-list below |
 | Protected set | All existing `architecture/likec4/**`, `architecture/rendered/**`, `requirements/architecture/**`, `scripts/golden/architecture*`, `mk/issue-5/i5-01.mk` |
 | Duration | From successful cook preflight until Stage A PR merge/release, explicit revocation, or detected drift; never auto-broken |
@@ -628,8 +636,9 @@ copy, `1. 1.` numbering, or a text alternative that reorders steps fails
 The final diff remains exactly 50 create-only paths, but the commit sequence is mandatory and
 machine-audited:
 
-1. **Plan input:** exact clean `c07c9a080be7be88447aac497bdf0a2b5fddd020` plus the eventual
-   independently validated/audited plan-only diff; no failed feature ancestry.
+1. **Plan input:** the externally recorded exact derived input from clean `c07c9a0…`, exact `-x`
+   application of `788ea453…`, `4add8e1b…`, and the readiness output, plus the one no-ff merge of
+   `5644f01b…`; no failed feature ancestry and all 50 paths still absent.
 2. **Scaffold commit (`C1`, exactly 7 creates):**
    `mk/issue-5/i5-06.mk`, `learning/curriculum/tools/__init__.py`,
    `learning/curriculum/tools/content_io.py`,
@@ -821,10 +830,10 @@ a new exact amendment, validation, and readiness audit.
 
 ## Hard STOP Conditions
 
-- Pinned released authority `fecf6bb8…` is missing or no longer an ancestor of clean `c07c9a0…`,
-  the future v3 input is not clean `c07c9a0…` plus the exact independently validated/audited
-  plan-only diff, a live post-`fecf6bb8…` integration delta overlaps or becomes required, or any
-  pinned release object/hash differs.
+- Pinned Stage A contract authority `fecf6bb8…` or integration release `5644f01b…` is missing,
+  topology/tree differs, the future v3 input is not the exact recorded non-rewriting derivation,
+  an integration delta overlaps or becomes required by Issue #11 semantics, or any pinned release
+  object/hash differs.
 - Any one of the 50 create paths exists at input, any extra path appears, or a modify/delete occurs.
 - The merged Issue #8 Stage B change overlaps, is consumed, or becomes necessary.
 - Any protected architecture source/render/manifest/tool/blob changes.
@@ -843,12 +852,11 @@ a new exact amendment, validation, and readiness audit.
 - Any AWS/Terraform/cloud action, credential access, other-worktree write, PR, merge, or synthetic
   approval is attempted outside separate explicit authority.
 
-## Blocked Future v3 Implementation Handoff
+## Authorized Future v3 Implementation Handoff
 
-Do not cook from the validation output. Fresh xhigh independent plan validation has passed; a
-separate fresh readiness audit must now bind its exact pushed head, released inputs, and plan-only
-diff. Only that later PASS may define the plan-only diff applied to clean `c07c9a0…` and the
-resulting exact v3 implementation input. The future cook then follows the 7-path scaffold → 5-path
-complete tests → recorded public-path semantic RED → 38-path semantic complement protocol,
-creates exactly the 50 final paths, and stops for independent implementation review. Do not begin
-Stage B.
+Do not cook from the plan-branch validation/readiness output itself. Derive and externally record
+the exact feature input using the `-x` plan-commit applications and one `5644f01b…` no-ff
+reconciliation above; repeat the full release, writer, ancestry, path, identity, and cleanliness
+preflight. The cook then follows the 7-path scaffold → 5-path complete tests → recorded
+public-path semantic RED → 38-path semantic complement protocol, creates exactly the 50 final
+paths, and stops for independent implementation review. Do not begin Stage B.

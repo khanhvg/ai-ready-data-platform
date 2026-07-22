@@ -23,8 +23,9 @@ human exact-head approval, then hand off for a separately authorized PR/merge wo
 phase does not itself create a PR or merge.
 
 At the current planner output this phase is hard-blocked and has no file or command authority.
-The corrected Stage A plan passed independent validation but still awaits readiness; this final
-phase cannot treat plan validation as implementation review or approval.
+The corrected Stage A plan passed independent validation and readiness, but no Stage A
+implementation/release exists; this final phase cannot treat plan validation/readiness as
+implementation review or approval.
 
 ## Requirements
 
