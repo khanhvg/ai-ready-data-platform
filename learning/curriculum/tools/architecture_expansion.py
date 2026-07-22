@@ -1133,8 +1133,32 @@ def _repository_handoff() -> CheckResult:
         if current != expected: codes.append("I11_PROTECTED_IDENTITY_DRIFT")
         protected[path] = hashlib.sha256(current).hexdigest()
     if len(protected) != 33: codes.append("I11_PROTECTED_IDENTITY_DRIFT")
-    copied = _copy_and_remove_owned_artifacts(evidence_root)
-    private_pattern = re.compile(rb"/Users/|khanhvg|BEGIN [A-Z ]*PRIVATE KEY|AKIA[0-9A-Z]{16}|(?:password|token|secret)=[^\s]{4,}", re.IGNORECASE)
+    if codes:
+        return CheckResult(
+            "I11-EP-HANDOFF", True, tuple(dict.fromkeys(codes)),
+            {"testedTreeSha": head, "trackedCreates": len(rows), "protected": len(protected)},
+        )
+    provenance_path = evidence_root / "red-provenance.json"
+    raw_log = evidence_root / "red-raw.log"
+    sanitized_log = evidence_root / "red-sanitized.log"
+    if not all(path.is_file() for path in (provenance_path, raw_log, sanitized_log)):
+        codes.append("I11_EVIDENCE_ORPHAN")
+    else:
+        provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
+        if provenance.get("rawLogSha256") != _sha(raw_log) or provenance.get("sanitizedLogSha256") != _sha(sanitized_log):
+            codes.append("I11_EVIDENCE_ORPHAN")
+    if codes:
+        return CheckResult(
+            "I11-EP-HANDOFF", True, tuple(dict.fromkeys(codes)),
+            {"testedTreeSha": head, "trackedCreates": len(rows), "protected": len(protected)},
+        )
+    raw_log.unlink()
+    for stale_preview in evidence_root.glob("previews/*/*.svg.png"):
+        stale_preview.unlink()
+    private_pattern = re.compile(
+        rb"/(?:Users|home)/[^/\s\"']+|BEGIN [A-Z ]*PRIVATE KEY|AKIA[0-9A-Z]{16}|(?:password|token|secret)=[^\s]{4,}",
+        re.IGNORECASE,
+    )
     external_pattern = re.compile(rb"https?://[^\s\"'<>]+")
     allowed_urls = {b"https://nodejs.org/download/release/v22.22.3/", b"http://www.w3.org/2000/svg"}
     scan_paths = [ROOT / path for path in allowed] + [path for path in evidence_root.rglob("*") if path.is_file()]
@@ -1145,6 +1169,12 @@ def _repository_handoff() -> CheckResult:
         if any(not any(url.startswith(prefix) for prefix in allowed_urls) for url in external_pattern.findall(content)):
             findings.append(path.name)
     if findings: codes.append("I11_S3_PRIVATE_PATH")
+    if codes:
+        return CheckResult(
+            "I11-EP-HANDOFF", True, tuple(dict.fromkeys(codes)),
+            {"testedTreeSha": head, "trackedCreates": len(rows), "protected": len(protected), "s3Findings": sorted(set(findings))},
+        )
+    copied = _copy_and_remove_owned_artifacts(evidence_root)
     porcelain = _git("status", "--porcelain=v1", "--untracked-files=all")
     if porcelain: codes.append("I11_CLEAN_PORCELAIN_NONEMPTY")
     ignored = _git("status", "--porcelain=v1", "--ignored", "--untracked-files=all", "-z").split(b"\0")
