@@ -1,6 +1,6 @@
 ---
 title: "Issue #8 Requirements and Risk Traceability"
-status: pending
+status: completed
 priority: P1
 issue: 8
 created: "2026-07-21"
@@ -12,23 +12,25 @@ created: "2026-07-21"
 
 | Source | Immutable identity / locator | Contract carried forward |
 |---|---|---|
-| Issue #8 body/state | `https://github.com/khanhvg/ai-ready-data-platform/issues/8` observed OPEN at validation input with `ready for plan validation`, `risk:high`, `tdd`, `security:S3`, `shared-core`, `api` | Exclusive paths, tests-first order, three primary checks, evidence root, S3, migration/rollback, STOP rules |
+| Issue #8 body/state | `https://github.com/khanhvg/ai-ready-data-platform/issues/8`, all 23 current comments re-read; Stage A evidence `5043195549`, concrete conflict report `5043335319` | Exclusive paths, tests-first order, three primary checks, evidence root, S3, migration/rollback, release results and the exact Stage B binding gap |
 | Owner parallelization decision | `https://github.com/khanhvg/ai-ready-data-platform/issues/5#issuecomment-5036142770` | Plan downstream lanes now; only fresh readiness may authorize a genuinely independent Stage A; single shared-contract writer |
 | Planning input | `24be3b34c6b0fcdbd07c5800dcab349054e34713` | Shipped Issue #6 integration/handoff and exact read-only contract/fixture bytes |
+| Post-release audit input | `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` | Pristine Stage A release integration and current I5-03 consumer handoff |
 | Master discovery | `plans/260721-005-enterprise-learning-sandbox/discovery/` at the input | PH-C02, PH-C05, PH-C06, PH-H06, PH-H11 and SC-01/02/03/06/14/16/19/20 |
 | Normative lesson/lab contract | `plans/260721-005-enterprise-learning-sandbox/lesson-lab-contract.md` | Required lesson/lab fields, state machine, API operations, evidence, accessibility, remediation |
 | Master Phase 3 | `plans/260721-005-enterprise-learning-sandbox/phase-03-shared-lesson-lab-and-evidence-contract.md` | TDD order, operation matrix, one completion authority, probes/hints, backward readers, no AsyncAPI without channel |
 | Master implementation graph | `plans/260721-005-enterprise-learning-sandbox/implementation-issue-graph.md` | I5-03 dependencies/ownership, downstream blockers, exact target names, serialized release SHA |
 | Master readiness | `e440c5855732d5d8f5d634e3cc1359c010cc5ed3` | Per-issue plan→independent validation→fresh audit, no master cook, mandatory human pre-merge approval |
 | Issue #6 handoff | `plans/260721-006-freeze-golden-baseline/implementation-handoff.md` and shipped input tree | Strict I-JSON/JCS, schema registry/readers, fitness evidence, protected paths, additive migration |
-| Issue #7 state | OPEN/unmerged at planning time; owner selected Vite in Issue #7 comment `5036142177` | Direction only. No accepted ADR or merged handoff SHA exists; Stage B stays blocked |
+| Issue #7 release | CLOSED/shipped; PR #22 merge `1806b6d515f2f7a2ace2be7077af84a745ff221f`; Accepted ADR `docs/decisions/0005-web-stack.md` | Vite selection/source identities are available read-only; its exact grain labels expose the missing cross-release aliases |
+| Downstream issues | Current Issue #9 and Issue #10 bodies/comments at the audit date | Issue #9 owns runner behavior; Issue #10 owns portal behavior but consumes shared contracts read-only and cannot invent the shared alias mapping |
 | OpenAPI authority | `https://spec.openapis.org/oas/v3.2.0.html` (published 2025-09-19) | OpenAPI 3.2.0 is real; the project profile validates only the exact offline subset used and does not claim to be a universal validator |
 
 ## End-to-End Traceability Coverage
 
 | Layer | IDs / authority | Planned artifact | RED / contract proof | GREEN command and evidence |
 |---|---|---|---|---|
-| Outcome | Issue #8 acceptance; LC-001..025 | versioned learning contracts plus staged Vite binding | authority/stage-boundary RED | three-command primary gate; external release attestation |
+| Outcome | Issue #8 acceptance; LC-001..025 plus fresh Stage B plan | released Stage A contracts plus one additive Vite identifier binding | authority/stage-boundary RED plus post-release real-path mismatch RED | primary gate; focused Issue #7 Node gate; external two-component release attestation |
 | Capability | CAP-01 author/validate; CAP-02 progress/complete; CAP-03 prove evidence; CAP-04 expose HTTP; CAP-05 publish promotion-trust; CAP-06 evolve/rollback | schemas, pure validators, operation/completion documents, OpenAPI, manifests, registry/release set | I8-SCHEMA/STATE/COMPLETION/TAMPER/OPENAPI/PROMO/MIGRATION suites | learning/API/evidence results under bounded evidence roots |
 | Functional requirements | FR-01..FR-12 mapped by LC-002..020 and LC-023..024 | exact files in the Stage A allow-list | stable test/fixture IDs below | exact primary and blast-radius commands |
 | Non-functional requirements | NFR-01 closed/fail-safe; NFR-02 deterministic; NFR-03 offline; NFR-04 16 GiB; NFR-05 no new dependency; NFR-06 additive/backward; NFR-07 bounded/redacted; NFR-08 no cloud/heavy profile; NFR-09 framework-neutral; NFR-10 authority-gated | canonical profile, runtime/import manifest, protected hashes, rollback protocol | I8-CANON/DEPS/SECRET/ROLLBACK/STAGEA suites | lock/import scan, offline rerun, resource record, protected-path result |
@@ -246,7 +248,7 @@ failure never satisfies RED.
 
 | ID | Requirement | Stage / phase | Planned verification | Evidence |
 |---|---|---|---|---|
-| LC-001 | Start only from a fresh readiness-authorized exact head with one active shared-contract lease | A/1, B/6 | local = tracking = fresh-live; ancestry; clean and lease checks | authority result + remote refs |
+| LC-001 | Start each shared-contract stage only from a fresh readiness-authorized exact head with one active lease; release it after the complete Stage B handoff | A/1; disposition/6; fresh Stage B | local = tracking = fresh-live; ancestry; clean and lease checks | authority result + remote refs + requirement audit |
 | LC-002 | Write every schema/ref/state/tamper/canonicalization/migration/operation/completion/reconciliation/probe/hint/release negative before behavior | A/1 | exact stable matrix above; named RED assertions fail for intended missing behavior while read-only characterizers pass | `.artifacts/evidence/learning-contracts/<run-id>/tdd/red/` |
 | LC-003 | Version lesson, lab, progress, and learner-evidence families with closed Draft 2020-12 schemas | A/2 | valid, missing, wrong-type, unknown-field, bounds and mutation fixtures | schema suite result and schema hashes |
 | LC-004 | Reuse Issue #6 strict I-JSON/RFC 8785/SHA-256 profile without changing its bytes | A/2 | duplicate-name/non-finite/surrogate/BOM/JCS cross-reader vectors | canonical vector index and exact I5-01 hashes |
@@ -260,13 +262,13 @@ failure never satisfies RED.
 | LC-012 | No AsyncAPI without a real channel | A/4 | repository inventory fails any AsyncAPI artifact while channel registry is empty; no artifact is created | contract inventory |
 | LC-013 | Learner evidence includes exact provenance, redaction, retention, artifacts and canonical integrity | A/4 | tamper, stale hash, absolute path, secret/PII, recursive identity and missing provenance negatives | learner-evidence verification result |
 | LC-014 | Promotion-trust manifest preserves four independent grains and `insufficient-evidence / no-common-grain` | A/4 | fixture digest, grain/order/limitation and forbidden attribution mutations | manifest and fixture hash report |
-| LC-015 | Existing Issue #6 contracts, registry, readers and tracked fixtures remain byte-for-byte read-only/readable | A/1-5, B/6 | protected hashes + base-registry hash binding + existing data/evidence/migration suites | protected-path/registry compatibility report |
+| LC-015 | Existing Issue #6 contracts, registry, readers and tracked fixtures remain byte-for-byte read-only/readable | A/1-5; disposition/6 | protected hashes + base-registry hash binding + existing data/evidence/migration suites | protected-path/registry compatibility report |
 | LC-016 | New v1 families have identity readers; fitness v1 remains readable beside v2; migration engine is additive, reversible where representable, cycle-free and closed | A/2,5 | v1 reader vectors, private v0↔v1 vector, v2 owner vector; unknown/lossy/cycle/collision negatives | migration report |
 | LC-017 | Public targets live only in `mk/issue-5/i5-03.mk`; do not duplicate I5-01 target ownership | A/5 | command registry ownership and Make recipe inventory | command/owner projection |
 | LC-018 | Stage A consumes no selected-framework or Issue #7 ADR bytes | A/1,5 | source/import/ref scan, dependency-absent execution, decoy-tree invariance, changed/read path allow-list | stage-boundary result |
-| LC-019 | Vite binding consumes exact merged Issue #7 handoff and cannot redefine Stage A | B/6 | merge/ADR/lock hash checks plus generated ID/hash equality | Vite handoff result |
-| LC-020 | Contract release identities are exact external merge SHAs with independent exact-head review and human exact-head approval | A/5, B/6 | tested head = independently reviewed head = human-approved head; remotely observed merge identity/blob equality per repository flow | external issue/PR attestation |
-| LC-021 | All checks stay local, 16 GiB-safe and post-install offline | A/1-5, B/6 | no-network/no-cloud-credential run; no Docker/heavy profile; bounded time/output | environment/tool/resource fields |
+| LC-019 | Evaluate the exact merged Issue #7 handoff before adding any I5-03 binding; add only the proven lossless key/grain aliases and preserve downstream ownership | disposition/6 + fresh Stage B plan | exact merge/ADR/lock/source/fixture hashes; total ordered bijection tests; no value transform | Stage B binding result and two-component handoff |
+| LC-020 | Contract release identities are exact external merge SHAs with independent exact-head review and human exact-head approval | A/5; disposition/6 | tested head = independently reviewed head = human-approved head; remotely observed merge identity/blob equality per repository flow | external issue/PR attestation |
+| LC-021 | All checks stay local, 16 GiB-safe and post-install offline | A/1-5; disposition/6 | no-network/no-cloud-credential run; no Docker/heavy profile; bounded time/output | environment/tool/resource fields |
 | LC-022 | No cloud/AWS/Terraform action or destructive migration exists in the command graph | All | command/source scan and subprocess spy | S3 negative-test result |
 | LC-023 | I5-03 fitness evidence is truthful and later registered command owners can consume v2 without another shared-contract write | A/1,2,5 | v1 owner mismatch RED; v2 owner/command/activation mismatches; generic activation schema plus I5-03 instance; v1 reader/hash regression | fitness-version and downstream-consumption compatibility report |
 | LC-024 | OpenAPI wire semantics and compatibility are exact | A/3-4 | per-operation request/success/error/auth/idempotency table; `/v1` and body schema-version negatives | API compatibility report |
@@ -286,7 +288,7 @@ failure never satisfies RED.
 | Evidence tamper/leak | Evidence boundary | payload/artifact/verifier/fixture hash edits, traversal/absolute/symlink/hardlink/device locator, credential/private-key/PII canary, recursive SHA | reject/quarantine before trust; descriptor-bound read; redact bounded diagnostics |
 | Cross-grain misattribution | Promotion-trust manifest | hidden join/common-grain assertion, omitted limitation, changed ordering/threshold | manifest validation fails; completion unavailable |
 | Operation/auth/injection drift | OpenAPI/matrix | undocumented operation, missing taxonomy/role/auth/CSRF/idempotency/evidence/version, raw SQL/command/path/URL/template injection field | API contract check fails before dispatch |
-| Framework contract fork | Vite binding | copied schema with changed field/default, operation rename, alternate completion rule/canonicalizer | Stage B fails; Stage A remains unchanged |
+| Framework contract fork | Stage B binding and downstream adapters | copied schema/value/default, non-bijective alias, operation rename, alternate completion rule/canonicalizer | Stage B/downstream gate fails; released Stage A remains unchanged |
 | Supply-chain/runtime drift | Validator execution | wrong Python/platform/freeze/lock hash, unadmitted dependency, install-script request | fail with typed remediation; no dependency mutation |
 | Known/advisory drift | Dependency boundary | changed lock/freeze/manifests, newly imported distribution, missing `pip check`, unreviewed inherited advisory | fail; only a pre-authorized recorded inherited-advisory disposition can satisfy the gate; never fetch/fix/waive inside the check |
 | Cloud/destructive escape | Command graph | AWS credential canary, `terraform`, cloud SDK, Docker/heavy-profile, shell string, broad delete invocation | command graph rejected before execution |
@@ -306,11 +308,11 @@ failure never satisfies RED.
 | RK-09 | AsyncAPI is added for polling/SSE without a channel | High | polling-only v1; channel inventory empty; orphan AsyncAPI check | LC-012 inventory |
 | RK-10 | New validator/runtime breaks offline or 16 GiB target | High | existing locked Python only; no new distribution; bounded output/time and post-install no-network run | runtime/freeze/resource evidence |
 | RK-11 | Backward migration silently drops information | Critical | lossless round-trip property; lossy edge is STOP/new version decision; old readers retained | migration report |
-| RK-12 | Stage B uses owner direction instead of accepted merged handoff | Critical | require exact merged SHA/ADR/lock/hashes; current unmerged Issue #7 bytes are non-authority | Phase 6 entry result |
-| RK-13 | Vite consumer representation becomes a second schema/canonicalizer | Critical | any amended representation is limited to IDs/hashes; no copied schema/default/state logic; byte equality gates | Stage B drift suite |
+| RK-12 | A historical Stage B placeholder is cooked without a real mismatch, or the real mismatch is ignored | Critical | exact source/fixture/manifest diff and current ownership audit; only the three proven aliases enter scope | Phase 6 disposition + Stage B RED |
+| RK-13 | The Vite binding becomes a second schema/canonicalizer | Critical | closed alias-only document; no values/defaults/validation/state; server validates Stage A and browser remains projection-only | Stage B boundary suite |
 | RK-14 | Root Make or I5-01 target is overwritten | High | one issue fragment; command registry check; root/fragment hashes protected | changed-path report |
 | RK-15 | Contract release file recursively claims its own commit | High | tracked set contains content hashes only; release/merge SHA recorded externally | provenance check |
-| RK-16 | Readiness-authorized Stage A cook is mistaken for PR/merge authority or full Issue #8 completion | Critical | implementation-only wording; final independent exact-head review, repository checks, human approval and external merge identity remain mandatory; Stage B stays closed | external gate attestations |
+| RK-16 | Stage A release is rewritten to fix a downstream mismatch | Critical | retain exact Stage A hashes/readers; publish binding as a separately hashed immutable component | protected-hash + external release attestations |
 | RK-17 | I5-03 emits invalid v1 evidence or v2 owner becomes another hard-coded shared bottleneck | Critical | RED v1 and v2 owner/command mismatches; v2 owner is activation-bound; retain v1/readers; future owners add only issue-owned activation instances | LC-023 report |
 | RK-18 | Reserved I5-03 commands remain labelled `future-owner` in the immutable command registry | High | retain base registry; use the generic activation schema and I5-03-owned hash-bound instance; `make help` keeps the immutable snapshot view while the I5-03 validator composes activation | command/activation report |
 | RK-19 | YAML 1.1 coercion/duplicate keys make OpenAPI ambiguous | Critical | custom locked safe loader rejects non-JSON YAML features/duplicates and hashes normalized model | OpenAPI parser vectors |
@@ -319,7 +321,7 @@ failure never satisfies RED.
 
 | Command | Owner | Required scope | Evidence root / principal assertion |
 |---|---|---|---|
-| `make learning-contracts-check` | I5-03 / `fitness-result-v2` | Stage A and final Stage B | `.artifacts/evidence/learning-contracts/<run-id>/`; Stage A schemas, refs, state, completion, probes, hints and migration; any Stage B addition requires the amended plan |
+| `make learning-contracts-check` | I5-03 / `fitness-result-v2` | Stage A plus Stage B binding | `.artifacts/evidence/learning-contracts/<run-id>/`; existing contracts plus exact binding/ref/alias/boundary checks |
 | `make lesson-check LESSON=promotion-trust` | I5-03 / `fitness-result-v2` | Stage A and final | same family; promotion manifest + fixture hash + grain integrity |
 | `make api-contracts-check` | I5-03 / `fitness-result-v2` | Stage A and final | `.artifacts/evidence/api-contracts/<run-id>/`; OpenAPI/profile/refs/examples/matrix equality/no AsyncAPI |
 | `make evidence-verify` | I5-03 / `fitness-result-v2` | Stage A and final | validates one emitted learner or fitness evidence locator without mutation |
@@ -335,10 +337,12 @@ failure never satisfies RED.
 - Any Issue #6 contract/registry/fixture/reader/lock/Make byte or another protected path changes.
 - Missing required tool/lock, unadmitted runtime dependency, schema/ref/operation/migration drift,
   failed S3 negative, secret/private path in evidence, or inability to roll back safely.
-- Any Stage B attempt before the exact Issue #7 Vite ADR/handoff is merged and externally attested.
+- Any Stage B path/mapping beyond the exact fresh plan, non-bijective/value-changing alias,
+  generated portal type/module, or loss of the exclusive I5-03 lease.
 - Any exact-head human approval mismatch, failed required check, or unresolved contract-release SHA.
 - Any missing independent exact-head review, ambiguous request/version/conflict semantics,
   unreviewed dependency/advisory delta, or evidence locator that is not descriptor-bound.
 
-Planning-time Issue #7 dependency is the only expected unresolved gate. It blocks Stage B, not
-fresh independent validation of this full staged plan.
+The planning-time Issue #7 dependency is released and audited. Direct consumption is blocked by
+two key aliases and one grain-ID alias, so the fresh Stage B plan is the only remaining Issue #8
+product scope.

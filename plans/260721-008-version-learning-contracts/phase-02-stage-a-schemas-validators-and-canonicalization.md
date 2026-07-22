@@ -1,15 +1,16 @@
 ---
 phase: 2
-title: "Stage A schemas validators and canonicalization"
-status: pending
+title: Stage A schemas validators and canonicalization
+status: completed
 priority: P1
-dependencies: [1]
-stage: "A"
+dependencies:
+  - 1
+stage: A
 ---
 
 # Phase 2: Stage A Schemas, Validators, and Canonicalization
 
-<!-- Updated: Validation Session 1 - exact closed validators and additive fitness v2 compatibility. -->
+<!-- Historical Stage A execution plan; released through PR #23 and PR #25, with current disposition in plan.md. -->
 
 ## Context Links
 
