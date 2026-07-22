@@ -23,17 +23,23 @@ const model = await loadReleasedLearning({ root: repo });
 if (process.argv.includes("--local-only")) { console.log(JSON.stringify({ status: "pass", releasePaths: rows.length, bindingId: model.bindingId })); process.exit(0); }
 
 const runtimeRoot = path.join(repo, ".artifacts/workspaces/golden");
-const candidate = path.join(runtimeRoot, "i5-05-stage-a");
-await fs.rm(candidate, { recursive: true, force: true }); await fs.mkdir(runtimeRoot, { recursive: true });
+await fs.mkdir(runtimeRoot, { recursive: true });
+const candidate = await fs.mkdtemp(path.join(runtimeRoot, "i5-05-stage-a-"));
+const venv = path.join(candidate, "venv");
 const run = (command, args, options = {}) => { const result = spawnSync(command, args, { cwd: repo, stdio: "inherit", timeout: options.timeout ?? 300000, env: { ...process.env, ...options.env } }); if (result.status !== 0) throw new Error(`COMMAND_FAILED:${command}:${result.status}`); };
-run("python3.12", ["-m", "venv", candidate]);
-const python = path.join(candidate, "bin/python3.12");
-run(python, ["-m", "pip", "install", "--require-hashes", "--only-binary=:all:", "--no-cache-dir", "--index-url", "https://pypi.org/simple", "-r", "requirements/golden-py312-macos-arm64.lock"]);
-run(python, ["-m", "pip", "check"]);
-const pythonHash = crypto.createHash("sha256").update(await fs.readFile(python)).digest("hex");
-const env = { LEARNING_RUNTIME_ROOT: ".artifacts/workspaces/golden", LEARNING_RUNTIME_CANDIDATE: candidate, LEARNING_RUNTIME_INTERPRETER_SHA256: pythonHash };
-run("make", ["learning-runtime-admit"], { env });
-for (const args of [["learning-contracts-check"], ["lesson-check", "LESSON=promotion-trust"], ["api-contracts-check"]]) run("make", args, { env });
-await fs.mkdir(path.join(repo, ".artifacts/runtime/i5-05-stage-a"), { recursive: true });
-await fs.writeFile(path.join(repo, ".artifacts/runtime/i5-05-stage-a/learning-runtime.env"), Object.entries(env).map(([key, value]) => `${key}=${value}`).join("\n") + "\n");
-console.log(JSON.stringify({ status: "pass", releasePaths: rows.length, bindingId: model.bindingId, runtime: "admitted" }));
+let pythonHash;
+try {
+  run("python3.12", ["-m", "venv", venv]);
+  const python = path.join(venv, "bin/python3.12");
+  run(python, ["-m", "pip", "install", "--require-hashes", "--only-binary=:all:", "--no-cache-dir", "--index-url", "https://pypi.org/simple", "-r", "requirements/golden-py312-macos-arm64.lock"]);
+  run(python, ["-m", "pip", "check"]);
+  pythonHash = crypto.createHash("sha256").update(await fs.readFile(python)).digest("hex");
+  const env = { LEARNING_RUNTIME_ROOT: ".artifacts/workspaces/golden", LEARNING_RUNTIME_CANDIDATE: candidate, LEARNING_RUNTIME_INTERPRETER_SHA256: pythonHash };
+  run("make", ["learning-runtime-admit"], { env });
+  for (const args of [["learning-contracts-check"], ["lesson-check", "LESSON=promotion-trust"], ["api-contracts-check"]]) run("make", args, { env });
+} finally {
+  await fs.rm(candidate, { recursive: true, force: true });
+}
+const result = { status: "pass", releasePaths: rows.length, bindingId: model.bindingId, runtime: "cleaned", interpreterSha256: pythonHash, commands: ["learning-contracts-check", "lesson-check LESSON=promotion-trust", "api-contracts-check"] };
+const evidenceRoot = path.join(repo, ".artifacts/evidence/local-journey"); await fs.mkdir(evidenceRoot, { recursive: true }); await fs.writeFile(path.join(evidenceRoot, "release-verifier.json"), JSON.stringify(result, null, 2));
+console.log(JSON.stringify(result));
