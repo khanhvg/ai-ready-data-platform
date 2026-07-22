@@ -30,6 +30,7 @@ class RedPublicPathTest(unittest.TestCase):
                 with tarfile.open(source, "w") as archive:
                     info = archive.gettarinfo(str(data), "value")
                     info.uid = info.gid = 65532
+                    info.mode = 0o600
                     with data.open("rb") as stream:
                         archive.addfile(info, stream)
                 archives.append(workspace.commit(source, revision))

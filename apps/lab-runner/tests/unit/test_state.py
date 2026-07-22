@@ -22,6 +22,7 @@ class RedPublicPathTest(unittest.TestCase):
             store = Store(pathlib.Path(temporary))
             request = {"operationId": "workspace.prepare", "idempotencyKey": "terminal-state-key", "workspaceRevision": 0}
             admitted = store.admit(request, 1)
+            store.transition(admitted.run_id, 1, "created")
             store.transition(admitted.run_id, 1, "removed")
             result = {"status": "pass"}
             store.commit(admitted.run_id, 1, result, 1)

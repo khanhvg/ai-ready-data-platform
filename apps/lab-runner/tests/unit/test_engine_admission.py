@@ -20,7 +20,7 @@ class RedPublicPathTest(unittest.TestCase):
         from lab_runner.engine import EngineError
 
         class AmbiguousEngine:
-            def json(self, _args):
+            def inspect_optional(self, _container_id):
                 raise EngineError("RUNNER_ENGINE_OPERATION_FAILED")
 
         class RecordingStore:

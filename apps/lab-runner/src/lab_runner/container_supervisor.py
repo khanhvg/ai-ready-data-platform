@@ -1,6 +1,6 @@
 """PID-namespace supervisor and subreaper for one fixed semantic operation."""
 from __future__ import annotations
-import ctypes, json, os, pathlib, resource, runpy, selectors, signal, struct, sys, tarfile, time
+import ctypes, hashlib, io, json, os, pathlib, resource, runpy, selectors, signal, struct, sys, tarfile, time
 from .archive import extract_tar
 from .container_protocol import write
 from .operation_adapters import execute
@@ -31,14 +31,26 @@ def _descendants()->tuple[int,bool]:
     return count,tracker
 
 
+def _descendant_pids()->list[int]:
+    return [int(p.name) for p in pathlib.Path("/proc").iterdir() if p.name.isdigit() and int(p.name) not in (1,os.getpid())]
+
+
 def _archive_output(path:pathlib.Path,state:pathlib.Path=WORKSPACE/"state")->None:
+    rows=[]
     with tarfile.open(path,"w",format=tarfile.PAX_FORMAT) as tf:
         for p in sorted(state.rglob("*")):
+            if p.relative_to(state).as_posix()==".runner-output-manifest.json":continue
             arc=p.relative_to(state).as_posix()
             info=tf.gettarinfo(str(p),arc); info.uid=65532; info.gid=65532; info.uname=""; info.gname=""; info.mtime=0
             if info.isfile():
-                with p.open("rb") as f: tf.addfile(info,f)
-            else: tf.addfile(info)
+                info.mode=0o600
+                raw=p.read_bytes();tf.addfile(info,io.BytesIO(raw));rows.append({"path":arc,"type":"file","mode":384,"size":len(raw),"sha256":hashlib.sha256(raw).hexdigest()})
+            elif info.isdir():
+                info.mode=0o700;tf.addfile(info);rows.append({"path":arc,"type":"directory","mode":448,"size":0,"sha256":None})
+            else:raise RuntimeError("RUNNER_OUTPUT_TYPE_INVALID")
+        manifest=json.dumps({"schemaVersion":"runner-output-manifest-v1","entries":rows},sort_keys=True,separators=(",",":")).encode()+b"\n"
+        info=tarfile.TarInfo(".runner-output-manifest.json");info.uid=info.gid=65532;info.mode=0o600;info.mtime=0;info.size=len(manifest)
+        tf.addfile(info,io.BytesIO(manifest))
 
 
 def _fixture(name:str,fixture_args:tuple[str,...])->dict[str,object]:
@@ -66,6 +78,7 @@ def _main(operation:str,fixture:tuple[str,tuple[str,...]]|None=None,execute_seco
     if len(input_raw)!=input_length or sys.stdin.buffer.read(1):return 65
     (RUN/"input.tar").write_bytes(input_raw)
     extract_tar(RUN/"input.tar",WORKSPACE/"state")
+    (WORKSPACE/"state/.runner-output-manifest.json").unlink(missing_ok=True)
     out_read,out_write=os.pipe();err_read,err_write=os.pipe()
     pid=os.fork()
     if pid==0:
@@ -115,11 +128,26 @@ def _main(operation:str,fixture:tuple[str,tuple[str,...]]|None=None,execute_seco
             got,_=os.waitpid(-1,os.WNOHANG)
             if got==0: time.sleep(.02)
         except ChildProcessError: break
+    survivors=_descendant_pids()
+    if survivors:
+        for child in survivors:
+            try:os.kill(child,signal.SIGTERM)
+            except ProcessLookupError:pass
+        time.sleep(.2)
+        for child in _descendant_pids():
+            try:os.kill(child,signal.SIGKILL)
+            except ProcessLookupError:pass
+        while True:
+            try:
+                got,_=os.waitpid(-1,os.WNOHANG)
+                if got==0:break
+            except ChildProcessError:break
+        failure=failure or "RUNNER_DESCENDANT_SURVIVOR"
     for key in list(streams.get_map().values()):
         try:streams.unregister(key.fd);os.close(key.fd)
         except OSError:pass
     streams.close();stdout_size=min(sizes["stdout"],STREAM_LIMIT);stderr_size=min(sizes["stderr"],STREAM_LIMIT)
-    if rc==0 and failure is None:
+    if rc==0 and failure is None and not _descendant_pids():
         result=json.loads((RUN/"worker-result.json").read_text()); _archive_output(OUTPUT); status="pass"
     else:
         result=None; status="fail"; failure=failure or "RUNNER_OPERATION_FAILED"

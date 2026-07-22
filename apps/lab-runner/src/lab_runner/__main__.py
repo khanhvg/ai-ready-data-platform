@@ -1,8 +1,9 @@
 """Owner CLI; accepts only a closed semantic operation and idempotency key."""
 from __future__ import annotations
 import argparse,json,pathlib,sys
+from .contract import validate_released_contract
 from .service import RunnerService,RunnerError
-from .transport import serve_loopback
+from .transport import serve_uds
 
 
 def main(argv:list[str]|None=None)->int:
@@ -13,9 +14,12 @@ def main(argv:list[str]|None=None)->int:
     p.add_argument("--image-lock",default="apps/lab-runner/config/runner-image-release-v1.json",help=argparse.SUPPRESS)
     a=p.parse_args(argv)
     root=pathlib.Path.cwd();release=json.loads((root/a.image_lock).read_text())
+    validate_released_contract(root,root/"apps/lab-runner/config/released-contract-lock.json")
+    if release.get("schemaVersion")!="runner-image-release-v1" or release.get("platform")!="linux/arm64" or not str(release.get("imageDigest","")).startswith("sha256:"):
+        raise SystemExit("RUNNER_IMAGE_RELEASE_INVALID")
     service=RunnerService(root/a.state_root,release["imageDigest"],root/"apps/lab-runner/container/seccomp-runner-v1.json")
     if a.command=="serve":
-        serve_loopback(service,root/a.state_root/"control.json");return 0
+        serve_uds(service,root/a.state_root/"control.json");return 0
     request={"operationId":a.operation,"idempotencyKey":a.idempotency_key,"workspaceRevision":service.current_revision()}
     try:result=service.run(request)
     except RunnerError as exc:

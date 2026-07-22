@@ -53,3 +53,18 @@ class Engine:
     def json(self,args:Sequence[str],*,timeout:float=30)->dict[str,object]:
         try: return json.loads(self.command(args,timeout=timeout).stdout)
         except json.JSONDecodeError as exc: raise EngineError("RUNNER_ENGINE_PROTOCOL_INVALID") from exc
+
+    def inspect_optional(self, container_id: str) -> dict[str, object] | None:
+        completed = self.command(["inspect", container_id], timeout=30, check=False)
+        if completed.returncode == 0:
+            try:
+                value = json.loads(completed.stdout)
+            except json.JSONDecodeError as exc:
+                raise EngineError("RUNNER_ENGINE_PROTOCOL_INVALID") from exc
+            if not isinstance(value, list) or len(value) != 1 or not isinstance(value[0], dict):
+                raise EngineError("RUNNER_ENGINE_PROTOCOL_INVALID")
+            return value[0]
+        missing = f"no such object: {container_id}".lower()
+        if completed.returncode == 1 and missing in completed.stderr.strip().lower():
+            return None
+        raise EngineError("RUNNER_ENGINE_OPERATION_FAILED")

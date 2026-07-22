@@ -37,7 +37,7 @@ def build_context()->dict[str,object]:
     app_paths+=files_in("apps/lab-runner/src")+files_in("apps/lab-runner/tests/fixtures")
     for p in app_paths:copy_file(p,CONTEXT/"app"/p.relative_to(APP))
     families=["transform/dbt","scripts/golden","tests/fixtures/data"]
-    project_paths=[ROOT/name for name in ("data-generator/generate.py","ingestion/load_raw.py","serving/export_marts_snapshot.py","lake/curated_assets.json","contracts/data/retail-golden-v1.json","contracts/data/curated-release-manifest.schema.json")]
+    project_paths=[ROOT/name for name in ("data-generator/generate.py","ingestion/load_raw.py","serving/export_marts_snapshot.py","lake/curated_assets.json","contracts/data/retail-golden-v1.json","contracts/data/promotion-trust-v1.yaml","contracts/data/curated-release-manifest.schema.json")]
     for family in families:project_paths+=files_in(family)
     for p in project_paths:copy_file(p,CONTEXT/"project"/p.relative_to(ROOT))
     stage_families=["scripts/learning_contracts","learning/contracts","learning/labs/promotion-trust","learning/lessons/promotion-trust","learning/manifests"]

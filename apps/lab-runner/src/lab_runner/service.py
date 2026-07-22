@@ -35,23 +35,28 @@ class RunnerService:
         request=validate_request(request_value)
         self._reserve()
         with acquire(self.root/"locks") as fence:
+            self.workspace.reconcile(self.store.current_revision())
             for run_id,status,container_id,image_digest,run_fence in self.store.incomplete():
                 self.backend.reconcile(run_id,status,container_id,image_digest,run_fence)
             admission=self.store.admit(request,fence.epoch)
             if admission.replay is not None:return admission.replay
             run_dir=self.root/"inputs"/admission.run_id;run_dir.mkdir(mode=0o700,parents=True,exist_ok=False)
             input_archive=run_dir/"input.tar";self.workspace.input_archive(int(request["workspaceRevision"]),input_archive)
+            committed=False
             try:
                 outcome=self.backend.execute(admission.run_id,fence.epoch,str(request["operationId"]),input_archive)
                 revision=int(request["workspaceRevision"])+1
-                self.workspace.commit(outcome.output_archive,revision)
+                self.workspace.stage(outcome.output_archive,revision)
                 result={"schemaVersion":"runner-operation-result-v1","runId":admission.run_id,"operationId":request["operationId"],"workspaceRevision":revision,"status":"pass","result":outcome.protocol["result"],"containerIdSha256":__import__("hashlib").sha256(outcome.container_id.encode()).hexdigest()}
-                self.store.commit(admission.run_id,fence.epoch,result,revision)
                 write_evidence(self.evidence,admission.run_id,result)
+                self.store.commit(admission.run_id,fence.epoch,result,revision)
+                committed=True
+                self.workspace.publish(revision)
                 return result
             except (EngineError,StateError,RuntimeError) as exc:
-                try:self.store.transition(admission.run_id,fence.epoch,"failed")
-                except StateError:pass
+                if not committed:
+                    try:self.store.transition(admission.run_id,fence.epoch,"failed")
+                    except StateError:pass
                 raise RunnerError(str(exc)) from exc
 
     def current_revision(self)->int:return self.store.current_revision()

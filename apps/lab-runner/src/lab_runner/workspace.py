@@ -10,31 +10,31 @@ class Workspace:
         (root/"generations").mkdir(mode=0o700,exist_ok=True)
 
     def input_archive(self, revision: int, output: pathlib.Path) -> None:
+        if type(revision) is not int or revision < 0:
+            raise RuntimeError("RUNNER_WORKSPACE_REVISION_INVALID")
+        if revision == 0:
+            with tarfile.open(output,"w"):
+                pass
+            os.chmod(output,0o600)
+            return
         root_fd=os.open(self.root,os.O_RDONLY|os.O_DIRECTORY)
         try:
-            try: pointer=os.readlink("current",dir_fd=root_fd)
-            except FileNotFoundError: pointer=None
-            if pointer is not None:
-                parts=pathlib.PurePosixPath(pointer).parts
-                if len(parts)!=2 or parts[0]!="generations" or len(parts[1])!=24 or not parts[1].endswith(".tar") or not parts[1][:-4].isdigit():
-                    raise RuntimeError("RUNNER_WORKSPACE_POINTER_INVALID")
-                source_fd=os.open(pointer,os.O_RDONLY|getattr(os,"O_NOFOLLOW",0),dir_fd=root_fd)
+            source=f"generations/{revision:020d}.tar"
+            try: source_fd=os.open(source,os.O_RDONLY|getattr(os,"O_NOFOLLOW",0),dir_fd=root_fd)
+            except FileNotFoundError as exc: raise RuntimeError("RUNNER_WORKSPACE_REVISION_MISSING") from exc
+            try:
+                observed=os.fstat(source_fd)
+                if not stat.S_ISREG(observed.st_mode) or observed.st_nlink!=1: raise RuntimeError("RUNNER_WORKSPACE_POINTER_INVALID")
+                target_fd=os.open(output,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,"O_NOFOLLOW",0),0o600)
                 try:
-                    observed=os.fstat(source_fd)
-                    if not stat.S_ISREG(observed.st_mode) or observed.st_nlink!=1: raise RuntimeError("RUNNER_WORKSPACE_POINTER_INVALID")
-                    target_fd=os.open(output,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,"O_NOFOLLOW",0),0o600)
-                    try:
-                        while chunk:=os.read(source_fd,1024*1024): os.write(target_fd,chunk)
-                        os.fsync(target_fd)
-                    finally: os.close(target_fd)
-                finally: os.close(source_fd)
-                return
+                    while chunk:=os.read(source_fd,1024*1024): os.write(target_fd,chunk)
+                    os.fsync(target_fd)
+                finally: os.close(target_fd)
+            finally: os.close(source_fd)
+            return
         finally: os.close(root_fd)
-        with tarfile.open(output,"w"):
-            pass
-        os.chmod(output,0o600)
 
-    def commit(self, archive: pathlib.Path, revision: int) -> pathlib.Path:
+    def stage(self, archive: pathlib.Path, revision: int) -> pathlib.Path:
         inspect_tar(archive)
         generation=self.root/"generations"/f"{revision:020d}.tar"
         if generation.exists():
@@ -43,9 +43,31 @@ class Workspace:
             tmp=self.root/"generations"/f".{revision}.{os.getpid()}.tmp"
             tmp.write_bytes(archive.read_bytes()); os.chmod(tmp,0o600)
             fd=os.open(tmp,os.O_RDONLY); os.fsync(fd); os.close(fd); os.replace(tmp,generation)
+            dfd=os.open(self.root/"generations",os.O_RDONLY); os.fsync(dfd); os.close(dfd)
+        return generation
+
+    def publish(self, revision: int) -> pathlib.Path | None:
+        if revision == 0:
+            (self.root/"current").unlink(missing_ok=True)
+            return None
+        generation=self.root/"generations"/f"{revision:020d}.tar"
+        observed=generation.stat()
+        if not stat.S_ISREG(observed.st_mode) or observed.st_nlink!=1:
+            raise RuntimeError("RUNNER_WORKSPACE_REVISION_MISSING")
         link_tmp=self.root/f".current.{os.getpid()}"
         try: link_tmp.symlink_to(pathlib.Path("generations")/generation.name); os.replace(link_tmp,self.root/"current")
         finally:
             if link_tmp.exists() or link_tmp.is_symlink(): link_tmp.unlink()
         dfd=os.open(self.root,os.O_RDONLY); os.fsync(dfd); os.close(dfd)
         return generation
+
+
+    def reconcile(self, revision: int) -> None:
+        expected=None if revision==0 else f"generations/{revision:020d}.tar"
+        try: observed=os.readlink(self.root/"current")
+        except FileNotFoundError: observed=None
+        if observed!=expected:self.publish(revision)
+
+
+    def commit(self, archive: pathlib.Path, revision: int) -> pathlib.Path:
+        generation=self.stage(archive,revision);self.publish(revision);return generation

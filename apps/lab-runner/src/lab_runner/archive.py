@@ -1,6 +1,6 @@
 """Closed archive admission for private workspace and container output."""
 from __future__ import annotations
-import hashlib, os, pathlib, shutil, stat, tarfile, tempfile
+import hashlib, json, os, pathlib, shutil, stat, tarfile, tempfile, unicodedata
 from dataclasses import dataclass
 
 
@@ -24,8 +24,11 @@ def _parts(name: str) -> tuple[str,...]:
     return p.parts
 
 
-def inspect_tar(path: pathlib.Path, *, limits: Limits=Limits()) -> list[dict[str,object]]:
-    seen=set(); total=0; count=0; rows=[]
+MANIFEST_NAME=".runner-output-manifest.json"
+
+
+def inspect_tar(path: pathlib.Path, *, limits: Limits=Limits(), require_manifest: bool=False) -> list[dict[str,object]]:
+    seen=set(); folded=set(); total=0; count=0; rows=[];manifest=None
     try:
         tf=tarfile.open(path,"r:*")
     except (tarfile.TarError,OSError) as exc: raise ArchiveError("RUNNER_ARCHIVE_INVALID") from exc
@@ -33,17 +36,34 @@ def inspect_tar(path: pathlib.Path, *, limits: Limits=Limits()) -> list[dict[str
         for item in tf:
             parts=_parts(item.name)
             key="/".join(parts)
-            if key in seen: raise ArchiveError("RUNNER_ARCHIVE_DUPLICATE")
-            seen.add(key)
+            collision=unicodedata.normalize("NFC",key).casefold()
+            if key!=unicodedata.normalize("NFC",key) or key in seen or collision in folded: raise ArchiveError("RUNNER_ARCHIVE_DUPLICATE")
+            seen.add(key);folded.add(collision);count+=1
+            if count>limits.files:raise ArchiveError("RUNNER_ARCHIVE_QUOTA")
             if not (item.isdir() or item.isreg()) or item.issparse():
                 raise ArchiveError("RUNNER_ARCHIVE_TYPE_INVALID")
             if item.uid != 65532 or item.gid != 65532:
                 raise ArchiveError("RUNNER_ARCHIVE_OWNER_INVALID")
+            expected_mode=0o700 if item.isdir() else 0o600
+            if item.mode & 0o777 != expected_mode:raise ArchiveError("RUNNER_ARCHIVE_MODE_INVALID")
             if item.isreg():
-                count+=1; total+=item.size
-                if item.size>limits.file_bytes or count>limits.files or total>limits.total_bytes:
+                total+=item.size
+                if item.size>limits.file_bytes or total>limits.total_bytes:
                     raise ArchiveError("RUNNER_ARCHIVE_QUOTA")
-            rows.append({"path":key,"type":"directory" if item.isdir() else "file","size":item.size,"mode":item.mode & 0o777})
+                source=tf.extractfile(item)
+                if source is None:raise ArchiveError("RUNNER_ARCHIVE_INVALID")
+                raw=source.read(limits.file_bytes+1)
+                if len(raw)!=item.size:raise ArchiveError("RUNNER_ARCHIVE_INVALID")
+                if key==MANIFEST_NAME:
+                    try:manifest=json.loads(raw)
+                    except json.JSONDecodeError as exc:raise ArchiveError("RUNNER_ARCHIVE_MANIFEST_INVALID") from exc
+                    continue
+                digest=hashlib.sha256(raw).hexdigest()
+            else:digest=None
+            rows.append({"path":key,"type":"directory" if item.isdir() else "file","size":item.size,"mode":item.mode & 0o777,"sha256":digest})
+    if require_manifest:
+        expected={"schemaVersion":"runner-output-manifest-v1","entries":rows}
+        if manifest!=expected:raise ArchiveError("RUNNER_ARCHIVE_MANIFEST_INVALID")
     return rows
 
 
@@ -55,6 +75,10 @@ def extract_tar(path: pathlib.Path, destination: pathlib.Path, *, limits: Limits
         with tarfile.open(path,"r:*") as tf:
             for item in tf:
                 target=destination.joinpath(*_parts(item.name))
+                if item.name==MANIFEST_NAME:
+                    source=tf.extractfile(item)
+                    if source is None:raise ArchiveError("RUNNER_ARCHIVE_INVALID")
+                    target.write_bytes(source.read());os.chmod(target,0o600);continue
                 target.parent.mkdir(mode=0o700,parents=True,exist_ok=True)
                 if item.isdir():
                     target.mkdir(mode=0o700,exist_ok=True)

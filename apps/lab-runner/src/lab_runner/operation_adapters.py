@@ -98,7 +98,22 @@ def promotion_verify() -> dict[str,object]:
     if assertion != {"id":"four-independent-grains","severity":"critical","failureCode":"PROMOTION_COMMON_GRAIN_FORBIDDEN"}:
         raise RuntimeError("RUNNER_PROMOTION_CONTRACT_INVALID")
     assets=validate_release(STATE)
-    result={"schemaVersion":"promotion-verification-v1","decision":"insufficient-evidence","reason":"no-common-grain","assertions":[{"id":"four-independent-grains","status":"pass"},{"id":"METRIC_REFUND_NOT_ACCOUNTED","status":"pass"}],"assetCount":len(assets)}
+    verifier=_load("runner_promotion_trust",PROJECT/"scripts/golden/promotion_trust.py")
+    contract=verifier.load_contract();verifier.validate_contract(contract)
+    import duckdb
+    grains=[]
+    for source in contract["sources"]:
+        asset=str(source["sourceId"]);expected=tuple(source["grain"])
+        parquet=STATE/"serving/export"/f"{asset}.parquet"
+        columns=tuple(row[0] for row in duckdb.connect(":memory:").execute("DESCRIBE SELECT * FROM read_parquet(?)",[str(parquet)]).fetchall())
+        if any(key not in columns for key in expected):raise RuntimeError("RUNNER_PROMOTION_GRAIN_INVALID")
+        grains.append(set(expected))
+    common=set.intersection(*grains)
+    if common:raise RuntimeError("PROMOTION_COMMON_GRAIN_FORBIDDEN")
+    promotion_columns=grains[0];returns_columns=tuple(row[0] for row in duckdb.connect(":memory:").execute("DESCRIBE SELECT * FROM read_parquet(?)",[str(STATE/"serving/export/mart_returns_analysis.parquet")]).fetchall())
+    controlled_failure="total_refund_amount" not in promotion_columns and "total_refund_amount" in returns_columns
+    if not controlled_failure:raise RuntimeError("METRIC_REFUND_NOT_ACCOUNTED")
+    result={"schemaVersion":"promotion-verification-v1","decision":contract["decision"],"reason":contract["reason"],"assertions":[{"id":"four-independent-grains","status":"pass","observedCommonKeys":[]},{"id":"METRIC_REFUND_NOT_ACCOUNTED","status":"pass","observed":"refund-metric-is-independent-returns-grain"}],"assetCount":len(assets),"contractSha256":hashlib.sha256((PROJECT/"contracts/data/promotion-trust-v1.yaml").read_bytes()).hexdigest()}
     (STATE/"promotion-verification.json").write_text(json.dumps(result,sort_keys=True,separators=(",",":"))+"\n")
     return result
 

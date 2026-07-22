@@ -39,6 +39,10 @@ class Store:
         CREATE TRIGGER IF NOT EXISTS audit_no_delete BEFORE DELETE ON audit BEGIN SELECT RAISE(ABORT,'AUDIT_IMMUTABLE'); END;
         """)
         os.chmod(self.path, 0o600)
+        if self.db.execute("SELECT COUNT(*) FROM audit").fetchone()[0]==0:
+            self.db.execute("BEGIN IMMEDIATE")
+            self._append({"kind":"genesis"})
+            self.db.execute("COMMIT")
         self.verify_audit()
 
     def verify_audit(self) -> None:
@@ -83,6 +87,16 @@ class Store:
         now=time.time_ns()
         self.db.execute("BEGIN IMMEDIATE")
         try:
+            row=self.db.execute("SELECT status FROM runs WHERE run_id=? AND fence=?",(run_id,fence)).fetchone()
+            allowed={
+                "admitted":{"created","failed"},
+                "created":{"started-awaiting-input","removed","failed"},
+                "started-awaiting-input":{"executing","removed","failed"},
+                "executing":{"removed","failed"},
+                "removed":{"failed"},
+            }
+            if not row: raise StateError("RUNNER_STALE_IDENTITY")
+            if status not in allowed.get(str(row[0]),set()): raise StateError("RUNNER_ILLEGAL_TRANSITION")
             cur=self.db.execute("UPDATE runs SET status=?,container_id=COALESCE(?,container_id),image_digest=COALESCE(?,image_digest),updated_ns=? WHERE run_id=? AND fence=?",(status,container_id,image_digest,now,run_id,fence))
             if cur.rowcount != 1: raise StateError("RUNNER_STALE_IDENTITY")
             self._append({"kind":"transition","runId":run_id,"status":status,"fence":fence})

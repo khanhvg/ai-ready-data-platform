@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import concurrent.futures
+import datetime
 import hashlib
 import importlib.util
 import io
@@ -27,6 +28,7 @@ MANIFEST = APP / "tests/red-manifest.json"
 COOK_INPUT = "f6791555dc8b2ada6fa44747ca829a3d9cd87667"
 STAGE_A = "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9"
 sys.path.insert(0, str(SRC))
+sys.path.insert(0, str(ROOT))
 
 from lab_runner.archive import ArchiveError, Limits, inspect_tar
 from lab_runner.container_backend import Backend
@@ -36,7 +38,7 @@ from lab_runner.engine import Engine, EngineError
 from lab_runner.evidence import write as write_evidence
 from lab_runner.fence import acquire
 from lab_runner.registry import RegistryError, operation_ids, validate_request
-from lab_runner.release import ASSETS
+from lab_runner.release import ASSETS,validate as validate_release
 from lab_runner.service import RunnerService
 from lab_runner.state import StateError, Store
 from lab_runner.transport import TransportError, admit
@@ -71,6 +73,7 @@ def expect_error(error: type[BaseException], code: str, call: Callable[[], objec
 
 class Gate:
     def __init__(self) -> None:
+        validate_released_contract(ROOT,APP/"config/released-contract-lock.json")
         self.engine = Engine()
         self.engine_info = self.engine.admit()
         inspected = self.engine.json(["image", "inspect", "ai-ready-lab-runner:issue9"])
@@ -78,6 +81,8 @@ class Gate:
             raise RuntimeError("RUNNER_IMAGE_UNADMITTED")
         self.image_observation = inspected[0]
         self.image = str(inspected[0]["Id"])
+        release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
+        if release.get("imageDigest")!=self.image:raise RuntimeError("RUNNER_IMAGE_RELEASE_MISMATCH")
         self.rows: dict[str, dict[str, object]] = {}
         evidence_root = APP / ".local-state/evidence/gates"
         evidence_root.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -193,9 +198,23 @@ class Gate:
             value = self.fixture_backend._inspect(self._probe_container(create_only=True))
             try: self.fixture_backend.effective(value, self.image)
             finally: self.remove_test_container(str(value["Id"]))
-            changed = json.loads(json.dumps(value)); changed["HostConfig"]["ReadonlyRootfs"] = False
-            expect_error(EngineError, "RUNNER_CONTAINMENT_UNAVAILABLE", lambda: self.fixture_backend.effective(changed, self.image))
-            return {"effectiveFields": "observed"}
+            mutations=(
+                ("ReadonlyRootfs",False),("NetworkMode","bridge"),("Init",False),("PidsLimit",65),
+                ("Memory",536870911),("MemorySwap",-1),("NanoCpus",1_000_000_000),("CapDrop",[]),
+                ("Devices",[{"PathOnHost":"/dev/null"}]),("ShmSize",33554432),("GroupAdd",["0"]),
+            )
+            checked=[]
+            for field,replacement in mutations:
+                changed=json.loads(json.dumps(value));changed["HostConfig"][field]=replacement
+                expect_error(EngineError,"RUNNER_CONTAINMENT_UNAVAILABLE",lambda c=changed:self.fixture_backend.effective(c,self.image));checked.append(field)
+            for name in ("/workspace","/tmp","/run"):
+                changed=json.loads(json.dumps(value));changed["HostConfig"]["Tmpfs"][name]="rw,size=1"
+                expect_error(EngineError,"RUNNER_CONTAINMENT_UNAVAILABLE",lambda c=changed:self.fixture_backend.effective(c,self.image));checked.append(name)
+            changed=json.loads(json.dumps(value));changed["HostConfig"]["SecurityOpt"]=["no-new-privileges"]
+            expect_error(EngineError,"RUNNER_CONTAINMENT_UNAVAILABLE",lambda:self.fixture_backend.effective(changed,self.image));checked.append("seccomp")
+            changed=json.loads(json.dumps(value));changed["Config"]["Env"].append("AWS_SECRET_ACCESS_KEY=canary")
+            expect_error(EngineError,"RUNNER_CONTAINMENT_UNAVAILABLE",lambda:self.fixture_backend.effective(changed,self.image));checked.append("environment")
+            return {"effectiveFields":checked}
 
         def img1() -> object:
             image = self.image_observation
@@ -292,7 +311,7 @@ class Gate:
         self.record("RED-PID-003", lambda: observations["main_crash.py:"] if protocol("main_crash.py").get("status") == "fail" else (_ for _ in ()).throw(AssertionError("crash committed")))
         self.record("RED-PID-004", lambda: {"resourceTrackerObserved": self.dbt_tracker, "descendantPeak": self.dbt_peak} if self.dbt_tracker and self.dbt_peak >= 2 else (_ for _ in ()).throw(AssertionError("tracker absent")))
         self.record("RED-PID-005", lambda: observations["fork_bomb.py:"] if 2 <= protocol("fork_bomb.py").get("descendantPeak", 0) <= 64 else (_ for _ in ()).throw(AssertionError("pids limit")))
-        self.record("RED-PID-006", lambda: {"authority": "container-namespace-remove", "polling": "evidence-only"})
+        self.record("RED-PID-006", lambda: {"protocol":protocol("rapid_double_fork.py"),"containerAbsent":self._no_runner_containers(),"authority":"container-remove"} if protocol("rapid_double_fork.py").get("failureCode")=="RUNNER_DESCENDANT_SURVIVOR" and self._no_runner_containers() else (_ for _ in ()).throw(AssertionError("polling changed authority")))
 
         exact_timeout = self.supervised("reparent_setsess_daemon.py", (), 110)
         exact_protocol = dict(exact_timeout.get("protocol") or {})
@@ -305,7 +324,7 @@ class Gate:
         self.record("RED-NET-003", lambda: {"metadataReachable": network_result.get("('169.254.169.254', 80)")})
 
         self.record("RED-OUT-001", lambda: observations["output_flood.py:"] if protocol("output_flood.py").get("failureCode") == "RUNNER_OUTPUT_LIMIT" and protocol("output_flood.py").get("stdoutBytes") <= 2097152 else (_ for _ in ()).throw(AssertionError("stream cap")))
-        self.record("RED-OUT-002", lambda: {"protocolLimit": 65536, "archiveLimit": 268435456, "rawPersisted": False})
+        self.record("RED-OUT-002", self._bounded_protocol_archive)
         effective = network["inspect"]["HostConfig"]
         self.record("RED-RES-001", lambda: {"memory": effective["Memory"], "swap": effective["MemorySwap"], "pids": effective["PidsLimit"]} if (effective["Memory"], effective["MemorySwap"], effective["PidsLimit"]) == (536870912, 536870912, 64) else (_ for _ in ()).throw(AssertionError("cgroup")))
         self.record("RED-RES-002", lambda: observations["resource_probe.py:cpu"] if protocol("resource_probe.py", ("cpu",)).get("failureCode") == "RUNNER_TIMEOUT" and effective["NanoCpus"] == 2000000000 else (_ for _ in ()).throw(AssertionError("cpu")))
@@ -382,16 +401,16 @@ class Gate:
         self.record("RED-IDM-001", lambda: {"replayEqual": replay==results[0], "runId": results[0]["runId"]})
         self.record("RED-IDM-002", lambda: self._idempotency_conflict(service, results[0]))
         self.record("RED-REL-001", lambda: self._release_invalid())
-        self.record("RED-REL-002", lambda: {"assetSet": list(ASSETS), "readerView": "complete"})
+        self.record("RED-REL-002", self._release_reader_atomicity)
         self.record("RED-FEN-001", lambda: self._lock_serialization())
-        self.record("RED-FEN-002", lambda: {"workspaceRevisions": [row["workspaceRevision"] for row in results], "mixed": False})
+        self.record("RED-FEN-002", lambda: self._stale_revision_conflict(service))
         self.record("RED-AUD-001", lambda: self._audit_immutable(runtime))
         self.record("RED-CRS-001", lambda: {"sqliteSynchronous": service.store.db.execute("PRAGMA synchronous").fetchone()[0], "auditVerified": self._verified(service.store)})
         self.record("RED-CRS-002", lambda: self._workspace_atomic())
-        self.record("RED-CRS-003", lambda: {"durableReplay": replay==results[0]})
+        self.record("RED-CRS-003", self._durable_replay)
         self.record("RED-REC-001", lambda: self._recover_admitted())
         self.record("RED-REC-002", lambda: self._stale_identity())
-        self.record("RED-REC-003", lambda: {"teardownBeforeCommit": True, "committedRuns": len(results)})
+        self.record("RED-REC-003", self._durable_replay)
         self.record("RED-ROL-001", lambda: {"exactOwnedCleanup": self._no_runner_containers(), "foreignUnchanged": self._foreign_unchanged()})
         self.operations=results
 
@@ -401,8 +420,57 @@ class Gate:
         return {"conflictBeforeContainer":True,"originalRunId":first["runId"]}
 
     def _release_invalid(self) -> object:
-        if len(ASSETS)!=11 or len(set(ASSETS))!=11:raise AssertionError("asset catalogue")
-        return {"missingRejected": True, "assetCount": len(ASSETS)}
+        root=self.root/"invalid-release";export=root/"serving/export";export.mkdir(parents=True)
+        for asset in ASSETS:
+            path=export/f"{asset}.parquet";path.write_bytes(b"PAR1validPAR1");os.chmod(path,0o600)
+        accepted=validate_release(root)
+        (export/f"{ASSETS[-1]}.parquet").unlink()
+        expect_error(RuntimeError,"RUNNER_RELEASE_ASSET_SET_INVALID",lambda:validate_release(root))
+        return {"missingRejected":True,"validHashes":[row["sha256"] for row in accepted],"assetCount":len(accepted)}
+
+    def _bounded_protocol_archive(self)->object:
+        protocol=self.root/"oversize-protocol.json";protocol.write_bytes(b"{"+b"x"*65536+b"}")
+        expect_error(RuntimeError,"RUNNER_PROTOCOL_LIMIT",lambda:read_protocol(protocol))
+        archive=self.root/"oversize-archive.tar"
+        with tarfile.open(archive,"w") as tf:
+            info=tarfile.TarInfo("huge");info.uid=info.gid=65532;info.mode=0o600;info.size=2;tf.addfile(info,io.BytesIO(b"xx"))
+        expect_error(ArchiveError,"RUNNER_ARCHIVE_QUOTA",lambda:inspect_tar(archive,limits=Limits(total_bytes=1,file_bytes=1,files=1)))
+        return {"protocolOverflowRejected":True,"archiveOverflowRejected":True,"rawPersisted":False}
+
+    def _release_reader_atomicity(self)->object:
+        workspace=Workspace(self.root/"release-readers");archives=[]
+        for revision,payload in ((1,b"one"),(2,b"two")):
+            source=self.root/f"reader-{revision}.tar"
+            with tarfile.open(source,"w") as tf:
+                info=tarfile.TarInfo("value");info.uid=info.gid=65532;info.mode=0o600;info.size=len(payload);tf.addfile(info,io.BytesIO(payload))
+            archives.append(workspace.stage(source,revision))
+        workspace.publish(1);observed=[];stop=False
+        def reader()->None:
+            while not stop:
+                try:
+                    target=os.readlink(workspace.root/"current");observed.append(target)
+                except FileNotFoundError:observed.append("missing")
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            future=pool.submit(reader)
+            for _ in range(100):workspace.publish(2);workspace.publish(1)
+            stop=True;future.result()
+        if not observed or set(observed)-{"generations/00000000000000000001.tar","generations/00000000000000000002.tar"}:raise AssertionError("partial release")
+        return {"readerSamples":len(observed),"completeGenerations":sorted(set(observed))}
+
+    def _stale_revision_conflict(self,service:RunnerService)->object:
+        before=self._no_runner_containers()
+        request={"operationId":"workspace.prepare","idempotencyKey":"stale-revision-gate","workspaceRevision":service.current_revision()-1}
+        expect_error(StateError,"RUNNER_CONFLICT",lambda:service.store.admit(validate_request(request),999999))
+        if not before or not self._no_runner_containers():raise AssertionError("container allocated")
+        return {"conflictBeforeContainer":True,"currentRevision":service.current_revision()}
+
+    def _durable_replay(self)->object:
+        root=self.root/f"replay-{time.time_ns()}";store=Store(root);request=validate_request({"operationId":"workspace.prepare","idempotencyKey":"durable-replay-gate","workspaceRevision":0})
+        admission=store.admit(request,1);store.transition(admission.run_id,1,"created");store.transition(admission.run_id,1,"removed")
+        result={"status":"pass","runId":admission.run_id};store.commit(admission.run_id,1,result,1);store.db.close()
+        reopened=Store(root);replay=reopened.admit(request,2)
+        if replay.replay!=result:raise AssertionError("durable replay mismatch")
+        return {"runId":admission.run_id,"replayEqual":True}
 
     def _lock_serialization(self) -> object:
         lock_root=self.root/"lock-test"
@@ -553,8 +621,14 @@ class Gate:
         for row in manifest["rows"]:
             value={"id":row["id"],"oracle":row["oracle"],"fixtureMarker":{"fixture":row["fixture"],"sha256":sha256(APP/str(row["fixture"]))},**self.rows[row["id"]]}
             results.append(value)
+        head=subprocess.run(["git","rev-parse","HEAD"],cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE).stdout.strip()
+        tree=subprocess.run(["git","rev-parse","HEAD^{tree}"],cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE).stdout.strip()
+        policy_sha=sha256(APP/"container/seccomp-runner-v1.json")
+        for row in results:
+            row_path=self.root/"rows"/f"{row['id']}.json";row_path.parent.mkdir(mode=0o700,exist_ok=True)
+            row_path.write_text(json.dumps(row,sort_keys=True,separators=(",",":"))+"\n");os.chmod(row_path,0o600)
         output={
-            "schemaVersion":"runner-gate-result-v1","inputSha":COOK_INPUT,"sourceDigest":source_digest(),"imageDigest":self.image,
+            "schemaVersion":"runner-gate-result-v1","cookInputSha":COOK_INPUT,"headSha":head,"treeSha":tree,"sourceDigest":source_digest(),"imageDigest":self.image,"policySha256":policy_sha,
             "manifestSha256":sha256(MANIFEST),"redRows":sum(row["id"].startswith("RED-") for row in results),
             "s3Rows":sum(row["id"].startswith("S3-") for row in results),"passed":sum(row["status"]=="pass" for row in results),
             "failed":sum(row["status"]!="pass" for row in results),"evidenceRole":self.root.relative_to(APP).as_posix(),"results":results,
@@ -575,22 +649,55 @@ def evaluate_case(row: dict[str, object]) -> dict[str, object]:
         if not latest.is_file():raise RuntimeError("RUNNER_GATE_EVIDENCE_MISSING")
         value=json.loads(latest.read_text())
         if value.get("sourceDigest")!=source_digest():raise RuntimeError("RUNNER_GATE_EVIDENCE_STALE")
+        head=subprocess.run(["git","rev-parse","HEAD"],cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE).stdout.strip()
+        tree=subprocess.run(["git","rev-parse","HEAD^{tree}"],cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE).stdout.strip()
+        if value.get("headSha")!=head or value.get("treeSha")!=tree or value.get("policySha256")!=sha256(APP/"container/seccomp-runner-v1.json"):raise RuntimeError("RUNNER_GATE_EVIDENCE_STALE")
         _EVALUATED={item["id"]:item for item in value["results"]}
     return _EVALUATED[str(row["id"])]
 
 
+def emit_fitness(command_id:str,gate_value:dict[str,object],started:float)->dict[str,object]:
+    from scripts.learning_contracts.canonical import canonical_bytes
+    from scripts.learning_contracts.fitness import verify_fitness
+    manifest=json.loads(MANIFEST.read_text());expected=[row["id"] for row in manifest["rows"]]
+    results=gate_value.get("results")
+    if not isinstance(results,list) or [row.get("id") for row in results]!=expected or any(row.get("status")!="pass" for row in results):raise RuntimeError("RUNNER_GATE_EVIDENCE_INCOMPLETE")
+    gate_root=APP/str(gate_value["evidenceRole"]);gate_result=gate_root/"gate-result.json"
+    artifacts=[]
+    for case_id in expected:
+        path=gate_root/"rows"/f"{case_id}.json"
+        if not path.is_file():raise RuntimeError("RUNNER_GATE_EVIDENCE_INCOMPLETE")
+        artifacts.append({"locator":path.relative_to(ROOT).as_posix(),"mediaType":"application/json","size":path.stat().st_size,"sha256":sha256(path)})
+    artifacts.append({"locator":gate_result.relative_to(ROOT).as_posix(),"mediaType":"application/json","size":gate_result.stat().st_size,"sha256":sha256(gate_result)})
+    contract_lock=json.loads((APP/"config/released-contract-lock.json").read_text())
+    contract_hashes=[{"name":f"contract-{index:03d}","sha256":row["sha256"]} for index,row in enumerate(contract_lock["pins"],1)]
+    fixture_hashes=[{"name":row["id"],"sha256":sha256(APP/str(row["fixture"]))} for row in manifest["rows"]]
+    schema_hashes=[{"name":"fitness-result-v2","sha256":sha256(ROOT/"learning/contracts/fitness-result-v2.schema.json")}]
+    now=datetime.datetime.now(datetime.UTC);argv=[sys.executable,str(APP/"tools/run-gate.py")]
+    value={"schemaVersion":"fitness-result-v2","commandId":command_id,"owner":"I5-04","requested":{"subjectType":"contract-set","subjectId":"issue-9-container-runner","parameters":[]},"status":"pass","failureCode":None,"remediation":None,"inputSha":str(gate_value["headSha"]),"testedTreeSha":str(gate_value["treeSha"]),"dependencyMergeShas":["5644f01b4c0443a81f3af0bcce80f44c847cd986",STAGE_A],"contractHashes":contract_hashes,"fixtureHashes":fixture_hashes,"schemaHashes":schema_hashes,"toolchain":[{"name":"python","version":f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"},{"name":"docker","version":"29.4.0"}],"lockSha256":sha256(APP/"requirements/runner-py312-linux-arm64.lock"),"invocation":{"publicArgv":["make",command_id],"canonicalChildArgv":["python3.12","apps/lab-runner/tools/run-gate.py"],"actualChildArgvSha256":hashlib.sha256(canonical_bytes(argv)).hexdigest(),"cwdRole":"repository-root"},"startedAt":datetime.datetime.fromtimestamp(started,datetime.UTC).isoformat().replace("+00:00","Z"),"finishedAt":now.isoformat().replace("+00:00","Z"),"durationMs":max(0,int((time.time()-started)*1000)),"rawLocator":gate_result.relative_to(ROOT).as_posix(),"projectionLocator":None,"envelopeLocator":None,"projectionSha256":None,"artifacts":artifacts,"redactionClass":"public-contract-evidence","retentionClass":"review-bundle","rollback":{"supported":True,"preserveEvidence":True},"canonicalization":"RFC8785"}
+    value["payloadSha256"]=hashlib.sha256(canonical_bytes(value)).hexdigest()
+    activation=json.loads((APP/"config/command-owner-activation-i5-04-v1.json").read_text());verify_fitness(value,root=ROOT,activation=activation)
+    target=APP/".local-state/evidence/verifiers"/command_id;target.mkdir(mode=0o700,parents=True,exist_ok=True);os.chmod(target,0o700)
+    envelope=target/"fitness-result-v2.json";temporary=target/f".{os.getpid()}.tmp";temporary.write_text(json.dumps(value,sort_keys=True,separators=(",",":"))+"\n");os.chmod(temporary,0o600);os.replace(temporary,envelope)
+    return value
+
+
 def main() -> int:
+    started=time.time()
     if len(sys.argv)!=1:
         print("run-gate accepts no selectors",file=sys.stderr);return 2
     mode=os.environ.get("RUNNER_GATE_MODE","full")
     if mode=="verify":
+        command=os.environ.get("RUNNER_PUBLIC_COMMAND")
+        if command not in ("runner-test","runner-security-test","runner-race-test"):print("missing fixed public command",file=sys.stderr);return 2
+        latest=APP/".local-state/evidence/gates/latest.json";gate_value=json.loads(latest.read_text()) if latest.is_file() else {}
         manifest=json.loads(MANIFEST.read_text());results=[evaluate_case(row) for row in manifest["rows"]]
-        output={"schemaVersion":"runner-gate-verification-v1","sourceDigest":source_digest(),"redRows":sum(row["id"].startswith("RED-") and row["status"]=="pass" for row in results),"s3Rows":sum(row["id"].startswith("S3-") and row["status"]=="pass" for row in results),"failed":sum(row["status"]!="pass" for row in results)}
+        output=emit_fitness(command,gate_value,started)
     elif mode=="full":output=Gate().run()
     else:
         print("invalid fixed gate mode",file=sys.stderr);return 2
     print(json.dumps(output,sort_keys=True,separators=(",",":")))
-    return 0 if output["failed"]==0 else 1
+    return 0 if output.get("failed",0)==0 and output.get("status","pass")=="pass" else 1
 
 
 if __name__=="__main__":raise SystemExit(main())
