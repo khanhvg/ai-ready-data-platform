@@ -982,9 +982,12 @@ def _validate_owned_artifacts(evidence_root: Path) -> tuple[list[tuple[Path, dic
     }
     if not inventory_rows or set(inventory_rows) != actual_roots:
         raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
-    allowed_purposes = {"learning-contracts-check", "lesson-check", "api-contracts-check", "architecture-check", "architecture-render", "help"}
+    allowed_purposes = {"learning-contracts-check", "lesson-check", "api-contracts-check", "architecture-check", "architecture-render", "command-registry"}
     plans: list[tuple[Path, dict[str, object], list[Path], list[Path]]] = []
     destinations: set[Path] = set()
+    destination_dir = evidence_root / "protected-command-results"
+    if destination_dir.exists():
+        raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
     for relative_root, expected_owner in sorted(inventory_rows.items()):
         run_root = artifacts / relative_root
         marker = run_root / ".golden-owner.json"
@@ -994,7 +997,7 @@ def _validate_owned_artifacts(evidence_root: Path) -> tuple[list[tuple[Path, dic
         record = json.loads(marker.read_text(encoding="utf-8"))
         observed = run_root.stat()
         relative = run_root.relative_to(artifacts)
-        admitted_family = relative.parts[:2] in {("evidence", "learning-contracts"), ("evidence", "architecture-check"), ("evidence", "architecture-render"), ("workspaces", "golden")}
+        admitted_family = relative.parts[:2] in {("evidence", "learning-contracts"), ("evidence", "architecture-check"), ("evidence", "architecture-render"), ("evidence", "command-registry"), ("workspaces", "golden")}
         if (
             record.get("schemaVersion") != "golden-owner-v1"
             or (record.get("device"), record.get("inode")) != (observed.st_dev, observed.st_ino)
@@ -1012,7 +1015,7 @@ def _validate_owned_artifacts(evidence_root: Path) -> tuple[list[tuple[Path, dic
         if any(not stat.S_ISREG(path.stat().st_mode) or path.is_symlink() for path in results):
             raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
         result_destinations = [
-            evidence_root / "protected-command-results" / f"{record['purpose']}-{record['runId']}-{path.name}"
+            destination_dir / f"{record['purpose']}-{record['runId']}-{path.name}"
             for path in results
         ]
         if any(path in destinations or path.exists() for path in result_destinations):
