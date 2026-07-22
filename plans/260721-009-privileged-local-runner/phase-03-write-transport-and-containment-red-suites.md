@@ -1,132 +1,91 @@
----
-phase: 3
-title: "Write transport and containment RED suites"
-status: pending
-priority: P1
-dependencies: [1, 2]
-effort: "1.5 implementation days"
----
+# Phase 3 — Commit Public-Path Container RED Suites
 
-# Phase 3: Write Transport and Containment RED Suites
+## Objective
 
-## Overview
+Commit tests and inert adversarial fixtures before production launcher/container behavior. Fast
+contract/policy tests first fail through the three public I5-04 verifier targets. Long-running real
+container cases first fail through the fixed no-argument shard harness for the intended missing
+behavior, not because collection is broken.
 
-Commit the complete security/race/crash/idempotency suite RED before runner behavior. Tests use
-the exact released Issue #8 schemas/readers and Phase 1 harmless fixtures. Every RED execution
-enters through the real public `make runner-test`, `make runner-security-test`, or
-`make runner-race-test` path and reaches its named fixture marker; helper-only or missing-command
-failure is not evidence. Required absence/tool/dependency conditions fail explicitly and cannot be
-converted to skips.
+## TDD Gate
 
-This phase is not admitted at the current plan head. Exact dbt operation feasibility is 7/8; the
-future all-eight backend gate must pass before these product RED files may be created.
+Production source, Dockerfile behavior and image release records remain absent. Tests may define
+schemas/helpers inside test code only. Capture a RED manifest containing assertion ID, threat,
+suite/shard, verifier target, expected failing assertion and fixture hash. The fixed
+apps/lab-runner/tools/run-gate.py invocation has no selector and runs every declared shard; no
+caller can skip a case. Commit this test-only slice before Phase 4.
 
-## Context Links
+After the exact i5-04.mk RED verifier fragment exists, hash its actual bytes and emit the Issue #9
+activation instance with the released base-registry hash and exactly the three fitness-result-v2
+commands. Validate it with the released activation schema/verifier in the same RED commit. No
+placeholder fragment or activation hash is permitted.
 
-- [RED assertion families](./verification-evidence-and-rollback.md#red-assertion-families)
-- [Threat matrix](./requirements-risk-threat-traceability.md#threat-and-abuse-case-matrix)
-- [Private transport](./implementation-boundary-and-design.md#private-transport)
-- [Containment/quotas](./implementation-boundary-and-design.md#host-containment-and-process-quotas)
+## Required RED Families
 
-## Requirements
+1. Transport: Host/Origin/CSRF/bearer/UDS peer, duplicate headers, cookies, Fetch Metadata, CORS,
+   framing and 16384-byte body limit before allocation.
+2. Registry: exact eight enum values and fixed zero-argument descriptors; raw argv/env/path/URL/
+   SQL/plugin/install/image/Docker options rejected.
+3. Engine: stopped/missing/wrong-owner/non-socket/remote endpoint, ignored effective fields and
+   stale image identity fail closed with no host fallback.
+4. PID lifecycle: rapid double-fork, reparent, setsid, daemonized child, TERM-ignore, main crash,
+   resource-tracker, and zero survivors after stop/KILL/wait/remove.
+5. Fork bomb: real fork pressure reaches pids-limit 64, remains bounded, and teardown removes the
+   namespace. A polled list is asserted as evidence only.
+6. Network: DNS, TCP, UDP, listener and cloud metadata probes fail under network none; no published
+   port or resolvable DNS path exists.
+7. Filesystem/archive: read-only root/base, traversal, symlink, hardlink, FIFO/socket/device,
+   sparse/oversize, ownership/mode/count/hash mismatch and use-time swap.
+8. Environment/output: cloud, credential, proxy, Docker, home, Python/dbt plugin and tracing
+   canaries absent; stdout/stderr/protocol/output flood bounded without raw persistence.
+9. Resources: memory/no-swap, CPU, pids, workspace/tmpfs, file, FD and 120-second TERM-to-KILL
+   envelopes verified from effective state and observable enforcement.
+10. Recovery: interrupted create/start-awaiting-input/copy/verify/execute/archive/stop/remove, main
+    crash, stale/reused container identity, duplicate request, stale fence and restart
+    reconciliation.
+11. Atomicity: reset and exact eleven-asset export crash/concurrency matrices preserve old-or-new
+    complete state.
+12. Feasibility: one real-flow assertion per exact command, with retail.dbt-build requiring pinned
+    dbtRunner and its tracker contained inside the namespace.
 
-- Cover every user-required negative class before behavior changes.
-- Deterministic barriers force race/TOCTOU/crash windows; timing-only sleeps are insufficient.
-- Assert zero process/operation/audit allocation for pre-admission request failures.
-- Assert base/protected/foreign state unchanged on every attack.
-- Retain a machine-readable RED manifest tied to exact Issue #6/#8/input SHAs.
-- Use every exact stable ID and pre-behavior oracle in the verification companion; prefixes or
-  dynamically assigned IDs are insufficient.
-- Retain the exact test-only RED commit before any production runner module/behavior commit. RED
-  reruns after implementation are regression evidence, not a substitute for that contemporaneous
-  pre-behavior commit.
+## Shards and Public Verifier Targets
 
-## Related Code Files
+The no-argument shard harness runs contract/unit, all-eight, expert compatibility, transport,
+Engine, containment, supply-chain, race, recovery and rollback cases. Each shard records exact
+head/image/policy/fixture identities, monotonic timing, result and artifact hashes. Long suites may
+take more than 120 seconds overall; no shard or operation exceeds its own applicable limit.
 
-- Create test/gate scaffolding only: `apps/lab-runner/pyproject.toml`, the three exact
-  `apps/lab-runner/requirements/runner-py312-macos-arm64.{in,lock,metadata.json}` files,
-  `apps/lab-runner/config/runtime-policy-v1.toml`,
-  `apps/lab-runner/config/command-owner-activation-i5-04-v1.json`,
-  `apps/lab-runner/tools/run-gate.py`, and `mk/issue-5/i5-04.mk`
-- Extend/rehash: `apps/lab-runner/config/released-contract-lock.json` created in Phase 2 with
-  release pins; add the measured fragment/activation hashes after their Phase 3 bytes exist
-- Create: `apps/lab-runner/tests/security/test_{interpreter_import,argv_registry,path_toctou,environment_network,quotas_output_descendants,base_immutability,browser_transport}.py`
-- Create: `apps/lab-runner/tests/race/test_{fencing,cross_entrypoint,release_atomicity,crash_recovery,idempotency}.py`
-- Create: `apps/lab-runner/tests/unit/test_{transport_policy,runtime_policy,workspace_policy,state_machine,release_policy,evidence_policy}.py`
-- Create: `apps/lab-runner/tests/red-manifest.json`
-- Reuse read-only: Phase 1 test fixtures and released Issue #8 schema/reader modules; Stage A
-  releases no generated binding procedure or generated output list
-- Modify/Delete: no existing path; the new Make fragment owns only the three reserved targets
+- runner-test verifies the complete fresh functional shard set, all-eight/expert results and
+  evidence closure, then emits one fitness-result-v2 verifier envelope in under 120000 ms.
+- runner-security-test verifies the complete fresh security/S3 shard set, including the real
+  110-second timeout shard, then emits one fitness-result-v2 verifier envelope in under 120000 ms.
+- runner-race-test verifies the complete fresh race/recovery/rollback shard set and emits one
+  fitness-result-v2 verifier envelope in under 120000 ms.
 
-## Tests Before
+Each verifier rejects a missing, stale, duplicate, failed, skipped, foreign-head/image/policy or
+hash-mismatched shard. It never claims the aggregate shard execution duration as its own
+durationMs. data-contracts-check remains the released I5-01 fitness-result-v1 target and is not
+modified.
 
-This phase is the tests-before phase. Each family must:
+## RED Acceptance
 
-1. Fail with its stable `RED-*` assertion because runner behavior is absent or deny-by-default.
-2. Prove fixture/precondition reached with an independent marker.
-3. Cap its own runtime, output, paths, child count and cleanup.
-4. Record expected denial/state/pointer/base/process oracle.
-5. Refuse skipped/xfail/expectedFailure treatment for required cases.
+- All tests collect with stable fixture hashes and no skipped required assertion.
+- Each behavior shard fails at its intended production seam; missing engine is used only by the
+  dedicated preflight test, not to fake adversarial container coverage.
+- No fixture can escape its future operation container or select host paths.
+- Protected paths remain unchanged; only exact Issue #9 test, fixture, package metadata and
+  i5-04.mk wiring appear in the test-only commit.
 
-## Implementation Steps
+## Exit Criteria
 
-1. Create the pinned test environment and minimal non-behavior gate dispatcher. Add only the three
-   exact recipes to the new I5-04 Make fragment; create its exact activation instance from actual
-   fragment bytes and verify `fitness-result-v2` authority. No production runner module exists yet.
-2. Add pure policy/type/registry/property tests using Issue #8 bindings; unknown fields and command
-   variants must fail before process resolution.
-3. Add UDS and explicit loopback-fallback tests for exact Host, absent Origin, auth, CSRF, Fetch
-   Metadata, content type/framing/body bounds, launch replay, no CORS and browser-direct denial.
-4. Add import/startup/entrypoint/env tests with canary modules/configs and an argv/env spy.
-5. Add descriptor/path/TOCTOU/base tests with barriers that swap parent, child, pointer and temp
-   entries between check and use.
-6. Add CPU/RSS/disk/file/FD/output/single-worker tests. All fork/spawn/subprocess/multiprocessing
-   child attempts and rapid double-fork/setsid attempts must be denied before their first child
-   marker. Separately, exact PID/start TERM→KILL→wait must reap a TERM-ignore main worker after
-   same-process `setsid`. The suite fails admission if any released adapter requires child/exec or
-   if before/after inventory is non-empty.
-7. Add deterministic OS containment probes for network denial, base write denial, workspace write,
-   required import and process cleanup.
-8. Add runner/runner, reset/export/verify, Make expert non-overlap and learner-targeted Airflow
-   denial barriers. The Airflow case must initially prove current explicit-path acceptance, then
-   require `RUNNER_LEARNER_NAMESPACE_RESERVED` before child/import/write.
-9. Add kill/fault points before/after SQLite, audit, file fsync, manifest, pointer rename/fsync,
-   result commit and response acknowledgment; add replay/conflicting-request cases.
-10. Run all three public Make targets, generate the RED manifest, and prove every listed assertion
-    fails after its marker for the intended absent/refusing behavior. Commit these test-only bytes
-    and evidence before Phase 4 creates any runner source module.
+- The complete RED catalog is committed separately.
+- The fixed no-argument shard harness and exact four verifier commands are wired without root Make
+  changes.
+- The activation instance binds the actual i5-04.mk fragment hash and validates against the
+  released schema; Phase 2 did not predict it.
+- Reviewer can map every RUN and THR row to at least one RED assertion.
 
-## Refactor
+## Rollback
 
-None. Only test/gate scaffolding, tests, fixtures and read-only released schema/reader interfaces
-exist. Do not create a generated binding or production helper that makes tests pass in this phase.
-
-## Tests After
-
-- Run the RED suite twice through the exact public Make targets with randomized safe IDs and
-  deterministic barriers.
-- Verify no fixture/process/socket/temp state remains outside marker-owned test roots.
-- Verify protected hashes/Git tree and previous current pointer are unchanged.
-
-## Regression Gate
-
-- Every required family is represented and RED.
-- No pass caused by missing tool, missing contract, unsupported host, or fixture/setup failure.
-- RED manifest has stable IDs, exact SHAs, expected failure and future owning module.
-
-## Risk and Security
-
-Adversarial helpers are themselves attack surfaces. They live only below the app tests, accept
-only test-created descriptors/paths, use hard timeouts, never use sudo/network/cloud/container,
-and are excluded from runtime package entrypoints.
-
-## Success Criteria
-
-- [ ] All mandatory negatives exist and are demonstrably RED first.
-- [ ] Race/crash tests use deterministic barriers at every commit boundary.
-- [ ] Browser/request failures allocate no privileged operation.
-- [ ] Base, expert namespace, foreign state, and host processes remain untouched.
-
-## Next Steps
-
-Phase 4 implements only enough fail-closed core behavior to turn the relevant RED suites GREEN.
+Revert only the Issue #9 RED commit. No container/image/runtime cleanup is necessary because this
+phase does not build or run the production image.

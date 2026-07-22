@@ -1,123 +1,64 @@
----
-phase: 1
-title: "Characterize seams and design RED fixtures"
-status: pending
-priority: P1
-dependencies: []
-effort: "1 implementation day"
----
+# Phase 1 — Characterize Seams and Record Local Engine Gate
 
-# Phase 1: Characterize Seams and Design RED Fixtures
+## Objective
 
-## Overview
+Freeze the exact released implementation seams, confirm the implementation tree is an eligible
+clean remote-equal Stage A descendant, and resolve the local engine prerequisite without executing
+any semantic operation or weakening containment.
 
-Dependency-independent pre-implementation work, currently blocked before source/RED changes. The
-planning-only capability investigation proves fork prevention and exact same-worker reap but also
-proves the pinned dbt operation requires a denied resource-tracker child. This phase cannot resume
-until the owner/platform dependency decision in the capability amendment is released and freshly
-validated.
+## Entry Gates
 
-## Context Links
+- Work only in the designated Issue #9 worktree and branch.
+- Local, tracking and remote heads are equal and descend from
+  fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9.
+- Changed paths are empty before cook.
+- Owner platform direction and whole-plan cook scope are recorded.
 
-- [Plan](./plan.md)
-- [Implementation boundary](./implementation-boundary-and-design.md#existing-seam-characterization)
-- [RED families](./verification-evidence-and-rollback.md#red-assertion-families)
-- Master `PH-C05`, `PH-C06`, `PH-H13`, `SC-02`, `SC-03`, `SC-14` in
-  [traceability](../260721-005-enterprise-learning-sandbox/requirements-traceability.md)
+## Steps
 
-## Requirements
+1. Recompute all Phase 2 Stage A hashes directly from the implementation tree and released Git
+   object. Stop on any missing path, changed byte or ancestry mismatch.
+2. Characterize the real generator, loader, dbt project/profile/models/tests/macros, exporter,
+   golden workspace/process/release helpers and exact eleven-asset order. Record callable/module
+   identities without changing them.
+3. Prove the eight command IDs are zero argument and each retains network denied, 120 seconds and
+   536870912 bytes; prove workspace quota 268435456 and profile small/seed 42.
+4. Record Docker CLI/app/context/socket discovery read-only. Service preflight against the stopped
+   state must yield RUNNER_ENGINE_UNAVAILABLE and allocate no operation/container/fallback.
+5. If the installed engine is still stopped, record the separate local-side-effect gate stating
+   app name, expected user socket and that starting the app changes local state. Only after that
+   gate may autonomous cook start OrbStack. Stop on admin/TCC prompts; never automate them.
+6. Once reachable, accept only a local Unix socket owned by the effective user. Record Engine API,
+   server architecture, linux/arm64 support, cgroup version, seccomp availability, init support and
+   resource-control capability. Reject TCP/remote contexts and do not authenticate to a registry.
+7. Write characterization tests and fixture manifest paths from the exact allow-list. Fixture
+   content is inert until Phase 3 and cannot alter product behavior.
+8. Record protected path hashes and an Issue #9/Issue #13 ownership scan baseline. Characterize
+   current ignore behavior and retain an exact ignored-inclusive status baseline, then require the
+   future app-owned apps/lab-runner/.gitignore to ignore only `/.local-state/`; the root .gitignore
+   and unrelated pre-existing ignored entries remain protected.
 
-- Record exact input/host/tool/file identities without writing runtime/product state.
-- Prove existing generator/load/dbt/export/Airflow expert semantics and path capabilities.
-- Design deterministic, harmless malicious fixtures for every required RED family.
-- Prove expert and future learner namespaces can be disjoint without changing existing defaults.
-- Identify any truly missing seam; do not edit it in this phase.
-- Prove or reject the exact Darwin descendant-control capability before any product/RED cook; a
-  100 ms ancestry poll by itself is not admissible.
+## Verification
 
-## Architecture and Characterization Matrix
+- Stopped-engine preflight is deterministic and fail-closed.
+- No container, image or semantic operation is required for the stopped-engine assertion.
+- If the gated engine start occurs, only engine capability inspection follows in this phase; no
+  image pull/build or operation container starts before the later explicit build/test steps.
+- Golden/expert paths remain byte-identical.
+- Fixed workspace/evidence roles are ignored only by the app-owned rule, a neighboring unlisted
+  file remains visible, and the deterministic context excludes the entire runtime state root.
 
-| Seam | Characterization | Required oracle |
-|---|---|---|
-| generator | exact argv/path, `small`/42 semantics, `--out` only | output remains caller root; base data untouched in fixture tests |
-| loader | explicit raw/DB paths and writer closure | 18 tables; no open writer after exit |
-| dbt | read-only project + generated profile/target/log/home | 51 models and expected warning contract; no base target/log |
-| exporter | explicit DB/export paths and curated list | exact ordered 11 files; repository export untouched |
-| Airflow callable | explicit alternate path behavior/import safety; current learner-path acceptance is captured as RED input | task order/defaults unchanged; future reserved-path guard denies before spawn |
-| direct Make | default expert namespace only | no learner workspace/current-pointer path |
+## Exit Criteria
 
-## Related Code Files
+- Eligible exact implementation head and released inputs are recorded.
+- Engine is either reachable through the admitted socket or cook is blocked with the exact local
+  prerequisite; no insecure alternative is proposed.
+- Characterization and fixture plan covers all eight operations and every adversarial family.
+- No ownership overlap or protected-path drift exists.
 
-- Create: `apps/lab-runner/tests/characterization/test_current_entrypoints.py`
-- Create: `apps/lab-runner/tests/characterization/test_expert_namespace.py`
-- Create: `apps/lab-runner/tests/fixtures/{argv_probe,import_probe,startup_probe,process_tree_probe,path_race_probe,network_probe,resource_probe,output_probe}.py`
-- Create: `apps/lab-runner/tests/fixtures/browser-requests.json`
-- Create: `apps/lab-runner/tests/fixtures/fault-points.json`
-- Create: `apps/lab-runner/tests/fixtures/fixture-manifest.json`
-- Read only: current seams listed in the implementation-boundary companion
-- Modify/Delete: none
+## Rollback
 
-## Tests Before
-
-1. Add characterization assertions against the exact input behavior, not future runner behavior.
-2. Give every malicious fixture a stable ID, expected side effect, maximum runtime/output, and
-   cleanup oracle. Fixtures may touch only their temporary marker-owned root.
-3. Prove fixture self-tests fail if a fixture silently skips, cannot create its intended harmless
-   condition, or leaves a process/file behind.
-4. Record pre/post Git tree, protected file hashes, running child list, and expert namespace state.
-
-## Implementation Steps
-
-1. Capture exact Git/input/Issue #6 identities, Darwin build/memory/Python/sandbox executable, and
-   SHA-256/Git blobs for every current entrypoint/config/schema used later.
-2. Characterize each existing seam with private temporary paths; do not run broad clean, Docker,
-   Airflow service, network/cloud, or production-size data.
-3. Model generated workspace profile paths for dbt and prove the base project can remain read-only.
-4. Reproduce the capability amendment: all seven child-creation paths are denied before a first
-   marker and the same-process TERM-ignore/`setsid` worker is reaped by exact PID/start identity.
-   Then run the real all-eight adapter gate. STOP if any adapter—including dbt—needs a child,
-   exec, private startup-context override, or dynamic caller-selected plugin.
-5. Build only test fixtures and manifests. Fixture helpers never accept arbitrary host paths and
-   terminate within their own hard timeout.
-6. Exercise namespace maps with no mutation: existing Make/Airflow defaults are `expert`; future
-   runner paths are `learner`; record the current explicit Airflow path gap for Phase 3 RED.
-7. Produce `characterization.json` and `red-fixture-design.json` as future evidence artifacts
-   under the issue evidence root when the phase is eventually cooked.
-8. If an existing seam cannot be isolated, STOP with exact failing assertion/path and update the
-   plan through independent validation/readiness before any seam modification.
-
-## Refactor
-
-None. This phase cannot change product behavior or existing seams.
-
-## Tests After
-
-- Repeat fixture self-tests and characterization twice from clean temporary state.
-- Verify stable current outputs and no tracked/unrelated change.
-- Verify every Phase 3 assertion maps to one bounded fixture or a pure in-process test.
-
-## Regression Gate
-
-- Characterization and fixture-design suites pass against the immutable input.
-- `git diff --check` and changed-path allow-list pass.
-- No implementation module, shared contract, runtime config, Make fragment, or existing seam is
-  changed by this phase; the exact Airflow gap remains RED input.
-
-## Risk and Security
-
-Characterization executes repository-controlled current entrypoints only with bounded `small`/42
-temporary paths. A fixture that can reach a caller-selected host path, network, credential, or
-unbounded descendant is itself a security defect and blocks the phase.
-
-## Success Criteria
-
-- [ ] Current seams have exact, evidence-backed preservation oracles.
-- [ ] All required RED fixture families exist with stable IDs and self-tests.
-- [ ] Expert/learner namespace non-overlap is proven without changing defaults.
-- [ ] No implementation or shared-contract assumption was introduced.
-
-## Next Steps
-
-Proceed only to Phase 2 after freshly verifying released Stage A integration SHA
-`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` and completing every characterization/capability
-criterion above. Readiness does not allow bypassing this phase.
+This phase makes only Issue #9 test/plan artifacts plus an explicitly gated app start. If the local
+app was started by cook and rollback policy authorizes returning it to its observed stopped state,
+record that separate side effect; otherwise leave engine state to the owner. Never stop unrelated
+processes or remove containers/images.
