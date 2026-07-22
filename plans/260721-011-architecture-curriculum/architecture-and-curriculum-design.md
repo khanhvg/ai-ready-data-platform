@@ -14,8 +14,11 @@ The output is a Vietnamese-first learning product, not a documentation dump.
 - Every module is independently versioned through the I5-06-owned machine-valid curriculum
   schema and exact release binding. Issue #11 does not duplicate Issue #8 lesson, lab, progress,
   completion, evidence, operation-matrix, or portal-rendering truth.
-- Every reusable template has one stable language-neutral content ID, an I5-06 schema/version
-  token, content hash, compatibility/supersession relation, and reciprocal registry reference.
+- Every reusable template uses exact schema token
+  `i5-06-architecture-template-registry-v1`, registry ID
+  `i5-06-architecture-template-registry`, registry version `1.0.0`, canonical content hash,
+  compatibility/supersession/removal declaration, and reciprocal per-instance exact
+  ID/version/hash registry binding.
 - Every module must expose prerequisites, observable outcome, starter, task, controlled failure,
   verify, evidence, reset, progressive hints, gated solution, reflection, and next path. Stage A
   may describe and statically validate that structure but cannot claim the executable elements ran.
@@ -122,15 +125,37 @@ Templates are structured content governed by released contracts, not free-form M
 | `tpl-dr-recovery` | DR/recovery | Authority, backup/rebuild, failure point, RTO/RPO/TBC, restore verification, rollback | Backup exit code substitutes for restore |
 | `tpl-security-review` | Security review | Assets, actors, trust boundaries, threats, controls, negative tests, residual risk, owner | Generic checklist/no threat model |
 
-Every instance records the stable template ID and exact I5-06 template version/hash it uses. A
-superseded version stays readable until the I5-06 compatibility/rollback rule permits removal; an
-unregistered local copy fails. Stable IDs above are Issue #11 content identities, not invented
-Issue #8 schema field names.
+`architecture-templates-v1.json` is the one stable registry/definition document. Every instance
+records the same registry ID, stable template ID, semantic version, and recomputed canonical hash;
+the registry row reciprocally lists the exact sorted instance ID. Each row also carries the exact
+schema/registry tokens, compatibility range, status, nullable predecessor binding, and consumer
+list. A successor names the predecessor's exact ID/version/hash; a predecessor remains readable
+while referenced. Removal requires zero references, registered compatible successor, passing
+migration/rollback evidence, and a later explicit tombstone. Stage A v1 has exactly 12 active
+rows and no removal. Unregistered copy, hash drift, one-way binding, unknown successor, or early
+removal fails. Stable IDs above are Issue #11 content identities, not invented Issue #8 fields.
 
 A flow marked critical because it crosses authority, state, deployment, security, resilience, or
-recovery boundaries must link both an ordered dynamic/sequence view and a deployment view. C4
-L1/L2 are included only when they answer a named concern; L3 is admitted only for a valuable
-high-risk internal boundary. A critical flow cannot waive dynamic/deployment coverage with prose.
+recovery boundaries must be one of the amendment's exact 11 flow IDs. Its distinct ordered step
+vector must equal the complete ordered canonical relation identities from the linked dynamic view
+and bind every endpoint to exact deployment topology nodes/edges. Nonempty arrays, shared generic
+steps, or prefixes do not pass. C4 L1/L2 are included only when they answer a named concern; L3 is
+admitted only for a valuable high-risk internal boundary. A critical flow cannot waive dynamic/
+deployment coverage with prose.
+
+## Frozen Promotion Decision
+
+The static promotion-publication example is a negative decision, not a generic four-grain label:
+
+```text
+decision = insufficient-evidence
+reason = no-common-grain
+```
+
+Both separate fields are constants in the exact released
+`learning/contracts/promotion-trust-v1.schema.json`. The Issue #11 validator must apply that
+schema and reject changed, combined, missing, swapped, case-drifted, or alias values independently;
+checking only runtime status or grain IDs is insufficient.
 
 ## System-Design Coverage and Pattern Admission
 
@@ -188,14 +213,19 @@ endpoints, or deployment claim.
 
 | Concern | Local learning mapping | AWS learning mapping | Honest shared invariant / divergence |
 |---|---|---|---|
-| Analytics | DuckDB | ClickHouse | Data-product/query intent shared; engine/type/performance behavior differs |
-| BI | Rill | Superset | Decision/metric definition shared; runtime and metadata ownership differ |
-| Governance | OpenMetadata local profile | OpenMetadata on ECS/EC2 with durable DB/search decisions | Asset identity/owner/lineage intent shared; topology/recovery differ |
-| Lake/catalog | MinIO + Lakekeeper + Iceberg | S3 + admitted Iceberg catalog | Iceberg lifecycle concepts shared; auth/catalog/state differ |
-| Compute | Host processes and mutually exclusive profiles | ECS on EC2/capacity provider | Workload intent shared; scheduling, network, IAM, readiness differ |
-| State/recovery | Local files/volumes and deterministic rebuild | S3/catalog/DB/search/evidence authorities | Every authority and restore oracle must be explicit |
-| Security | Single local actor, loopback/private runner | Hosted identity/object authorization remains gated | No hosted security claim from local evidence |
-| Cost | 16 GiB resource envelope | Active/off-hours plus residual services | Units/assumptions visible; no apply or current-price claim here |
+| Analytics / `BR-ANALYTICS-01` | DuckDB | ClickHouse | Data-product/query intent shared; engine/type/performance behavior differs |
+| BI / `BR-BI-01` | Rill | Superset | Decision/metric definition shared; runtime and metadata ownership differ |
+| Governance / `BR-GOVERNANCE-01` | OpenMetadata local profile | OpenMetadata on ECS/EC2 with durable DB/search decisions | Asset identity/owner/lineage intent shared; topology/recovery differ |
+| Lake/catalog / `BR-LAKE-01` | MinIO + Lakekeeper + Iceberg | S3 + admitted Iceberg catalog | Iceberg lifecycle concepts shared; auth/catalog/state differ |
+| Compute / `BR-COMPUTE-01` | Host processes and mutually exclusive profiles | ECS on EC2/capacity provider | Workload intent shared; scheduling, network, IAM, readiness differ |
+| State/recovery / `BR-STATE-01` | Local files/volumes and deterministic rebuild | S3/catalog/DB/search/evidence authorities | Every authority and restore oracle must be explicit |
+| Security / `BR-SECURITY-01` | Single local actor, loopback/private runner | Hosted identity/object authorization remains gated | No hosted security claim from local evidence |
+| Cost / `BR-COST-01` | 16 GiB resource envelope | Active/off-hours plus residual services | Units/assumptions visible; no apply or current-price claim here |
+
+Each bridge binds exact source relations to exact target topology paths and records the preserved
+invariant, explicit divergences, and `claimClass=conceptual-only`. It closes comparison trace only;
+it cannot satisfy a local runtime, hosted runtime, deployment, readiness, RTO/RPO, security, or
+cost claim.
 
 ## Architecture View Contract
 
@@ -205,7 +235,7 @@ endpoints, or deployment claim.
 source, manifest mapping/row semantics, rendered SVG/text, and semantic projection. They are
 referenced, never copied or regenerated into Issue #11-owned paths as a second truth.
 
-### Admitted Stage A additions-only expansion
+### Proposed Stage A additions-only expansion
 
 | ID | Type | Audience / concern | Required content |
 |---|---|---|---|
@@ -240,6 +270,15 @@ The Stage A amendment binds exact tools/paths and the cook must prove:
    paths, and hidden deployment claims.
 7. No browser, native GUI, manual broad matrix, Structurizr fallback, native Graphviz fallback,
    or unpinned resolver is introduced.
+8. New titles and primary labels are Vietnamese-first; source relation labels have no ordinal and
+   the renderer/text adds exactly one matching ordinal.
+9. At fitted widths 1440 and 1024 CSS px, titles remain at least 18 px, primary node/relation text
+   14 px, secondary text 12 px; aspect ratio is at most 2.4:1; WCAG contrast thresholds pass.
+10. Painted/text bounds stay on canvas, peer content does not overlap, containment padding is at
+    least 8 px, outer padding 4 px, and no label/relation clips or exits the canvas.
+11. Text alternatives preserve exact ordered relation identities, deployment hierarchy, bridge/
+    claim class, limitations and TBCs. Machine metrics plus fresh independent human inspection at
+    both fitted widths are mandatory for the five new views.
 
 ## Stage B Executable Architecture Lab
 

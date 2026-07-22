@@ -22,6 +22,8 @@ The lab covers F01→F04→J01/J04/J05 and is the only stage allowed to claim co
 hint, reset, deterministic verify, retained evidence, completion, and portal delivery.
 
 At the current planner output this phase is hard-blocked and has no file or command authority.
+Nothing in the post-review scaffold-first Stage A correction supplies an Issue #10 renderer,
+journey, runtime completion path, or Stage B command/file authority.
 
 ## Requirements
 
@@ -71,7 +73,9 @@ evidence. It does not implement a queue, broker, cache, pipeline, AWS resource, 
     cannot complete.
 11. Render/publish through exact #10; test keyboard/static/no-JS and bounded required browser
     contexts from the release, with no native GUI/manual broad automation matrix.
-12. Run S3, protected-hash, dependency-hash, exact-diff, cleanup, and rollback gates.
+12. Run S3, protected-hash, dependency-hash, exact-diff, process-group resource, truthful
+    nonignored/ignored-inclusive cleanup, and rollback gates inherited from the final Stage B
+    amendment; do not infer Stage B bounds from a Stage A static result.
 
 ## Tests Before
 

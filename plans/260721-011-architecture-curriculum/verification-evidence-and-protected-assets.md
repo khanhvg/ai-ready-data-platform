@@ -2,9 +2,9 @@
 
 ## Verification Boundary
 
-This amendment/readiness audit runs plan/static/link/dependency/protected-hash and installed-tool
-availability checks only. It does not run new curriculum or expansion implementation, lab,
-portal, native GUI, manual browser matrix, cloud, or Terraform gates.
+This post-review author correction runs plan/static/link/dependency/protected-hash and installed-
+tool availability checks only. It does not independently validate readiness and does not run new
+curriculum or expansion implementation, lab, portal, native GUI, cloud, or Terraform gates.
 
 Whole-product practical acceptance remains:
 
@@ -16,27 +16,30 @@ The exact Stage A command subset is in the
 [Stage A amendment](./stage-a-release-amendment.md). Existing Issue #6 `architecture-check` and
 `architecture-render` are read-only regression contracts; the isolated I5-06 adapter validates
 five expansions separately without redefining owner code. `architecture-lab-e2e` and
-`architecture-visual-review` remain unavailable and cannot be reported pass.
+the portal `architecture-visual-review` remain unavailable and cannot be reported pass. The five
+new SVGs still have mandatory exact Stage A static visual machine gates and a bounded independent
+human inspection at fitted widths 1440/1024.
 
 ## Planner-Only Check Set
 
 | Check | Expected result |
 |---|---|
-| Branch/input/fresh remote | Required branch; clean input `ab653f6edec73e5ef875723945d2e3cd7814b4e6` before amendment writes |
-| Live Issue #11 | OPEN; exact body; `triaged` before output transition; risk high/TDD/S3/architecture/curriculum |
+| Branch/input/fresh remote | Required branch; clean local/upstream/fresh-live input `1c62b68159ffc48cc2f063c137cb9072d8ed741f` before correction writes |
+| Live Issue #11 | OPEN; exact body; `ready to cook` is stale and must transition to `ready for plan validation`; risk high/TDD/S3/architecture/curriculum |
 | Dependencies | #8 Stage A released at `fecf6bb8…` and read-only; #8 Stage B lease not consumed; #10 not released and Stage B empty |
 | `ck plan status` | Seven pending phases, valid frontmatter/dependency DAG |
 | Markdown structure | One H1 per file; required sections; no empty placeholders |
 | Local links/anchors | All repo-relative plan links and anchors resolve |
-| Authority scan | Exact 50 Stage A create paths and exact commands; Stage B lists empty; no future SHA/route/renderer path |
-| Protected assets | Exact Issue #6 SHA-256 and Git blob identities unchanged |
+| Authority scan | Proposed exact 50 Stage A create paths, exact 16 commands and exact 7/5/38 chronology; Stage B lists empty; future implementation SHAs are explicit null blockers |
+| Protected assets | Exact 33/33 Issue #6 SHA-256 and Git blob identities unchanged |
 | Staged scope | Only `plans/260721-011-architecture-curriculum/**` |
 | Formatting | `git diff --cached --check` passes |
 | S3 scan | No secret/private-key/private-path/credential-bearing URL/runtime artifact |
 
 ## Protected Issue #6 Source Closure
 
-Baseline at planner input `24be3b34c6b0fcdbd07c5800dcab349054e34713`:
+Baseline remains identical at released integration `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`
+and clean v3 base `c07c9a080be7be88447aac497bdf0a2b5fddd020`:
 
 | Path | Git blob | SHA-256 |
 |---|---|---|
@@ -47,8 +50,9 @@ Baseline at planner input `24be3b34c6b0fcdbd07c5800dcab349054e34713`:
 | `architecture/likec4/model/local-deployment.c4` | `552e1af0dddb219f5c8fa0d7542678caf6ea1025` | `58e6fbc72e3ea41b826057a60f096f50a42b75550f1d35e0378edee59f0006ad` |
 | `architecture/likec4/view-manifest.yaml` | `ff8f59a76440561d0de17a08b3d79fc580d2e043` | `1659c51389718f2799581550ab17fd31c4dd30639723d5b443ac088944178169` |
 
-All source-closure bytes remain read-only. The Stage A lease adds exact sources/rows only beneath
-the separate extension root; it may not normalize, reserialize, or append the protected files.
+All source-closure bytes remain read-only. The proposed Stage A lease, if Gate A2 passes, adds
+exact sources/rows only beneath the separate extension root; it may not normalize, reserialize,
+or append the protected files.
 
 ## Protected Six Views and Renders
 
@@ -65,9 +69,21 @@ the separate extension root; it may not normalize, reserialize, or append the pr
 `c116d89ab5d1768894fce101e2eb1d1b9896e97c`; SHA-256 is
 `7934c00f9f7bd772f0f2eec4730332b6b6a8b5907f2d7547673fbef9718a04e6`.
 
-The Stage A lease preserves the six manifest rows’ ordered ID/key/type/audience/concern/scope
-semantics and all original blobs. It does not permit any whole-file base manifest or render-
-manifest change; extension manifests remain separate.
+The proposed Stage A lease preserves the six manifest rows’ ordered ID/key/type/audience/concern/
+scope semantics and all original blobs. It does not permit any whole-file base manifest or
+render-manifest change; extension manifests remain separate.
+
+## Complete 33-Identity Gate
+
+The 25 assets above (six source-closure files, six view sources, six SVGs, six text alternatives,
+and one render manifest) plus the eight exact tool/lock/Make identities enumerated in the
+[amendment](./stage-a-release-amendment.md#protected-tool-identities) form the protected set.
+Sorted path/blob/content-hash inventory count must be exactly `33`; the independently reproduced
+v2 review aggregate identity SHA-256 is
+`0c6d42c8fb828ac5f47368c7c754233899929abc70c31ed853a18ecf9279f8f4`. The future v3 preflight,
+every Stage A public command, rollback, and final handoff recompute all 33 from the clean base and
+require byte/blob equality. The aggregate is supporting closure, never a substitute for the 33
+individual comparisons.
 
 ## Deterministic Static and Semantic Render Tests
 
@@ -88,8 +104,15 @@ Stage A expansion tests must cover:
    and text hashes agree; stale output fails.
 8. **Safety:** no script, event handler, external image/URL, `foreignObject`, credential, account
    endpoint, absolute/private path, or hidden apply claim.
-9. **No broad visual matrix:** deterministic source/text/semantic assertions are required; fixed
-   human readability review is a later release gate, not native GUI automation.
+9. **Language/numbering:** Vietnamese-first title/primary labels; renderer is the sole ordinal
+   source; text alternative contains exactly one matching order.
+10. **Fitted readability:** exact 1440/1024 fit scales, 18/14/12 px font minima, aspect <=2.4:1,
+    4.5:1 normal-text and 3:1 large/non-text contrast.
+11. **Geometry:** computed painted/text bounding boxes prove no peer overlap, clipping, off-canvas
+    content or relation endpoint; exact containment/outer padding thresholds apply.
+12. **Independent inspection:** fresh reviewer records per-view readability, language, ordering,
+    overlap, clipping and off-canvas disposition at both widths. This narrow static review is not
+    the blocked portal/browser visual command.
 
 ## Stage Test Layers
 
@@ -100,35 +123,51 @@ Stage A expansion tests must cover:
 | Contract | Exact #8 validators/registries/evidence binding | Exact #8 completion and exact #10 renderer consumer |
 | Integration | None claimed | Content discovery/render + lab lifecycle through released seams |
 | Failure/recovery | Negative fixtures; no runtime reset claim | Controlled failure, hint, reset, process/retry/tamper/unavailable cases |
-| Accessibility | Vietnamese/static semantic structure and text alternatives | Released renderer keyboard/static/no-JS/status/evidence behavior |
+| Accessibility | Exact Vietnamese-first/numbering/fit/font/contrast/geometry/text-parity machine checks plus bounded independent static review | Released renderer keyboard/static/no-JS/status/evidence behavior |
 | Security | Content/render/secret/path/cloud-action scans | Browser/BFF/evidence/workspace negatives from exact releases |
 | UAT | Content-owner review only; not completion evidence | Foundation, junior, mid challenge path and human readability review |
 
 ## Evidence Contract
 
-Stage A command evidence roots are fixed by the amendment:
+Stage A retained evidence root is fixed by the amendment:
 
 ```text
-.artifacts/evidence/curriculum-check/<run-id>/
-.artifacts/evidence/traceability-check/<run-id>/
+.claude/evidence/issue-11-stage-a/<run-id>/
 ```
 
-The run-owned layout uses a closed index and `fitness-result-v1` command envelopes. The evidence
-bundle must prove these logical records:
+The released `.gitignore` already ignores `/.claude/`; no ignore-file change is allowed. An
+auditor-approved external mode-0700 app-state root may substitute with the same symbolic root ID.
+Nonignored `.artifacts/**` is forbidden. The run-owned layout uses private modes, closed
+`index.json` + `index.sha256`, and `fitness-result-v1` command envelopes. The evidence bundle must
+prove these logical records:
 
 | Record | Required content |
 |---|---|
 | Authority | Stage, exact input, branch/worktree, local/tracking/live equality, dependency release SHAs/hashes, lease |
-| RED | Failing fixture/assertion IDs and failure reasons before implementation |
-| Commands | Exact command line, owner, tool/lock versions, start/end/status/resource/output bounds |
+| RED | Plan input, seven-path scaffold commit, direct-child five-path tests commit, RED tree, all four entrypoint reach/preconditions, failing named semantic rules, first semantic commit |
+| Commands | Exact command line, owner, tool/lock versions, start/end/status plus elapsed/RSS/process/output/file/PGID/TERM/KILL/wait measurements |
 | Contracts | Every consumed #8/#10/view schema/registry/renderer/fixture path, version, SHA-256 |
-| Renders | Source/projection/tool/SVG/text hashes, deterministic pair result, protected-six result |
-| Traceability | Requirement/module/view/ADR/pattern/test/evidence reciprocal coverage |
+| Renders | Source/projection/tool/SVG/text hashes, deterministic pair, exact visual metrics/inspection, protected-six result |
+| Traceability | Requirement/module/template-instance/view/dynamic relation/deployment topology/bridge/ADR/pattern/test/evidence reciprocal coverage |
 | Runtime Stage B | Controlled failure, hints used, reset commit, verifier assertions, evidence/completion authority |
 | Security | Negative results, secret/private-path scan, redaction class, residual risks |
-| Cleanup/rollback | Owned bytes removed/restored, evidence preserved, protected/unrelated pre/post hashes |
+| Cleanup/rollback | Owned bytes removed/restored, ignored/private evidence preserved, zero-byte nonignored porcelain, ignored-inclusive ownership delta, protected/unrelated pre/post hashes |
 | Provenance | `inputGitSha`, `testedTreeSha`, optional later attestation commit, external merge/approval identity |
-| Index | Closed ordered inventory of every required result/artifact locator, media type, size and SHA-256; reject missing, duplicate, orphaned, stale, or unindexed bytes |
+| Index | Closed ordered inventory of every payload/owner locator, media type, size and SHA-256; detached index hash; reject missing, duplicate, orphaned, stale, traversal, extra, or unindexed bytes without recursive self-hash |
+
+## Exact Process and Resource Verification
+
+- `run-focused-tests` owns one PGID and one 120000 ms deadline.
+- `verify-expansions` owns one 180000 ms deadline spanning both sequential locked installs, both
+  renders, and all validation; per-child timeouts cannot substitute.
+- Every external command starts a new session/process group; only one is active; maximum 16 live
+  group processes; aggregate RSS <=1610612736 bytes.
+- Combined output <=1048576 bytes; failure excerpt <=16384 bytes plus full hash; staging <=4096
+  files; each tool root <=1 GiB; both roots plus staging <=2.5 GiB; per-command evidence <=4 MiB.
+- On timeout/breach/abort: TERM owned PGID, wait 5000 ms, KILL survivors, wait/reap leader, prove
+  zero descendants. Missing/ambiguous PGID is fail and never authorizes a signal.
+- Evidence records elapsed ms, sampling count, peak aggregate RSS, maximum process count, output
+  bytes/hash, file count/bytes, PGID and TERM/KILL/wait outcome. Tests force every breach class.
 
 The existing I5-06 `fitness-result-v1` command envelope and released Issue #8 learning evidence
 are separate authorities. Stage A emits only the former. Released `fitness-result-v2` declares
@@ -151,14 +190,20 @@ command allow-list.
 
 ## Cleanup and Rollback Verification
 
-1. Capture exact pre-stage tracked/ignored/protected manifests.
-2. Allocate only an amendment-authorized Issue #11 mutable root with owner marker.
+1. Capture exact pre-stage tracked, nonignored-untracked, ignored-inclusive, device/inode, byte and
+   protected manifests.
+2. Allocate only the exact ignored app-owned or approved external Issue #11 root with mode-0700
+   owner marker; retained files are mode 0600 and contain no absolute/private locator.
 3. On success/failure, stop only recorded Issue #11 process groups and validate no descendants.
-4. Delete only verified temporary workspace/render staging bytes; retain committed evidence.
+4. Delete only verified temporary workspace/render staging bytes; retain ignored/external
+   evidence under the closed index.
 5. Roll back the exact 50 new Issue #11 tracked candidates as one coherent set. Remove only the
    separate extension manifests/assets while proving protected rows/outputs never changed.
-6. Rerun protected hashes/blob IDs, contract/renderer dependency hashes, staged allow-list, S3
-   scan, and clean-status check.
+6. Rerun protected hashes/blob IDs, contract/renderer dependency hashes, staged allow-list and S3
+   scan. Require exit 0 **and zero stdout bytes** from
+   `git status --porcelain=v1 --untracked-files=all`; then parse NUL-terminated
+   `git status --porcelain=v1 --ignored --untracked-files=all -z` and classify every ignored entry
+   as pre-existing unchanged or exact retained-owned evidence.
 7. Any ambiguity, foreign byte, missing evidence, or protected drift fails rollback and blocks
    merge. No broad `make clean`, recursive workspace delete, reset/rebase, or worktree removal.
 
