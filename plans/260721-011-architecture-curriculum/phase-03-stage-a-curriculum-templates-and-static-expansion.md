@@ -21,10 +21,10 @@ effort: "L after RED"
 
 Create the Vietnamese-first curriculum graph, structured templates, architecture-system-design
 coverage, pattern admission data, and deterministic static architecture expansion under the
-future exact Stage A authority. Stage A is a candidate learning-content release only. It cannot
+exact Stage A amendment. Stage A is a candidate learning-content release only. It cannot
 claim portal delivery or executable failure/reset/verify/evidence.
 
-At the current planner output this phase is blocked and has no file or command authority.
+This phase is ready to cook only from `fecf6bb8…` and only within the 50-path create-only list.
 
 ## Requirements
 
@@ -42,11 +42,10 @@ the portal, execute a lab, or create a second renderer/contract authority.
 
 ## Related Code Files
 
-- Current Create/Modify/Delete: none (`[]`).
-- Ownership ceiling for later derivation: `learning/curriculum/**`, implementation ADR templates,
-  P6-owned architecture expansion sources/renders, and `mk/issue-5/i5-06.mk`.
-- Exact files, manifest rows, generated outputs, fixture paths, and recipes must come from the
-  Stage A amendment. The ceiling is not a wildcard allow-list.
+- Current Create: exact amendment paths beneath `learning/curriculum/**`,
+  `architecture/expansions/i5-06/**`, `mk/issue-5/i5-06.mk`, and exact tests/fixture paths.
+- Current Modify/Delete: none (`[]`). The directory names are ceilings, not wildcard authority;
+  the 50-path enumeration controls.
 
 ## Implementation Steps
 
@@ -104,7 +103,7 @@ removes real complexity and preserves stable IDs/released contract semantics.
 
 ## Regression Gate
 
-Future amendment-authorized Stage A subset of:
+Amendment-authorized Stage A subset:
 
 ```bash
 make curriculum-check architecture-check architecture-render traceability-check

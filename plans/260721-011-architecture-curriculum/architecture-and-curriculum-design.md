@@ -11,12 +11,11 @@ The output is a Vietnamese-first learning product, not a documentation dump.
   bounded design decision. Mid-level learners challenge forces, failure modes, operability,
   security, cost, and recovery. Instruction may be skipped after a diagnostic; verification may
   never be skipped.
-- Every module is independently versioned through the exact released Issue #8 contract. Issue #11
-  owns content/trace data only; it does not duplicate schemas, progress, completion, evidence,
-  operation matrices, or portal rendering truth.
-- Every reusable template has one stable language-neutral content ID, a released-contract version
+- Every module is independently versioned through the I5-06-owned machine-valid curriculum
+  schema and exact release binding. Issue #11 does not duplicate Issue #8 lesson, lab, progress,
+  completion, evidence, operation-matrix, or portal-rendering truth.
+- Every reusable template has one stable language-neutral content ID, an I5-06 schema/version
   token, content hash, compatibility/supersession relation, and reciprocal registry reference.
-  Exact serialized version field names come only from the released Issue #8 contract.
 - Every module must expose prerequisites, observable outcome, starter, task, controlled failure,
   verify, evidence, reset, progressive hints, gated solution, reflection, and next path. Stage A
   may describe and statically validate that structure but cannot claim the executable elements ran.
@@ -46,7 +45,8 @@ without a stable ID and reciprocal reference does not count.
 ## Modular Foundation-to-Mid Graph
 
 The graph preserves IDs and intent from the accepted master curriculum. Exact serialized fields
-and prerequisite status values come from the future released Issue #8 contracts.
+come from the I5-06 schemas; released Issue #8 identifiers and operation truth are read-only
+references. Runtime prerequisite status is `not-executed-static-only` in Stage A.
 
 | ID | Level | Vietnamese-first outcome | Prerequisites | Required question/failure | Evidence class |
 |---|---|---|---|---|---|
@@ -122,10 +122,10 @@ Templates are structured content governed by released contracts, not free-form M
 | `tpl-dr-recovery` | DR/recovery | Authority, backup/rebuild, failure point, RTO/RPO/TBC, restore verification, rollback | Backup exit code substitutes for restore |
 | `tpl-security-review` | Security review | Assets, actors, trust boundaries, threats, controls, negative tests, residual risk, owner | Generic checklist/no threat model |
 
-Every instance records the stable template ID and the exact released template version/hash it
-uses. A superseded version stays readable until the released compatibility/rollback rule permits
-removal; an unregistered local copy fails. Stable IDs above are Issue #11 content identities, not
-invented Issue #8 schema field names.
+Every instance records the stable template ID and exact I5-06 template version/hash it uses. A
+superseded version stays readable until the I5-06 compatibility/rollback rule permits removal; an
+unregistered local copy fails. Stable IDs above are Issue #11 content identities, not invented
+Issue #8 schema field names.
 
 A flow marked critical because it crosses authority, state, deployment, security, resilience, or
 recovery boundaries must link both an ordered dynamic/sequence view and a deployment view. C4
@@ -205,7 +205,7 @@ endpoints, or deployment claim.
 source, manifest mapping/row semantics, rendered SVG/text, and semantic projection. They are
 referenced, never copied or regenerated into Issue #11-owned paths as a second truth.
 
-### Candidate additions after exact lease authority
+### Admitted Stage A additions-only expansion
 
 | ID | Type | Audience / concern | Required content |
 |---|---|---|---|
@@ -215,14 +215,16 @@ referenced, never copied or regenerated into Issue #11-owned paths as a second t
 | DYN-OFFICE | Dynamic | Operations / usable office-hours readiness | open, capacity, restore/hydrate, health/equivalence, ready, drain/checkpoint/close/residual inventory |
 | DYN-RESTORE | Dynamic | Reliability/data owner / empty-environment recovery | restore/register, hydrate/rebuild, metadata/search/evidence recovery, equivalence, RTO/RPO TBC |
 
-These IDs and semantics come from accepted master inputs. Exact source/render paths remain empty
-until the additions-only lease amendment resolves the current hard-coded six-view toolchain seam.
+These IDs and semantics come from accepted master inputs. The exact source/render paths are the 19
+`architecture/expansions/i5-06/**` create-only paths in the
+[Stage A amendment](./stage-a-release-amendment.md). A separate extension and render manifest bind
+the protected base identities without appending or regenerating them.
 AWS views use visible `TBC — blocks aws-apply` annotations for budget, retention, readiness SLO,
 RTO/RPO, account/environment, and approver. A diagram never means a resource exists.
 
 ## Deterministic Render and Semantic Rules
 
-The later amendment must bind exact tools/paths and prove:
+The Stage A amendment binds exact tools/paths and the cook must prove:
 
 1. Two isolated clean renders of every expansion view produce byte-identical normalized SVG and
    UTF-8/NFC/LF structured text outputs.
@@ -264,5 +266,5 @@ teaches and verifies the architecture decision through released execution/render
 
 ## Unresolved Questions
 
-None. Exact contract/renderer/tool extension fields are intentionally delegated to release-bound
-amendments and are not guessed here.
+None for Stage A. Exact Stage B portal renderer fields remain delegated to a later Issue #10
+release-bound amendment and are not guessed here.
