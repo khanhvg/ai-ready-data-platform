@@ -6,8 +6,10 @@ import json
 from pathlib import Path
 import re
 from typing import Any, Sequence
+from jsonschema import Draft202012Validator
+import yaml
 
-from .content_io import CheckResult, NormalizedRequest, content_sha256, load_json
+from .content_io import CheckResult, NormalizedRequest, admitted_runtime_ok, content_sha256, load_json
 
 ENTRYPOINT_ID = "I11-EP-TRACE"
 
@@ -55,30 +57,97 @@ EXPECTED_FLOW_STEPS = {
 }
 
 
+def _relations(path: Path, flow_id: str, expected: list[str]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for source, target, label in re.findall(r"^\s*([A-Za-z0-9_.]+) -> ([A-Za-z0-9_.]+) '([^']+)'", path.read_text(encoding="utf-8"), re.MULTILINE):
+        token = re.search(r"\[([^:]+):([^\]]+)\]", label)
+        if flow_id == "CF-LEARNER-FIRST-JOURNEY":
+            step_id = expected[len(rows)] if len(rows) < len(expected) else "unexpected"
+        elif token and token.group(1) == flow_id:
+            step_id = token.group(2)
+        else:
+            continue
+        rows.append({"ordinal": len(rows) + 1, "stepId": step_id, "sourceId": source, "targetId": target,
+                     "labelVi": re.sub(r"\s*\[[^\]]+\]$", "", label), "technology": None})
+    return rows
+
+
+def _deployment_nodes(path: Path) -> set[str]:
+    text = path.read_text(encoding="utf-8")
+    declarations = re.findall(r"\b(?:environment|host|privateStorage)\s+([A-Za-z0-9_]+)", text)
+    instances = re.findall(r"^\s*([A-Za-z0-9_]+)\s*=\s*instanceOf\b", text, re.MULTILINE)
+    return set(declarations + instances)
+
+
 def check_repository() -> CheckResult:
     trace = dict(load_json(ROOT / "learning/curriculum/traces/architecture-trace-v1.json").payload)
     mapping = dict(load_json(ROOT / "learning/curriculum/mappings/local-aws-conceptual-v1.json").payload)
     codes: list[str] = []
+    if not admitted_runtime_ok(): codes.append("I11_RESOURCE_OWNERSHIP")
+    trace_schema = dict(load_json(ROOT / "learning/curriculum/contracts/architecture-trace-v1.schema.json").payload)
+    if list(Draft202012Validator(trace_schema).iter_errors(trace)): codes.append("I11_REF_STALE")
+    view_schema = dict(load_json(ROOT / "learning/curriculum/contracts/architecture-view-extension-v1.schema.json").payload)
+    view_manifest = yaml.safe_load((ROOT / "architecture/expansions/i5-06/likec4/view-manifest.yaml").read_text(encoding="utf-8"))
+    if list(Draft202012Validator(view_schema).iter_errors(view_manifest)): codes.append("I11_REF_STALE")
     flows = {flow.get("flowId"): flow for flow in trace.get("criticalFlows", [])}
     if set(flows) != set(EXPECTED_FLOW_STEPS): codes.append("I11_CRITICAL_FLOW_COVERAGE_MISSING")
-    sources: dict[str, str] = {}
-    for view in ("DYN-PUBLISH", "DYN-OFFICE", "DYN-RESTORE"):
-        sources[view] = (ROOT / f"architecture/expansions/i5-06/likec4/views/{view}.c4").read_text(encoding="utf-8")
+    view_paths = {
+        "DYN-JOURNEY": ROOT / "architecture/likec4/views/DYN-JOURNEY.c4",
+        **{view: ROOT / f"architecture/expansions/i5-06/likec4/views/{view}.c4" for view in ("DYN-PUBLISH", "DYN-OFFICE", "DYN-RESTORE")},
+    }
+    deployment_nodes = {
+        "DEP-LOCAL": _deployment_nodes(ROOT / "architecture/likec4/model/local-deployment.c4"),
+        "DEP-AWS": _deployment_nodes(ROOT / "architecture/expansions/i5-06/likec4/model/architecture-curriculum.c4"),
+    }
     for flow_id, expected in EXPECTED_FLOW_STEPS.items():
         flow = flows.get(flow_id, {})
-        if flow.get("stepIds") != expected or flow.get("dynamicRelations") != expected:
+        actual_relations = _relations(view_paths.get(flow.get("dynamicView"), Path("missing")), flow_id, expected) if flow.get("dynamicView") in view_paths else []
+        if flow.get("stepIds") != expected or flow.get("dynamicRelations") != actual_relations:
             codes.append("I11_RELATION_ORDER_MISMATCH")
-        if not flow.get("deploymentView") or not flow.get("topologyNodes"):
+        topology = flow.get("topology", {})
+        admitted_nodes = deployment_nodes.get(flow.get("deploymentView"), set())
+        placements = topology.get("endpointPlacements", {})
+        expected_edges = [
+            {"ordinal": row["ordinal"], "stepId": row["stepId"],
+             "sourceNode": placements.get(row["sourceId"]), "targetNode": placements.get(row["targetId"])}
+            for row in actual_relations
+        ]
+        endpoints = {value for row in actual_relations for value in (row["sourceId"], row["targetId"])}
+        if (
+            set(topology.get("nodes", [])) != admitted_nodes
+            or set(placements) != endpoints or not set(placements.values()).issubset(admitted_nodes)
+            or topology.get("edges") != expected_edges
+            or not set(topology.get("trustBoundaryNodes", [])).issubset(admitted_nodes)
+            or not set(topology.get("failureNodes", [])).issubset(admitted_nodes)
+        ):
             codes.append("I11_TOPOLOGY_BINDING_MISMATCH")
-        if flow.get("dynamicView") in sources:
-            tokens = re.findall(rf"\[{re.escape(flow_id)}:([^\]]+)\]", sources[flow["dynamicView"]])
-            if tokens != expected: codes.append("I11_RELATION_ORDER_MISMATCH")
     bridges = mapping.get("bridges", [])
     if len(bridges) != 8 or len({item.get("bridgeId") for item in bridges}) != 8:
         codes.append("I11_BRIDGE_MISSING")
     for bridge in bridges:
         if bridge.get("claimClass") != "conceptual-only": codes.append("I11_BRIDGE_RUNTIME_CLAIM")
         if not bridge.get("divergences") or not bridge.get("preservedInvariant"): codes.append("I11_BRIDGE_DIVERGENCE_MISSING")
+        topology = bridge.get("topologyBindings", {})
+        if topology.get("sourceNode") not in deployment_nodes["DEP-LOCAL"] or topology.get("targetNode") not in deployment_nodes["DEP-AWS"]:
+            codes.append("I11_TOPOLOGY_BINDING_MISMATCH")
+    module_documents = [
+        module for path in sorted((ROOT / "learning/curriculum/modules").glob("*.json"))
+        for module in dict(load_json(path).payload).get("modules", [])
+    ]
+    trace_bindings = {row.get("moduleId"): row for row in trace.get("moduleTraceBindings", [])}
+    for module in module_documents:
+        expected_binding = {
+            "moduleId": module["moduleId"], "moduleSha256": content_sha256(module),
+            "businessOutcomeSha256": content_sha256(module["businessOutcome"]), "capabilitySha256": content_sha256(module["capability"]),
+            "stakeholderConcernSha256": content_sha256(module["stakeholderConcern"]), "requirementsSha256": content_sha256(module["requirements"]),
+            "optionsSha256": content_sha256(module["exercise"]["options"]), "viewIds": module["exercise"]["requiredViews"],
+            "adrId": module["exercise"]["decision"], "patternId": module["exercise"]["pattern"],
+            "implementationIntentSha256": content_sha256(module["exercise"]["implementationIntent"]),
+            "verifier": module["evidence"]["verifier"], "consequencesSha256": content_sha256(module["consequences"]),
+            "reciprocalModuleId": module["moduleId"],
+        }
+        if trace_bindings.get(module["moduleId"]) != expected_binding: codes.append("I11_TRACE_NONRECIPROCAL")
+    if set(trace_bindings) != {module["moduleId"] for module in module_documents}: codes.append("I11_TRACE_NONRECIPROCAL")
     spine = trace.get("spine", {})
     if len(spine.get("stages", [])) != 10 or not spine.get("reciprocal") or spine.get("orphanPolicy") != "reject":
         codes.append("I11_TRACE_NONRECIPROCAL")

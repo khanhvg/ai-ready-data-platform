@@ -5,8 +5,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any, Sequence
+from jsonschema import Draft202012Validator
 
-from .content_io import CheckResult, NormalizedRequest, content_sha256, load_json
+from .content_io import CheckResult, NormalizedRequest, admitted_runtime_ok, content_sha256, load_json
 
 ENTRYPOINT_ID = "I11-EP-CURRICULUM"
 
@@ -109,9 +110,17 @@ def _read(relative: str) -> dict[str, Any]:
     return dict(load_json(ROOT / relative).payload)
 
 
+def _schema_valid(document: dict[str, Any], schema_name: str) -> bool:
+    schema = _read(f"learning/curriculum/contracts/{schema_name}")
+    return not list(Draft202012Validator(schema).iter_errors(document))
+
+
 def check_repository() -> CheckResult:
     codes: list[str] = []
+    if not admitted_runtime_ok(): codes.append("I11_RESOURCE_OWNERSHIP")
     manifest = _read("learning/curriculum/architecture-curriculum-v1.json")
+    if not _schema_valid(manifest, "architecture-curriculum-v1.schema.json"):
+        codes.append("I11_REF_STALE")
     modules = [
         module for path in manifest.get("moduleCollections", [])
         for module in _read(path).get("modules", [])
@@ -134,6 +143,8 @@ def check_repository() -> CheckResult:
         if len(exercise.get("options", [])) < 2 or not exercise.get("implementationIntent"):
             codes.append("I11_ADR_INCOMPLETE")
     registry = _read(manifest["templateRegistry"])
+    if not _schema_valid(registry, "architecture-template-registry-v1.schema.json"):
+        codes.append("I11_TEMPLATE_SCHEMA_TOKEN_INVALID")
     templates = registry.get("templates", [])
     if len(templates) != 12 or len({item.get("templateId") for item in templates}) != 12:
         codes.append("I11_TEMPLATE_UNREGISTERED")
@@ -149,6 +160,33 @@ def check_repository() -> CheckResult:
         for item in bound:
             if (item.get("registryId"), item.get("version"), item.get("contentSha256")) != (registry.get("registryId"), template.get("version"), digest):
                 codes.append("I11_TEMPLATE_NONRECIPROCAL")
+    catalogue = _read("learning/curriculum/patterns/system-design-patterns-v1.json")
+    patterns = {item.get("patternId"): item for item in catalogue.get("patterns", [])}
+    adrs = {item.get("adrId"): item for item in catalogue.get("adrs", [])}
+    trace = _read(manifest["trace"])
+    if len(patterns) != 20 or len(adrs) != 20 or set(adrs) != set(trace.get("adrIds", [])):
+        codes.append("I11_ADR_INCOMPLETE")
+    for module in modules:
+        exercise = module.get("exercise", {})
+        pattern = patterns.get(exercise.get("pattern"), {})
+        adr = adrs.get(exercise.get("decision"), {})
+        expected_adr = {
+            "adrId": exercise.get("decision"), "moduleId": module.get("moduleId"),
+            "status": "accepted-static-teaching-decision", "alternatives": exercise.get("options"),
+            "selectedAlternative": exercise.get("selectedAlternative"),
+            "forces": {"stakeholderConcern": module.get("stakeholderConcern"),
+                       "nonFunctional": module.get("requirements", {}).get("nonFunctional"),
+                       "asr": module.get("requirements", {}).get("asr")},
+            "failure": pattern.get("failure"), "verifier": module.get("evidence", {}).get("verifier"),
+            "evidenceExpectation": module.get("evidence", {}).get("expected"),
+            "consequences": module.get("consequences"), "removalRule": pattern.get("removalRule"),
+            "patternId": exercise.get("pattern"), "reciprocalModuleId": module.get("moduleId"),
+        }
+        option_ids = {option.get("id") for option in exercise.get("options", [])}
+        if adr != expected_adr or exercise.get("selectedAlternative") not in option_ids:
+            codes.append("I11_ADR_INCOMPLETE")
+        if not pattern.get("forces") or not pattern.get("failure") or not pattern.get("verifier") or not pattern.get("consequences") or not pattern.get("removalRule"):
+            codes.append("I11_PATTERN_VERIFIER_MISSING")
     promotion = _read(manifest["promotionExample"])
     codes.extend(_codes({"promotion": promotion}))
     if promotion.get("pinnedSchema", {}).get("sha256") != "43fc68833237ef5b522f82fbbd18caba0f11e16bf66e0ff26cf44f0238c39871":
@@ -156,6 +194,12 @@ def check_repository() -> CheckResult:
     operation_matrix = _read("learning/contracts/operation-matrix-v1.json")
     if len(operation_matrix.get("operations", [])) != 16 or operation_matrix.get("channels") != []:
         codes.append("I11_API_OPERATION_UNRELEASED")
+    for path in manifest.get("moduleCollections", []):
+        if not _schema_valid(_read(path), "architecture-module-collection-v1.schema.json"):
+            codes.append("I11_REF_STALE")
+    release = _read("learning/curriculum/release-binding-i5-06-stage-a-v1.json")
+    if not _schema_valid(release, "architecture-release-binding-v1.schema.json"):
+        codes.append("I11_REF_STALE")
     unique = tuple(dict.fromkeys(codes))
     return CheckResult(ENTRYPOINT_ID, True, unique, {"modules": len(modules), "templates": len(templates), "projectionSha256": content_sha256(manifest)})
 

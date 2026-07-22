@@ -12,6 +12,7 @@ import json
 import math
 from pathlib import Path, PurePosixPath
 import stat
+import sys
 from typing import Any, Mapping
 import unicodedata
 
@@ -123,3 +124,21 @@ def canonical_bytes(value: Any) -> bytes:
 
 def content_sha256(value: Any) -> str:
     return hashlib.sha256(canonical_bytes(value)).hexdigest()
+
+
+def admitted_runtime_ok() -> bool:
+    root = Path(__file__).resolve().parents[3]
+    expected = root / ".artifacts/workspaces/golden/i11-stage-a-v3/venv/bin/python"
+    marker = expected.parents[2] / "runtime-admission.json"
+    if Path(sys.executable) != expected or not marker.is_file() or not expected.is_file():
+        return False
+    try:
+        admission = json.loads(marker.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    digest = hashlib.sha256(expected.read_bytes()).hexdigest()
+    return (
+        admission.get("schemaVersion") == "learning-runtime-admission-v1"
+        and admission.get("interpreterSha256") == digest
+        and admission.get("lockSha256") == "f41c727b39f99106f95b7937b2811e8d27db89d1d5106e9f1d9effd4403143d2"
+    )

@@ -7,7 +7,9 @@ trace, render and evidence acceptance rules are intentionally added after RED.
 from __future__ import annotations
 
 import argparse
+import datetime
 import hashlib
+import html
 import json
 import os
 from pathlib import Path
@@ -118,6 +120,19 @@ def _sha(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _relative_luminance(color: str) -> float:
+    value = color.lstrip("#")
+    if len(value) == 3: value = "".join(character * 2 for character in value)
+    channels = [int(value[index:index + 2], 16) / 255 for index in (0, 2, 4)]
+    linear = [channel / 12.92 if channel <= 0.04045 else ((channel + 0.055) / 1.055) ** 2.4 for channel in channels]
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
+
+
+def _contrast_ratio(left: str, right: str) -> float:
+    first, second = sorted((_relative_luminance(left), _relative_luminance(right)), reverse=True)
+    return round((first + 0.05) / (second + 0.05), 2)
+
+
 def _verify_repository() -> CheckResult:
     base = ROOT / "architecture/expansions/i5-06"
     manifest_path = base / "rendered/render-manifest.json"
@@ -136,6 +151,8 @@ def _verify_repository() -> CheckResult:
     tool = manifest.get("tool", {})
     tool_path = ROOT / tool.get("path", "missing")
     if not tool_path.is_file() or tool.get("sha256") != _sha(tool_path): codes.append("I11_RENDER_STALE")
+    finalizer_path = ROOT / tool.get("finalizerPath", "missing")
+    if not finalizer_path.is_file() or tool.get("finalizerSha256") != _sha(finalizer_path): codes.append("I11_RENDER_STALE")
     dynamic_text = {
         "DYN-PUBLISH": ["stage-snapshot", "write-object", "validate-object", "commit-catalog-pointer", "verify-read-back", "detect-partial", "read-commit-state", "resume-idempotently", "verify-pointer", "close-attempt", "publish-current-pointer", "open-ingestion-window", "ingest-physical", "ingest-logical", "verify-catalog", "close-window"],
         "DYN-OFFICE": ["request-open", "admit-budget-capacity", "start-compute", "restore-hydrate", "pass-readiness", "expose-endpoint", "probe-data-authority", "probe-metadata-authority", "probe-bi-path", "compare-equivalence", "declare-ready", "stop-admission", "drain-work", "checkpoint-authorities", "stop-compute", "inventory-residual-state-cost"],
@@ -174,28 +191,53 @@ def _verify_repository() -> CheckResult:
         scale = 1024 / box[2] if len(box) == 4 and box[2] else 0
         if not fonts or max(fonts) * scale < 18 or min(fonts) * scale < 12:
             codes.append("I11_VISUAL_FIT_FONT")
-        visual = row.get("visual", {})
-        if not visual.get("onCanvas"): codes.append("I11_VISUAL_CANVAS")
-        if visual.get("overlap"): codes.append("I11_VISUAL_OVERLAP")
-        if visual.get("clipping"): codes.append("I11_VISUAL_CLIPPING")
-        if visual.get("minContrast", 0) < 4.5: codes.append("I11_VISUAL_CONTRAST")
+        rects = []
+        for element in root.iter():
+            if element.tag == f"{namespace}rect" and element.get("data-node"):
+                rects.append(tuple(float(element.get(field, "0")) for field in ("x", "y", "width", "height")))
+        def contained(inner: tuple[float, ...], outer: tuple[float, ...]) -> bool:
+            return inner[0] >= outer[0] and inner[1] >= outer[1] and inner[0] + inner[2] <= outer[0] + outer[2] and inner[1] + inner[3] <= outer[1] + outer[3]
+        overlap = False
+        for index, left in enumerate(rects):
+            for right in rects[index + 1:]:
+                intersects = left[0] < right[0] + right[2] and right[0] < left[0] + left[2] and left[1] < right[1] + right[3] and right[1] < left[1] + left[3]
+                if intersects and not contained(left, right) and not contained(right, left): overlap = True
+        on_canvas = all(x >= 0 and y >= 0 and x + width <= box[2] and y + height <= box[3] for x, y, width, height in rects)
+        text_on_canvas = all(
+            float(element.get("x", "0")) >= 0 and float(element.get("y", "0")) <= box[3]
+            and float(element.get("x", "0")) + len("".join(element.itertext())) * float(element.get("font-size", "15")) * 0.56 <= box[2]
+            for element in root.iter() if element.tag == f"{namespace}text"
+        )
+        if not on_canvas: codes.append("I11_VISUAL_CANVAS")
+        if overlap: codes.append("I11_VISUAL_OVERLAP")
+        if not text_on_canvas: codes.append("I11_VISUAL_CLIPPING")
+        text_colors = {element.get("fill") for element in root.iter() if element.tag == f"{namespace}text" and element.get("fill", "").startswith("#")}
+        background_colors = {element.get("fill") for element in root.iter() if element.tag == f"{namespace}rect" and element.get("fill", "").startswith("#")}
+        min_contrast = min((_contrast_ratio(foreground, background) for foreground in text_colors for background in background_colors), default=0.0)
+        if min_contrast < 4.5: codes.append("I11_VISUAL_CONTRAST")
         alternative = text.read_text(encoding="utf-8")
         expected = dynamic_text.get(view_id, [])
         positions = [alternative.find(step) for step in expected]
         if any(position < 0 for position in positions) or positions != sorted(positions):
             codes.append("I11_VISUAL_TEXT_PARITY")
-        if row.get("semanticProjectionSha256") != _sha(text): codes.append("I11_RENDER_SEMANTIC_ERASURE")
+        raw_sha = row.get("rawSvgSha256")
+        if root.get("data-source-sha256") != _sha(source) or root.get("data-raw-sha256") != raw_sha:
+            codes.append("I11_RENDER_STALE")
+        projection_sha = content_sha256({"viewId": view_id, "source": source_text, "rawSha256": raw_sha})
+        freshness = content_sha256({
+            "sourceSha256": _sha(source), "rawSvgSha256": raw_sha, "svgSha256": _sha(svg),
+            "textSha256": _sha(text), "projectionSha256": projection_sha,
+            "toolSha256": _sha(tool_path),
+        })
+        if row.get("semanticProjectionSha256") != projection_sha or row.get("freshnessSha256") != freshness:
+            codes.append("I11_RENDER_SEMANTIC_ERASURE")
+        expected_visual = {"aspect": 2.0, "titlePx1024": 20.48, "primaryPx1024": 12.8,
+                           "secondaryPx1024": 12.8, "minContrast": min_contrast,
+                           "onCanvas": on_canvas, "overlap": overlap, "clipping": not text_on_canvas}
+        if row.get("visual") != expected_visual: codes.append("I11_RENDER_STALE")
         mutated = source.read_bytes() + b"\n// semantic-mutation\n"
         if hashlib.sha256(mutated).hexdigest() == row.get("sourceSha256"):
             codes.append("I11_RENDER_SEMANTIC_ERASURE")
-    with tempfile.TemporaryDirectory(prefix="i11-render-a-") as left, tempfile.TemporaryDirectory(prefix="i11-render-b-") as right:
-        for view_id in VIEW_IDS:
-            for suffix in ("svg", "txt"):
-                source = base / f"rendered/{view_id}.{suffix}"
-                shutil.copyfile(source, Path(left) / source.name)
-                shutil.copyfile(source, Path(right) / source.name)
-        if any(_sha(Path(left) / f"{view}.{suffix}") != _sha(Path(right) / f"{view}.{suffix}") for view in VIEW_IDS for suffix in ("svg", "txt")):
-            codes.append("I11_RENDER_NONDETERMINISTIC")
     review_path = ROOT / ".claude/evidence/issue-11-stage-a/260722-cook-v3/human-visual-review.json"
     if not review_path.is_file():
         codes.append("I11_VISUAL_HUMAN_REVIEW_MISSING")
@@ -281,7 +323,8 @@ def _terminate_group(process: subprocess.Popen[bytes]) -> tuple[bool, bool, bool
 def _run_owned(
     argv: Sequence[str], deadline_seconds: float, *, cwd: Path = ROOT,
     env: dict[str, str] | None = None, rss_limit: int = 1_610_612_736,
-    process_limit: int = 16, output_limit: int = MAX_OUTPUT,
+    process_limit: int = 16, output_limit: int = MAX_OUTPUT, file_root: Path | None = None,
+    file_count_limit: int = 1_000_000, file_bytes_limit: int = 1_073_741_824,
 ) -> tuple[int, dict[str, object]]:
     started = time.monotonic()
     process = subprocess.Popen(
@@ -294,6 +337,7 @@ def _run_owned(
     selector.register(process.stdout, selectors.EVENT_READ)
     output = bytearray()
     peak_rss = max_processes = samples = 0
+    peak_file_count = peak_file_bytes = 0
     breach = ""
     term_sent = kill_sent = False
     zero_members = False
@@ -304,11 +348,16 @@ def _run_owned(
             member_count, rss = _pgid_measure(process.pid)
             peak_rss = max(peak_rss, rss)
             max_processes = max(max_processes, member_count)
+            if file_root is not None and samples % 10 == 0:
+                file_count, file_bytes = _tree_measure(file_root)
+                peak_file_count, peak_file_bytes = max(peak_file_count, file_count), max(peak_file_bytes, file_bytes)
             samples += 1
             if time.monotonic() - started > deadline_seconds: breach = "deadline"
             elif peak_rss > rss_limit: breach = "rss"
             elif max_processes > process_limit: breach = "process-count"
             elif len(output) > output_limit: breach = "output"
+            elif peak_file_count > file_count_limit: breach = "file-count"
+            elif peak_file_bytes > file_bytes_limit: breach = "file-bytes"
             if breach:
                 term_sent, kill_sent, zero_members = _terminate_group(process)
                 break
@@ -344,6 +393,7 @@ def _run_owned(
         "killSent": kill_sent, "waited": process.poll() is not None,
         "reaped": process.poll() is not None, "zeroDescendants": zero_members,
         "returnStatus": process.returncode,
+        "peakFileCount": peak_file_count, "peakFileBytes": peak_file_bytes,
     }
     return (process.returncode if not breach else 124), metrics
 
@@ -379,20 +429,109 @@ def _tree_measure(path: Path) -> tuple[int, int]:
     return len(files), sum(item.stat().st_size for item in files)
 
 
-def _render_bundle(source: Path, raw: Path, model: Path) -> dict[str, dict[str, str]]:
+JOURNEY_STEPS = ("load", "start", "run", "record-controlled-failure", "diagnose", "reset", "verify", "retain-evidence", "complete")
+
+
+def _view_semantics(view_id: str, source_text: str) -> tuple[str, list[tuple[str, str, str, str]]]:
+    title_match = re.search(r"title '([^']+)'", source_text)
+    title = title_match.group(1) if title_match else view_id
+    source_relations = re.findall(r"^\s*([A-Za-z0-9_.]+) -> ([A-Za-z0-9_.]+) '([^']+)'", source_text, re.MULTILINE)
+    relations: list[tuple[str, str, str, str]] = []
+    for index, (source, target, label) in enumerate(source_relations):
+        token = re.search(r"\[[^:]+:([^\]]+)\]", label)
+        step_id = token.group(1) if token else JOURNEY_STEPS[index] if view_id == "DYN-JOURNEY" and index < len(JOURNEY_STEPS) else f"relation-{index + 1}"
+        relations.append((source, target, re.sub(r"\s*\[[^\]]+\]$", "", label), step_id))
+    return title, relations
+
+
+def _render_text_alternative(view_id: str, source_text: str) -> bytes:
+    title, relations = _view_semantics(view_id, source_text)
+    lines = [title, f"Mã view: {view_id}", "Giới hạn: thiết kế tĩnh; AWS chỉ khái niệm/TBC; không phải bằng chứng runtime hay triển khai."]
+    if relations:
+        lines.append("Thứ tự quan hệ:")
+        lines.extend(f"{ordinal}. {label} [{step_id}; {source} -> {target}]" for ordinal, (source, target, label, step_id) in enumerate(relations, 1))
+    elif view_id == "DEP-AWS":
+        lines.extend([
+            "Phân cấp triển khai: aws_conceptual.",
+            "Ranh giới truy cập: edge > admission_instance.",
+            "Ranh giới tính toán: compute_boundary > compute_instance, bi_instance.",
+            "Ranh giới authority: authority_boundary > lake_instance, governance_instance, recovery_state > evidence_instance.",
+        ])
+    else:
+        lines.append("Phạm vi container: admission, compute, lake, bi, governance, evidenceStore.")
+    return ("\n".join(lines) + "\n").encode("utf-8")
+
+
+def _svg_text(x: int, y: int, value: str, *, size: int = 15, weight: int = 400) -> str:
+    return f'<text x="{x}" y="{y}" font-family="Arial, sans-serif" font-size="{size}" font-weight="{weight}" fill="#14213d">{html.escape(value)}</text>'
+
+
+def _render_accessible_svg(view_id: str, source_text: str, raw_sha: str) -> bytes:
+    title, relations = _view_semantics(view_id, source_text)
+    source_sha = hashlib.sha256(source_text.encode("utf-8")).hexdigest()
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600" role="img" aria-labelledby="title desc" data-source-sha256="{source_sha}" data-raw-sha256="{raw_sha}">',
+        f'<title id="title">{html.escape(title)}</title>',
+        f'<desc id="desc">{html.escape("View kiến trúc tĩnh có nhãn tiếng Việt và văn bản thay thế theo đúng thứ tự quan hệ.")}</desc>',
+        '<rect width="1200" height="600" fill="#ffffff"/>', _svg_text(40, 44, title, size=24, weight=700),
+    ]
+    if view_id.startswith("DYN-"):
+        for ordinal, (source, target, label, _step_id) in enumerate(relations, 1):
+            column = 0 if ordinal <= 10 else 1
+            row = ordinal - 1 if column == 0 else ordinal - 11
+            x, y = (35 if column == 0 else 615), 72 + row * 48
+            parts.append(f'<rect data-node="step-{ordinal}" x="{x}" y="{y}" width="550" height="42" rx="7" fill="#f8fafc" stroke="#334155" stroke-width="2"/>')
+            parts.append(_svg_text(x + 12, y + 18, f"{ordinal}. {label}", size=15, weight=700))
+            parts.append(_svg_text(x + 12, y + 36, f"{source} → {target}", size=15))
+        parts.append(_svg_text(40, 580, "Chú giải: số thứ tự do renderer tạo; quan hệ một chiều; failure/recovery giữ đúng trình tự.", size=15))
+    elif view_id == "DEP-AWS":
+        boundaries = [
+            (40, "Ranh giới truy cập", [("admission_instance", "Cổng admission")]),
+            (410, "Ranh giới tính toán", [("compute_instance", "Năng lực tính toán"), ("bi_instance", "Truy cập BI")]),
+            (780, "Authority và trạng thái", [("lake_instance", "Object và catalog"), ("governance_instance", "Quản trị metadata"), ("evidence_instance", "Bằng chứng phục hồi")]),
+        ]
+        for x, heading, nodes in boundaries:
+            parts.append(f'<rect data-node="boundary-{x}" x="{x}" y="82" width="340" height="440" rx="10" fill="#f8fafc" stroke="#334155" stroke-width="3"/>')
+            parts.append(_svg_text(x + 18, 115, heading, size=18, weight=700))
+            for index, (node_id, label) in enumerate(nodes):
+                y = 145 + index * 112
+                parts.append(f'<rect data-node="{node_id}" x="{x + 25}" y="{y}" width="290" height="82" rx="7" fill="#e0f2fe" stroke="#075985" stroke-width="2"/>')
+                parts.append(_svg_text(x + 42, y + 34, label, size=18, weight=700))
+                parts.append(_svg_text(x + 42, y + 60, "chỉ khái niệm · TBC", size=15))
+        parts.append(_svg_text(40, 570, "Chú giải: containment là phân cấp; không có tài khoản, tài nguyên, giá hiện tại hay deployability claim.", size=15))
+    else:
+        nodes = ["Cổng ngân sách", "Năng lực tính toán", "Object và catalog", "Truy cập BI", "Quản trị metadata", "Bằng chứng phục hồi"]
+        for index, label in enumerate(nodes):
+            column, row = index % 3, index // 3
+            x, y = 55 + column * 380, 105 + row * 190
+            parts.append(f'<rect data-node="c4-{index + 1}" x="{x}" y="{y}" width="330" height="145" rx="9" fill="#e0f2fe" stroke="#075985" stroke-width="3"/>')
+            parts.append(_svg_text(x + 20, y + 55, label, size=18, weight=700))
+            parts.append(_svg_text(x + 20, y + 88, "AWS conceptual only", size=15))
+        parts.append(_svg_text(55, 535, "Quan hệ: admission → compute → lake/BI; governance đối chiếu lake; evidence báo operator.", size=15))
+        parts.append(_svg_text(55, 570, "Giới hạn: không phải runtime, tài khoản, tài nguyên, giá hay bằng chứng triển khai.", size=15))
+    parts.append("</svg>\n")
+    return "".join(parts).encode("utf-8")
+
+
+def _render_bundle(source: Path, raw: Path, model: Path, final: Path) -> dict[str, dict[str, str]]:
     bundle: dict[str, dict[str, str]] = {}
     json.loads(model.read_text(encoding="utf-8"))
     tool_sha = _sha(ROOT / "learning/curriculum/tools/architecture-render.mjs")
+    final.mkdir(mode=0o700)
     for view_id in VIEW_IDS:
         view_source = source / f"views/{view_id}.c4"
         source_bytes = view_source.read_bytes()
-        labels = re.findall(r"'([^']+)'", source_bytes.decode("utf-8"))
-        text_bytes = ("\n".join(labels) + "\n").encode("utf-8")
         raw_svg = raw / f"{view_id}.raw.svg"
-        projection_sha = content_sha256({"viewId": view_id, "labels": labels})
+        source_text = source_bytes.decode("utf-8")
+        text_bytes = _render_text_alternative(view_id, source_text)
+        svg_bytes = _render_accessible_svg(view_id, source_text, _sha(raw_svg))
+        svg_path, text_path = final / f"{view_id}.svg", final / f"{view_id}.txt"
+        svg_path.write_bytes(svg_bytes); text_path.write_bytes(text_bytes)
+        svg_path.chmod(0o600); text_path.chmod(0o600)
+        projection_sha = content_sha256({"viewId": view_id, "source": source_text, "rawSha256": _sha(raw_svg)})
         row = {
             "sourceSha256": hashlib.sha256(source_bytes).hexdigest(),
-            "svgSha256": _sha(raw_svg),
+            "rawSvgSha256": _sha(raw_svg), "svgSha256": hashlib.sha256(svg_bytes).hexdigest(),
             "textSha256": hashlib.sha256(text_bytes).hexdigest(),
             "projectionSha256": projection_sha,
         }
@@ -418,6 +557,12 @@ def _resource_probe(kind: str) -> int:
         time.sleep(30)
     elif kind == "output":
         sys.stdout.write("x" * 4096)
+    elif kind in {"file-count", "file-bytes"}:
+        root = Path(os.environ["I11_RESOURCE_PROBE_ROOT"])
+        for index in range(5):
+            (root / f"{index}.bin").write_bytes(b"x" * 4096)
+        print("files-created=5", flush=True)
+        time.sleep(30)
     else:
         return 2
     return 0
@@ -449,14 +594,19 @@ def _resource_proofs(deadline: float) -> tuple[list[str], list[dict[str, object]
             codes.append("I11_RESOURCE_MEASUREMENT_MISSING")
         if kind == "term-resistant-grandchild" and not (metrics.get("termSent") and metrics.get("killSent")):
             codes.append("I11_RESOURCE_KILL")
-    with tempfile.TemporaryDirectory(prefix="i11-resource-file-proof-") as temporary:
-        proof = Path(temporary)
-        for index in range(3):
-            (proof / f"{index}.bin").write_bytes(b"x" * 1024)
-        count, size = _tree_measure(proof)
-        records.append({"probe": "file-bounds", "fileCount": count, "fileBytes": size, "countThreshold": 2, "byteThreshold": 2048})
-        if not (count > 2 and size > 2048):
-            codes.append("I11_RESOURCE_MEASUREMENT_MISSING")
+    for kind, count_limit, byte_limit, expected in (("file-count", 2, 1_000_000, "file-count"), ("file-bytes", 100, 2048, "file-bytes")):
+        with tempfile.TemporaryDirectory(prefix=f"i11-{kind}-proof-") as temporary:
+            proof = Path(temporary)
+            environment = {**os.environ, "I11_RESOURCE_PROBE_ROOT": str(proof)}
+            _, metrics = _run_owned(
+                [sys.executable, "-m", "learning.curriculum.tools.architecture_expansion", "_resource-probe", kind],
+                min(5.0, max(0.1, deadline - time.monotonic())), env=environment, file_root=proof,
+                file_count_limit=count_limit, file_bytes_limit=byte_limit,
+            )
+            metrics["argv"] = [Path(sys.executable).name, "-m", "learning.curriculum.tools.architecture_expansion", "_resource-probe", kind]
+            metrics.pop("outputExcerpt", None); records.append(metrics)
+            if metrics.get("breach") != expected or not metrics.get("zeroDescendants"):
+                codes.append("I11_RESOURCE_MEASUREMENT_MISSING")
     return list(dict.fromkeys(codes)), records
 
 
@@ -476,7 +626,7 @@ def _toolchain_verification() -> tuple[list[str], dict[str, object]]:
         remaining = deadline - time.monotonic()
         if remaining <= 0:
             raise TimeoutError("I11_RESOURCE_DEADLINE")
-        status, metrics = _run_owned(argv, remaining, cwd=cwd, env=env)
+        status, metrics = _run_owned(argv, remaining, cwd=cwd, env=env, file_root=cwd)
         executable = Path(argv[0])
         metrics["argv"] = [Path(value).name if value.startswith((str(ROOT), str(cwd), "/var/", "/private/")) else value for value in argv]
         metrics["executableSha256"] = _sha(executable.resolve()) if executable.is_file() else None
@@ -566,6 +716,7 @@ def _toolchain_verification() -> tuple[list[str], dict[str, object]]:
                 model = stage / "model.json"
                 dot = stage / "dot"
                 raw = stage / "raw"
+                final = stage / "final"
                 dot.mkdir(mode=0o700)
                 run([str(likec4), "format", "--check", str(source)], tool, offline)
                 run([str(likec4), "validate", "--json", str(source)], tool, offline)
@@ -579,7 +730,12 @@ def _toolchain_verification() -> tuple[list[str], dict[str, object]]:
                     if any(token in raw_bytes for token in (b"<script", b"foreignObject", b"onload=", b"data:")) or re.search(rb"(?:href|src)=", raw_bytes, re.IGNORECASE):
                         codes.append("I11_RENDER_UNSAFE")
                     ET.fromstring(raw_bytes)
-                finals.append(_render_bundle(source, raw, model))
+                finals.append(_render_bundle(source, raw, model, final))
+                for view_id in VIEW_IDS:
+                    if (final / f"{view_id}.svg").read_bytes() != (ROOT / f"architecture/expansions/i5-06/rendered/{view_id}.svg").read_bytes():
+                        codes.append("I11_RENDER_STALE")
+                    if (final / f"{view_id}.txt").read_bytes() != (ROOT / f"architecture/expansions/i5-06/rendered/{view_id}.txt").read_bytes():
+                        codes.append("I11_RENDER_STALE")
                 if label == "b":
                     mutation_source = source / "views/DYN-PUBLISH.c4"
                     mutated = mutation_source.read_text(encoding="utf-8").replace(
@@ -590,13 +746,14 @@ def _toolchain_verification() -> tuple[list[str], dict[str, object]]:
                     mutation_source.write_text(mutated, encoding="utf-8")
                     mutation_dot = stage / "mutation-dot"
                     mutation_raw = stage / "mutation-raw"
+                    mutation_final = stage / "mutation-final"
                     mutation_model = stage / "mutation-model.json"
                     mutation_dot.mkdir(mode=0o700)
                     run([str(likec4), "export", "json", "--skip-layout", "--pretty", "-o", str(mutation_model), str(source)], tool, offline)
                     run([str(likec4), "gen", "dot", "-o", str(mutation_dot), str(source)], tool, offline)
                     run([str(node), str(adapter), str(mutation_dot), str(mutation_raw)], tool, offline)
-                    mutated_bundle = _render_bundle(source, mutation_raw, mutation_model)["DYN-PUBLISH"]
-                    if any(mutated_bundle[field] == finals[-1]["DYN-PUBLISH"][field] for field in ("sourceSha256", "svgSha256", "textSha256", "projectionSha256", "freshnessSha256")):
+                    mutated_bundle = _render_bundle(source, mutation_raw, mutation_model, mutation_final)["DYN-PUBLISH"]
+                    if any(mutated_bundle[field] == finals[-1]["DYN-PUBLISH"][field] for field in ("sourceSha256", "rawSvgSha256", "svgSha256", "textSha256", "projectionSha256", "freshnessSha256")):
                         codes.append("I11_RENDER_SEMANTIC_ERASURE")
             if finals[0] != finals[1]:
                 codes.append("I11_RENDER_NONDETERMINISTIC")
@@ -710,14 +867,19 @@ def _copy_and_remove_owned_artifacts(evidence_root: Path) -> list[str]:
     copied: list[str] = []
     if not artifacts.exists():
         raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
+    allowed_purposes = {"learning-contracts-check", "lesson-check", "api-contracts-check", "architecture-check", "architecture-render", "help"}
     for marker in sorted(artifacts.rglob(".golden-owner.json")):
         run_root = marker.parent
         record = json.loads(marker.read_text(encoding="utf-8"))
         observed = run_root.stat()
+        relative = run_root.relative_to(artifacts)
+        admitted_family = relative.parts[:2] in {("evidence", "learning-contracts"), ("evidence", "architecture-check"), ("evidence", "architecture-render"), ("workspaces", "golden")}
         if (
             record.get("schemaVersion") != "golden-owner-v1"
             or (record.get("device"), record.get("inode")) != (observed.st_dev, observed.st_ino)
             or not run_root.is_relative_to(artifacts)
+            or record.get("purpose") not in allowed_purposes
+            or not admitted_family
         ):
             raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
         for result_path in sorted(path for path in run_root.glob("*.json") if path.name != ".golden-owner.json"):
@@ -771,6 +933,18 @@ def _close_evidence(evidence_root: Path, head: str, cleanup: dict[str, object]) 
         "schemaVersion": "i11-stage-a-evidence-owner-v1", "owner": "I5-06",
         "runId": "260722-cook-v3", "inputGitSha": "5f28f83bc2062e0bc7b8792d9aaa744a0b7e175b",
         "testedTreeSha": head, "stage": "A-static-only", "cloudAction": "none",
+        "repositoryIdentity": "ai-ready-data-platform", "branch": "feature/issue-11-architecture-stage-a-v3",
+        "rootLocator": "repository-root", "evidenceRootLocator": ".claude/evidence/issue-11-stage-a/260722-cook-v3",
+        "createdAt": datetime.datetime.now(datetime.UTC).isoformat().replace("+00:00", "Z"),
+        "nonce": os.urandom(32).hex(), "privacyClass": "sanitized-no-private-locators",
+        "chronology": {
+            "scaffoldCommitSha": "7646e446198c9483e3f1ac1a725d7699e4a09010",
+            "testsCommitSha": "e712d08ff4ba62fdbe19bd269beb8ed91525e39f",
+            "redTestedTreeSha": "0ea601a7c2cefc4936bb37e52d02d5f9f52de4ed",
+            "firstSemanticCommitSha": "5f214b644642aedd27f9ffd91f7ce5e07af3aef2",
+            "finalSemanticHeadSha": head,
+        },
+        "permissions": {"directoryMode": "0700", "fileMode": "0600"},
     }
     (evidence_root / "owner.json").write_text(json.dumps(owner, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
     (evidence_root / "cleanup-result.json").write_text(json.dumps(cleanup, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
@@ -803,6 +977,10 @@ def _close_evidence(evidence_root: Path, head: str, cleanup: dict[str, object]) 
 def _repository_handoff() -> CheckResult:
     codes: list[str] = []
     evidence_root = ROOT / ".claude/evidence/issue-11-stage-a/260722-cook-v3"
+    claude_root = ROOT / ".claude"
+    allowed_ancestors = {evidence_root, *evidence_root.parents}
+    if any(path not in allowed_ancestors and not path.is_relative_to(evidence_root) for path in claude_root.rglob("*")):
+        codes.append("I11_CLEAN_IGNORED_UNOWNED")
     head = _git("rev-parse", "HEAD").decode().strip()
     allowed = _allowed_stage_paths()
     rows = [line.split("\t", 1) for line in _git("diff", "--name-status", "5f28f83bc2062e0bc7b8792d9aaa744a0b7e175b", "HEAD").decode().splitlines()]

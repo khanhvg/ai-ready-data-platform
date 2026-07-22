@@ -1,1 +1,35 @@
-{"$id":"urn:i5-06:architecture-view-extension-v1","type":"object","additionalProperties":false,"required":["schemaVersion","baseManifest","views"],"properties":{"schemaVersion":{"const":"i5-06-architecture-view-extension-v1"},"baseManifest":{"type":"object","required":["path","blob","sha256"]},"views":{"type":"array","minItems":5,"maxItems":5,"items":{"type":"object","required":["id","key","type","audience","concern","scope","source","svg","text"]}}}}
+{
+  "$id": "urn:i5-06:architecture-view-extension-v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "owner", "baseManifest", "numberingAuthority", "legendVi", "views"],
+  "properties": {
+    "schemaVersion": {"const": "i5-06-architecture-view-extension-v1"},
+    "owner": {"const": "I5-06"},
+    "numberingAuthority": {"const": "renderer-only"},
+    "legendVi": {"type": "string", "minLength": 30},
+    "baseManifest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "blob", "sha256"],
+      "properties": {
+        "path": {"const": "architecture/likec4/view-manifest.yaml"},
+        "blob": {"pattern": "^[0-9a-f]{40}$"},
+        "sha256": {"pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "views": {
+      "type": "array", "minItems": 5, "maxItems": 5,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "key", "type", "audience", "concern", "scope", "source", "svg", "text"],
+        "properties": {
+          "id": {"enum": ["C4-L2-AWS", "DEP-AWS", "DYN-OFFICE", "DYN-PUBLISH", "DYN-RESTORE"]},
+          "key": {"type": "string"}, "type": {"enum": ["container", "deployment", "dynamic"]},
+          "audience": {"type": "string"}, "concern": {"type": "string"}, "scope": {"type": "string"},
+          "source": {"type": "string", "pattern": "^architecture/expansions/i5-06/likec4/views/"},
+          "svg": {"type": "string", "pattern": "^architecture/expansions/i5-06/rendered/"},
+          "text": {"type": "string", "pattern": "^architecture/expansions/i5-06/rendered/"}
+        }
+      }
+    }
+  }
+}

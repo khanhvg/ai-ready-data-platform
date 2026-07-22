@@ -1,10 +1,20 @@
-ID: DYN-PUBLISH
-Tiêu đề: Công bố dữ liệu có kiểm soát
-Audience: data platform, governance
-Concern: commit, retry/resume và ingestion window đúng thứ tự
-CF-PUBLISH-STAGE-COMMIT: 1 stage-snapshot; 2 write-object; 3 validate-object; 4 commit-catalog-pointer; 5 verify-read-back.
-CF-PUBLISH-RETRY-RESUME: 6 detect-partial; 7 read-commit-state; 8 resume-idempotently; 9 verify-pointer; 10 close-attempt.
-CF-CATALOG-INGEST-HANDOFF: 11 publish-current-pointer; 12 open-ingestion-window; 13 ingest-physical; 14 ingest-logical; 15 verify-catalog; 16 close-window.
-Deployment binding: DEP-LOCAL; transform/publisher, object store, catalog, metadata ingestor, operator và evidence.
-Authority: object bất biến; catalog pointer chỉ đổi sau validate; metadata không thay data authority.
-Limitations: static design, không phải execution evidence.
+Công bố dữ liệu có kiểm soát (Controlled data publication)
+Mã view: DYN-PUBLISH
+Giới hạn: thiết kế tĩnh; AWS chỉ khái niệm/TBC; không phải bằng chứng runtime hay triển khai.
+Thứ tự quan hệ:
+1. Dàn snapshot [stage-snapshot; curriculum -> publisher]
+2. Ghi object [write-object; publisher -> objectStore]
+3. Kiểm tra object [validate-object; publisher -> objectStore]
+4. Commit con trỏ catalog [commit-catalog-pointer; publisher -> localCatalog]
+5. Kiểm tra đọc lại [verify-read-back; localCatalog -> publisher]
+6. Phát hiện trạng thái dở dang [detect-partial; objectStore -> publisher]
+7. Đọc trạng thái commit [read-commit-state; publisher -> localCatalog]
+8. Tiếp tục idempotent [resume-idempotently; publisher -> objectStore]
+9. Kiểm tra con trỏ [verify-pointer; publisher -> localCatalog]
+10. Đóng attempt [close-attempt; publisher -> curriculum]
+11. Công bố con trỏ current [publish-current-pointer; publisher -> localCatalog]
+12. Mở cửa sổ ingest [open-ingestion-window; operator -> metadataGovernance]
+13. Ingest physical metadata [ingest-physical; localCatalog -> metadataGovernance]
+14. Ingest logical lineage [ingest-logical; publisher -> metadataGovernance]
+15. Kiểm tra catalog [verify-catalog; metadataGovernance -> operator]
+16. Đóng cửa sổ [close-window; operator -> metadataGovernance]

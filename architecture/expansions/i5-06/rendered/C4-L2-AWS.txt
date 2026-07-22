@@ -1,10 +1,4 @@
-ID: C4-L2-AWS
-Tiêu đề: Kiến trúc phân tích AWS — chỉ khái niệm
-Audience: kiến trúc sư, bảo mật, FinOps
-Concern: ranh giới capability, authority, trust và cost driver
-Scope: aws-conceptual; không có account, resource, endpoint, current price hay deployability claim
-Elements: admission; compute; lake/object-catalog; BI; governance; recovery evidence
-Relations: admission cho phép compute; compute đọc data authority và phục vụ BI; governance đối chiếu lineage; evidence báo recovery result.
-Bridges: BR-ANALYTICS-01, BR-BI-01, BR-GOVERNANCE-01, BR-LAKE-01, BR-COMPUTE-01, BR-STATE-01, BR-SECURITY-01, BR-COST-01; claimClass=conceptual-only.
-TBC: identity, network, measured capacity, backup, RTO/RPO và pricing.
-Limitations: nội dung tĩnh; không phải runtime, hosted security proof hay triển khai.
+Kiến trúc phân tích AWS — chỉ khái niệm (AWS analytics — conceptual only)
+Mã view: C4-L2-AWS
+Giới hạn: thiết kế tĩnh; AWS chỉ khái niệm/TBC; không phải bằng chứng runtime hay triển khai.
+Phạm vi container: admission, compute, lake, bi, governance, evidenceStore.

@@ -1,11 +1,24 @@
-ID: DYN-RESTORE
-Tiêu đề: Khôi phục theo authority — chỉ khái niệm
-Audience: incident commander, governance
-Concern: restore order và stale-state rejection
-CF-RESTORE-OBJECT-CATALOG: 1 create-empty-boundary; 2 restore-objects; 3 register-catalog; 4 publish-current-pointer; 5 verify-table-read.
-CF-RESTORE-ANALYTICS: 6 restore-clickhouse-authority; 7 hydrate-query-state; 8 restore-bi-metadata; 9 run-equivalence; 10 record-rto-rpo.
-CF-RESTORE-GOVERNANCE: 11 restore-db; 12 restore-search; 13 reconnect-openmetadata; 14 reingest-lineage; 15 verify-owner-classification.
-CF-RESTORE-EVIDENCE: 16 restore-evidence-index; 17 verify-payload-hashes; 18 reconcile-current-state; 19 reject-stale-completion; 20 record-recovery-result.
-Deployment binding: DEP-AWS conceptual; object/catalog, analytics, BI, metadata DB/search, evidence index và current state.
-Bridge/claim: conceptual-only; không thỏa runtime, RTO/RPO, hosted security hay deployability proof.
-Limitations: hash kiểm tra integrity, không phải chữ ký hoặc approval.
+Khôi phục theo authority — chỉ khái niệm (Authority restore — conceptual only)
+Mã view: DYN-RESTORE
+Giới hạn: thiết kế tĩnh; AWS chỉ khái niệm/TBC; không phải bằng chứng runtime hay triển khai.
+Thứ tự quan hệ:
+1. Tạo ranh giới trống [create-empty-boundary; operator -> awsConcept.evidenceStore]
+2. Khôi phục object [restore-objects; awsConcept.evidenceStore -> awsConcept.lake]
+3. Đăng ký catalog [register-catalog; awsConcept.evidenceStore -> awsConcept.lake]
+4. Công bố current pointer [publish-current-pointer; awsConcept.evidenceStore -> awsConcept.lake]
+5. Kiểm tra đọc table [verify-table-read; awsConcept.lake -> awsConcept.evidenceStore]
+6. Khôi phục analytics authority [restore-clickhouse-authority; awsConcept.evidenceStore -> awsConcept.compute]
+7. Hydrate query state [hydrate-query-state; awsConcept.evidenceStore -> awsConcept.compute]
+8. Khôi phục BI metadata [restore-bi-metadata; awsConcept.evidenceStore -> awsConcept.bi]
+9. Chạy equivalence [run-equivalence; awsConcept.bi -> awsConcept.evidenceStore]
+10. Ghi RTO/RPO [record-rto-rpo; awsConcept.evidenceStore -> operator]
+11. Khôi phục DB [restore-db; awsConcept.evidenceStore -> awsConcept.governance]
+12. Khôi phục search [restore-search; awsConcept.evidenceStore -> awsConcept.governance]
+13. Kết nối OpenMetadata [reconnect-openmetadata; awsConcept.evidenceStore -> awsConcept.governance]
+14. Reingest lineage [reingest-lineage; awsConcept.lake -> awsConcept.governance]
+15. Kiểm tra owner và classification [verify-owner-classification; awsConcept.governance -> awsConcept.evidenceStore]
+16. Khôi phục evidence index [restore-evidence-index; operator -> awsConcept.evidenceStore]
+17. Kiểm tra hash payload [verify-payload-hashes; awsConcept.evidenceStore -> awsConcept.evidenceStore]
+18. Reconcile current state [reconcile-current-state; awsConcept.evidenceStore -> awsConcept.lake]
+19. Từ chối completion stale [reject-stale-completion; awsConcept.evidenceStore -> operator]
+20. Ghi kết quả recovery [record-recovery-result; awsConcept.evidenceStore -> operator]

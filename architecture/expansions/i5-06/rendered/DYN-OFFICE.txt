@@ -1,10 +1,20 @@
-ID: DYN-OFFICE
-Tiêu đề: Vận hành office window — chỉ khái niệm
-Audience: vận hành, FinOps
-Concern: open, readiness và close đúng thứ tự
-CF-OFFICE-OPEN: 1 request-open; 2 admit-budget-capacity; 3 start-compute; 4 restore-hydrate; 5 pass-readiness; 6 expose-endpoint.
-CF-OFFICE-READINESS: 7 probe-data-authority; 8 probe-metadata-authority; 9 probe-bi-path; 10 compare-equivalence; 11 declare-ready.
-CF-OFFICE-CLOSE: 12 stop-admission; 13 drain-work; 14 checkpoint-authorities; 15 stop-compute; 16 inventory-residual-state-cost.
-Deployment binding: DEP-AWS conceptual; admission, compute, state, BI, evidence và operator.
-Bridge/claim: conceptual-only; không thỏa runtime, readiness, security hoặc cost proof.
-TBC: identity, network, capacity, RTO/RPO, price.
+Vận hành office window — chỉ khái niệm (Office window — conceptual only)
+Mã view: DYN-OFFICE
+Giới hạn: thiết kế tĩnh; AWS chỉ khái niệm/TBC; không phải bằng chứng runtime hay triển khai.
+Thứ tự quan hệ:
+1. Yêu cầu mở [request-open; operator -> awsConcept.admission]
+2. Kiểm tra ngân sách và capacity [admit-budget-capacity; awsConcept.admission -> awsConcept.compute]
+3. Khởi động compute [start-compute; awsConcept.admission -> awsConcept.compute]
+4. Khôi phục và hydrate [restore-hydrate; awsConcept.compute -> awsConcept.lake]
+5. Vượt readiness [pass-readiness; awsConcept.compute -> awsConcept.evidenceStore]
+6. Mở endpoint [expose-endpoint; awsConcept.compute -> awsConcept.bi]
+7. Probe data authority [probe-data-authority; awsConcept.evidenceStore -> awsConcept.lake]
+8. Probe metadata authority [probe-metadata-authority; awsConcept.evidenceStore -> awsConcept.governance]
+9. Probe đường BI [probe-bi-path; awsConcept.evidenceStore -> awsConcept.bi]
+10. So sánh tương đương [compare-equivalence; awsConcept.evidenceStore -> awsConcept.compute]
+11. Tuyên bố ready có điều kiện [declare-ready; awsConcept.evidenceStore -> operator]
+12. Dừng admission [stop-admission; operator -> awsConcept.admission]
+13. Drain công việc [drain-work; awsConcept.admission -> awsConcept.compute]
+14. Checkpoint authority [checkpoint-authorities; awsConcept.compute -> awsConcept.lake]
+15. Dừng compute [stop-compute; awsConcept.admission -> awsConcept.compute]
+16. Kiểm kê trạng thái và cost còn lại [inventory-residual-state-cost; awsConcept.compute -> awsConcept.evidenceStore]
