@@ -1,0 +1,12 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import crypto from "node:crypto";
+import { spawn } from "node:child_process";
+
+const repo = path.resolve(import.meta.dirname, "../../.."); const runtime = path.join(repo, ".artifacts/runtime/i5-05-stage-a"); const statePath = path.join(runtime, "portal.json"); const logPath = path.join(runtime, "portal.log");
+async function state() { try { return JSON.parse(await fs.readFile(statePath, "utf8")); } catch { return null; } }
+function alive(pid) { try { process.kill(pid, 0); return true; } catch { return false; } }
+async function start() { const current = await state(); if (current && alive(current.pid)) { console.log(current.url); return; } await fs.mkdir(runtime, { recursive: true }); const handle = await fs.open(logPath, "a"); const child = spawn(process.execPath, [path.join(import.meta.dirname, "serve-built-portal.mjs")], { cwd: repo, detached: true, stdio: ["ignore", handle.fd, handle.fd] }); child.unref(); const started = Date.now(); let url; for (let i = 0; i < 30; i++) { await new Promise((resolve) => setTimeout(resolve, 250)); const log = await fs.readFile(logPath, "utf8"); url = log.match(/PORTAL_URL=(http:\/\/127\.0\.0\.1:\d+)/)?.[1]; if (url) break; } if (!url || !alive(child.pid)) throw new Error("PORTAL_READINESS_TIMEOUT"); const value = { pid: child.pid, started, nonce: crypto.randomBytes(16).toString("hex"), url, maturity: "static-portal-stage-a" }; await fs.writeFile(statePath, JSON.stringify(value)); console.log(`${url}\nrunner=unavailable completion=disabled`); }
+async function status() { const value = await state(); if (!value || !alive(value.pid)) { console.log("portal=stopped stage-b=blocked-on-issue9"); return; } console.log(`portal=running pid=${value.pid} url=${value.url} runner=unavailable completion=disabled stage-b=blocked-on-issue9`); }
+async function down() { const value = await state(); if (value && alive(value.pid)) { process.kill(value.pid, "SIGTERM"); for (let i = 0; i < 20 && alive(value.pid); i++) await new Promise((resolve) => setTimeout(resolve, 100)); if (alive(value.pid)) process.kill(value.pid, "SIGKILL"); } await fs.rm(statePath, { force: true }); console.log("portal=stopped review-evidence=preserved"); }
+const action = process.argv[2]; if (action === "start") await start(); else if (action === "status") await status(); else if (action === "down") await down(); else throw new Error("LIFECYCLE_ACTION_FORBIDDEN");
