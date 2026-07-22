@@ -1,0 +1,25 @@
+views {
+  dynamic view dyn_restore {
+    title 'Khôi phục theo authority — chỉ khái niệm (Authority restore — conceptual only)'
+    operator -> awsConcept.evidenceStore 'Tạo ranh giới trống [CF-RESTORE-OBJECT-CATALOG:create-empty-boundary]'
+    awsConcept.evidenceStore -> awsConcept.lake 'Khôi phục object [CF-RESTORE-OBJECT-CATALOG:restore-objects]'
+    awsConcept.evidenceStore -> awsConcept.lake 'Đăng ký catalog [CF-RESTORE-OBJECT-CATALOG:register-catalog]'
+    awsConcept.evidenceStore -> awsConcept.lake 'Công bố current pointer [CF-RESTORE-OBJECT-CATALOG:publish-current-pointer]'
+    awsConcept.lake -> awsConcept.evidenceStore 'Kiểm tra đọc table [CF-RESTORE-OBJECT-CATALOG:verify-table-read]'
+    awsConcept.evidenceStore -> awsConcept.compute 'Khôi phục analytics authority [CF-RESTORE-ANALYTICS:restore-clickhouse-authority]'
+    awsConcept.evidenceStore -> awsConcept.compute 'Hydrate query state [CF-RESTORE-ANALYTICS:hydrate-query-state]'
+    awsConcept.evidenceStore -> awsConcept.bi 'Khôi phục BI metadata [CF-RESTORE-ANALYTICS:restore-bi-metadata]'
+    awsConcept.bi -> awsConcept.evidenceStore 'Chạy equivalence [CF-RESTORE-ANALYTICS:run-equivalence]'
+    awsConcept.evidenceStore -> operator 'Ghi RTO/RPO [CF-RESTORE-ANALYTICS:record-rto-rpo]'
+    awsConcept.evidenceStore -> awsConcept.governance 'Khôi phục DB [CF-RESTORE-GOVERNANCE:restore-db]'
+    awsConcept.evidenceStore -> awsConcept.governance 'Khôi phục search [CF-RESTORE-GOVERNANCE:restore-search]'
+    awsConcept.evidenceStore -> awsConcept.governance 'Kết nối OpenMetadata [CF-RESTORE-GOVERNANCE:reconnect-openmetadata]'
+    awsConcept.lake -> awsConcept.governance 'Reingest lineage [CF-RESTORE-GOVERNANCE:reingest-lineage]'
+    awsConcept.governance -> awsConcept.evidenceStore 'Kiểm tra owner và classification [CF-RESTORE-GOVERNANCE:verify-owner-classification]'
+    operator -> awsConcept.evidenceStore 'Khôi phục evidence index [CF-RESTORE-EVIDENCE:restore-evidence-index]'
+    awsConcept.evidenceStore -> awsConcept.evidenceStore 'Kiểm tra hash payload [CF-RESTORE-EVIDENCE:verify-payload-hashes]'
+    awsConcept.evidenceStore -> awsConcept.lake 'Reconcile current state [CF-RESTORE-EVIDENCE:reconcile-current-state]'
+    awsConcept.evidenceStore -> operator 'Từ chối completion stale [CF-RESTORE-EVIDENCE:reject-stale-completion]'
+    awsConcept.evidenceStore -> operator 'Ghi kết quả recovery [CF-RESTORE-EVIDENCE:record-recovery-result]'
+  }
+}

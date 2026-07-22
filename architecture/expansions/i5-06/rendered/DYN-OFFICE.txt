@@ -1,0 +1,10 @@
+ID: DYN-OFFICE
+Tiêu đề: Vận hành office window — chỉ khái niệm
+Audience: vận hành, FinOps
+Concern: open, readiness và close đúng thứ tự
+CF-OFFICE-OPEN: 1 request-open; 2 admit-budget-capacity; 3 start-compute; 4 restore-hydrate; 5 pass-readiness; 6 expose-endpoint.
+CF-OFFICE-READINESS: 7 probe-data-authority; 8 probe-metadata-authority; 9 probe-bi-path; 10 compare-equivalence; 11 declare-ready.
+CF-OFFICE-CLOSE: 12 stop-admission; 13 drain-work; 14 checkpoint-authorities; 15 stop-compute; 16 inventory-residual-state-cost.
+Deployment binding: DEP-AWS conceptual; admission, compute, state, BI, evidence và operator.
+Bridge/claim: conceptual-only; không thỏa runtime, readiness, security hoặc cost proof.
+TBC: identity, network, capacity, RTO/RPO, price.

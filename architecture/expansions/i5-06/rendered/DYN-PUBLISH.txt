@@ -1,0 +1,10 @@
+ID: DYN-PUBLISH
+Tiêu đề: Công bố dữ liệu có kiểm soát
+Audience: data platform, governance
+Concern: commit, retry/resume và ingestion window đúng thứ tự
+CF-PUBLISH-STAGE-COMMIT: 1 stage-snapshot; 2 write-object; 3 validate-object; 4 commit-catalog-pointer; 5 verify-read-back.
+CF-PUBLISH-RETRY-RESUME: 6 detect-partial; 7 read-commit-state; 8 resume-idempotently; 9 verify-pointer; 10 close-attempt.
+CF-CATALOG-INGEST-HANDOFF: 11 publish-current-pointer; 12 open-ingestion-window; 13 ingest-physical; 14 ingest-logical; 15 verify-catalog; 16 close-window.
+Deployment binding: DEP-LOCAL; transform/publisher, object store, catalog, metadata ingestor, operator và evidence.
+Authority: object bất biến; catalog pointer chỉ đổi sau validate; metadata không thay data authority.
+Limitations: static design, không phải execution evidence.

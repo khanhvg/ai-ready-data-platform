@@ -1,0 +1,6 @@
+views {
+  view c4_l2_aws of awsConcept {
+    title 'Kiến trúc phân tích AWS — chỉ khái niệm (AWS analytics — conceptual only)'
+    include operator, admission, compute, lake, bi, governance, evidenceStore
+  }
+}

@@ -1,0 +1,11 @@
+ID: DYN-RESTORE
+Tiêu đề: Khôi phục theo authority — chỉ khái niệm
+Audience: incident commander, governance
+Concern: restore order và stale-state rejection
+CF-RESTORE-OBJECT-CATALOG: 1 create-empty-boundary; 2 restore-objects; 3 register-catalog; 4 publish-current-pointer; 5 verify-table-read.
+CF-RESTORE-ANALYTICS: 6 restore-clickhouse-authority; 7 hydrate-query-state; 8 restore-bi-metadata; 9 run-equivalence; 10 record-rto-rpo.
+CF-RESTORE-GOVERNANCE: 11 restore-db; 12 restore-search; 13 reconnect-openmetadata; 14 reingest-lineage; 15 verify-owner-classification.
+CF-RESTORE-EVIDENCE: 16 restore-evidence-index; 17 verify-payload-hashes; 18 reconcile-current-state; 19 reject-stale-completion; 20 record-recovery-result.
+Deployment binding: DEP-AWS conceptual; object/catalog, analytics, BI, metadata DB/search, evidence index và current state.
+Bridge/claim: conceptual-only; không thỏa runtime, RTO/RPO, hosted security hay deployability proof.
+Limitations: hash kiểm tra integrity, không phải chữ ký hoặc approval.

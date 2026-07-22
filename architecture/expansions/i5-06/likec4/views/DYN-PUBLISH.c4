@@ -1,0 +1,21 @@
+views {
+  dynamic view dyn_publish {
+    title 'Công bố dữ liệu có kiểm soát (Controlled data publication)'
+    curriculum -> publisher 'Dàn snapshot [CF-PUBLISH-STAGE-COMMIT:stage-snapshot]'
+    publisher -> objectStore 'Ghi object [CF-PUBLISH-STAGE-COMMIT:write-object]'
+    publisher -> objectStore 'Kiểm tra object [CF-PUBLISH-STAGE-COMMIT:validate-object]'
+    publisher -> localCatalog 'Commit con trỏ catalog [CF-PUBLISH-STAGE-COMMIT:commit-catalog-pointer]'
+    localCatalog -> publisher 'Kiểm tra đọc lại [CF-PUBLISH-STAGE-COMMIT:verify-read-back]'
+    objectStore -> publisher 'Phát hiện trạng thái dở dang [CF-PUBLISH-RETRY-RESUME:detect-partial]'
+    publisher -> localCatalog 'Đọc trạng thái commit [CF-PUBLISH-RETRY-RESUME:read-commit-state]'
+    publisher -> objectStore 'Tiếp tục idempotent [CF-PUBLISH-RETRY-RESUME:resume-idempotently]'
+    publisher -> localCatalog 'Kiểm tra con trỏ [CF-PUBLISH-RETRY-RESUME:verify-pointer]'
+    publisher -> curriculum 'Đóng attempt [CF-PUBLISH-RETRY-RESUME:close-attempt]'
+    publisher -> localCatalog 'Công bố con trỏ current [CF-CATALOG-INGEST-HANDOFF:publish-current-pointer]'
+    operator -> metadataGovernance 'Mở cửa sổ ingest [CF-CATALOG-INGEST-HANDOFF:open-ingestion-window]'
+    localCatalog -> metadataGovernance 'Ingest physical metadata [CF-CATALOG-INGEST-HANDOFF:ingest-physical]'
+    publisher -> metadataGovernance 'Ingest logical lineage [CF-CATALOG-INGEST-HANDOFF:ingest-logical]'
+    metadataGovernance -> operator 'Kiểm tra catalog [CF-CATALOG-INGEST-HANDOFF:verify-catalog]'
+    operator -> metadataGovernance 'Đóng cửa sổ [CF-CATALOG-INGEST-HANDOFF:close-window]'
+  }
+}

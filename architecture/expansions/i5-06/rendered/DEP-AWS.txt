@@ -1,0 +1,10 @@
+ID: DEP-AWS
+Tiêu đề: Triển khai AWS — chỉ khái niệm và TBC
+Audience: vận hành, bảo mật
+Concern: topology, authority/state, trust boundary và recovery
+Hierarchy: aws-conceptual > access boundary > admission; compute boundary > analytics + BI; authority/state boundary > object/catalog + governance > private recovery state > evidence.
+Ordered close semantics: stop-admission → drain-work → checkpoint-authorities → stop-compute → inventory-residual-state-cost.
+Failure/recovery nodes: admission, compute, object/catalog, governance, private recovery evidence.
+Bridge/claim: tám bridge local/AWS đều conceptual-only và không thỏa runtime/readiness/security/RTO/RPO/cost claim.
+TBC: principal, policy, network, backup, capacity và provider composition.
+Limitations: không có tài nguyên hoặc hành động cloud.
