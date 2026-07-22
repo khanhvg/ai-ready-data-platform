@@ -1,6 +1,6 @@
 ---
 title: "I5-06 — Architecture curriculum, templates, and fitness functions"
-description: "Authorize a bounded Vietnamese-first static Stage A curriculum from the exact released Issue #8 contracts while keeping portal-dependent Stage B blocked."
+description: "Correct the bounded Stage A plan with scaffold-first semantic TDD while keeping implementation unauthorized and portal-dependent Stage B blocked."
 status: pending
 priority: P1
 issue: 11
@@ -14,22 +14,28 @@ source: skill
 mode: fast-tdd-no-tasks
 modelProfile: "gpt-5.6-sol"
 modelReasoningEffort: "xhigh"
-inputSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
-validationStatus: passed-with-fixes-not-readiness
-validationInputSha: "7620d168fb96cf9ae11e963501f65ea5a416af43"
-validationReport: "validation/independent-validation-report.md"
-readinessAuditInputSha: "1287fe35aa9ab29a97daa541f39a624d01a77d31"
-readinessAuditReport: "audit/readiness-audit-report.md"
+inputSha: "1c62b68159ffc48cc2f063c137cb9072d8ed741f"
+originalPlanInputSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
+validationStatus: awaiting-fresh-independent-plan-validation
+historicalValidationInputSha: "7620d168fb96cf9ae11e963501f65ea5a416af43"
+historicalValidationReport: "validation/independent-validation-report.md"
+historicalReadinessAuditInputSha: "1287fe35aa9ab29a97daa541f39a624d01a77d31"
+historicalReadinessAuditReport: "audit/readiness-audit-report.md"
 stageAAmendmentStartSha: "ab653f6edec73e5ef875723945d2e3cd7814b4e6"
+postReviewAmendmentStartSha: "1c62b68159ffc48cc2f063c137cb9072d8ed741f"
+v3CleanBaseSha: "c07c9a080be7be88447aac497bdf0a2b5fddd020"
+validatedAmendmentSha: null
+auditedAmendmentSha: null
+stageAImplementationInputSha: null
 releasedStageASha: "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9"
 stageAAmendment: "stage-a-release-amendment.md"
-stageAReadinessAudit: "audit/stage-a-readiness-audit-report.md"
-readinessVerdict: stage-a-ready
-implementationAuthority: stage-a-only
-stageAStatus: ready-to-cook-from-exact-released-integration
+historicalStageAReadinessAudit: "audit/stage-a-readiness-audit-report.md"
+readinessVerdict: pending-fresh-independent-validation-and-readiness
+implementationAuthority: none
+stageAStatus: awaiting-independent-plan-validation
 stageBStatus: blocked-on-issue10
-currentStageAFileAuthority: "stage-a-release-amendment.md#exact-stage-a-tracked-write-allowlist"
-currentStageACommandAuthority: "stage-a-release-amendment.md#exact-command-allowlist"
+proposedStageAFileAuthority: "stage-a-release-amendment.md#exact-stage-a-tracked-write-allowlist"
+proposedStageACommandAuthority: "stage-a-release-amendment.md#exact-command-allowlist"
 stageBImplementationFileAllowList: []
 stageBImplementationCommandAllowList: []
 ---
@@ -46,12 +52,19 @@ or Markdown dump is not a release.
 
 The original plan was completed at exact clean input
 `24be3b34c6b0fcdbd07c5800dcab349054e34713`. A fresh audit starting from clean plan head
-`ab653f6edec73e5ef875723945d2e3cd7814b4e6` now binds Stage A to released integration
-`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`. The
-[Stage A Exact-Release Amendment](./stage-a-release-amendment.md) is the normative authority for
-its exact 50 create-only paths, commands, contracts, tests, output bounds, evidence, cleanup, and
-rollback gates. It supersedes stale Stage A dependency and empty-authority statements below while
-preserving the original validation and blocked audit as historical records.
+`ab653f6edec73e5ef875723945d2e3cd7814b4e6` bound Stage A to released integration
+`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`, but independent review of failed v2 proved that
+amendment's tests-only chronology impossible. Starting from exact clean local/upstream/live plan
+head `1c62b68159ffc48cc2f063c137cb9072d8ed741f`, the
+[post-review scaffold-first amendment](./stage-a-release-amendment.md) now proposes the corrected
+50 create-only paths, 16 commands, requirements, tests, resource/visual/evidence/cleanup bounds,
+and rollback gates. It is author output awaiting a fresh independent validator and readiness
+auditor; it is not cook authority.
+
+Future v3 implementation begins only from exact clean
+`c07c9a080be7be88447aac497bdf0a2b5fddd020` plus the eventual exact independently
+validated/audited plan-only diff. Failed v1 `0f765d3…`, failed v2 `482591d…`, PR #27, and their
+retained evidence remain immutable negative evidence and are not ancestors or inputs to v3.
 
 Stage A is a machine-valid curriculum/template/static-view foundation. It cannot claim portal
 delivery, an executable lab, runner, reset, progress, completion, fresh learner evidence, or
@@ -63,10 +76,10 @@ journey and released renderer; its file, command, dependency, and renderer lists
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 1 | [Freeze authority and dependency gates](./phase-01-freeze-authority-and-dependency-gates.md) | Ready for Stage A cook preflight |
-| 2 | [Stage A tests-first contract and preservation](./phase-02-stage-a-tests-first-contract-and-preservation.md) | Ready for Stage A cook |
-| 3 | [Stage A curriculum templates and static expansion](./phase-03-stage-a-curriculum-templates-and-static-expansion.md) | Ready for Stage A cook |
-| 4 | [Stage A evidence and bounded handoff](./phase-04-stage-a-evidence-and-bounded-handoff.md) | Ready for Stage A cook |
+| 1 | [Freeze authority and dependency gates](./phase-01-freeze-authority-and-dependency-gates.md) | Awaiting independent plan validation/readiness |
+| 2 | [Stage A scaffold-first TDD contract and preservation](./phase-02-stage-a-tests-first-contract-and-preservation.md) | Blocked on Phase 1; scaffold-first protocol proposed |
+| 3 | [Stage A curriculum templates and static expansion](./phase-03-stage-a-curriculum-templates-and-static-expansion.md) | Blocked on recorded public-path RED |
+| 4 | [Stage A evidence and bounded handoff](./phase-04-stage-a-evidence-and-bounded-handoff.md) | Blocked on Phases 1-3 |
 | 5 | [Stage B exact renderer and journey amendment](./phase-05-stage-b-exact-renderer-and-journey-amendment.md) | Blocked on Issue #10 release |
 | 6 | [Stage B executable architecture lab and publication](./phase-06-stage-b-executable-architecture-lab-and-publication.md) | Blocked on Phase 5 |
 | 7 | [Final verification rollback and exact-head approval](./phase-07-final-verification-rollback-and-exact-head-approval.md) | Blocked on Phase 6 |
@@ -108,15 +121,20 @@ journey and released renderer; its file, command, dependency, and renderer lists
 
 ## Current Authority
 
-Present cook authority is Stage A only and is closed by the exact enumeration in the
-[amendment](./stage-a-release-amendment.md). It creates 50 paths beneath the isolated architecture
-expansion root, `learning/curriculum/**`, `mk/issue-5/i5-06.mk`, and curriculum tests/fixtures.
-There are no modifies or deletes. Shared contracts and released validators are read-only.
+Present implementation authority is `none`. The [amendment](./stage-a-release-amendment.md)
+proposes exactly 50 final create-only paths and 16 command shapes, partitioned into a 7-path
+semantics-free public scaffold, a direct-child 5-path complete tests/fixture commit, and a
+38-path semantic complement after recorded RED. There are no final modifies or deletes relative
+to the v3 input. Shared contracts and released validators remain read-only.
 
 ```yaml
-stageAInputSha: fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9
-stageAFileAuthority: stage-a-release-amendment.md#exact-stage-a-tracked-write-allowlist
-stageACommandAuthority: stage-a-release-amendment.md#exact-command-allowlist
+releasedIntegrationSha: fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9
+v3CleanBaseSha: c07c9a080be7be88447aac497bdf0a2b5fddd020
+validatedAmendmentSha: null
+auditedAmendmentSha: null
+stageAImplementationInputSha: null
+proposedStageAFileAuthority: stage-a-release-amendment.md#exact-stage-a-tracked-write-allowlist
+proposedStageACommandAuthority: stage-a-release-amendment.md#exact-command-allowlist
 stageBImplementationFileAllowList: []
 stageBImplementationCommandAllowList: []
 stageBDependencyReleaseShas: []
@@ -132,14 +150,16 @@ Stage A or Stage B allow-list.
 
 ## Workflow and Exit
 
-- Workflow: `ck:plan` plus plan-to-cook-equivalent exact-release amendment and independent
-  readiness audit through Herdr using `gpt-5.6-sol` at `xhigh` reasoning.
+- Workflow: `ck:plan` post-review author correction through Herdr using `gpt-5.6-sol` at `xhigh`
+  reasoning, followed by a separate fresh xhigh independent plan-validation context and only then
+  a separate readiness audit.
 - Readiness checks cover CK status/strict validation, links/anchors, placeholders/future SHAs,
   dependency release objects, exact allow-list absence/overlap, requirements/scenario/RED/S3
   catalogues, 33 protected identities, architecture tool availability, diff hygiene, and a
   whole-plan sweep.
-- The original validation and blocked audit remain historical. The current result is in
-  [Stage A Readiness Audit](./audit/stage-a-readiness-audit-report.md).
+- The original validation, blocked audit, and prior Stage A readiness audit remain immutable
+  historical snapshots. Their stale readiness/tests-only rules are explicitly superseded in the
+  current amendment; none is current cook authority.
 - Not run: curriculum/product implementation, new renderer execution, portal/lab tests, learner
   journeys, PR/merge, cloud, AWS, or Terraform.
 
@@ -216,6 +236,10 @@ resolved the remaining factual checks; no genuine product decision was reopened.
 
 ### Session 2 — 2026-07-22 — Exact-release Stage A amendment and readiness
 
+Historical snapshot: independent v2 review comments `5046838991` and `5046839495` supersede the
+readiness and tests-only chronology below. The 50-path, 33-protected-identity, Stage B, S3, and
+non-runtime boundaries remain useful inputs; the cookability conclusion does not.
+
 **Trigger:** Re-audit from clean head `ab653f6edec73e5ef875723945d2e3cd7814b4e6` after Issue #8
 Stage A release `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`.
 
@@ -232,7 +256,33 @@ Stage A release `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`.
 
 #### Current Authority
 
-- Exact 50 create-only paths and exact command shapes:
+- Historical exact 50 create-only paths and command shapes:
   [Stage A amendment](./stage-a-release-amendment.md).
-- Fresh audit result and machine-check evidence:
+- Superseded audit snapshot:
   [Stage A readiness audit](./audit/stage-a-readiness-audit-report.md).
+
+### Session 3 — 2026-07-22 — Post-review scaffold-first author correction
+
+**Trigger:** Correct all seven findings from the independent PR and Issue reviews while preserving
+the exact 50-path final scope, 33 protected identities, released contracts/OpenAPI/Make/golden
+data, S3, and blocked Stage B.
+
+#### Decision Deltas
+
+- Replaced impossible tests-only-from-pristine chronology with an exact 7-path semantics-free
+  scaffold, direct-child 5-path complete tests/fixture commit, contemporaneous public-path
+  semantic RED, and only then the 38-path semantic complement.
+- Froze promotion `decision=insufficient-evidence` and `reason=no-common-grain` against the exact
+  released schema; completed template compatibility/registry/reciprocal binding rules.
+- Defined 11 distinct critical-flow step vectors, dynamic-relation/deployment-topology binding,
+  and conceptual-only local/AWS bridge semantics.
+- Added exact 120 s/180 s process-group resource control, aggregate RSS/output/file/process
+  bounds, TERM→KILL→wait, measured evidence, static visual gates, and honest ignored-root cleanup.
+- Changed future v3 base to clean `c07c9a080be7be88447aac497bdf0a2b5fddd020` plus only the
+  eventual independently validated/audited plan diff. Failed v1/v2 remain negative evidence.
+
+#### Current Disposition
+
+- Author self-check only; no independent validation or readiness claim.
+- Implementation authority: `none`.
+- Required next phase: fresh independent plan validation at the exact pushed correction head.

@@ -23,6 +23,9 @@ discovery, rendering, lifecycle, reset, verifier, evidence, completion, and clea
 editing portal source or duplicating Issue #8/#10 truth.
 
 At the current planner output this phase is hard-blocked and has no file or command authority.
+The post-review Stage A amendment is itself awaiting independent validation/readiness, so even an
+Issue #10 release cannot advance this phase until the corrected Stage A plan and implementation
+have separately passed their gates.
 
 ## Requirements
 
@@ -55,7 +58,8 @@ No arrow authorizes Issue #11 to copy or modify the target component.
 ## Implementation Steps
 
 1. Fetch and verify exact passing merged Issue #10 real-journey/renderer release and exact current
-   Issue #8/Stage A releases.
+   Issue #8/Stage A releases, including the validated scaffold/tests/RED/semantic provenance and
+   clean ignored-root evidence disposition introduced by the corrected Stage A amendment.
 2. Verify #10 evidence includes real controlled failure, reset, fresh verify, completion/evidence,
    dependency hashes, renderer build/test, cleanup, review, and human approval at the merge head.
 3. Copy exact renderer/content-discovery/registry/publication paths, versions, hashes, accepted

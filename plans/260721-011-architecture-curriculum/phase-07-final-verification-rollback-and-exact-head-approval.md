@@ -23,6 +23,8 @@ human exact-head approval, then hand off for a separately authorized PR/merge wo
 phase does not itself create a PR or merge.
 
 At the current planner output this phase is hard-blocked and has no file or command authority.
+The corrected Stage A plan is also awaiting independent validation/readiness; this final phase
+cannot treat the amendment author's structural checks as either implementation review or approval.
 
 ## Requirements
 
@@ -37,7 +39,9 @@ At the current planner output this phase is hard-blocked and has no file or comm
 Final provenance separates:
 
 ```text
-implementation input -> testedTreeSha -> optional attestation commit -> external PR/merge SHA
+implementation input -> scaffoldCommitSha -> testsCommitSha/redTestedTreeSha
+  -> firstSemanticCommitSha -> finalSemanticHeadSha/finalTestedTreeSha
+  -> optional attestation commit -> external PR/merge SHA
 ```
 
 A tracked file never recursively claims its own containing commit. Human approval names the exact
@@ -53,8 +57,9 @@ tested head and stage outside the evidence producer.
 
 1. Fetch fresh; verify required branch, exact Stage B readiness input ancestry, current #8/#10/
    Stage A releases, active leases, clean status, and local = tracking = fresh-live.
-2. Run tests-before evidence audit: every required RED case failed at the correct pre-change tree
-   for the intended reason.
+2. Run tests-before evidence audit: exact seven-path scaffold commit, direct-child five-path
+   complete tests/fixture commit, all four public entrypoints reached at the tests tree, and every
+   required named semantic RED failed before the first semantic commit for the intended reason.
 3. Run the full practical acceptance line exactly, followed by every amendment-bound #8/#10,
    security, accessibility, lifecycle, renderer, compatibility, and rollback blast-radius command.
 4. Run two isolated deterministic expansion renders and semantic mutation/overlap/freshness tests.
@@ -68,7 +73,8 @@ tested head and stage outside the evidence producer.
 8. Rehearse cleanup and rollback from the exact candidate: remove only owned temporary/candidate
    state, retain evidence, restore protected/shared state, verify no descendants/foreign bytes,
    then reconstruct/retest only under exact authorized procedure.
-9. Run formatting, exact staged allow-list, local link/ID/trace, dependency, and clean-status checks.
+9. Run formatting, exact staged allow-list, local link/ID/trace, dependency, zero-byte nonignored
+   porcelain, and ignored-inclusive ownership checks. Exit 0 with output is not clean.
 10. Obtain a fresh independent implementation review at exact tested head; resolve findings
     without weakening tests or expanding authority.
 11. Re-run affected/full gates at any changed head.
@@ -105,7 +111,8 @@ commands fail; no native GUI/manual broad automation substitute.
 - [ ] All five practical acceptance commands and exact blast-radius commands pass at one head.
 - [ ] Deterministic render/text/semantic overlap/freshness and protected hashes pass.
 - [ ] Complete S3/evidence/cleanup/rollback results validate with no Critical/High residual blocker.
-- [ ] Candidate diff equals the exact authorized union; worktree clean; local/tracking/live equal.
+- [ ] Candidate diff equals the exact authorized union; nonignored porcelain has zero records;
+      every ignored byte is classified; local/tracking/live equal.
 - [ ] Fresh independent implementation review passes at exact head.
 - [ ] Repository-authorized human pre-merge approval names that exact 40-hex head.
 - [ ] Docs/release impact is classified without expanding the exact Stage A/B union.

@@ -3,10 +3,11 @@
 ## Security Disposition
 
 Issue #11 is `security:S3`. Here “S3” is the security tier, not authorization to use Amazon S3.
-This plan authorizes no runtime, credential, cloud, AWS, Terraform, portal, shared-contract, or
-protected architecture-toolchain change. Current Stage A authority covers only structured
-curriculum and isolated generated static architecture expansions. Future Stage B adds one local
-architecture lab only through exact released Issue #8/#10 seams.
+This plan authorizes no implementation yet and no runtime, credential, cloud, AWS, Terraform,
+portal, shared-contract, or protected architecture-toolchain change. The proposed Stage A scope
+covers only structured curriculum and isolated generated static architecture expansions after
+fresh independent validation/readiness. Future Stage B adds one local architecture lab only
+through exact released Issue #8/#10 seams.
 
 The protected assets are dependency contract truth, completion/evidence authority, the released
 portal renderer, the six Issue #6 local views and toolchain, repository/user files, learner
@@ -22,7 +23,7 @@ boundaries still require protection.
 | Curriculum author | Edit exact Issue #11-owned content in an authorized cook | Shared contract/portal/toolchain/root/cloud changes |
 | Released Issue #8 authority | Define schema, prerequisite, lifecycle, completion, evidence, operation truth | Portal rendering implementation |
 | Released Issue #10 portal | Render/discover released content and mediate released local journey | Curriculum contract invention or privileged direct execution |
-| Issue #6 architecture toolchain | Validate/render protected local source and authorized expansion seam | Portal completion or AWS deployability |
+| Issue #6 architecture toolchain | Validate/render protected local source and, after Gate A2, the proposed expansion seam | Portal completion or AWS deployability |
 | Stage implementer | Execute one exact closed allow-list in one worktree | Rebase/merge around drift, expand authority, approve own merge |
 | Independent reviewer | Validate implementation and evidence at exact head | Synthetic human approval |
 | Human approver | Explicit exact-head pre-merge decision | Waiving failed tests/dependencies/security by implication |
@@ -35,7 +36,8 @@ Trust boundaries:
 4. Browser/portal → released Issue #10 same-origin renderer/BFF boundary.
 5. Portal/BFF → private released execution boundary; browser never receives privileged authority.
 6. Workspace → repository/protected dependency bytes.
-7. Evidence staging → immutable retained evidence/index.
+7. Evidence staging → ignored app-owned or approved external private root → immutable retained
+   evidence/index; nonignored worktree cleanliness remains separate.
 8. Local content/model → AWS teaching boundary; no live account/network/action.
 
 ## Threat and Control Register
@@ -60,11 +62,25 @@ Trust boundaries:
 | I11-T-16 | Concurrent contract/view/portal writer creates mixed generation | A/B | Serialized lease, exact base/owner/duration, no stale lease auto-break, atomic full-set publication | Active/stale lease requires human inspection |
 | I11-T-17 | Required validator/renderer missing and a newer/global/browser/native tool is used | A/B | Exact released tool/lock/integrity; missing tool = fail; network denied after bounded bootstrap | No silent fallback |
 | I11-T-18 | Automated result is presented as human review/approval | A/B | Separate implementation review and human exact-head attestation outside evidence producer | Missing attestation blocks merge |
+| I11-T-19 | Impossible pristine tests-only rule produces a common behavior-absent guard | A | Exact 7-path semantics-free scaffold, direct-child complete 5-path tests, four-entrypoint named semantic RED, commit/AST inspection | Any precondition-only RED STOP |
+| I11-T-20 | Promotion decision/reason drifts while grain checks still pass | A | Exact released schema constants and independent decision/reason mutations | Any drift STOP |
+| I11-T-21 | Template count hides unregistered copies or unsafe version removal | A | Exact registry tokens, compatibility, reciprocal instance ID/version/hash, supersession/removal negatives | One-way/unregistered binding STOP |
+| I11-T-22 | Generic flow steps or conceptual AWS mapping assert runtime truth | A | Exact 11 relation-order/topology bindings and eight conceptual-only bridge records | Prefix/generic/runtime-bridge pass STOP |
+| I11-T-23 | Timed-out renderer leaves descendants or breaches host resources | A | Owned PGID, 120 s/180 s, aggregate RSS/output/file/process bounds, TERM→KILL→wait, measurements | Missing ownership/measurement STOP |
+| I11-T-24 | Fresh SVG is unreadable, English-first, double-numbered or semantically reordered | A | Exact fit/font/contrast/aspect/geometry/language/numbering/text-parity gates plus independent static inspection | Any five-view visual failure STOP |
+| I11-T-25 | Exit-0 Git status masks nonignored evidence or unowned ignored bytes | A/B | Private ignored/external root, zero-byte nonignored porcelain, ignored-inclusive ownership delta, closed index | Ambiguous/dirty handoff STOP |
 
 ## Stage A Security Contract
 
-Stage A is content/static only under the exact released #8 binding and admitted view lease.
+Future Stage A is content/static only under the exact released #8 binding and the independently
+validated/readiness-authorized view lease.
 
+- Future implementation begins only from clean `c07c9a0…` plus the exact independently
+  validated/audited plan-only diff. The current author output grants no cook authority.
+- Create only the exact seven generic public scaffold files first; they contain no target rules,
+  fixture IDs, final content, hardcoded result, mock/skip, expected-value echo, or unconditional
+  not-implemented branch. Complete tests follow and must reach all four entrypoints before named
+  semantic RED.
 - No portal renderer dependency read or portal path write.
 - No executable lab, privileged command, progress/completion mutation, workspace runner, or fresh
   learner evidence claim.
@@ -98,17 +114,19 @@ Stage B adds one bounded architecture lab through released #8/#10 interfaces.
 
 ## Evidence Integrity and Redaction
 
-Stage A command evidence roots:
+Stage A retained evidence root:
 
 ```text
-.artifacts/evidence/curriculum-check/<run-id>/
-.artifacts/evidence/traceability-check/<run-id>/
+.claude/evidence/issue-11-stage-a/<run-id>/
 ```
 
+The released ignore rule already covers `/.claude/`; no ignore change is authorized. A separately
+approved external mode-0700 app-state root may substitute. Nonignored `.artifacts/**` is forbidden.
 These use the existing `fitness-result-v1` command envelope and released canonicalization rule.
-They do not emit Issue #8 learner evidence. Required logical fields are schema version, exact
-commands, tool versions, input/output/tested-tree SHAs, dependency merge SHAs, contract/fixture
-hashes, result status, artifact hashes, redaction class, and rollback result.
+They do not emit Issue #8 learner evidence. Required logical fields include schema version, exact
+commands, tool versions, plan/scaffold/tests/RED/first-semantic/final SHAs, dependency merge SHAs,
+contract/fixture hashes, resource/visual/porcelain measurements, result status, artifact hashes,
+redaction class, ownership/index closure, and rollback result.
 
 - Use SHA-256 for byte integrity and the released canonicalization rule for structured payloads.
 - Local hashes detect corruption/inconsistent edits only. Do not claim signing, authorship,
@@ -138,8 +156,9 @@ as evidence; broad ignore patterns are forbidden.
 ## Cleanup and Rollback
 
 - Plan phase: no runtime cleanup.
-- Cook runs allocate one Issue #11-owned root using released allocator semantics and an exact
-  owner marker. No caller-chosen arbitrary root.
+- Cook runs allocate one exact ignored app-owned or approved external retained root plus a
+  separate temporary runtime root using an exact owner marker. Roots/directories are 0700,
+  retained files 0600, and no caller-chosen arbitrary root or absolute locator enters evidence.
 - Cleanup removes only the run’s mutable workspace/temporary render staging after marker,
   identity, manifest, and boundary verification. It never invokes root `make clean`, deletes a
   worktree, follows links, scans broad roots, or deletes retained evidence.
@@ -148,6 +167,9 @@ as evidence; broad ignore patterns are forbidden.
   retains failure and rollback evidence.
 - If rollback cannot preserve the protected six, dependency contracts, portal renderer, prior
   evidence, and unrelated data, the stage cannot begin.
+- Final clean handoff requires exit 0 and zero stdout bytes from nonignored porcelain. A separate
+  NUL-terminated ignored-inclusive inventory must classify every record as pre-existing unchanged
+  or exact retained-owned evidence; exit 0 alone and ignored omission never mean clean.
 
 ## Residual Risks
 

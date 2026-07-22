@@ -21,10 +21,12 @@ effort: "Gate; repeated before each staged cook"
 
 ## Overview
 
-Convert real released dependencies into one exact, closed stage authority. For Stage A, the
-[exact-release amendment](./stage-a-release-amendment.md) completes this planning gate from
-released integration `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`; its fresh readiness audit
-authorizes only the exact static scope. The cook must repeat the gate before its first write.
+Convert real released dependencies into one exact, closed stage authority. The corrected
+[scaffold-first amendment](./stage-a-release-amendment.md) is author output, not authority. Stage A
+remains blocked until a fresh independent validator and later readiness auditor pass the exact
+pushed plan head. A future v3 cook must start from clean
+`c07c9a080be7be88447aac497bdf0a2b5fddd020` plus only that exact validated/audited plan-only diff
+and repeat the gate before its scaffold write.
 
 Stage A gate consumes exact released Issue #8 learning contracts. Stage B repeats the gate after
 Stage A and consumes the exact passing merged Issue #10 real journey/portal renderer. No future
@@ -44,18 +46,22 @@ Authority is a staged chain, not a Boolean:
 
 ```text
 real dependency release
-  -> exact amendment with hashes and closed allow-lists
+  -> exact clean c07c9a0 v3 base
+  -> corrected amendment with hashes and proposed closed allow-lists
   -> fresh independent validation
-  -> fresh readiness output / implementation input
+  -> fresh readiness output
+  -> exact plan-only diff applied to c07c9a0 / derived implementation input
   -> repeated exact-head preflight
-  -> RED tests before first behavior write
+  -> 7-path semantics-free public scaffold
+  -> 5-path complete tests/fixtures
+  -> public-path semantic RED before first target behavior write
 ```
 
 Stage B starts a new chain; Stage A readiness cannot authorize Stage B.
 
 ## Related Code Files
 
-- Current Stage A Create: exactly the 50 paths in the amendment.
+- Proposed Stage A final Create: exactly the 50 paths in the amendment.
 - Current Stage A Modify/Delete: none (`[]`).
 - Current Stage B Create/Modify/Delete: none (`[]`).
 
@@ -65,8 +71,9 @@ Stage B starts a new chain; Stage A readiness cannot authorize Stage B.
    and owner lease decisions fresh.
 2. Require exact branch, clean worktree, required ancestry, and local HEAD = tracking = fresh-live
    at the prospective stage input.
-3. For Stage A, reject Issue #8 plan/readiness/feature commits. Accept only exact released
-   `fecf6bb8…` plus the amendment-pinned registry/schema/validator/example/canonicalization hashes.
+3. For Stage A, reject Issue #8 plan/readiness/feature commits and failed Issue #11 v1/v2 commits.
+   Require exact v3 base `c07c9a0…`, released ancestor `fecf6bb8…`, the amendment-pinned
+   registry/schema/validator/example/canonicalization hashes, and absence of all 50 paths.
 4. Emit only the existing `fitness-result-v1` command envelope named by the released I5-06
    registry. Treat released `fitness-result-v2` (`emissionFallback: null`) and all learning,
    progress, and completion evidence as read-only negative boundaries; do not map or emit them.
@@ -75,14 +82,16 @@ Stage B starts a new chain; Stage A readiness cannot authorize Stage B.
    evidence.
 6. Verify the released portal seam requires no portal-source edit. If it does, stop for a new
    serialized portal integration authority.
-7. Verify the admitted `i5-06-stage-a-architecture-expansion-v1` lease: exact owner, release SHA,
+7. Verify the proposed `i5-06-stage-a-architecture-expansion-v1` lease: exact owner, release SHA,
    19 extension paths, duration, conflict rule, protected baseline, and rollback. Do not infer
    Structurizr or modify the hard-coded six-view toolchain.
 8. Verify the documented exact stage implementation file/command allow-lists, tool versions,
    time/resource/output bounds, dependency reads, evidence layout, and deny-list.
-9. Require fresh strict validation and a readiness auditor independent from the original planner,
-   validator, and future cook actor. The audit binds this exact amendment and release input.
-10. Before first write, repeat steps 1-8 at the exact readiness output and stop on any change.
+9. Require fresh strict independent validation and a readiness auditor independent from this
+   amendment author and future cook actor. The audit binds the exact correction output; until then
+   `validatedAmendmentSha`, `auditedAmendmentSha`, and `stageAImplementationInputSha` stay null.
+10. Apply only the passed plan-artifact diff to clean `c07c9a0…`, record the resulting exact
+    implementation input, and before first scaffold write repeat steps 1-8 and stop on any change.
 
 ## Tests Before
 
@@ -94,7 +103,7 @@ Stage B starts a new chain; Stage A readiness cannot authorize Stage B.
 ## Tests After
 
 - Static parse of amended authority tables.
-- Exact allow-list/command ownership uniqueness.
+- Exact 50-path/16-command ownership uniqueness and exact 7/5/38 chronology partition.
 - Dependency blob/hash/release/evidence verification.
 - Protected Issue #6 source/row/render/blob comparison.
 - Independent validation and readiness outputs reference the same exact amended head.
@@ -111,7 +120,8 @@ them or authorize Stage B.
 - [ ] Released evidence schema plus command-result compatibility and, for Stage B, portal
       renderer are bound to exact released paths/hashes.
 - [ ] Protected view/tool/shared-contract/portal boundaries and lease are proven.
-- [ ] Fresh independent validation and fresh readiness authorize one exact stage input.
+- [ ] Fresh independent validation and fresh readiness authorize one exact stage input derived
+      from `c07c9a0…`; author self-check does not satisfy either gate.
 - [ ] Any unmet item keeps the stage `blocked`, with no partial cook.
 
 ## Risk Assessment
