@@ -720,11 +720,10 @@ def _copy_and_remove_owned_artifacts(evidence_root: Path) -> list[str]:
             or not run_root.is_relative_to(artifacts)
         ):
             raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
-        result_path = run_root / "result.json"
-        if result_path.is_file():
+        for result_path in sorted(path for path in run_root.glob("*.json") if path.name != ".golden-owner.json"):
             destination_dir = evidence_root / "protected-command-results"
             destination_dir.mkdir(mode=0o700, exist_ok=True)
-            destination = destination_dir / f"{record['purpose']}-{record['runId']}.json"
+            destination = destination_dir / f"{record['purpose']}-{record['runId']}-{result_path.name}"
             shutil.copyfile(result_path, destination)
             destination.chmod(0o600)
             copied.append(destination.name)
