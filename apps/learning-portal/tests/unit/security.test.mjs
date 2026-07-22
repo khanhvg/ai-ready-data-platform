@@ -142,7 +142,7 @@ test("PTP-S3 protocol-aware socket replacement cannot impersonate the spawned ch
   let impostor;
   try {
     await fsp.rename(controlPath, ownedPath);
-    impostor = net.createServer((socket) => { let raw = ""; socket.setEncoding("utf8"); socket.on("data", (chunk) => { raw += chunk; }); socket.on("end", () => { const request = JSON.parse(raw); socket.end(JSON.stringify({ ok: true, status: "running", url: state.url, requestNonce: request.requestNonce }) + "\n"); }); });
+    impostor = net.createServer((socket) => { let raw = ""; socket.setEncoding("utf8"); socket.on("data", (chunk) => { raw += chunk; try { const request = JSON.parse(raw); socket.end(JSON.stringify({ ok: true, status: "running", url: state.url, requestNonce: request.requestNonce }) + "\n"); } catch {} }); });
     await new Promise((resolve, reject) => { impostor.once("error", reject); impostor.listen(controlPath, resolve); }); await fsp.chmod(controlPath, 0o700);
     const foreignStat = await fsp.lstat(controlPath); await fsp.writeFile(statePath, JSON.stringify({ ...state, control: { dev: foreignStat.dev, ino: foreignStat.ino } }));
     const rejected = run(process.execPath, [lifecycle, "status"], { timeout: 10_000 });
