@@ -391,10 +391,11 @@ def _git_value(*arguments: str) -> str:
 
 
 def _fitness_provenance() -> dict[str, Any]:
-    contract_hashes = [
+    schema_hashes = [
         {"name": path.name.replace(".schema.json", "").replace(".json", ""), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
         for path in sorted((ROOT / "learning/contracts").glob("*.schema.json"))
     ]
+    contract_hashes = list(schema_hashes)
     contract_hashes.extend(
         {"name": name, "sha256": hashlib.sha256((ROOT / relative).read_bytes()).hexdigest()}
         for name, relative in (
@@ -435,7 +436,7 @@ def _fitness_provenance() -> dict[str, Any]:
         ],
         "contractHashes": contract_hashes,
         "fixtureHashes": fixture_hashes,
-        "schemaHashes": contract_hashes,
+        "schemaHashes": schema_hashes,
         "lockSha256": hashlib.sha256((ROOT / "requirements/golden-py312-macos-arm64.lock").read_bytes()).hexdigest(),
     }
 
