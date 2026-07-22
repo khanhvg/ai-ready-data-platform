@@ -10,7 +10,7 @@
     "path": "learning/curriculum/tools/architecture-render.mjs",
     "sha256": "9cf6900324e4ae94c381e2ea4189a0117260af36697140fac245da1048c5f780",
     "finalizerPath": "learning/curriculum/tools/architecture_expansion.py",
-    "finalizerSha256": "ad1e4570419c624d3b009612084b4f45b3ad9562e66d306395d7f3a86013278f"
+    "finalizerSha256": "da309ae5a2b746b0893894518e6d448f3513b6308b69881094d67ce600102082"
   },
   "sourceClosure": {
     "modelSha256": "f451b50a3938ff80c52646430a0cc6c15311251fcd48f0d9e534daf01aeb680f",
