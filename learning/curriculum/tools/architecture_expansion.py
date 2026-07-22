@@ -993,7 +993,7 @@ def _validate_owned_artifacts(evidence_root: Path) -> tuple[list[tuple[Path, dic
     for relative_root, expected_owner in sorted(inventory_rows.items()):
         run_root = artifacts / relative_root
         marker = run_root / ".golden-owner.json"
-        if not marker.is_file() or run_root.is_symlink():
+        if not marker.is_file() or marker.is_symlink() or not stat.S_ISREG(marker.lstat().st_mode) or run_root.is_symlink():
             raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
         run_root = marker.parent
         record = json.loads(marker.read_text(encoding="utf-8"))
@@ -1026,7 +1026,7 @@ def _validate_owned_artifacts(evidence_root: Path) -> tuple[list[tuple[Path, dic
         plans.append((run_root, record, results, result_destinations))
     runtime_root = artifacts / "workspaces/golden/i11-stage-a-v3"
     admission = runtime_root / "runtime-admission.json"
-    if not admission.is_file() or runtime_root.is_symlink():
+    if not admission.is_file() or admission.is_symlink() or not stat.S_ISREG(admission.lstat().st_mode) or runtime_root.is_symlink():
         raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
     admission_record = json.loads(admission.read_text(encoding="utf-8"))
     expected_runtime = inventory.get("runtime")
