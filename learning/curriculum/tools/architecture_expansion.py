@@ -965,9 +965,8 @@ def _allowed_stage_paths() -> tuple[str, ...]:
     return paths
 
 
-def _copy_and_remove_owned_artifacts(evidence_root: Path) -> list[str]:
+def _validate_owned_artifacts(evidence_root: Path) -> tuple[list[tuple[Path, dict[str, object], list[Path], list[Path]]], Path, list[Path]]:
     artifacts = ROOT / ".artifacts"
-    copied: list[str] = []
     if not artifacts.exists():
         raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
     inventory_path = evidence_root / "artifact-ownership-inventory.json"
@@ -984,6 +983,8 @@ def _copy_and_remove_owned_artifacts(evidence_root: Path) -> list[str]:
     if not inventory_rows or set(inventory_rows) != actual_roots:
         raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
     allowed_purposes = {"learning-contracts-check", "lesson-check", "api-contracts-check", "architecture-check", "architecture-render", "help"}
+    plans: list[tuple[Path, dict[str, object], list[Path], list[Path]]] = []
+    destinations: set[Path] = set()
     for relative_root, expected_owner in sorted(inventory_rows.items()):
         run_root = artifacts / relative_root
         marker = run_root / ".golden-owner.json"
@@ -1007,14 +1008,17 @@ def _copy_and_remove_owned_artifacts(evidence_root: Path) -> list[str]:
             }
         ):
             raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
-        for result_path in sorted(path for path in run_root.glob("*.json") if path.name != ".golden-owner.json"):
-            destination_dir = evidence_root / "protected-command-results"
-            destination_dir.mkdir(mode=0o700, exist_ok=True)
-            destination = destination_dir / f"{record['purpose']}-{record['runId']}-{result_path.name}"
-            shutil.copyfile(result_path, destination)
-            destination.chmod(0o600)
-            copied.append(destination.name)
-        shutil.rmtree(run_root)
+        results = sorted(path for path in run_root.glob("*.json") if path.name != ".golden-owner.json")
+        if any(not stat.S_ISREG(path.stat().st_mode) or path.is_symlink() for path in results):
+            raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
+        result_destinations = [
+            evidence_root / "protected-command-results" / f"{record['purpose']}-{record['runId']}-{path.name}"
+            for path in results
+        ]
+        if any(path in destinations or path.exists() for path in result_destinations):
+            raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
+        destinations.update(result_destinations)
+        plans.append((run_root, record, results, result_destinations))
     runtime_root = artifacts / "workspaces/golden/i11-stage-a-v3"
     admission = runtime_root / "runtime-admission.json"
     if not admission.is_file() or runtime_root.is_symlink():
@@ -1029,13 +1033,40 @@ def _copy_and_remove_owned_artifacts(evidence_root: Path) -> list[str]:
         }
     ):
         raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
-    shutil.rmtree(runtime_root)
-    for owned_cache in (
+    owned_roots = [plan[0] for plan in plans] + [runtime_root]
+    if any(
+        not any(path == root or path.is_relative_to(root) or root.is_relative_to(path) for root in owned_roots)
+        for path in artifacts.rglob("*")
+    ):
+        raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
+    caches = [path for path in (
         ROOT / "learning/curriculum/tools/__pycache__",
         ROOT / "tests/learning/curriculum/__pycache__",
-    ):
-        if owned_cache.is_dir() and all(item.is_file() and item.suffix == ".pyc" for item in owned_cache.iterdir()):
-            shutil.rmtree(owned_cache)
+    ) if path.exists()]
+    if any(not path.is_dir() or path.is_symlink() or any(not item.is_file() or item.suffix != ".pyc" for item in path.iterdir()) for path in caches):
+        raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
+    return plans, runtime_root, caches
+
+
+def _commit_owned_artifacts(
+    evidence_root: Path, plans: list[tuple[Path, dict[str, object], list[Path], list[Path]]],
+    runtime_root: Path, caches: list[Path],
+) -> list[str]:
+    artifacts = ROOT / ".artifacts"
+    copied: list[str] = []
+    destination_dir = evidence_root / "protected-command-results"
+    if any(plan[2] for plan in plans):
+        destination_dir.mkdir(mode=0o700, exist_ok=False)
+    for _run_root, _record, results, destinations in plans:
+        for result_path, destination in zip(results, destinations, strict=True):
+            shutil.copyfile(result_path, destination)
+            destination.chmod(0o600)
+            copied.append(destination.name)
+    for run_root, _record, _results, _destinations in plans:
+        shutil.rmtree(run_root)
+    shutil.rmtree(runtime_root)
+    for owned_cache in caches:
+        shutil.rmtree(owned_cache)
     for directory in sorted((path for path in artifacts.rglob("*") if path.is_dir()), key=lambda path: len(path.parts), reverse=True):
         try:
             directory.rmdir()
@@ -1138,6 +1169,13 @@ def _repository_handoff() -> CheckResult:
             "I11-EP-HANDOFF", True, tuple(dict.fromkeys(codes)),
             {"testedTreeSha": head, "trackedCreates": len(rows), "protected": len(protected)},
         )
+    plans, runtime_root, caches = _validate_owned_artifacts(evidence_root)
+    precleanup_porcelain = _git("status", "--porcelain=v1", "--untracked-files=all").decode().splitlines()
+    if any(not row.startswith("?? .artifacts/") for row in precleanup_porcelain):
+        return CheckResult(
+            "I11-EP-HANDOFF", True, ("I11_CLEAN_PORCELAIN_NONEMPTY",),
+            {"testedTreeSha": head, "trackedCreates": len(rows), "protected": len(protected)},
+        )
     provenance_path = evidence_root / "red-provenance.json"
     raw_log = evidence_root / "red-raw.log"
     sanitized_log = evidence_root / "red-sanitized.log"
@@ -1161,7 +1199,8 @@ def _repository_handoff() -> CheckResult:
     )
     external_pattern = re.compile(rb"https?://[^\s\"'<>]+")
     allowed_urls = {b"https://nodejs.org/download/release/v22.22.3/", b"http://www.w3.org/2000/svg"}
-    scan_paths = [ROOT / path for path in allowed] + [path for path in evidence_root.rglob("*") if path.is_file()]
+    future_results = [path for _root, _record, results, _destinations in plans for path in results]
+    scan_paths = [ROOT / path for path in allowed] + [path for path in evidence_root.rglob("*") if path.is_file()] + future_results
     findings: list[str] = []
     for path in scan_paths:
         content = path.read_bytes()
@@ -1174,7 +1213,7 @@ def _repository_handoff() -> CheckResult:
             "I11-EP-HANDOFF", True, tuple(dict.fromkeys(codes)),
             {"testedTreeSha": head, "trackedCreates": len(rows), "protected": len(protected), "s3Findings": sorted(set(findings))},
         )
-    copied = _copy_and_remove_owned_artifacts(evidence_root)
+    copied = _commit_owned_artifacts(evidence_root, plans, runtime_root, caches)
     porcelain = _git("status", "--porcelain=v1", "--untracked-files=all")
     if porcelain: codes.append("I11_CLEAN_PORCELAIN_NONEMPTY")
     ignored = _git("status", "--porcelain=v1", "--ignored", "--untracked-files=all", "-z").split(b"\0")
