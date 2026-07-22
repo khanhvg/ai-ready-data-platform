@@ -762,6 +762,7 @@ def _close_evidence(evidence_root: Path, head: str, cleanup: dict[str, object]) 
         raw_log.unlink()
     provenance_path = evidence_root / "red-provenance.json"
     provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
+    provenance["scaffoldCommitSha"] = "7646e446198c9483e3f1ac1a725d7699e4a09010"
     provenance["testsCommitSha"] = "e712d08ff4ba62fdbe19bd269beb8ed91525e39f"
     provenance["firstSemanticCommitSha"] = "5f214b644642aedd27f9ffd91f7ce5e07af3aef2"
     provenance["finalSemanticHeadSha"] = head
