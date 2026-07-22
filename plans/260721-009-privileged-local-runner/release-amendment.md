@@ -21,7 +21,9 @@ implement the runner, create runtime/data/config outside the plan directory, per
 or invent a future Git or file SHA.
 
 The historical validation and blocked-readiness reports retain their exact earlier inputs. This
-amendment, its fresh validation, and its fresh readiness report are the current authority.
+amendment remains current authority only for the released Stage A identity and exact contract pins.
+The later [local container platform amendment](./platform-amendment.md) supersedes every platform,
+ownership, containment, TDD execution and readiness clause below where they differ.
 
 ## Released Identity and Evidence
 
@@ -78,22 +80,24 @@ The binding procedure is therefore direct read-only JSON/schema/reader consumpti
 At `2026-07-22T08:05:02Z`, the latest Issue #8 Stage B handoff
 <https://github.com/khanhvg/ai-ready-data-platform/issues/8#issuecomment-5043335319> records a
 blocked plan-only attempt with `OUTPUT_SHA=none` and no amended paths. There is no actual write
-overlap. Issue #9 consumes released Stage A read-only and may write only:
+overlap. The original conditional Airflow seam is superseded and denied. Under the platform
+amendment, Issue #9 consumes released Stage A read-only and may write only:
 
 - exact named paths under `apps/lab-runner/**`;
-- `mk/issue-5/i5-04.mk` with only the three reserved runner targets; and
-- the previously characterized pre-`_run` learner-namespace refusal in
-  `orchestration/airflow/callables/pipeline.py`, only if Phase 1 still proves it necessary.
+- `mk/issue-5/i5-04.mk` with only the three reserved runner targets.
 
 Root Make, portal/framework, shared contracts, golden core, other Make fragments, cloud,
-Terraform, Docker/container, and all other existing source/config/data paths are denied. A later
-real overlapping write lease is a STOP; read-only consumption alone is not.
+Terraform, Compose/profile/Airflow paths, and all other existing source/config/data paths are
+denied. Issue #9-owned runner Dockerfile/context/lock/launcher paths are inside
+`apps/lab-runner/**`; they are not shared Compose ownership. A later real overlapping write lease
+is a STOP; read-only consumption alone is not.
 
 ## Readiness Effect
 
 `COOK_SCOPE=whole-plan`. The dependency-safe staged subset is not selected because the released
-contract now supports the entire ordered plan without shared writes. Phase 1 still gates host
-containment and complete descendant control. Phase 3 still must retain a test-only RED commit and
-invoke every stable RED through the real public runner Make paths before Phase 4/5 behavior.
-Security, S3, evidence, rollback, independent exact-head reviews, and human approval remain
-mandatory execution/release gates.
+contract supports the ordered plan without shared writes. The platform amendment replaces host
+execution with one local PID-namespace container backend for all eight operations. Phase 3 retains
+a test-only RED commit: long real cases run through the fixed no-argument shard harness; the three
+public I5-04 Make targets verify fresh shard closure and emit bounded fitness-result-v2, while the
+protected I5-01 data-contracts-check remains v1. Security, S3, evidence, rollback, independent
+exact-head reviews, and human approval remain mandatory execution/release gates.
