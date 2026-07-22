@@ -976,11 +976,13 @@ def _validate_owned_artifacts(evidence_root: Path) -> tuple[list[tuple[Path, dic
     if inventory.get("schemaVersion") != "i11-owned-artifact-inventory-v1" or inventory.get("issue") != 11 or inventory.get("cookRunId") != "260722-cook-v3":
         raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
     inventory_rows = {row.get("relativeRoot"): row for row in inventory.get("ownedRuns", [])}
-    actual_roots = {
-        marker.parent.relative_to(artifacts).as_posix()
-        for marker in artifacts.rglob(".golden-owner.json")
-    }
-    if not inventory_rows or set(inventory_rows) != actual_roots:
+    if not inventory_rows or any(
+        not isinstance(relative, str)
+        or Path(relative).is_absolute()
+        or Path(relative).as_posix() != relative
+        or ".." in Path(relative).parts
+        for relative in inventory_rows
+    ):
         raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
     allowed_purposes = {"learning-contracts-check", "lesson-check", "api-contracts-check", "architecture-check", "architecture-render", "command-registry"}
     plans: list[tuple[Path, dict[str, object], list[Path], list[Path]]] = []
@@ -1043,15 +1045,26 @@ def _validate_owned_artifacts(evidence_root: Path) -> tuple[list[tuple[Path, dic
             ancestor for ancestor in owned_root.parents
             if ancestor == artifacts or ancestor.is_relative_to(artifacts)
         )
-    for current, directories, files in os.walk(artifacts, topdown=True, followlinks=False):
+    owned_root_set = set(owned_roots)
+    owned_prefixes = tuple(f"{root}{os.sep}" for root in owned_roots)
+    actual_roots: set[str] = set()
+
+    def reject_walk_error(_error: OSError) -> None:
+        raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
+
+    for current, directories, files in os.walk(
+        artifacts, topdown=True, onerror=reject_walk_error, followlinks=False,
+    ):
         current_path = Path(current)
-        if current_path in owned_roots:
-            directories.clear()
-            continue
-        if current_path not in admitted_nodes or any(
+        if ".golden-owner.json" in files:
+            actual_roots.add(current_path.relative_to(artifacts).as_posix())
+        inside_owned_root = current_path in owned_root_set or str(current_path).startswith(owned_prefixes)
+        if not inside_owned_root and (current_path not in admitted_nodes or any(
             current_path / name not in admitted_nodes for name in (*directories, *files)
-        ):
+        )):
             raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
+    if actual_roots != set(inventory_rows):
+        raise ValueError("I11_CLEAN_OWNERSHIP_DRIFT")
     caches = [path for path in (
         ROOT / "learning/curriculum/tools/__pycache__",
         ROOT / "scripts/golden/__pycache__",
