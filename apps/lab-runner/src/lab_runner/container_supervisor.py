@@ -110,12 +110,14 @@ def _main(operation:str,fixture:tuple[str,tuple[str,...]]|None=None,execute_seco
             print(f"{type(exc).__name__}:{exc}",file=sys.stderr,flush=True); os._exit(1)
     os.close(out_write);os.close(err_write)
     streams=selectors.DefaultSelector();streams.register(out_read,selectors.EVENT_READ,"stdout");streams.register(err_read,selectors.EVENT_READ,"stderr")
-    sizes={"stdout":0,"stderr":0}
+    sizes={"stdout":0,"stderr":0};stderr_preview=bytearray()
     def drain(wait:float)->None:
         for key,_ in streams.select(wait):
             try:data=os.read(key.fd,65536)
             except BlockingIOError:continue
-            if data:sizes[str(key.data)]+=len(data)
+            if data:
+                sizes[str(key.data)]+=len(data)
+                if key.data=="stderr" and len(stderr_preview)<131072:stderr_preview.extend(data[:131072-len(stderr_preview)])
             else:
                 streams.unregister(key.fd);os.close(key.fd)
     end=time.monotonic()+execute_seconds; peak=0; tracker=False; rc=None; failure=None
@@ -138,6 +140,7 @@ def _main(operation:str,fixture:tuple[str,tuple[str,...]]|None=None,execute_seco
         if failure:
             _,status=os.waitpid(pid,0); rc=os.waitstatus_to_exitcode(status); break
     drain(0)
+    if rc!=0 and stderr_preview:os.write(2,bytes(stderr_preview))
     cgroup=_cgroup()
     if fixture is not None and fixture==("resource_probe.py",("memory",)) and rc==-signal.SIGKILL and int(cgroup["memoryEvents"].get("oom_kill",0))>=1:failure="RUNNER_RESOURCE_LIMIT"
     reap_end=time.monotonic()+2

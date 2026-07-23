@@ -65,8 +65,8 @@
     {
       "path": "app/src/lab_runner/container_supervisor.py",
       "mode": "0644",
-      "size": 10028,
-      "sha256": "de6c67ace106ce52b213d791dcdaa216f52bb1ecad23d08342723940bfc875b3"
+      "size": 10264,
+      "sha256": "5e82698ecddcb4c7f52377d6bee2a51ff734a000a882a4107d904f76bd2c593e"
     },
     {
       "path": "app/src/lab_runner/contract.py",
