@@ -1,2 +1,0 @@
-import { useState } from 'react';
-export default function Probe(){const [status,setStatus]=useState('Exploration is reversible and unverified.');return <div className="probe"><button type="button" onClick={()=>setStatus('Controlled failure: no common grain; no answer or score saved.')}>Run bounded probe</button><button type="button" onClick={()=>setStatus('Reset: baseline restored; no answer or score persisted.')}>Reset</button><p role="status" aria-live="polite">{status}</p></div>}

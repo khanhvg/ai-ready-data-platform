@@ -1,1 +1,0 @@
-"""Golden baseline characterization tests."""

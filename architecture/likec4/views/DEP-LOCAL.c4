@@ -1,6 +1,0 @@
-views {
-  deployment view dep_local {
-    title 'Local deployment and 16 GiB operating constraint'
-    include local.**
-  }
-}

@@ -1,9 +1,0 @@
-{
-  "schemaVersion": "post-cook-review-green-result-v1",
-  "command": "node --test spikes/web/common/tests/static-facts.test.mjs spikes/web/common/tests/state-navigation.test.mjs spikes/web/common/tests/journey-contract.test.mjs",
-  "startedAtUtc": "2026-07-21T01:40:33Z",
-  "endedAtUtc": "2026-07-21T01:40:33Z",
-  "exitCode": 0,
-  "resultStatus": "pass",
-  "tapSha256": "0a817ca534cf2dd25f9b230c9cf6158516d36a5c23e0b1c7023ee47d3c798eab"
-}

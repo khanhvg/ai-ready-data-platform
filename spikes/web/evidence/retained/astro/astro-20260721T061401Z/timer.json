@@ -1,1 +1,0 @@
-{"schemaVersion":"i5-02-candidate-timer-v1","candidate":"astro","budgetSeconds":10800,"earlyKillSeconds":5400,"startedAtUtc":"2026-07-21T06:14:01Z","startedMonotonicNanoseconds":"217473904108083","endedAtUtc":"2026-07-21T06:17:52Z","endedMonotonicNanoseconds":"217705017530125","activeSeconds":231.113422042,"status":"FOUNDATION_PASS","earlyKillPassed":true,"pauses":[]}

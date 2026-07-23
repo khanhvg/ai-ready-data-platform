@@ -1,1 +1,0 @@
-{"schemaVersion":"i5-02-candidate-timer-v1","candidate":"vite","budgetSeconds":10800,"earlyKillSeconds":5400,"startedAtUtc":"2026-07-21T06:22:45Z","startedMonotonicNanoseconds":"217998416667000","endedAtUtc":"2026-07-21T06:25:09Z","endedMonotonicNanoseconds":"218142487812875","activeSeconds":144.071145875,"status":"FOUNDATION_PASS","earlyKillPassed":true,"pauses":[]}

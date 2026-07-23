@@ -1,9 +1,0 @@
-{
-  "schemaVersion": "runner-dependency-lock-metadata-v1",
-  "python": "3.12",
-  "platform": "linux/arm64",
-  "sourceLock": "requirements/golden-py312-macos-arm64.lock",
-  "sourceLockSha256": "f41c727b39f99106f95b7937b2811e8d27db89d1d5106e9f1d9effd4403143d2",
-  "resolution": "existing-hash-complete-lock-verified-with-only-binary-arm64-download",
-  "packageCount": 56
-}

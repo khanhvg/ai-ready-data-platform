@@ -1,6 +1,0 @@
-views {
-  view c4_l2_local of learning {
-    title 'Local learning platform containers'
-    include learner, browser, portal, runner, progress, adapters, retail
-  }
-}

@@ -1,1 +1,0 @@
-{"$id":"urn:i5-06:architecture-curriculum-v1.schema.json","$schema":"https://json-schema.org/draft/2020-12/schema","additionalProperties":true,"properties":{"schemaVersion":{"const":"i5-06-architecture-curriculum-v1"}},"required":["schemaVersion","modules","views","criticalFlows","promotion"],"type":"object"}
