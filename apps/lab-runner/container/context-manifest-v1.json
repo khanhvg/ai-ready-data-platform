@@ -5,8 +5,8 @@
     {
       "path": "Dockerfile",
       "mode": "0644",
-      "size": 1847,
-      "sha256": "0f790387a509ae0d0d43303b6f0baae5e71bcb92b42148f23e0e5be8cf75bde3"
+      "size": 1947,
+      "sha256": "221bbc7a970003f24f6875dc2218870c8db9fbcc40fab1701a4a402c2e4d8b56"
     },
     {
       "path": "app/config/runtime-policy-v2.toml",

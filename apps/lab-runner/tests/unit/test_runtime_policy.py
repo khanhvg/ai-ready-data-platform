@@ -22,6 +22,18 @@ class RedPublicPathTest(unittest.TestCase):
         supervisor=(APP/"src/lab_runner/container_supervisor.py").read_text()
         self.assertIn("resource.RLIMIT_AS",supervisor)
 
+    def test_image_fixes_allocator_and_native_worker_limits_before_python_start(self) -> None:
+        dockerfile=(APP/"container/runner.Dockerfile").read_text()
+        for setting in (
+            "MALLOC_ARENA_MAX=1",
+            "OMP_NUM_THREADS=1",
+            "OPENBLAS_NUM_THREADS=1",
+            "MKL_NUM_THREADS=1",
+            "NUMEXPR_NUM_THREADS=1",
+        ):
+            with self.subTest(setting=setting):
+                self.assertIn(setting,dockerfile)
+
     def test_release_record_binds_build_and_gate_aggregates(self) -> None:
         import hashlib,json
         release=json.loads((APP/"config/runner-image-release-v1.json").read_text())

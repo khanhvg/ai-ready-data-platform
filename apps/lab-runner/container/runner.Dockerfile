@@ -10,7 +10,7 @@ LABEL org.opencontainers.image.title="AI Ready Lab Runner" org.opencontainers.im
 RUN rm -rf /usr/local/lib/python3.12/site-packages/pip* /usr/local/bin/pip*
 FROM scratch
 LABEL org.opencontainers.image.title="AI Ready Lab Runner" org.opencontainers.image.licenses="Apache-2.0" ai-ready.issue="9"
-ENV PATH=/opt/venv/bin:/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 HOME=/run/runner PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1
+ENV PATH=/opt/venv/bin:/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 HOME=/run/runner PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 MALLOC_ARENA_MAX=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
 COPY --from=sanitized /usr/local /usr/local
 COPY --from=sanitized /usr/lib /usr/lib
 COPY --from=sanitized /lib /lib
