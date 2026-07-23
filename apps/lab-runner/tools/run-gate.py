@@ -815,7 +815,11 @@ class Gate:
                 if name.startswith((".artifacts/evidence/golden/",".artifacts/workspaces/golden/")):
                     parts=pathlib.PurePosixPath(name).parts;run_root=ROOT/pathlib.Path(*parts[:4]);return (run_root/".golden-owner.json").is_file()
                 if name.startswith(".artifacts/evidence/data-contracts/"):
-                    parts=pathlib.PurePosixPath(name).parts;run_root=ROOT/pathlib.Path(*parts[:4]);return (run_root/".data-contracts-owner.json").is_file() or (run_root/"result.json").is_file()
+                    parts=pathlib.PurePosixPath(name).parts;run_root=ROOT/pathlib.Path(*parts[:4]);golden=run_root/".golden-owner.json";golden_owned=False
+                    if golden.exists():
+                        observed=golden.stat(follow_symlinks=False);value=json.loads(golden.read_text())
+                        golden_owned=stat.S_ISREG(observed.st_mode) and observed.st_nlink==1 and stat.S_IMODE(observed.st_mode)==0o600 and value.get("schemaVersion")=="golden-owner-v1" and value.get("purpose")=="data-contracts" and value.get("runId")==parts[3]
+                    return (run_root/".data-contracts-owner.json").is_file() or golden_owned or (run_root/"result.json").is_file()
                 return name.startswith("apps/lab-runner/.pytest_cache/") or ("/__pycache__/" in name and name.endswith(".pyc"))
             prompts={".hermes/prompts/issue-9-container-runner-v2-cook.md",".hermes/prompts/issue-9-standard-lean-recovery.md"}
             session_logs={".hermes/logs/claudekit/issue-9-container-runner-v2-cook.log",".hermes/logs/claudekit/issue-9-standard-lean-recovery.log"}
