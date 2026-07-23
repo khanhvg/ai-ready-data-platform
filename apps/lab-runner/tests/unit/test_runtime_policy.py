@@ -43,6 +43,13 @@ class RedPublicPathTest(unittest.TestCase):
         self.assertEqual({"redRows":52,"s3Rows":14,"passed":66,"failed":0},release["gateAggregate"])
         self.assertEqual(2,release["rollbackAggregate"]["attempts"])
 
+    def test_release_result_identity_retains_semantics_but_not_run_manifest_identity(self) -> None:
+        first={"tables":18,"manifestSha256":"a"*64,"nested":{"dataRunId":"b"*64,"models":51}}
+        replay={"tables":18,"manifestSha256":"c"*64,"nested":{"dataRunId":"d"*64,"models":51}}
+        changed={"tables":17,"manifestSha256":"a"*64,"nested":{"dataRunId":"b"*64,"models":51}}
+        self.assertEqual(gate.stable_result_sha256(first),gate.stable_result_sha256(replay))
+        self.assertNotEqual(gate.stable_result_sha256(first),gate.stable_result_sha256(changed))
+
     def test_named_behavior_passes_public_gate(self) -> None:
         for case_id in ["RED-ENV-001","RED-ENV-002","RED-RES-001"]:
             with self.subTest(case_id=case_id):

@@ -81,6 +81,16 @@ def _canonical_json(value:object)->bytes:
     return json.dumps(value,sort_keys=True,separators=(",",":"),allow_nan=False).encode()+b"\n"
 
 
+def stable_result_sha256(value:object)->str:
+    def project(item:object)->object:
+        if isinstance(item,dict):
+            return {key:project(child) for key,child in item.items() if key not in {"manifestSha256","dataRunId"}}
+        if isinstance(item,list):return [project(child) for child in item]
+        return item
+    raw=json.dumps(project(value),sort_keys=True,separators=(",",":"),allow_nan=False).encode()
+    return hashlib.sha256(raw).hexdigest()
+
+
 def verify_gate_evidence(value:dict[str,object],gate_root:pathlib.Path)->None:
     results=value.get("results")
     if not isinstance(results,list) or any(not isinstance(row,dict) for row in results):raise RuntimeError("RUNNER_GATE_EVIDENCE_TAMPERED")
@@ -888,7 +898,7 @@ class Gate:
 
     def _operation_release_aggregate(self)->object:
         release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
-        observed=[{"operationId":row["operationId"],"resultSha256":hashlib.sha256(json.dumps(row["result"],sort_keys=True,separators=(",",":"),allow_nan=False).encode()).hexdigest()} for row in self.operations]
+        observed=[{"operationId":row["operationId"],"stableResultSha256":stable_result_sha256(row["result"])} for row in self.operations]
         if len(self.operations)!=8 or not self.dbt_tracker or release.get("operationResults")!=observed or release.get("gateAggregate")!={"redRows":52,"s3Rows":14,"passed":66,"failed":0} or release.get("rollbackAggregate")!={"attempts":2,"live":True,"absent":True,"stalePreserved":True,"foreignUnchanged":True,"idempotent":True}:raise AssertionError("operation release aggregate")
         return {"operations":len(self.operations),"dbtTracker":self.dbt_tracker,"releaseResults":len(observed),"rollbackAttempts":2}
 

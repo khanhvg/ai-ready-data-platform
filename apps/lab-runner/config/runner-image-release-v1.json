@@ -48,14 +48,14 @@
     "workspace.reset"
   ],
   "operationResults": [
-    {"operationId": "workspace.prepare", "resultSha256": "f8ae1ca61dda8bf046716c7d47ffc18eb67b2a657f239ace65d587260fa1073d"},
-    {"operationId": "retail.generate", "resultSha256": "6948a1fc9faac2882d20bfd839a3a7d1d4e4c9b67498fd904114744d07b751c6"},
-    {"operationId": "retail.load", "resultSha256": "76124f7bf74f922dbd56a860da4f61b85068f4714a91767134083738cf4033a0"},
-    {"operationId": "retail.dbt-build", "resultSha256": "3e2e79e39c5a6be5c48fa0302e891557f1279209d9f43ad79339d3483b0b7fb5"},
-    {"operationId": "retail.export", "resultSha256": "b999abc5b4cfc53ff9b26f2e4a2a8e4b496c2a24036d2ff88cc9e6632657fac0"},
-    {"operationId": "promotion.configure", "resultSha256": "3a60c765d8d8eeabd4ecbcab13f669b64fc2d2bc26ed37cd0cb6d2eb4f070531"},
-    {"operationId": "promotion.verify", "resultSha256": "2d05f4a5225b93f9cf97c7058135925e9c94c0358be82b3cc8cadd50480ead4a"},
-    {"operationId": "workspace.reset", "resultSha256": "d0ad210cf7177bdfef5c87d00d74a7472b5967e7a0e36f1a30b264b081d3815c"}
+    {"operationId": "workspace.prepare", "stableResultSha256": "f8ae1ca61dda8bf046716c7d47ffc18eb67b2a657f239ace65d587260fa1073d"},
+    {"operationId": "retail.generate", "stableResultSha256": "76124f7bf74f922dbd56a860da4f61b85068f4714a91767134083738cf4033a0"},
+    {"operationId": "retail.load", "stableResultSha256": "76124f7bf74f922dbd56a860da4f61b85068f4714a91767134083738cf4033a0"},
+    {"operationId": "retail.dbt-build", "stableResultSha256": "8b91320f80b1cafdf9218be037d18896b01d96cb2979095a6c6c25421ecda5ce"},
+    {"operationId": "retail.export", "stableResultSha256": "6c19888e65a707a9f17271eb919245b875b61be38acc413fe3358809709ee5d4"},
+    {"operationId": "promotion.configure", "stableResultSha256": "3a60c765d8d8eeabd4ecbcab13f669b64fc2d2bc26ed37cd0cb6d2eb4f070531"},
+    {"operationId": "promotion.verify", "stableResultSha256": "2d05f4a5225b93f9cf97c7058135925e9c94c0358be82b3cc8cadd50480ead4a"},
+    {"operationId": "workspace.reset", "stableResultSha256": "d0ad210cf7177bdfef5c87d00d74a7472b5967e7a0e36f1a30b264b081d3815c"}
   ],
   "gateAggregate": {"redRows": 52, "s3Rows": 14, "passed": 66, "failed": 0},
   "rollbackAggregate": {"attempts": 2, "live": true, "absent": true, "stalePreserved": true, "foreignUnchanged": true, "idempotent": true},
