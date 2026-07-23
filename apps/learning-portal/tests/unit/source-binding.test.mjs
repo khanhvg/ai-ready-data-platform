@@ -22,4 +22,10 @@ test('source loader exposes no copied source registry or runnable candidate oper
   assert.equal(catalog.manualOnly, true);
   assert.equal(catalog.labs.every((lab)=>lab.descriptor.commands.every(({id})=>id.startsWith('candidate.'))), true);
   assert.equal(catalog.labs.flatMap(({commands})=>commands).every((command)=>/^make [a-z-]+(?: [A-Z]+=[a-z0-9]+)*$/.test(command)), true);
+  assert.equal(
+    catalog.labs.every(({ sections }) =>
+      Object.values(sections).every((value) => !value.includes('**') && !value.includes('`'))
+    ),
+    true
+  );
 });
