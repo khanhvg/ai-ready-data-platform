@@ -4,7 +4,14 @@ export function createReleasedModuleProvider(adapter) {
   }
   return Object.freeze({
     readRegistry() {
-      return adapter.readRegistry();
+      const registry = adapter.readRegistry();
+      if (
+        registry?.authorityKind !== 'released' ||
+        registry?.registryType !== 'ReleasedPortalDescriptorRegistry'
+      ) {
+        throw new Error('PORTAL_DESCRIPTOR_AUTHORITY_FORBIDDEN');
+      }
+      return registry;
     }
   });
 }
