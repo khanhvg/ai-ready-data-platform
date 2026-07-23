@@ -4,6 +4,7 @@ import base64
 import hashlib
 import json
 import os
+import re
 import shutil
 import signal
 import stat
@@ -23,6 +24,11 @@ from learning.curriculum.tools.architecture_expansion import (
 from learning.curriculum.tools.check_curriculum import check_repository
 from learning.curriculum.tools.check_traceability import _verify_repository
 from learning.curriculum.tools.content_io import controller_environment
+from learning.curriculum.tools.content_io import (
+    RepositoryInputError,
+    RepositoryLimits,
+    _run_owned_process,
+)
 
 
 SOURCE_ROOT = Path(__file__).resolve().parents[3]
@@ -385,6 +391,241 @@ def _refresh_evidence_index(root: Path) -> None:
     _write_text(evidence / "index.sha256", hashlib.sha256(payload.encode()).hexdigest() + "\n", 0o600)
 
 
+def _canonical_sha256(value: object) -> str:
+    payload = json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _evidence_receipt(
+    source_head: str,
+    source_tree: str,
+    argv: list[str],
+    returncode: int,
+    stdout: bytes,
+    stderr: bytes = b"",
+) -> dict[str, object]:
+    return {
+        "argv": argv,
+        "returncode": returncode,
+        "sourceHead": source_head,
+        "sourceTree": source_tree,
+        "startedNs": 1,
+        "finishedNs": 2,
+        "stdoutBase64": base64.b64encode(stdout).decode(),
+        "stdoutBytes": len(stdout),
+        "stdoutSha256": hashlib.sha256(stdout).hexdigest(),
+        "stderrBase64": base64.b64encode(stderr).decode(),
+        "stderrBytes": len(stderr),
+        "stderrSha256": hashlib.sha256(stderr).hexdigest(),
+    }
+
+
+def _refresh_control_closure(root: Path) -> None:
+    evidence = root / ".claude/evidence/control"
+    tree = _git(root, "rev-parse", "HEAD^{tree}").stdout.decode().strip() if (root / ".git").exists() else "pending"
+    head = _git(root, "rev-parse", "HEAD").stdout.decode().strip() if (root / ".git").exists() else "pending"
+    command_argv = (
+        ["python", "-m", "learning.curriculum.tools.check_curriculum"],
+        ["python", "-m", "learning.curriculum.tools.check_traceability"],
+        ["python", "-m", "learning.curriculum.tools.architecture_expansion", "verify-expansions"],
+        ["make", "curriculum-check"],
+        ["make", "traceability-check"],
+        ["python", "-m", "unittest", "discover"],
+        ["node", "architecture-render.mjs", "render", "run-1"],
+        ["node", "architecture-render.mjs", "render", "run-2"],
+        ["python", "protected-identities"],
+        ["python", "released-byproducts"],
+        ["python", "public-cli"],
+        ["make", "public-make"],
+        ["python", "resource-processes"],
+        ["python", "visible-mutation"],
+        ["python", "artifact-smoke", "1440"],
+        ["python", "artifact-smoke", "1024"],
+    )
+    commands = []
+    for index, argv in enumerate(command_argv, 1):
+        row = _evidence_receipt(head, tree, argv, 0, f"command-{index:02d}:pass\n".encode())
+        row["commandId"] = f"command-{index:02d}"
+        commands.append(row)
+    _write_json(evidence / "commands.raw.json", commands, 0o600)
+    _write_json(
+        evidence / "commands.sanitized.json",
+        [
+            {
+                "commandId": row["commandId"],
+                "rawSha256": _canonical_sha256(row),
+                "redacted": True,
+                "returncode": 0,
+            }
+            for row in commands
+        ],
+        0o600,
+    )
+    mutations = []
+    for case in CASES:
+        expected = str(case["expectedCode"])
+        receipts = {
+            route: _evidence_receipt(
+                head,
+                tree,
+                [route, str(case["id"])],
+                1,
+                f"{expected}\n".encode(),
+            )
+            for route in (
+                "check_repository",
+                "verify_repository",
+                "toolchain_verification",
+                "repository_handoff",
+                "cli",
+                "make",
+            )
+        }
+        mutations.append(
+            {
+                "caseId": case["id"],
+                "expectedCode": expected,
+                "routeReceipts": receipts,
+            }
+        )
+    _write_json(evidence / "mutations.raw.json", mutations, 0o600)
+    _write_json(
+        evidence / "mutations.sanitized.json",
+        [
+            {
+                "caseId": row["caseId"],
+                "expectedCode": row["expectedCode"],
+                "rawSha256": _canonical_sha256(row),
+                "redacted": True,
+            }
+            for row in mutations
+        ],
+        0o600,
+    )
+    manifest = _load_json(root / "architecture/expansions/i5-06/rendered/render-manifest.json")
+    render_rows = [
+        {
+            **{
+                key: row[key]
+                for key in (
+                    "viewId",
+                    "projectionSha256",
+                    "dotSha256",
+                    "rawSvgSha256",
+                    "svgSha256",
+                    "textSha256",
+                    "fittedHtmlSha256",
+                )
+            },
+            "renderer": manifest["renderer"],
+            "likec4": manifest["toolIdentity"]["likec4"],
+            "graphvizPackage": manifest["toolIdentity"]["graphvizPackage"],
+            "returncode": 0,
+        }
+        for row in manifest["views"]
+    ]
+    _write_json(evidence / "render.raw.json", render_rows, 0o600)
+    _write_json(
+        evidence / "render.sanitized.json",
+        [
+            {
+                "viewId": row["viewId"],
+                "lineageClosed": True,
+                "rawSha256": _canonical_sha256(row),
+                "redacted": True,
+                "renderer": row["renderer"],
+                "likec4": row["likec4"],
+                "graphvizPackage": row["graphvizPackage"],
+                "returncode": 0,
+            }
+            for row in render_rows
+        ],
+        0o600,
+    )
+    descriptor = _load_json(root / "learning/contracts/learning-contract-set-v1.json")
+    released = [
+        {
+            "path": row["path"],
+            "sha256": _sha256(root / row["path"]),
+            "releasedByproductClosed": True,
+        }
+        for row in descriptor["contracts"]
+    ]
+    _write_json(evidence / "released-byproducts.json", released, 0o600)
+    payload_paths = sorted(
+        item
+        for item in evidence.rglob("*")
+        if item.is_file() and item.name not in {"closure.json", "index.json", "index.sha256"}
+    )
+    aggregate = hashlib.sha256()
+    for item in payload_paths:
+        aggregate.update(item.relative_to(evidence).as_posix().encode() + b"\0")
+        aggregate.update(item.read_bytes())
+        aggregate.update(b"\0")
+    _write_json(
+        evidence / "closure.json",
+        {
+            "schemaVersion": "i11-stage-a-control-closure-v1",
+            "sourceHead": head,
+            "sourceTree": tree,
+            "commands": 16,
+            "mutations": 82,
+            "renderViews": 5,
+            "protectedIdentities": 33,
+            "releasedContracts": 21,
+            "rawSanitizedPairs": 3,
+            "payloadFiles": len(payload_paths),
+            "payloadBytes": sum(item.stat().st_size for item in payload_paths),
+            "payloadSha256": aggregate.hexdigest(),
+            "selectorPublication": "last",
+        },
+        0o600,
+    )
+
+
+def _refresh_closure_payload_binding(root: Path) -> None:
+    evidence = root / ".claude/evidence/control"
+    payload_paths = sorted(
+        item
+        for item in evidence.rglob("*")
+        if item.is_file() and item.name not in {"closure.json", "index.json", "index.sha256"}
+    )
+    aggregate = hashlib.sha256()
+    for item in payload_paths:
+        aggregate.update(item.relative_to(evidence).as_posix().encode() + b"\0")
+        aggregate.update(item.read_bytes())
+        aggregate.update(b"\0")
+    closure = _load_json(evidence / "closure.json")
+    closure.update(
+        payloadFiles=len(payload_paths),
+        payloadBytes=sum(item.stat().st_size for item in payload_paths),
+        payloadSha256=aggregate.hexdigest(),
+    )
+    _write_json(evidence / "closure.json", closure, 0o600)
+
+
+def _refresh_selector(root: Path) -> None:
+    evidence = root / ".claude/evidence/control"
+    tree = _git(root, "rev-parse", "HEAD^{tree}").stdout.decode().strip()
+    _write_json(
+        root / ".claude/evidence/selected.json",
+        {
+            "generation": "control",
+            "indexSha256": _sha256(evidence / "index.json"),
+            "publicationOrder": "selector-last",
+            "sourceTree": tree,
+        },
+        0o600,
+    )
+
+
+def _record_resource_violation(root: Path, measurement: Path, code: str) -> None:
+    _mutate_json(measurement, lambda value: value.update(violation=code))
+    _refresh_control_closure(root)
+    _refresh_evidence_index(root)
+    _refresh_selector(root)
+
+
 def build_repository(tmp_path: Path) -> Path:
     root = tmp_path / "repository"
     root.mkdir(mode=0o700)
@@ -398,8 +639,7 @@ def build_repository(tmp_path: Path) -> Path:
     for row in descriptor["contracts"]:
         _copy_file(SOURCE_ROOT / row["path"], root / row["path"])
     for relative in SEMANTIC_PATHS:
-        _write_text(root / relative, _semantic_content(relative))
-    _refresh_render_manifest(root)
+        _copy_file(SOURCE_ROOT / relative, root / relative)
     _write_text(root / "Makefile", "include mk/issue-5/i5-06.mk\n")
     _write_text(root / ".gitignore", "/.claude/\n/.ignored/\n")
     evidence = root / ".claude/evidence/control"
@@ -408,7 +648,20 @@ def build_repository(tmp_path: Path) -> Path:
     _write_text(evidence / "stdout.raw", "valid control stdout\n", 0o600)
     _write_text(evidence / "stderr.raw", "", 0o600)
     _write_text(evidence / "sanitized.log", "valid control\n", 0o600)
-    _write_json(evidence / "process-measurement.json", {"rssBytes": 1024, "processes": 1, "complete": True}, 0o600)
+    _write_json(
+        evidence / "process-measurement.json",
+        {
+            "aggregateRssSampled": True,
+            "processGroupSampled": True,
+            "createdFilesSampled": True,
+            "outputSampled": True,
+            "deadlineEnforced": True,
+            "termGraceSeconds": 5,
+            "waited": True,
+            "descendantsAfterReap": 0,
+        },
+        0o600,
+    )
     _write_json(
         evidence / "human-review.json",
         {"reviewClass": "cook-self-inspection", "independent": False, "synthesized": True},
@@ -419,6 +672,7 @@ def build_repository(tmp_path: Path) -> Path:
         '<!doctype html><html lang="en"><body><h1>1. Architecture view</h1><p>Visible decision evidence</p></body></html>\n',
         0o600,
     )
+    _refresh_control_closure(root)
     _refresh_evidence_index(root)
     _git(root, "init", "-q")
     _git(root, "add", "--all")
@@ -426,8 +680,11 @@ def build_repository(tmp_path: Path) -> Path:
     tree = _git(root, "rev-parse", "HEAD^{tree}").stdout.decode().strip()
     owner = _load_json(evidence / "owner.json")
     owner["sourceTree"] = tree
+    owner["sourceHead"] = _git(root, "rev-parse", "HEAD").stdout.decode().strip()
     _write_json(evidence / "owner.json", owner, 0o600)
+    _refresh_control_closure(root)
     _refresh_evidence_index(root)
+    _refresh_selector(root)
     return root
 
 
@@ -488,6 +745,7 @@ def apply_mutation(root: Path, mutation: dict[str, object]) -> MutationState:
     assessment = root / "learning/curriculum/assessments/architecture-assessment-v1.json"
     example = root / "learning/curriculum/examples/promotion-publication-architecture-v1.json"
     evidence = root / ".claude/evidence/control"
+    measurement = evidence / "process-measurement.json"
     svg = root / "architecture/expansions/i5-06/rendered/C4-L2-AWS.svg"
     text = root / "architecture/expansions/i5-06/rendered/C4-L2-AWS.txt"
     source = root / "architecture/expansions/i5-06/likec4/model/architecture-curriculum.c4"
@@ -501,9 +759,9 @@ def apply_mutation(root: Path, mutation: dict[str, object]) -> MutationState:
     elif kind == "unknown-prerequisite":
         _mutate_json(curriculum, lambda value: value["modules"][1].update(prerequisites=["ARC-99"]))
     elif kind == "self-prerequisite":
-        _mutate_json(curriculum, lambda value: value["modules"][1].update(prerequisites=["ARC-02"]))
+        _mutate_json(curriculum, lambda value: value["modules"][1].update(prerequisites=["F02"]))
     elif kind == "cyclic-prerequisite":
-        _mutate_json(curriculum, lambda value: value["modules"][0].update(prerequisites=["ARC-02"]))
+        _mutate_json(curriculum, lambda value: value["modules"][0].update(prerequisites=["F02"]))
     elif kind == "unreachable-module":
         _mutate_json(curriculum, lambda value: value["modules"][10].update(prerequisites=[]))
     elif kind == "regress-progression-level":
@@ -525,7 +783,7 @@ def apply_mutation(root: Path, mutation: dict[str, object]) -> MutationState:
     elif kind == "remove-trace-row":
         _mutate_json(trace, lambda value: value["rows"].pop())
     elif kind == "break-trace-reciprocity":
-        _mutate_json(trace, lambda value: value["rows"][0].update(reciprocalModuleRef="ARC-02"))
+        _mutate_json(trace, lambda value: value["rows"][0].update(reciprocalModuleRef="F02"))
     elif kind == "change-source-without-render":
         _write_text(source, source.read_text() + 'relation new -> node label "visible" technology "repository"\n')
     elif kind == "change-repeat-render-bytes":
@@ -533,7 +791,7 @@ def apply_mutation(root: Path, mutation: dict[str, object]) -> MutationState:
     elif kind == "inject-active-svg-content":
         _write_text(svg, svg.read_text().replace("</svg>", '<script>alert("unsafe")</script></svg>'))
     elif kind == "erase-visible-render-label":
-        _write_text(svg, svg.read_text().replace("1. C4-L2-AWS source", ""))
+        _write_text(svg, svg.read_text().replace("</svg>", "<!-- semantic drift --></svg>"))
     elif kind == "modify-protected-source":
         protected = root / "architecture/likec4/model/data-platform.c4"
         _write_text(protected, protected.read_text() + "\n// drifted protected relation\n")
@@ -559,7 +817,7 @@ def apply_mutation(root: Path, mutation: dict[str, object]) -> MutationState:
     elif kind == "change-template-without-hash":
         _mutate_json(templates, lambda value: value["templates"][0].update(body="changed visible template body"))
     elif kind == "break-template-reciprocity":
-        _mutate_json(templates, lambda value: value["templates"][0].update(instances=[]))
+        _mutate_json(templates, lambda value: value["templates"][0].update(consumingInstanceIds=[]))
     elif kind == "forge-template-supersession":
         _mutate_json(templates, lambda value: value["templates"][0].update(supersedes="0.9.0", tombstone={"released": False}))
     elif kind == "remove-live-template-rows":
@@ -602,59 +860,56 @@ def apply_mutation(root: Path, mutation: dict[str, object]) -> MutationState:
     elif kind == "add-bridge-runtime-claim":
         _mutate_json(trace, lambda value: value["bridge"].update(runtimeClaim=True))
     elif kind == "spawn-deadline-process":
-        process = _spawn(root, "import time; time.sleep(30)", state)
-        _write_json(root / "learning/curriculum/process-state.json", {"pid": process.pid, "deadlineMs": 10})
+        _record_resource_violation(root, measurement, "I11_RESOURCE_DEADLINE")
     elif kind == "spawn-memory-process":
-        process = _spawn(root, "import time; payload=bytearray(64*1024*1024); time.sleep(30)", state)
-        _write_json(root / "learning/curriculum/process-state.json", {"pid": process.pid, "rssLimitBytes": 1024 * 1024})
+        _record_resource_violation(root, measurement, "I11_RESOURCE_RSS")
     elif kind == "spawn-process-tree":
-        process = _spawn(root, "import subprocess,sys,time; subprocess.Popen([sys.executable,'-c','import time; time.sleep(30)']); time.sleep(30)", state)
-        _write_json(root / "learning/curriculum/process-state.json", {"pid": process.pid, "processLimit": 1})
+        _record_resource_violation(root, measurement, "I11_RESOURCE_PROCESS_COUNT")
     elif kind == "produce-excess-output":
-        output = root / ".claude/evidence/control/process.stdout.raw"
-        process = _spawn(root, "import sys; sys.stdout.write('x'*(3*1024*1024))", state, output)
-        process.wait(timeout=5)
-        _write_json(root / "learning/curriculum/process-state.json", {"output": str(output.relative_to(root)), "outputLimitBytes": 1024})
+        _record_resource_violation(root, measurement, "I11_RESOURCE_OUTPUT")
     elif kind == "create-many-files":
-        for index in range(130):
-            _write_text(root / f".claude/evidence/control/files/{index:03d}.txt", "x", 0o600)
+        _record_resource_violation(root, measurement, "I11_RESOURCE_FILE_COUNT")
     elif kind == "create-large-output-file":
-        _write_text(root / ".claude/evidence/control/large-output.bin", "x" * (3 * 1024 * 1024), 0o600)
+        _record_resource_violation(root, measurement, "I11_RESOURCE_FILE_BYTES")
     elif kind == "drift-process-owner":
-        process = _spawn(root, "import time; time.sleep(30)", state)
-        _write_json(root / "learning/curriculum/process-state.json", {"pid": process.pid, "ownerNonce": "wrong-owner"})
+        _record_resource_violation(root, measurement, "I11_RESOURCE_OWNERSHIP")
     elif kind == "spawn-term-resistant-process":
-        process = _spawn(root, "import signal,time; signal.signal(signal.SIGTERM,signal.SIG_IGN); time.sleep(30)", state)
-        os.killpg(process.pid, signal.SIGTERM)
-        _write_json(root / "learning/curriculum/process-state.json", {"pid": process.pid, "termSent": True})
+        _record_resource_violation(root, measurement, "I11_RESOURCE_TERM")
     elif kind == "spawn-kill-required-process":
-        process = _spawn(root, "import signal,time; signal.signal(signal.SIGTERM,signal.SIG_IGN); time.sleep(30)", state)
-        _write_json(root / "learning/curriculum/process-state.json", {"pid": process.pid, "killRequired": True, "killRecorded": False})
+        _record_resource_violation(root, measurement, "I11_RESOURCE_KILL")
     elif kind == "leave-unreaped-process":
-        process = _spawn(root, "import subprocess,sys,time; subprocess.Popen([sys.executable,'-c','pass']); time.sleep(30)", state)
-        _write_json(root / "learning/curriculum/process-state.json", {"pid": process.pid, "reaped": False})
+        _record_resource_violation(root, measurement, "I11_RESOURCE_REAP")
     elif kind == "remove-resource-measurement":
         (evidence / "process-measurement.json").unlink()
     elif kind == "change-visible-language":
-        _write_text(text, text.read_text().replace("source", "fuente"))
+        _write_text(text, "fuente\n" + text.read_text())
     elif kind == "change-visible-numbering":
-        _write_text(svg, svg.read_text().replace("1. C4", "9. C4"))
+        _write_text(svg, svg.read_text().replace("</svg>", "<!-- 9. C4 --></svg>"))
     elif kind == "change-visible-font-size":
-        _write_text(svg, svg.read_text().replace('font-size="18"', 'font-size="4"', 1))
+        _write_text(svg, re.sub(r'font-size="[0-9.]+"', 'font-size="4"', svg.read_text(), count=1))
     elif kind == "change-visible-aspect-ratio":
-        _write_text(svg, svg.read_text().replace('viewBox="0 0 1200 675"', 'viewBox="0 0 3000 200"'))
+        _write_text(
+            svg,
+            re.sub(r'viewBox="[0-9. ]+"', 'viewBox="0 0 3000 200"', svg.read_text(), count=1),
+        )
     elif kind == "change-visible-canvas":
         _write_text(svg, svg.read_text().replace("background:#ffffff", "background:#000000"))
     elif kind == "overlap-visible-nodes":
-        _write_text(svg, svg.read_text().replace('x="700" y="420"', 'x="100" y="130"'))
+        _write_text(
+            svg,
+            svg.read_text().replace(
+                "</svg>",
+                '<text x="100" y="130">overlap one</text><text x="100" y="130">overlap two</text></svg>',
+            ),
+        )
     elif kind == "clip-visible-text":
-        _write_text(svg, svg.read_text().replace('width="360"', 'width="12"'))
+        _write_text(svg, svg.read_text().replace("</svg>", '<rect width="12" height="12"/></svg>'))
     elif kind == "reduce-visible-contrast":
-        _write_text(svg, svg.read_text().replace('fill="#111111"', 'fill="#ffffff"'))
+        _write_text(svg, svg.read_text().replace("</svg>", '<text fill="#ffffff">contrast</text></svg>'))
     elif kind == "remove-accessible-title":
-        _write_text(svg, svg.read_text().replace("<title>C4-L2-AWS architecture decision</title>", ""))
+        _write_text(svg, re.sub(r"<title[^>]*>.*?</title>", "", svg.read_text(), count=1))
     elif kind == "change-visible-text-only":
-        _write_text(text, text.read_text().replace("target", "different visible target"))
+        _write_text(text, text.read_text() + "different visible target\n")
     elif kind == "remove-human-review-record":
         (evidence / "human-review.json").unlink()
     elif kind == "dirty-tracked-file":
@@ -669,7 +924,16 @@ def apply_mutation(root: Path, mutation: dict[str, object]) -> MutationState:
         _write_json(root / ".claude/evidence/control/rollback.json", {"delete": ["README.md", "contracts"]}, 0o600)
     elif kind == "reorder-source-relations":
         lines = source.read_text().splitlines()
-        _write_text(source, "\n".join([lines[0], lines[2], lines[1], *lines[3:]]) + "\n")
+        relation_indexes = [
+            index
+            for index, line in enumerate(lines)
+            if " -> " in line and not line.strip().startswith("//")
+        ]
+        lines[relation_indexes[0]], lines[relation_indexes[1]] = (
+            lines[relation_indexes[1]],
+            lines[relation_indexes[0]],
+        )
+        _write_text(source, "\n".join(lines) + "\n")
     elif kind == "change-deployment-topology":
         deployment = root / "architecture/expansions/i5-06/likec4/views/DEP-AWS.c4"
         _write_text(deployment, deployment.read_text().replace("private-subnet", "public-subnet"))
@@ -823,3 +1087,195 @@ install_case_tests(
     ArchitectureAndVisibleRenderMutations,
     [case for case in CASES if case["family"] in ARCHITECTURE_FAMILIES],
 )
+
+
+class ReleaseQaRegressions(unittest.TestCase):
+    def _repository(self, temporary: str) -> Path:
+        return build_repository(Path(temporary))
+
+    def _assert_public_rejection(self, root: Path, family: str, expected: str) -> None:
+        direct = _call(root, family)
+        cli, make = _run_public(root, family)
+        self.assertIn(expected, direct)
+        self.assertIn(expected, (cli.stdout + cli.stderr).decode(errors="replace"))
+        self.assertIn(expected, (make.stdout + make.stderr).decode(errors="replace"))
+        self.assertNotEqual(cli.returncode, 0)
+        self.assertNotEqual(make.returncode, 0)
+
+    def test_weak_generic_repository_is_rejected_by_public_routes(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="weak-repository-", dir=os.environ["TMPDIR"]) as temporary:
+            root = self._repository(temporary)
+            _write_json(root / "learning/curriculum/architecture-curriculum-v1.json", _curriculum())
+            _write_json(root / "learning/curriculum/templates/architecture-templates-v1.json", _template_registry())
+            _write_json(root / "learning/curriculum/traces/architecture-trace-v1.json", _trace())
+            self._assert_public_rejection(root, "I11-RED-REF-001", "I11_MODULE_CONTRACT_INVALID")
+
+    def test_legacy_synthetic_render_is_rejected_by_public_routes(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="legacy-render-", dir=os.environ["TMPDIR"]) as temporary:
+            root = self._repository(temporary)
+            rendered = root / "architecture/expansions/i5-06/rendered"
+            _write_text(rendered / "C4-L2-AWS.svg", _render_svg("C4-L2-AWS"))
+            _write_text(rendered / "C4-L2-AWS.txt", "1. C4-L2-AWS source\n2. C4-L2-AWS target\n")
+            _refresh_render_manifest(root)
+            self._assert_public_rejection(root, "I11-RED-RENDER-001", "I11_RENDER_LINEAGE_INVALID")
+
+    def test_manifest_must_close_projection_dot_raw_and_normalized_lineage(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="render-lineage-", dir=os.environ["TMPDIR"]) as temporary:
+            root = self._repository(temporary)
+            manifest = root / "architecture/expansions/i5-06/rendered/render-manifest.json"
+            _mutate_json(manifest, lambda value: value["views"][0].update(projectionSha256="1" * 64))
+            self._assert_public_rejection(root, "I11-RED-RENDER-001", "I11_RENDER_LINEAGE_INVALID")
+
+    def test_all_protected_identities_are_enforced(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="protected-identity-", dir=os.environ["TMPDIR"]) as temporary:
+            root = self._repository(temporary)
+            protected = root / "architecture/rendered/C4-L0.svg"
+            _write_text(protected, protected.read_text() + "\n<!-- drift -->\n")
+            _git(root, "add", "architecture/rendered/C4-L0.svg")
+            _git(
+                root,
+                "-c",
+                "user.name=Checkpoint Test",
+                "-c",
+                "user.email=checkpoint@example.invalid",
+                "commit",
+                "-qm",
+                "committed protected drift",
+            )
+            self._assert_public_rejection(root, "I11-RED-READONLY-001", "I11_PROTECTED_IDENTITY_DRIFT")
+
+    def test_released_descriptor_cannot_redefine_byproduct_identities(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="released-descriptor-", dir=os.environ["TMPDIR"]) as temporary:
+            root = self._repository(temporary)
+            descriptor = root / "learning/contracts/learning-contract-set-v1.json"
+            _mutate_json(descriptor, lambda value: value["contracts"][0].update(contentSha256="1" * 64))
+            _git(root, "add", "learning/contracts/learning-contract-set-v1.json")
+            _git(
+                root,
+                "-c",
+                "user.name=Checkpoint Test",
+                "-c",
+                "user.email=checkpoint@example.invalid",
+                "commit",
+                "-qm",
+                "committed released descriptor drift",
+            )
+            self._assert_public_rejection(root, "I11-RED-READONLY-001", "I11_PROTECTED_IDENTITY_DRIFT")
+
+    def test_security_scan_covers_relevant_content_not_optional_policy_only(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="content-scan-", dir=os.environ["TMPDIR"]) as temporary:
+            root = self._repository(temporary)
+            source = root / "learning/curriculum/command-owner-activation-i5-06-stage-a-v1.json"
+            _mutate_json(source, lambda value: value.update(credential="not-for-publication"))
+            self._assert_public_rejection(root, "I11-RED-S3-001", "I11_S3_SECRET")
+
+    def test_minimal_evidence_is_not_a_complete_release_generation(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="evidence-closure-", dir=os.environ["TMPDIR"]) as temporary:
+            root = self._repository(temporary)
+            (root / ".claude/evidence/control/commands.raw.json").unlink()
+            _refresh_evidence_index(root)
+            report = check_repository(root)
+            self.assertFalse(report.ok)
+            self.assertIn("I11_EVIDENCE_CLOSURE_MISSING", report.issues)
+
+    def test_evidence_receipts_are_byte_bound_not_predicate_flags(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="evidence-receipt-", dir=os.environ["TMPDIR"]) as temporary:
+            root = self._repository(temporary)
+            evidence = root / ".claude/evidence/control"
+            commands = _load_json(evidence / "commands.raw.json")
+            commands[0]["stdoutSha256"] = "1" * 64
+            _write_json(evidence / "commands.raw.json", commands, 0o600)
+            sanitized = _load_json(evidence / "commands.sanitized.json")
+            sanitized[0]["rawSha256"] = _canonical_sha256(commands[0])
+            _write_json(evidence / "commands.sanitized.json", sanitized, 0o600)
+            _refresh_closure_payload_binding(root)
+            _refresh_evidence_index(root)
+            _refresh_selector(root)
+            report = check_repository(root)
+            self.assertFalse(report.ok)
+            self.assertIn("I11_EVIDENCE_CLOSURE_MISSING", report.issues)
+
+
+class RealOwnedProcessLimits(unittest.TestCase):
+    def _run(self, code: str, limits: RepositoryLimits, cwd: Path = SOURCE_ROOT) -> object:
+        runtime = Path(os.environ["I11_RUNTIME"])
+        return _run_owned_process(
+            (str(runtime / "venv/bin/python"), "-c", code),
+            cwd=cwd,
+            environment=_runtime_environment(),
+            limits=limits,
+        )
+
+    def test_deadline_terminates_and_reaps_real_process_group(self) -> None:
+        sentinel = "I11_REAP_SENTINEL_11_STAGE_A"
+        code = (
+            "import signal,subprocess,sys,time;"
+            f"sentinel='{sentinel}';"
+            "signal.signal(signal.SIGTERM,signal.SIG_IGN);"
+            "subprocess.Popen([sys.executable,'-c',"
+            f"'import os,signal,time;sentinel=\"{sentinel}\";os.setsid();"
+            "signal.signal(signal.SIGTERM,signal.SIG_IGN);time.sleep(30)']);"
+            "time.sleep(30)"
+        )
+        started = time.monotonic()
+        with self.assertRaisesRegex(RepositoryInputError, "I11_RESOURCE_DEADLINE"):
+            self._run(code, RepositoryLimits(timeout_seconds=0.2))
+        self.assertGreaterEqual(time.monotonic() - started, 5.0)
+        processes = subprocess.run(
+            ("/bin/ps", "-axo", "command="),
+            check=True,
+            stdout=subprocess.PIPE,
+        ).stdout.decode()
+        self.assertNotIn(sentinel, processes)
+
+    def test_aggregate_rss_is_sampled_from_real_processes(self) -> None:
+        with self.assertRaisesRegex(RepositoryInputError, "I11_RESOURCE_RSS"):
+            self._run(
+                "import time;payload=bytearray(32*1024*1024);time.sleep(10)",
+                RepositoryLimits(timeout_seconds=10, max_rss_bytes=4 * 1024 * 1024),
+            )
+
+    def test_process_count_is_sampled_from_real_descendants(self) -> None:
+        code = (
+            "import subprocess,sys,time;"
+            "subprocess.Popen([sys.executable,'-c','import time;time.sleep(10)']);"
+            "time.sleep(10)"
+        )
+        with self.assertRaisesRegex(RepositoryInputError, "I11_RESOURCE_PROCESS_COUNT"):
+            self._run(code, RepositoryLimits(timeout_seconds=10, max_processes=1))
+
+    def test_output_limit_stops_real_writer_before_unbounded_capture(self) -> None:
+        started = time.monotonic()
+        with self.assertRaisesRegex(RepositoryInputError, "I11_RESOURCE_OUTPUT"):
+            self._run(
+                "import os,signal;signal.signal(signal.SIGTERM,signal.SIG_IGN)\n"
+                "while True: os.write(1,b'x'*65536)",
+                RepositoryLimits(timeout_seconds=10, max_output_bytes=128 * 1024),
+            )
+        self.assertGreaterEqual(time.monotonic() - started, 5.0)
+
+    def test_created_file_count_is_sampled_from_real_filesystem(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="resource-files-", dir=os.environ["TMPDIR"]) as temporary:
+            cwd = Path(temporary)
+            code = (
+                "from pathlib import Path;import time;"
+                "[(Path(f'created-{index}.txt').write_text('x')) for index in range(4)];"
+                "time.sleep(10)"
+            )
+            with self.assertRaisesRegex(RepositoryInputError, "I11_RESOURCE_FILE_COUNT"):
+                self._run(
+                    code,
+                    RepositoryLimits(timeout_seconds=10, max_created_files=2),
+                    cwd,
+                )
+
+    def test_created_file_bytes_are_sampled_from_real_filesystem(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="resource-bytes-", dir=os.environ["TMPDIR"]) as temporary:
+            cwd = Path(temporary)
+            code = "from pathlib import Path;import time;Path('large.bin').write_bytes(b'x'*65536);time.sleep(10)"
+            with self.assertRaisesRegex(RepositoryInputError, "I11_RESOURCE_FILE_BYTES"):
+                self._run(
+                    code,
+                    RepositoryLimits(timeout_seconds=10, max_created_bytes=4_096),
+                    cwd,
+                )

@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import secrets
+import selectors
 import shutil
 import signal
 import stat
@@ -29,6 +30,10 @@ class RepositoryLimits:
     max_total_bytes: int = 64 * 1024 * 1024
     max_output_bytes: int = 2 * 1024 * 1024
     timeout_seconds: float = 30.0
+    max_processes: int = 32
+    max_rss_bytes: int = 512 * 1024 * 1024
+    max_created_files: int = 4_096
+    max_created_bytes: int = 64 * 1024 * 1024
 
 
 @dataclass(frozen=True)
@@ -61,6 +66,13 @@ class ProcessReceipt:
     stdout: bytes
     stderr: bytes
     duration_ms: int
+    peak_processes: int
+    peak_rss_bytes: int
+    created_files: int
+    created_bytes: int
+    term_sent: bool
+    kill_sent: bool
+    descendants_after_reap: int
 
 
 @dataclass(frozen=True)
@@ -73,6 +85,7 @@ class OwnedDirectory:
 
 
 _SKIPPED_DIRECTORIES = frozenset({".git", ".claude", ".artifacts", ".hermes", "__pycache__"})
+_PROCESS_SKIPPED_DIRECTORIES = frozenset({".git", "__pycache__"})
 _CONTROLLER_KEYS = frozenset(
     {
         "PATH",
@@ -360,7 +373,9 @@ def _run_owned_process(
         raise RepositoryInputError("owned process executable must be an absolute regular file")
     if set(environment) != _CONTROLLER_KEYS:
         raise RepositoryInputError("owned process environment differs from the controller table")
+    baseline_files = _file_snapshot(_resolved_directory(cwd))
     started = time.monotonic()
+    deadline = started + limits.timeout_seconds
     process = subprocess.Popen(
         tuple(argv),
         cwd=_resolved_directory(cwd),
@@ -370,21 +385,234 @@ def _run_owned_process(
         stderr=subprocess.PIPE,
         start_new_session=True,
     )
-    try:
-        stdout, stderr = process.communicate(timeout=limits.timeout_seconds)
-    except subprocess.TimeoutExpired:
-        os.killpg(process.pid, signal.SIGTERM)
-        try:
-            stdout, stderr = process.communicate(timeout=2)
-        except subprocess.TimeoutExpired:
-            os.killpg(process.pid, signal.SIGKILL)
-            stdout, stderr = process.communicate(timeout=2)
-    if len(stdout) + len(stderr) > limits.max_output_bytes:
-        raise RepositoryInputError("owned process output limit exceeded")
+    if process.stdout is None or process.stderr is None:
+        raise RepositoryInputError("owned process pipes are unavailable")
+    for stream in (process.stdout, process.stderr):
+        os.set_blocking(stream.fileno(), False)
+    selector = selectors.DefaultSelector()
+    selector.register(process.stdout, selectors.EVENT_READ, "stdout")
+    selector.register(process.stderr, selectors.EVENT_READ, "stderr")
+    output = {"stdout": bytearray(), "stderr": bytearray()}
+    peak_processes = 0
+    peak_rss_bytes = 0
+    created_files = 0
+    created_bytes = 0
+    tracked_pids: set[int] = set()
+    violation: str | None = None
+    next_file_sample = started
+    while True:
+        for key, _ in selector.select(timeout=0.05):
+            while True:
+                try:
+                    chunk = os.read(key.fileobj.fileno(), 64 * 1024)
+                except BlockingIOError:
+                    break
+                if not chunk:
+                    selector.unregister(key.fileobj)
+                    break
+                _append_bounded_output(output, str(key.data), chunk, limits.max_output_bytes)
+                if len(output["stdout"]) + len(output["stderr"]) > limits.max_output_bytes:
+                    violation = "I11_RESOURCE_OUTPUT"
+                    break
+            if violation is not None:
+                break
+        if violation is not None:
+            break
+        processes, rss_bytes, observed_pids = _process_tree_usage(process.pid, tracked_pids)
+        tracked_pids.update(observed_pids)
+        peak_processes = max(peak_processes, processes)
+        peak_rss_bytes = max(peak_rss_bytes, rss_bytes)
+        if processes > limits.max_processes:
+            violation = violation or "I11_RESOURCE_PROCESS_COUNT"
+        if rss_bytes > limits.max_rss_bytes:
+            violation = violation or "I11_RESOURCE_RSS"
+        now = time.monotonic()
+        if now >= next_file_sample:
+            current_files = _file_snapshot(_resolved_directory(cwd))
+            created = {
+                path: size
+                for path, size in current_files.items()
+                if path not in baseline_files
+            }
+            created_files = max(created_files, len(created))
+            created_bytes = max(created_bytes, sum(created.values()))
+            if created_files > limits.max_created_files:
+                violation = violation or "I11_RESOURCE_FILE_COUNT"
+            if created_bytes > limits.max_created_bytes:
+                violation = violation or "I11_RESOURCE_FILE_BYTES"
+            next_file_sample = now + 0.25
+        if now >= deadline and process.poll() is None:
+            violation = violation or "I11_RESOURCE_DEADLINE"
+        if violation is not None:
+            break
+        if process.poll() is not None and not selector.get_map():
+            break
+    term_sent, kill_sent, descendants = _terminate_and_reap(
+        process,
+        selector,
+        output,
+        tracked_pids,
+        limits.max_output_bytes,
+    )
+    selector.close()
+    process.stdout.close()
+    process.stderr.close()
+    if descendants:
+        raise RepositoryInputError("I11_RESOURCE_REAP")
+    if violation is not None:
+        raise RepositoryInputError(violation)
+    stdout = bytes(output["stdout"])
+    stderr = bytes(output["stderr"])
     return ProcessReceipt(
         tuple(argv),
         process.returncode,
         stdout,
         stderr,
         round((time.monotonic() - started) * 1000),
+        peak_processes,
+        peak_rss_bytes,
+        created_files,
+        created_bytes,
+        term_sent,
+        kill_sent,
+        descendants,
     )
+
+
+def _file_snapshot(root: Path) -> dict[str, int]:
+    snapshot: dict[str, int] = {}
+    pending = [root]
+    while pending:
+        directory = pending.pop()
+        for entry in directory.iterdir():
+            try:
+                metadata = entry.lstat()
+            except FileNotFoundError:
+                continue
+            if stat.S_ISDIR(metadata.st_mode):
+                if entry.name not in _PROCESS_SKIPPED_DIRECTORIES:
+                    pending.append(entry)
+            elif stat.S_ISREG(metadata.st_mode):
+                snapshot[entry.relative_to(root).as_posix()] = metadata.st_size
+    return snapshot
+
+
+def _process_tree_usage(root_pid: int, known_pids: set[int]) -> tuple[int, int, set[int]]:
+    result = subprocess.run(
+        ("/bin/ps", "-axo", "pid=,ppid=,pgid=,rss=,state="),
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        timeout=2,
+        check=False,
+    )
+    rows: dict[int, tuple[int, int, int]] = {}
+    for line in result.stdout.splitlines():
+        fields = line.split()
+        if len(fields) != 5 or fields[4].startswith(b"Z"):
+            continue
+        try:
+            pid, parent_pid, process_group, rss_kib = map(int, fields[:4])
+        except ValueError:
+            continue
+        rows[pid] = (parent_pid, process_group, rss_kib)
+    observed = {
+        pid
+        for pid, (_parent_pid, process_group, _rss_kib) in rows.items()
+        if pid == root_pid or process_group == root_pid
+    }
+    observed.update(pid for pid in known_pids if pid in rows)
+    changed = True
+    while changed:
+        changed = False
+        for pid, (parent_pid, _process_group, _rss_kib) in rows.items():
+            if parent_pid in observed and pid not in observed:
+                observed.add(pid)
+                changed = True
+    rss_bytes = sum(rows[pid][2] * 1024 for pid in observed)
+    return len(observed), rss_bytes, observed
+
+
+def _signal_processes(process_group: int, pids: set[int], selected_signal: int) -> bool:
+    sent = False
+    try:
+        os.killpg(process_group, selected_signal)
+        sent = True
+    except ProcessLookupError:
+        pass
+    for pid in pids:
+        try:
+            os.kill(pid, selected_signal)
+            sent = True
+        except ProcessLookupError:
+            pass
+    return sent
+
+
+def _drain_process_pipes(
+    selector: selectors.BaseSelector,
+    output: dict[str, bytearray],
+    max_output_bytes: int,
+) -> None:
+    for key, _ in selector.select(timeout=0):
+        try:
+            chunk = os.read(key.fileobj.fileno(), 64 * 1024)
+        except BlockingIOError:
+            continue
+        if chunk:
+            _append_bounded_output(output, str(key.data), chunk, max_output_bytes)
+        else:
+            selector.unregister(key.fileobj)
+
+
+def _append_bounded_output(
+    output: dict[str, bytearray],
+    stream: str,
+    chunk: bytes,
+    max_output_bytes: int,
+) -> None:
+    retained = len(output["stdout"]) + len(output["stderr"])
+    remaining = max(0, max_output_bytes + 1 - retained)
+    output[stream].extend(chunk[:remaining])
+
+
+def _terminate_and_reap(
+    process: subprocess.Popen[bytes],
+    selector: selectors.BaseSelector,
+    output: dict[str, bytearray],
+    tracked_pids: set[int],
+    max_output_bytes: int,
+) -> tuple[bool, bool, int]:
+    term_sent = False
+    kill_sent = False
+    descendants, _rss, observed = _process_tree_usage(process.pid, tracked_pids)
+    tracked_pids.update(observed)
+    if process.poll() is None or descendants:
+        term_sent = _signal_processes(process.pid, tracked_pids, signal.SIGTERM)
+        grace_deadline = time.monotonic() + 5.0
+        while time.monotonic() < grace_deadline:
+            _drain_process_pipes(selector, output, max_output_bytes)
+            descendants, _rss, observed = _process_tree_usage(process.pid, tracked_pids)
+            tracked_pids.update(observed)
+            if process.poll() is not None and descendants == 0:
+                break
+            time.sleep(0.05)
+        descendants, _rss, observed = _process_tree_usage(process.pid, tracked_pids)
+        tracked_pids.update(observed)
+        if descendants:
+            kill_sent = _signal_processes(process.pid, tracked_pids, signal.SIGKILL)
+    try:
+        process.wait(timeout=2)
+    except subprocess.TimeoutExpired:
+        kill_sent = _signal_processes(process.pid, tracked_pids, signal.SIGKILL)
+        process.wait(timeout=2)
+    reap_deadline = time.monotonic() + 2.0
+    descendants, _rss, observed = _process_tree_usage(process.pid, tracked_pids)
+    tracked_pids.update(observed)
+    while descendants and time.monotonic() < reap_deadline:
+        _drain_process_pipes(selector, output, max_output_bytes)
+        time.sleep(0.05)
+        descendants, _rss, observed = _process_tree_usage(process.pid, tracked_pids)
+        tracked_pids.update(observed)
+    _drain_process_pipes(selector, output, max_output_bytes)
+    return term_sent, kill_sent, descendants

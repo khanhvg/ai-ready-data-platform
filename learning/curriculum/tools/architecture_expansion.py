@@ -52,11 +52,30 @@ def _toolchain_verification(
     }
     if len(hashes) != len(locked_inputs):
         raise RuntimeError("locked tool input is missing or linked")
+    render_manifest = json.loads(
+        (root_path / "architecture/expansions/i5-06/rendered/render-manifest.json").read_text()
+    )
+    view_lineage = []
+    for row in render_manifest["views"]:
+        view_lineage.append(
+            {
+                "viewId": row["viewId"],
+                "projectionSha256": row["projectionSha256"],
+                "dotSha256": row["dotSha256"],
+                "rawSvgSha256": row["rawSvgSha256"],
+                "normalizedSvgSha256": row["svgSha256"],
+                "structuredTextSha256": row["textSha256"],
+                "fittedHtmlSha256": row["fittedHtmlSha256"],
+            }
+        )
     return {
         "runtime": str(runtime),
         "interpreter": str(interpreter),
         "interpreterSha256": interpreter_digest,
         "lockedInputs": hashes,
+        "renderer": render_manifest["renderer"],
+        "toolIdentity": render_manifest["toolIdentity"],
+        "renderLineage": view_lineage,
     }
 
 
