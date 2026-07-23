@@ -1,7 +1,7 @@
 ---
 phase: 4
 title: "Stage A closed evidence and exact-head handoff"
-status: pending
+status: completed
 priority: P1
 dependencies: [3]
 effort: "L"

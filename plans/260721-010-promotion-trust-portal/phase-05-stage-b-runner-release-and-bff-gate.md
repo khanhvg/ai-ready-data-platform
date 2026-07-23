@@ -1,140 +1,61 @@
 ---
 phase: 5
 title: "Stage B runner release and BFF gate"
-status: pending
+status: completed
 priority: P1
 dependencies: [4]
-effort: "L"
+effort: "S"
 ---
 
-# Phase 5: Stage B runner release and BFF gate
-
-> Blocked: Issue #9 is OPEN and unreleased at this correction. Every Issue #9 plan/cook candidate
-> is non-release provenance. Stage B path, command, dependency, transport, execution, evidence,
-> reset, progress, and completion authorities are all `[]`.
+# Phase 5: Stage B Runner Release and BFF Gate
 
 ## Overview
 
-Fail closed on the exact released Issue #9 runner, then establish the server-only client,
-completion repository, evidence service, and crash/reconciliation seams through tests first.
-This phase is hard-blocked today and never edits runner/shared-contract source.
+Dependency and boundary discovery is complete. PR #31 shipped Stage A and PR #32 shipped the
+runner. This phase records the exact compatibility decision used by Phase 6; it performs no
+product write.
 
-## Context Links
+## Verified Dependencies
 
-- [Gate B](./dependency-and-release-gates.md#gate-b--real-journey-authority)
-- [Stage separation](./architecture-and-api-boundaries.md#stage-separation)
-- [Capability boundary](./architecture-and-api-boundaries.md#capability-boundary)
-- [S3 matrix](./threat-model-and-security.md#stride-and-negative-test-matrix)
-- [Blocked result verification](./verification-evidence-and-uat.md#blocked-fitness-result-v2-verification)
+- Portal merge: `041d4ca866e927a331e159fdf8216838b481a595`.
+- Portal reviewed head: `473f54c2e0879d3037cbed25b2e7a3f0626d558d`.
+- Runner/integration release: `671201f78024786a9f2eba5e9e5fce7c78b4443d`.
+- Runner reviewed head: `86a6c259ad384591777cf1d46f2f6c9ea6327361`.
+- Runner release gate: 66/66 = 52 RED + 14 S3.
+- Implementation base: exact integration `671201f…`.
 
-## Requirements
+## Contract Finding
 
-### Functional
+Issue #9 publishes an owner CLI and private UDS/loopback transport implementation. It does not
+publish the general learning-platform HTTP API for portal use. The safe minimal adapter is
+therefore:
 
-- Prove GB-01..GB-05 and exact #8/#9 cross-release compatibility.
-- Bind only the released #9 private client/API, registry, problems, idempotency, readiness, and
-  verified-artifact interface.
-- Implement one server-side completion/reconciliation binding exactly as the released #8
-  authority specifies, with no second progress/evidence truth.
-- Keep all runner credentials/config server-only and all browser calls same-origin.
+1. one portal-owned loopback BFF;
+2. one server-only fixed action → released operation map;
+3. one serialized owner-CLI subprocess at a time;
+4. one pending-call reconciliation path over released immutable runner evidence;
+5. one released progress/completion authority and one learning-evidence projection.
 
-### Non-functional
+The browser receives neither the runner socket/control record nor runner bearer/CSRF values. It
+cannot submit operation IDs, commands, argv, environment, paths, URLs, SQL, images, packages,
+plugins, Docker options, or cloud options.
 
-- No invented endpoint, command, registry entry, state transition, artifact path, or fallback.
-- No fake execution, synthetic success/evidence, browser-to-host command, browser-to-engine
-  authority, raw shell, or local-shell fallback.
-- Unknown/stale/mismatched API/version/status/evidence fails closed.
-- Crash, duplicate, response loss, reset/verify conflict, orphan evidence, and restart are
-  deterministic and idempotent.
-- If host containment/readiness is unavailable, retain Stage A and keep runner disabled.
+## Shared-Core Decision
 
-## Architecture
-
-One server-only BFF→runner adapter consumes the exact #9 released module or generated client path
-and authenticates over its private transport. The portal never implements runner commands. One
-completion/reconciliation binding implements the exact #8 CAS, transaction, idempotency, and
-recovery protocol; one evidence boundary accepts only verified immutable #9 handles and safe #8
-evidence metadata. Exact modules remain deferred to the later #9 amendment.
-
-## Related Code Files
-
-- Authorized Stage B create/modify/delete paths now: `[]`.
-- Authorized Stage B implementation commands now: `[]`.
-- Consumable Stage B dependency SHAs now: `[]`.
-- A later amendment may authorize only the smallest released-#9 integration subset beneath
-  `apps/learning-portal/**` (including portal tests) and the issue fragment after revalidation
-  and readiness.
-
-## Tests Before
-
-1. Add PTP-RED-B-001/010..014 and all Stage B PTP-S3 negatives.
-2. Prove current #9 planning/validation heads fail the release gate.
-3. Use the released #9 conformance/fault harness—not a fake promotion fixture—to fail
-   absent/expired auth, unknown operation, duplicate, response loss, crash, conflict, stale
-   result, orphan evidence, digest/handle/type/size mismatch, and containment-not-ready cases.
-4. Prove reflection, URL, browser state, baseline fixture, and uncommitted verifier results cannot
-   create completion.
-
-## Refactor
-
-Keep one runner client, one completion repository, one reconciliation path, and one evidence
-service. Do not wrap released types in a second domain schema or add retry abstraction beyond
-released idempotency/recovery semantics.
-
-## Tests After
-
-- GB-01..GB-05 and deterministic release bindings pass.
-- Browser bundle/network cannot observe runner transport/credential or arbitrary input.
-- Same idempotency key always returns/reconciles one committed result.
-- Portal crash/orphan reconciliation cannot grant early or duplicate completion.
-- Evidence download requires the exact verified handle/digest/size/media and safe headers.
-- Runner unavailable/containment failure falls back to Stage A without mutation.
-
-## Regression Gate
-
-Run focused client/contract/completion/evidence/S3 tests, the exact #9 conformance/security/race
-commands named by its release, #8 contract/evidence gates, #6 data-contract gates, app
-typecheck/build/audit/bundle scans, and `git diff --check`. Do not yet claim full browser journey.
-
-## Implementation Steps
-
-1. Stop unless a later amendment pins accepted Stage A, an exact reviewed/merged/pristine #9
-   release, and exact Stage B
-   file/command allow-lists, then passes fresh independent revalidation and Stage B readiness.
-2. Prove GB-01..GB-05, exact #8 compatibility, protected hashes, clean state, and lease ownership.
-3. Retain RED failures before creating any runner client or completion binding.
-4. Bind the exact #9 server client/API/registry/problem/idempotency/evidence interfaces.
-5. Add strict BFF mapping, portal session/CSRF, and runner capability/readiness reduction.
-6. Implement the exact released #8 CAS/completion transaction and startup reconciliation once,
-   using only the storage binding authorized by the amended release matrix.
-7. Implement safe verified-evidence metadata/download service without buffering unbounded bytes.
-8. Run conformance/fault/security/refactor/regression checks and emit Gate B evidence.
+No shared-core change is authorized. Phase 6 reads the released lab, lesson, progress,
+completion, and evidence contracts and invokes their existing validation/semantic functions. If
+the pinned runtime cannot import those existing functions, cook stops and reports that exact
+narrow dependency. It must not copy their logic into a second authority.
 
 ## Success Criteria
 
-- [ ] Gate B consumes one exact released #9 SHA and records all API/registry/evidence digests.
-- [ ] #9 names the exact compatible #8 release and all versions validate.
-- [ ] The browser cannot address or authenticate to the runner.
-- [ ] One #8 completion authority handles commit/reconciliation; no competing UI state exists.
-- [ ] Crash/retry/idempotency/artifact-integrity negatives pass.
-- [ ] Unsupported runner containment leaves Stage A usable and Stage B disabled.
-
-## Risk Assessment
-
-| Risk | Mitigation |
-|---|---|
-| #9 lacks required client/harness/verified handle | STOP and return upstream; no local substitute |
-| Released #8 storage binding incompatible with #7 Node | Readiness decision; exact lock; do not switch storage or duplicate authority silently |
-| BFF becomes generic runner proxy | Closed operation mapping and unknown-operation negative |
-| Orphan evidence completes on startup | Exact #8 reconciliation/quarantine tests |
-
-## Security Considerations
-
-Complete PTP-S3-01..14 with the real released transport and conformance seams. Redact bounded
-problems/logs; keep runner/session credentials distinct; require same-origin/CSRF on every
-mutation; preserve repository/home/network isolation evidence from #9.
+- [x] Stage A merge and post-merge smoke verified.
+- [x] Runner release/review/integration identities verified.
+- [x] Actual released CLI/registry/state/evidence/reset semantics inspected.
+- [x] No absent runner API assumed.
+- [x] Exact Stage B write set, commands, operations, adapter, journey, and rollback recorded.
+- [x] Phase 6 is unblocked for the bounded Stage B scope.
 
 ## Next Steps
 
-Only after the server boundary is green may Phase 6 connect real learner controls and the exact
-journey.
+Cook only Phase 6 from exact integration `671201f78024786a9f2eba5e9e5fce7c78b4443d`.

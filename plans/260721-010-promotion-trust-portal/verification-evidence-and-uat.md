@@ -1,5 +1,18 @@
 # Verification, Evidence, and UAT
 
+## Current Stage B Verification Authority
+
+The sections below preserve the exact historical Stage A proof. Stage B supersedes only the two
+formerly blocked command outcomes. Its current test portfolio and exact 15-command set are
+normative in
+[Phase 6](./phase-06-stage-b-real-journey-and-completion-integration.md#tests-before-and-after)
+and its Lane S exact-head evidence/review gate is in
+[Phase 7](./phase-07-stage-b-evidence-release-rollback-and-approval.md). Required Stage B coverage
+is request/auth/allowlist negatives, a real OrbStack operation and full fixed journey, controlled
+failure, immutable evidence, reset/idempotency, progress persistence, desktop+narrow/keyboard/axe/
+no-JS, lifecycle/process/port/container cleanup, and clean-checkout smoke. Focused review must end
+with Critical=0 and Important=0; no separate red-team/security/human ceremony is required.
+
 ## Scaffold-First TDD Rule
 
 V3 uses the exact chronology in the
@@ -57,7 +70,7 @@ path must fail at a named absent semantic after reaching the scaffold. The RED r
 - ignored/untracked/other-worktree/absolute-path fixture fallback;
 - logs generated after the matching semantic commit.
 
-`make learn`, status, and down traverse real scaffold lifecycle state. The scaffold child
+Historically, `make learn`, status, and down traversed real scaffold lifecycle state. The scaffold child
 self-expires safely; public commands report semantic readiness absent and produce current logs.
 The two Stage B commands are non-zero both before and after implementation, but RED remains until
 their stderr objects validate as exact blocked `fitness-result-v2` with zero runner action.
@@ -194,7 +207,7 @@ private loopback control listener; only the child can close its listeners and ex
 fails closed while the sentinel remains alive. Valid down proves authenticated response, listener
 closure, child exit, no owned descendant, retained evidence, and safe second down.
 
-## Blocked `fitness-result-v2` Verification
+## Historical Stage A Blocked `fitness-result-v2` Verification
 
 For each Stage B command, parse stderr as one JSON object, validate it with the exact released
 schema, independently recompute RFC 8785 payload SHA-256, verify all named hashes/artifacts and
@@ -247,7 +260,7 @@ Rollback removes only the exact 33 create-only tracked paths and owned scratch w
 evidence. It never modifies released inputs, failed PR #29, another worktree, home, containers,
 cloud, AWS, or Terraform.
 
-## Exact-Head Gate
+## Historical Stage A Exact-Head Gate
 
 Before any Stage A merge:
 
@@ -260,6 +273,5 @@ Before any Stage A merge:
 - one named human completes bounded keyboard/visual UAT and exact-head approval;
 - local, upstream, and fresh PR head match.
 
-This corrected plan satisfies none of those implementation gates. Fresh independent plan
-validation has passed, but the separate fresh readiness audit must occur before v3 cook. Stage B
-remains blocked on Issue #9 and Issue #10 stays open.
+This was the Stage A pre-merge gate and is retained for provenance. PR #31 subsequently satisfied
+the applicable focused review/tests and merged. Current Stage B exact-head authority is Phase 7.

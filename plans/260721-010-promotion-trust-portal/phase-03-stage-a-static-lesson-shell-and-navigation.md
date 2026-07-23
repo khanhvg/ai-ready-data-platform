@@ -1,7 +1,7 @@
 ---
 phase: 3
 title: "Stage A released-registry semantics and portal slice"
-status: pending
+status: completed
 priority: P1
 dependencies: [2]
 effort: "L"

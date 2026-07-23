@@ -1,5 +1,22 @@
 # Architecture and API Boundaries
 
+## Current Stage B Addendum
+
+The Stage A architecture below is shipped historical context. Current Stage B authority is the
+18-path Phase 6 amendment at integration
+`671201f78024786a9f2eba5e9e5fce7c78b4443d`: the same Node process serves the closed static
+inventory plus a small authenticated same-origin loopback BFF. The BFF maps nine fixed journey
+actions to eight exact released runner CLI operations plus one non-executing learner decision. It
+owns session/CSRF, Host/Origin/body/method/concurrency/output/time admission, progress/evidence/
+completion persistence, child lifecycle, and cleanup. Browser input cannot select an operation,
+command, argv, environment, path, URL, SQL, image, package, plugin, Docker option, or cloud option.
+
+The BFF uses the released Issue #9 owner CLI and immutable evidence store. It does not expose the
+runner's private transport, invent a runner HTTP API, parse runner SQLite, or change runner/shared
+contracts. `progress-v1`, `learning-evidence-v1`, and `learning-progress-authority-v1` remain the
+only learning truth. The exact design, operations, request schemas, and reset/completion order are
+in [Phase 6](./phase-06-stage-b-real-journey-and-completion-integration.md).
+
 ## Decision
 
 Stage A is one Vite-built React enhancement plus deterministic static documents and one minimal
@@ -20,8 +37,9 @@ exact released integration 5644f01...
   -> loopback GET/HEAD server
 ```
 
-Stage B remains a separate future architecture decision blocked on Issue #9. Nothing in Stage A
-adds a placeholder runner, probe, client, route, token, container, or browser contract.
+At the Stage A release this was intentionally static and Issue #9-blocked. That historical boundary
+remains true for the shipped Stage A commit; the current Stage B addendum above supersedes only the
+future-state column.
 
 ## Stage Separation
 
@@ -42,9 +60,10 @@ Stage A creates exactly the 33 paths in the
 and deletes no released path. Root Make remains unchanged and includes the issue-local fragment
 through its released sorted include seam.
 
-Stage B path/command/dependency authorities are `[]`. Shared contracts, released lessons,
-validators, fixtures, root files, runner source, Issue #11 curriculum, Issue #12 labs, Issue #13
-profiles, README/docs, CI, containers, cloud, AWS, and Terraform are read-only or denied.
+Stage B authority is exactly the 18 paths, 15 commands, and eight operations in Phase 6. Shared
+contracts, released lessons, validators, fixtures, root files, runner source, Issue #11
+curriculum, Issue #12 labs, Issue #13 profiles, README/docs, CI, container definitions, cloud,
+AWS, and Terraform remain read-only or denied.
 
 ## Released Descriptor Registry Admission
 

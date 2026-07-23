@@ -1,146 +1,162 @@
 # Dependency and Release Gates
 
-## Current Exact-Release State
+## Current Immutable Register
 
-Rechecked on 2026-07-23 from clean v3 correction input
-`2f278eb25aaff9e050314b01d1be155b76793f11` using fetched remote Git objects and live GitHub
-issue, pull-request, review, and release-evidence records. Dependency worktrees and ignored
-artifacts were not inputs.
+This register supersedes the pre-release Stage B rows. Historical Stage A plans/reports keep their
+original statements.
 
-| Dependency | Released/live fact | Stage consequence |
-|---|---|---|
-| Issue #6 | CLOSED/`shipped`; merge `24be3b34c6b0fcdbd07c5800dcab349054e34713` | Seven protected data/contract identities remain read-only |
-| Issue #7 | CLOSED/`shipped`; approved feature head `b219ba2d3843934c3bce2fbbec2a844b48b2dfa9`; PR #22 merge `1806b6d515f2f7a2ace2be7077af84a745ff221f` | Exact Vite/React toolchain is usable by Stage A; spike product architecture is not |
-| Issue #8 | CLOSED/`shipped`; final release merge `5644f01b4c0443a81f3af0bcce80f44c847cd986`; parents `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`, `12e17427076fb31de85534bfbbbedca7e901e76c`; handoff `5047964988` | Exact validators, contracts, binding, adapters, and fixtures are read-only Stage A authorities; shared-contract lease released |
-| Final integration | `5644f01b4c0443a81f3af0bcce80f44c847cd986`, tree `a38594d420fe7df2b30265a8a72bb5fad1698012` | Mandatory Stage A cook base |
-| Issue #9 | OPEN/`ready to cook`; remote plan head `308c736f8811ac9aeaf41ad5b27dea07d2e60b2e`; first cook stopped unchanged at `9eb31075aeb0e7b974ad15645460ab4987570f20`; no feature branch is published and no reviewed/merged/pristine release exists | No Stage B runner authority; Stage B remains blocked |
-
-The released integration has 921 tracked entries; the canonical `git ls-tree -r --full-tree`
-listing has SHA-256 `a6681b3e7ee932fbd29728bc3f649017e57e6980871a3de9def9cb3ac318d9fe`.
-The exact per-file blob, byte, and SHA-256 catalogue is in the
-[Stage A release amendment](./stage-a-release-amendment.md#released-read-only-dependency-binding).
-
-## Issue #7 Scope Reconciliation
-
-Stage A promotes only the released Node/npm/package-lock/Vite/React/Playwright/axe foundation:
-Node `22.22.3`, npm `10.9.8`, lockfile v3, Vite `8.1.5`, React/React DOM `19.2.7`, Playwright
-`1.61.1`, axe Playwright `4.12.1`, and React plugin `6.0.1` with the released transitive lock and
-integrity fields.
-
-The Issue #7 spike page, lesson contract, copied fixture, timer/score harness, retained spike
-evidence, and file layout are evidence of toolchain fitness only. They are not the portal
-architecture. Firefox/WebKit, VoiceOver/System Settings/native browser automation, performance
-sampling, timer scorecards, and Gate-D framework comparison are historical and not I5-05 gates.
-
-## Exact Implementation Authority
-
-| Stage | File authority | Command authority | Dependency authority | Cookable |
+| Dependency | Reviewed head | Released/merge SHA | Verified immutable fact | Stage B authority |
 |---|---|---|---|---|
-| A | Exactly 33 new tracked paths; no modifies/deletes | Exactly 18 release, install, test, build, audit, lifecycle, visual, and required-negative commands | Final integration plus 85 enumerated consumed paths | `true` at the published Stage A v3 readiness output |
-| B | `[]` | `[]` | `[]` | `false` |
+| Portal Stage A / PR #31 | `473f54c2e0879d3037cbed25b2e7a3f0626d558d` | `041d4ca866e927a331e159fdf8216838b481a595` | Merge tree equals reviewed tree `1ad11b31c45b282bd179f76054ad215484f81060`; focused review Critical/Important = 0; clean-checkout post-merge browser smoke PASS | Accepted portal base |
+| Runner / Issue #9 / PR #32 | `86a6c259ad384591777cf1d46f2f6c9ea6327361` | `671201f78024786a9f2eba5e9e5fce7c78b4443d` | Merge tree equals reviewed tree `e2c5166d549d5e8d4a3f6962afe0a2567f6b9566`; 66/66; all eight operations; dbt multiprocessing; evidence/reset; clean-checkout smoke; zero residue | Accepted runner release |
+| Stage B implementation base | N/A | `671201f78024786a9f2eba5e9e5fce7c78b4443d` | First parent is Stage A merge `041d4ca…`; second parent is reviewed runner head `86a6c25…` | Exact cook base |
+| Readiness audit input | N/A | `8c77957ad3be84dc97e4633cdafd898ea9e431fa` | Required clean plan input on `plan/issue-10-promotion-portal` | Amendment provenance |
 
-The exact lists in the amendment are normative. A path, command, dependency, version, route,
-operation, or artifact not listed there is denied even if it sits beneath the issue-level
-ownership ceiling.
+Live evidence:
 
-## Ownership and Writer-Overlap Decision
+- Lane S authority:
+  <https://github.com/khanhvg/ai-ready-data-platform/issues/10#issuecomment-5056144073>
+- Stage A merge and post-merge smoke:
+  <https://github.com/khanhvg/ai-ready-data-platform/issues/10#issuecomment-5056334157>
+- Runner shipped handoff:
+  <https://github.com/khanhvg/ai-ready-data-platform/issues/9#issuecomment-5056615622>
+- PR #31: <https://github.com/khanhvg/ai-ready-data-platform/pull/31>
+- PR #32: <https://github.com/khanhvg/ai-ready-data-platform/pull/32>
 
-- Stage A creates only the enumerated subset of `apps/learning-portal/**` and
-  `mk/issue-5/i5-05.mk`; root Make already includes sorted `mk/issue-5/*.mk` fragments.
-- Issue #7/#8 sources, shared contracts, root `release-manifest.json`, Issue #6 fixtures, root
-  Make, runner source, `README.md`, `docs/**`, CI, cloud, AWS, Terraform, and other issue files are
-  read-only or denied.
-- The app consumes released #8 validators and maps a closed safe view model. It does not copy,
-  reinterpret, fork, or become a second owner of shared contract truth. One validated released
-  descriptor registry drives catalog/app/router/static/React output; the app consumes the shared
-  Vite binding directly and creates no portal-local alias/mapping/schema/default-route authority.
-- A conflicting active lease, changed path, release drift, or protected-hash drift is a hard
-  STOP. No concurrency is assumed for shared surfaces.
+## Released Runner Contract
+
+The release is an owner CLI/private transport, not a portal HTTP API:
+
+- CLI: `python3.12 -m lab_runner run <closed-operation> --idempotency-key <key>`.
+- Private request schema: exactly `operationId`, `idempotencyKey`, `workspaceRevision`.
+- Registry: exactly eight zero-argument operations, 110-second execution limit each.
+- Runtime: linux/arm64, non-root `65532:65532`, read-only root, network none, all capabilities
+  dropped, no-new-privileges, 64 PIDs, 512 MiB memory/no swap, two CPUs, 256 MiB workspace.
+- Evidence: owner-private `0700` run directory containing only `0600` `result.json` and
+  `index.json`; result is at most 65,536 bytes; index binds locator, size, and SHA-256; publication
+  is atomic and immutable; reconciliation verifies exact bytes.
+- State: durable SQLite CAS plus append-only hash-chained audit; one current workspace revision;
+  same idempotency key with the same exact request replays the committed result, changed request
+  conflicts.
+- Reset: `workspace.reset` preserves runner `progress.json` and `evidence.json`, restores
+  deterministic `ready`/`small`/`42`, and runner audit/evidence history remains immutable.
+
+The portal must not call the currently unused runner loopback helper or claim the general
+learning-platform OpenAPI surface is implemented by Issue #9. The Stage B adapter invokes only
+the released owner CLI, serializes mutations, uses fixed server-owned paths/environment, captures
+bounded stdout/stderr, and reconciles any pending call from the runner's immutable evidence
+index/result before retrying.
 
 ## Gate A — Static Portal Authority
 
-Gate A is satisfied only at the published Stage A v3 readiness output. A v3 cook must begin from
-pristine `5644f01b4c0443a81f3af0bcce80f44c847cd986`, reproduce the exact correction/validation/
-readiness plan subtree, and re-prove every row before the first product write.
+Historical Gate A is completed by PR #31. Its exact 33-path/18-command/85-input recovery contract
+remains in the Stage A amendment and Phase 1–4; it is not reopened or altered by Stage B.
 
-| ID | Required proof | Failure disposition |
-|---|---|---|
-| GA-01 | #7 approval/head/merge ancestry and tree equality; exact released toolchain and lock | Stop on any identity, lock, integrity, tool, or ancestry mismatch |
-| GA-02 | #8 final release; exact shared binding/schema/adapter/invalid fixtures; contract set, registry, lesson/lab/manifest, validators, OpenAPI 16-operation matrix | Stop rather than create a local alias, mapping, schema, type, route, or operation truth |
-| GA-03 | Cook HEAD, upstream, and fresh integration ref equal the pristine integration; clean tree; no overlap | Stop on wrong base, dirty input, or lease/path conflict |
-| GA-04 | Seven Issue #6/protected identities match `requirements-and-risk-traceability.md` | Stop on byte, blob, or digest drift |
-| GA-05 | Planned and final changed paths are exactly within the 33-path allowlist | Stop on additions, modifications, deletions, generated tracked output, or root changes |
-| GA-06 | Commit chronology is exact 22-path scaffold → eight-path tests → contemporaneous RED → semantics | Stop on any early semantic, retrospective/missing real-path RED, test weakening, or v2 byte reuse |
-| GA-07 | One released descriptor registry and one closed current evidence generation | Stop on duplicate/test authority, stale/failed hash, missing sources-excluded trace, or partial publication |
+## Exact Released Operations
 
-### Gate A Claim Boundary
+| Order | Fixed portal action | Released operation ID | Required result |
+|---:|---|---|---|
+| 1 | `prepare` | `workspace.prepare` | `state=ready`, `profile=small`, `seed=42` |
+| 2 | `generate` | `retail.generate` | 18 tables and deterministic small/42 manifest |
+| 3 | `load` | `retail.load` | 18 loaded tables |
+| 4 | `build` | `retail.dbt-build` | 51 models; released `dbtRunner` path |
+| 5 | `export` | `retail.export` | validated golden release assets/manifest |
+| 6 | `fail` | `promotion.configure` | `controlledFailure=headline-revenue-overweighted` |
+| 7 | `verify` | `promotion.verify` | exact decision and both released assertions |
+| 8 | `reset` | `workspace.reset` | ready small/42 plus preserved progress/evidence |
 
-Allowed:
+Browser input may choose only the fixed portal action and, at the lesson decision step, one of
+`claim-common-grain` or `retain-independent-grains`. The controller map above is closed and
+server-owned. Unknown actions, fields, methods, paths, content types, origins, hosts, sessions,
+CSRF tokens, and concurrent mutations fail without invoking the runner.
 
-- Vietnamese-first Vite/React catalog → module → lesson → narrative-step shell.
-- One promotion-trust vertical slice derived from exact released #8 contracts.
-- Read-only history navigation, deterministic static/no-JavaScript pages, and accessibility.
-- Explicit `runner unavailable`, offline, and environmental-failure explanations.
-- Issue #6 fixture facts labelled as retained baseline reference only.
+## Promotion-Trust Binding
 
-Forbidden:
+The controlled failure is not an infrastructure failure. `promotion.configure` commits the
+released `headline-revenue-overweighted` starter and its expected
+`METRIC_REFUND_NOT_ACCOUNTED` evidence. The learner first selects `claim-common-grain`; the
+controller records that bounded learner action but does not pass it to the runner. The learner
+then fixes the decision to `retain-independent-grains`.
 
-- Importing, starting, probing, or emulating Issue #9.
-- A BFF/API, proxy, mutation route, generic command/path/URL/SQL surface, or host command exposure.
-- Execution, reset, fresh evidence, progress, completion, or course-completion claims.
-- Browser storage/cookie/session/service-worker truth, credentials, cloud action, or external
-  content fetch.
-- Copying Issue #7 spike product code or duplicating Issue #8 schema/registry/content truth.
+`promotion.verify` is admitted only after that learner action and the five deterministic
+small/42 setup operations. Verification passes only when:
+
+1. decision is exactly `insufficient-evidence/no-common-grain`;
+2. `four-independent-grains` passes with `observedCommonKeys=[]`;
+3. `METRIC_REFUND_NOT_ACCOUNTED` passes with the independent returns-grain observation;
+4. the runner result and immutable index agree on run ID, operation, revision, size, and SHA-256;
+5. released contract, fixture, verifier, portal merge, runner release, and implementation SHA
+   identities are retained in the learning-evidence envelope.
+
+Environmental errors (`RUNNER_ENGINE_UNAVAILABLE`, resource/containment failures, timeout,
+conflict, corrupt/missing evidence) are separate unavailable/error states and never satisfy the
+controlled failure or completion.
+
+## Progress, Evidence, Reset, and Completion
+
+- `progress-v1` is the only learner progress document.
+- `learning-progress-authority-v1` is the only completion authority.
+- Browser route, URL, storage, reflection, hint, displayed evidence, or raw runner result cannot
+  complete.
+- The portal progress repository persists with atomic write/fsync/rename under one owner-private,
+  fixed Issue #10 state root. Browser state is presentation-only.
+- The controller materializes one schema-valid `learning-evidence-v1` envelope from the
+  hash-verified committed `promotion.verify` result. It never edits runner evidence.
+- Evidence display is a bounded text projection of immutable fields only; no absolute locator,
+  raw environment, credential, command path, HTML, or unbounded log reaches the browser.
+- `workspace.reset` runs after evidence publication. It must return ready small/42 and confirm
+  preserved `progress.json`/`evidence.json`. Repeating the browser reset returns the stored
+  successful outcome and does not issue a second runner mutation.
+- Completion occurs only after successful verify, verified evidence publication, successful
+  truthful reset, and the learner's fixed decision. It uses expected progress revision and a
+  stable server-owned idempotency key. Repeated completion returns the stored completion.
+- A post-completion reset preserves evidence and immutable completion. Starting a new attempt
+  requires an explicit new local attempt/session in future scope; Stage B does not silently erase
+  completed truth.
+
+The only narrow shared-core dependency is read-only import of
+`scripts/learning_contracts/{canonical,schema,state,completion,evidence}.py` plus the released
+progress/completion/evidence schemas. No shared-core write is required. The portal-owned fixed
+Python adapter calls those functions; it does not clone them. If cook proves the imports cannot be
+invoked from the pinned local runtime, that exact runtime/import failure is a blocker and does not
+authorize a portal-local clone or shared-contract change.
 
 ## Gate B — Real Journey Authority
 
-Stage B stays disabled. Its file, command, and dependency lists remain empty until a separate
-exact-SHA amendment proves an accepted Stage A head and a released Issue #9 runner with its API,
-registry, transport/client, containment, idempotency, problem, reset, verifier, immutable-evidence,
-readiness, conformance, security, race, crash, cleanup, and rollback contracts. The #9 release
-must explicitly bind a compatible #8 release. Missing capability is a STOP, never an adapter
-guess or portal-owned implementation.
+Gate B is open for `stage-b-promotion-trust` only when all rows pass:
 
-The commands `make lesson-e2e LESSON=promotion-trust` and `make local-journey-e2e` are registered
-Stage B acceptance surfaces but must return non-zero `STAGE_B_DEPENDENCY_UNAVAILABLE` in Stage A
-without importing or acting on a runner.
+| ID | Predicate | Fail action |
+|---|---|---|
+| GB-01 | Cook starts at exact clean `671201f78024786a9f2eba5e9e5fce7c78b4443d` | Stop |
+| GB-02 | Changed paths equal the 18-path Phase 6 write set | Stop |
+| GB-03 | Runner release identities/image/registry/evidence semantics match this register | Stop |
+| GB-04 | Browser cannot select runner operation/host command/path/URL/SQL or obtain runner credentials | Stop |
+| GB-05 | Session cookie/capability, CSRF, Host/Origin, method/path/body/content-type/output/time/concurrency limits pass | Stop |
+| GB-06 | Real OrbStack operation and full fixed journey pass with zero container/process/port residue | Stop |
+| GB-07 | Controlled failure is distinct from environment failure and requires the learner fix | Stop |
+| GB-08 | Verify/evidence/reset/completion rules above pass, including replay/idempotency and persistence | Stop |
+| GB-09 | Desktop+narrow, keyboard/focus/live region, axe Critical/Serious=0, and truthful no-JS fallback pass | Stop |
+| GB-10 | Focused exact-head code review has Critical=0 and Important=0 | Stop |
 
-## Runtime Admission and Gate Recording
+Lane S requires no separate red-team/security/human ceremony. Functional request/auth/allowlist,
+runner containment, evidence, reset, browser, and cleanup tests are release behavior and remain
+mandatory.
 
-From a fresh checkout at the released integration, Stage A must:
+## Rollback
 
-1. recompute release ancestry, 921-entry tree, all 85 per-path blob/bytes/SHA-256 identities,
-   protected identities, command ownership, and the exact lock graph;
-2. run the released #8 `learning-contracts-check` including focused binding `11/11` and invalid
-   family `8/8`, promotion lesson check, and 16-operation API check through the admitted runtime;
-3. use frozen `npm ci --ignore-scripts --no-audit --no-fund`; after acquisition, run build and
-   focused checks without undeclared network access or package/runtime fallback;
-4. record the implementation input, dependency identities, paths, versions, tools, checks,
-   protected hashes, changed-path closure, and stable pass/failure code;
-5. keep dependency evidence distinct from learner-run evidence and human approval.
+Rollback is local and evidence-preserving:
 
-Missing cache/tool, network fallback, lifecycle-script execution, absent measurement, ignored
-failure, or alternate package manager is `fail`.
+1. authenticated `make learn-down` closes the portal/controller and child operation;
+2. wait for bounded child cleanup; prove no owned port, runner container, or pending Issue #10
+   runtime record remains;
+3. keep runner audit/evidence and portal learning evidence/progress;
+4. disable Stage B by reverting only the Phase 6 paths;
+5. rebuild and verify the merged Stage A static/no-JS route remains truthful;
+6. never delete runner state, shared evidence, unrelated artifacts, or OrbStack state.
 
-## Stage and Branch Strategy
+## Current Verdict
 
-Preserve failed PR #29, `feature/issue-10-portal-stage-a-v2`, its commits, and its evidence as
-immutable negative history. After the published readiness output only, create
-`feature/issue-10-portal-stage-a-v3` in a new worktree directly from final integration. Before the
-scaffold, seed correction subtree `92b620712d6fdbf69eb0901554dcf27ae357bc7e`, apply the exact
-validation delta to subtree `60e9f41b517cf7ecfda9f85ce5038f8fadd8d981`, then apply the exact
-readiness delta named by the handoff; prove the final subtree equals the published output and every
-diff is plan-directory-only. Never cherry-pick/copy v2
-product, tests, fixtures, logs, traces, manifests, evidence, or generated bytes.
-
-Then execute exact 22-path semantics-free scaffold, exact eight-path tests, contemporaneous real-
-path RED, first semantic, later semantic, and final commit/tree binding. The final head requires
-all gates, two fresh independent implementation reviews, bounded human UAT, and human exact-head
-approval. If Stage A later merges while Stage B is blocked, Issue #10 remains open.
-
-## Current Disposition
-
-`STAGE_A_V3_READY`: scope and released inputs remain exact and the fresh readiness audit passed
-with the two bounded plan-only corrections above. Cook scope is `stage-a-v3-static-portal` only at
-the published output. `STAGE_B_BLOCKED_ON_ISSUE9`: Stage B authority is empty. No implementation
-completion, review approval, merge, release, or Issue-completion claim follows from readiness.
+`STAGE_B_READY`: dependencies are released, the adapter is compatible with the actual CLI and
+evidence semantics, the journey is deterministic, and exact paths/commands are bounded. Cook
+scope is only `stage-b-promotion-trust`; no implementation, merge, Issue completion, or cloud
+authority follows.

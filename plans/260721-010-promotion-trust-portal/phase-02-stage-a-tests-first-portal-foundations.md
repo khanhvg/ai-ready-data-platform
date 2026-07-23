@@ -1,7 +1,7 @@
 ---
 phase: 2
 title: "Stage A complete tests and contemporaneous RED"
-status: pending
+status: completed
 priority: P1
 dependencies: [1]
 effort: "L"

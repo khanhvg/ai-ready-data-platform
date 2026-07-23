@@ -1,32 +1,67 @@
 ---
-title: "I5-05 — Promotion-trust portal vertical slice"
-description: "Recover Stage A with scaffold-first TDD, one released descriptor registry, and closed current-generation evidence while Stage B remains blocked."
-status: pending
+title: I5-05 — Promotion-trust portal vertical slice
+description: >-
+  Stage A is merged and the released runner now enables one bounded Stage B
+  promotion-trust journey.
+status: in-progress
 priority: P1
 issue: 10
-branch: "plan/issue-10-promotion-portal"
-tags: [feature, frontend, security, tdd, critical]
+branch: plan/issue-10-promotion-portal
+tags:
+  - feature
+  - frontend
+  - security
+  - tdd
+  - critical
 blockedBy: []
 blocks: []
-created: "2026-07-21T16:49:00.989Z"
-createdBy: "ck:plan"
+created: '2026-07-21T16:49:00.989Z'
+createdBy: 'ck:plan'
 source: skill
 mode: fast-tdd-no-tasks
-integrationBaseSha: "5644f01b4c0443a81f3af0bcce80f44c847cd986"
-correctionInputSha: "2f278eb25aaff9e050314b01d1be155b76793f11"
+integrationBaseSha: 671201f78024786a9f2eba5e9e5fce7c78b4443d
+correctionInputSha: 2f278eb25aaff9e050314b01d1be155b76793f11
 planningValidation: v3-independent-validation-pass
-readinessVerdict: stage-a-v3-ready
-cookScope: stage-a-v3-static-portal
+readinessVerdict: stage-b-ready
+cookScope: stage-b-promotion-trust
 dependencyIssue7: RELEASED_PR22_MERGE_1806B6D
 dependencyIssue8: RELEASED_FINAL_INTEGRATION_5644F01
-dependencyIssue9: BLOCKED_UNRELEASED
-stageAStatus: ready-to-cook
-stageBStatus: blocked-on-issue-9
+dependencyIssue9: RELEASED_PR32_MERGE_671201F
+stageAStatus: merged-pr31-post-merge-smoke-pass
+stageBStatus: ready-to-cook
+stageBReadinessInputSha: 8c77957ad3be84dc97e4633cdafd898ea9e431fa
+portalStageAMergeSha: 041d4ca866e927a331e159fdf8216838b481a595
+portalStageAReviewedHead: 473f54c2e0879d3037cbed25b2e7a3f0626d558d
+runnerReleaseSha: 671201f78024786a9f2eba5e9e5fce7c78b4443d
+runnerReviewedHead: 86a6c259ad384591777cf1d46f2f6c9ea6327361
 ---
 
 # I5-05 — Promotion-trust portal vertical slice
 
-## Overview
+## Stage B Readiness Amendment
+
+Stage A shipped through PR #31 at merge
+`041d4ca866e927a331e159fdf8216838b481a595`, reviewed head
+`473f54c2e0879d3037cbed25b2e7a3f0626d558d`, with a passing clean-checkout
+post-merge browser smoke. Issue #9 shipped through PR #32 at integration
+`671201f78024786a9f2eba5e9e5fce7c78b4443d`, reviewed head
+`86a6c259ad384591777cf1d46f2f6c9ea6327361`, with 66/66 release gates, all eight
+operations, dbt multiprocessing, clean-checkout evidence/reset smoke, and zero runner-container
+residue. The exact Stage B implementation base is `671201f…`.
+
+Lane S authorizes one local-only cook scope:
+`lesson → controlled failure → fixed released operations → verify → immutable evidence → reset →
+completion/progress`. The exact authority is the 18-path write set and 15-command set in
+[Phase 6](./phase-06-stage-b-real-journey-and-completion-integration.md). The browser submits only
+fixed journey actions and a two-value learner decision; it never supplies an operation ID,
+command, argv, environment, path, URL, SQL, image, package, plugin, or Docker option. The
+portal-owned loopback controller wraps the released owner CLI and immutable evidence store; it
+does not assert a runner HTTP API.
+
+No runner, released/shared contract, root Make, golden-data, README, docs, CI, container, cloud,
+AWS, or Terraform file is writable in this scope.
+
+## Historical Stage A Overview
 
 Recover Stage A from exact released integration
 `5644f01b4c0443a81f3af0bcce80f44c847cd986` after the independent review of failed PR #29 found
@@ -43,7 +78,9 @@ and the full product remain unavailable. Stage B remains blocked on Issue #9.
 This output now includes its fresh independent validation and readiness audit. The audit made two
 bounded plan-only corrections: a deterministic correction-subtree seed/delta proof for the fresh
 integration-based worktree, and exact Chrome 150 product/version/executable-digest admission.
-Stage A v3 is ready to cook only at the published readiness output. Stage B remains blocked.
+Stage A v3 was ready to cook only at the published readiness output and subsequently shipped as
+PR #31. Historical statements below retain their original Stage A attribution; this amendment,
+the dependency register, and Phase 6 are the current Stage B authority.
 
 ## Review Findings and Corrections
 
@@ -61,13 +98,13 @@ The normative details are in the
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 1 | [Stage A exact dependency and callable scaffold gate](./phase-01-stage-a-exact-dependency-and-contract-gate.md) | Pending |
-| 2 | [Stage A complete tests and contemporaneous RED](./phase-02-stage-a-tests-first-portal-foundations.md) | Pending |
-| 3 | [Stage A released-registry semantics and portal slice](./phase-03-stage-a-static-lesson-shell-and-navigation.md) | Pending |
-| 4 | [Stage A closed evidence and exact-head handoff](./phase-04-stage-a-bounded-verification-and-handoff.md) | Pending |
-| 5 | [Stage B runner release and BFF gate](./phase-05-stage-b-runner-release-and-bff-gate.md) | Blocked on Issue #9 |
-| 6 | [Stage B real journey and completion integration](./phase-06-stage-b-real-journey-and-completion-integration.md) | Blocked on Issue #9 |
-| 7 | [Stage B evidence release rollback and approval](./phase-07-stage-b-evidence-release-rollback-and-approval.md) | Blocked on Issue #9 |
+| 1 | [Stage A exact dependency and callable scaffold gate](./phase-01-stage-a-exact-dependency-and-contract-gate.md) | Completed |
+| 2 | [Stage A complete tests and contemporaneous RED](./phase-02-stage-a-tests-first-portal-foundations.md) | Completed |
+| 3 | [Stage A released-registry semantics and portal slice](./phase-03-stage-a-static-lesson-shell-and-navigation.md) | Completed |
+| 4 | [Stage A closed evidence and exact-head handoff](./phase-04-stage-a-bounded-verification-and-handoff.md) | Completed |
+| 5 | [Stage B runner release and BFF gate](./phase-05-stage-b-runner-release-and-bff-gate.md) | Completed by PR #32 + this audit |
+| 6 | [Stage B real journey and completion integration](./phase-06-stage-b-real-journey-and-completion-integration.md) | Ready to cook |
+| 7 | [Stage B evidence release rollback and review](./phase-07-stage-b-evidence-release-rollback-and-approval.md) | Pending Phase 6 |
 
 ## Dependencies and Recovery Input
 
@@ -86,8 +123,9 @@ The normative details are in the
   output, and every pre-scaffold delta is plan-directory-only.
 - No v2 product, test, log, trace, manifest, evidence, or generated byte may be cherry-picked,
   copied, regenerated from a v2 artifact, or used as an oracle.
-- Issue #9 is live but unreleased. Stage B file, command, dependency, transport, execution,
-  evidence, reset, progress, and completion authorities remain `[]`.
+- Current Stage B dependency and implementation authority is pinned in
+  [Dependency and Release Gates](./dependency-and-release-gates.md) and Phase 6. Historical Stage A
+  amendments/reports are records of the earlier blocked state, not current authority.
 
 ## Companion Contracts
 
@@ -107,7 +145,7 @@ The normative details are in the
 | Stage | Earliest honest claim | Prohibited claim |
 |---|---|---|
 | A | Static lesson is understandable, navigable, accessible, and truthful with runner absent | Lab ran, reset occurred, evidence is fresh, progress persisted, lesson completed, or full product exists |
-| B | None until exact released Issue #9 authority and later amendment | Any runner, execution, reset, evidence, progress, completion, container, or cloud claim |
+| B | One local promotion-trust journey using the exact released runner and learning contracts | Arbitrary runner input, browser-to-runner access, duplicate completion/evidence authority, unrelated lesson/full-product, or cloud claim |
 
 ## Stage A Invariants
 
@@ -131,10 +169,10 @@ The normative details are in the
 
 ## Ownership and Non-Overlap
 
-Issue #10 may create only the 33 paths in the amendment. Root Make, released contracts and data,
-Issue #9 runner, Issue #11 curriculum, Issue #12 labs, Issue #13 profiles, README/docs, CI,
-containers, cloud, AWS, and Terraform remain denied. Root Make already owns the sorted
-`mk/issue-5/*.mk` include seam; Stage A creates only `mk/issue-5/i5-05.mk`.
+Stage A created only its published 33 paths. Stage B may change only the 18 paths enumerated in
+Phase 6. Root Make, released contracts and data, Issue #9 runner, Issue #11 curriculum, Issue #12
+labs, Issue #13 profiles, README/docs, CI, container definitions, cloud, AWS, and Terraform remain
+denied. The only Make change is the existing Issue #10-owned `mk/issue-5/i5-05.mk` fragment.
 
 ## Validation State
 
@@ -185,11 +223,43 @@ the failed PR #29 review and cannot authorize v3.
   and the current independent validation report.
 - Unresolved contradictions permitted before publication: zero.
 
+### Session 7 — Standard-lane Stage B dependency amendment and readiness
+
+- Audit input: `8c77957ad3be84dc97e4633cdafd898ea9e431fa`.
+- Stage A: PR #31 merge `041d4ca866e927a331e159fdf8216838b481a595`, reviewed head
+  `473f54c2e0879d3037cbed25b2e7a3f0626d558d`, post-merge browser smoke PASS.
+- Runner: PR #32 integration `671201f78024786a9f2eba5e9e5fce7c78b4443d`, reviewed head
+  `86a6c259ad384591777cf1d46f2f6c9ea6327361`, release and clean-checkout smoke PASS.
+- Exact implementation base: `671201f78024786a9f2eba5e9e5fce7c78b4443d`.
+- Exact authority: 18 Stage B paths, 15 commands, eight released runner operations.
+- Adapter: portal-owned authenticated loopback BFF around the released owner CLI and immutable
+  evidence store; no invented runner API and no runner/shared-core write.
+- Journey: small/42 starter; released `headline-revenue-overweighted` controlled failure; learner
+  changes from `claim-common-grain` to `retain-independent-grains`; verify
+  `insufficient-evidence/no-common-grain` plus `METRIC_REFUND_NOT_ACCOUNTED`; display hash-verified
+  immutable evidence; run `workspace.reset`; complete once through
+  `learning-progress-authority-v1`.
+- Lane S: focused code review with Critical/Important = 0 plus functional safety tests. No
+  separate red-team/security/human ceremony.
+- Cloud action: none.
+
+### Stage B Whole-Plan Consistency Sweep
+
+- Normative files reread: `plan.md`, `dependency-and-release-gates.md`,
+  `architecture-and-api-boundaries.md`, `requirements-and-risk-traceability.md`, and all seven
+  phase files.
+- Decision deltas checked: 9.
+- Reconciled current Stage B references: dependency status, base SHA, adapter boundary, exact
+  operations, write set, commands, journey order, completion/reset rules, and Lane S review gate.
+- Historical Stage A blocked statements remain historical rather than current authority.
+- Unresolved contradictions: 0.
+
 ## Plan Exit
 
-The fresh independent readiness audit has passed after CK 4.5.2 strict validation/status,
-links/anchors, scope, command, RED, evidence, trace, protected/privacy/diff, exact-input, replay,
-resource, and live-state checks. Move Issue #10 from `ready for plan audit` to `ready to cook` only
-after the readiness output is committed, pushed, and local/upstream/live equality is proved. This
-authorizes only Stage A v3 static-portal cook; it is not implementation review, human approval,
-merge, release, Issue completion, or Stage B authority.
+The Stage B dependency amendment/readiness audit has passed after strict CK validation/status,
+links/anchors, scope, command, evidence, protected/privacy/diff, exact-input, feasibility, and
+live-state checks. Move Issue #10 to `ready to cook` only after this output is committed, pushed,
+and local/upstream/live equality is proved. Cook must begin at exact integration
+`671201f78024786a9f2eba5e9e5fce7c78b4443d`. This authorizes only
+`stage-b-promotion-trust`; it is not implementation review, merge, release, Issue completion, or
+cloud authority.

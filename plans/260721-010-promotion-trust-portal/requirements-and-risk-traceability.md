@@ -1,6 +1,22 @@
 # Requirements and Risk Traceability
 
-## Immutable and Live Inputs
+## Current Stage B Inputs
+
+| Input | Exact identity | Use |
+|---|---|---|
+| Readiness input | `8c77957ad3be84dc97e4633cdafd898ea9e431fa` | Exact clean plan-only amendment input |
+| Portal Stage A PR #31 merge | `041d4ca866e927a331e159fdf8216838b481a595` | Shipped portal and passing post-merge browser smoke |
+| Portal Stage A reviewed head | `473f54c2e0879d3037cbed25b2e7a3f0626d558d` | Focused review Critical/Important = 0 |
+| Runner PR #32 merge / implementation base | `671201f78024786a9f2eba5e9e5fce7c78b4443d` | Shipped runner and exact Stage B cook base |
+| Runner reviewed head | `86a6c259ad384591777cf1d46f2f6c9ea6327361` | 66/66, eight operations, dbt multiprocessing, clean-checkout smoke |
+| Lane | Issue #10 comment `5056144073` | Standard lean; focused review + functional safety tests |
+
+Current Stage B requirements are Phase 6's fixed journey, 18-path write set, 15 commands, eight
+released operations, authenticated loopback request contract, immutable evidence, truthful reset,
+sole progress/completion authority, browser/a11y/no-JS/lifecycle tests, and Critical/Important=0
+review. Historical Stage A rows below retain their release-time meaning and do not re-block Stage B.
+
+## Historical Stage A Inputs
 
 | Input | Exact identity | Use |
 |---|---|---|
@@ -19,7 +35,7 @@
 | Failed implementation review | PR #29 comment `5050218543`; 3 Medium findings | Invalidates prior Stage A readiness; immutable negative history |
 | Fresh recovery authorization | Issue #10 comment `5050239390` | V3 plan correction only; no cook/runner/cloud authority |
 | Live Issue #10 before correction publication | OPEN with `ready for review`, `risk:high`, `tdd`, `security:S3`, `frontend`, `accessibility`, `vertical-slice` | Must move to `ready for plan validation`, not readiness |
-| Live Issue #9 at current audit | OPEN and unreleased | Stage B blocker |
+| Live Issue #9 at the Stage A audit | OPEN and unreleased | Historical Stage A blocker; superseded by PR #32 |
 
 The [Stage A release amendment](./stage-a-release-amendment.md) is the normative byte/path/command
 closure. The prior validation and blocked audit remain historical evidence; they do not override
@@ -63,7 +79,7 @@ may not imply a causal join, execute the failure, or relabel retained fixture ev
 | PTP-FR-06 | Read-only navigation, back/forward/reload, and no-JS pages never mutate or progress | A | router + browser/network/storage tests |
 | PTP-FR-07 | Runner is explicitly unavailable; run/reset/verify are explanatory and completion impossible | A | DOM/bundle/import/request negatives |
 | PTP-FR-08 | Later released #11/#12 content enters only through hash-bound released registry/binding entries without content-ID code switches | A seam only | current released descriptor + branded test-only metamorphic pure-function tests + production rejection/absence |
-| PTP-FR-09 | Execute/reset/fresh-verify/evidence/completion journey only through released #9 | B | blocked; no Stage A implementation |
+| PTP-FR-09 | Execute/reset/fresh-verify/evidence/completion journey only through released #9 | B | Phase 6 fixed real-runner journey |
 | PTP-FR-10 | Start/status/down control only the Stage A static process and preserve review artifacts | A | lifecycle/PID/path/cleanup tests |
 | PTP-NFR-01 | Exact #7 Vite/React lock and exact #8 validators/contracts/shared binding; no duplicated truth | A | shared binding + released-adapter mutation tests |
 | PTP-NFR-02 | One loopback GET/HEAD static process plus private authenticated child-control listener; no product API/BFF/database/runner/service worker | A | closed request inventory + no-PID-signal lifecycle tests |
@@ -74,7 +90,7 @@ may not imply a causal join, execute the failure, or relabel retained fixture ev
 | PTP-NFR-07 | One process/worker, exact same-run Playwright/Chrome identity, and exact time/file/byte/artifact/current-generation/trace ceilings | A | browser-admission/lifecycle/build/evidence/trace/output-limit tests |
 | PTP-NFR-09 | Scaffold/tests/RED/first-semantic/final commits and trees are contemporaneously bound | A | Git ancestry + raw/sanitized log manifests |
 | PTP-NFR-10 | One atomic current generation verifies all non-self hashes and classifies stale/interrupted generations as negative history | A | closure/interruption/ignored-inclusive tests |
-| PTP-NFR-08 | Human visual/keyboard review and exact-head approval remain release gates, not automated claims | Release | bounded checklist + GitHub record |
+| PTP-NFR-08 | Lane S requires focused exact-head review with Critical/Important=0; no separate human/security/red-team ceremony | Release | focused review + functional safety tests |
 
 ## Source-to-Plan Trace
 
@@ -95,31 +111,32 @@ may not imply a causal join, execute the failure, or relabel retained fixture ev
 | PTP-R-02 | Issue #7 spike becomes portal architecture | Brittle duplicate product | Promote exact toolchain/lock only; purpose-built catalog/provider/router/render seams |
 | PTP-R-03 | Static fixture looks like a fresh completed run | False learner trust | retained-baseline label; no action/completion/evidence control |
 | PTP-R-04 | Cross-grain display implies causality | Wrong business decision | adjacent independent-grain limitations and exact decision tests |
-| PTP-R-05 | Browser or static server grows privileged surface | command execution/XSS/state forgery | GET/HEAD only, no BFF/API/storage/runner, strict CSP/Host/path limits |
+| PTP-R-05 | Browser or BFF grows a generic privileged surface | command execution/XSS/state forgery | fixed action map, session/CSRF, exact Host/Origin/body/method limits, no browser runner authority |
 | PTP-R-06 | Static/React/router route truth diverges | Inconsistent no-JS experience | one released registry, catalog and route derivation, stable fact IDs |
 | PTP-R-07 | #11/#12 require hard-coded switches | Curriculum growth stalls | family-driven released registry plus test-only metamorphic proof; no invented release |
 | PTP-R-08 | Dependency or contract downgrade | Unsafe/incorrect render | exact paths/hashes/versions/validators; unknowns fail before build |
 | PTP-R-09 | Mutable lifecycle state targets foreign process/path | Irrecoverable state loss | child-held capability/self-shutdown, no PID signal, containment/sentinel negatives |
-| PTP-R-10 | Visual/a11y scope becomes ceremony or overclaim | delay/false conformance | one Chromium desktop+narrow, axe Critical/Serious, bounded residual human UAT |
+| PTP-R-10 | Visual/a11y scope becomes ceremony or overclaim | delay/false conformance | one Chromium desktop+narrow, keyboard, axe Critical/Serious, no-JS; no separate ceremony |
 | PTP-R-11 | Package lock or supply chain drifts | unreproducible/unsafe build | exact transitive lock, frozen install, no scripts, audit gate |
-| PTP-R-12 | Stage A is mistaken for completed Issue #10 | Premature closure | explicit non-execution/non-completion claim; Issue remains open; Stage B blocked |
+| PTP-R-12 | Stage A is mistaken for completed Issue #10 | Premature closure | Issue stays open until Stage B merges and post-merge smoke passes |
 | PTP-R-13 | RED is reconstructed after semantics | False TDD provenance | exact scaffold/tests commit ancestry and contemporaneous raw/sanitized logs |
 | PTP-R-14 | Stale or partial evidence is selected | False exact-head proof | selector-written-last atomic publication, non-self closure, negative history |
 
 ## Hard STOP Conditions
 
-- Cook does not start from clean exact `5644f01b4c0443a81f3af0bcce80f44c847cd986`, or local,
+- Stage B cook does not start from clean exact `671201f78024786a9f2eba5e9e5fce7c78b4443d`, or local,
   upstream, and fresh integration disagree.
 - Any release ancestry/tree/path/blob/byte/hash/version/registry/operation/lock/protected identity
   differs from the amendment.
-- Any change falls outside the 33 Stage A paths, modifies/deletes a released path, or overlaps an
-  active owner.
+- Any Stage B change falls outside the exact 18 Phase 6 paths, changes package-lock/dependencies,
+  modifies runner/shared/root-Make/golden truth, deletes a path, or overlaps an active owner.
 - Scaffold chronology is not exact 22 paths then eight tests; RED is retrospective, missing a real
   Chromium/public path, or fails for setup/forced/mock/skip/fallback reasons.
 - A portal-local binding, alias/mapping table, copied binding schema, generated binding type,
   duplicate default catalog/step routes, promotion switch, test descriptor in production, or
   invented module/identifier/release truth appears.
-- Any Stage A runner/BFF/API/mutation/storage/credential/cloud/host-command capability appears.
+- Browser input reaches a runner credential/transport or selects operation/command/argv/env/path/
+  URL/SQL/image/package/plugin/Docker/cloud authority.
 - Lifecycle signals a mutable recorded PID; blocked Stage B output fails released
   `fitness-result-v2`; build/request inventory is open; runtime/lock/env admission drifts.
 - Any current evidence entry/hash/privacy/count/size/aggregate/binding fails; trace is missing,
@@ -128,7 +145,8 @@ may not imply a causal join, execute the failure, or relabel retained fixture ev
   channel, differs from Chrome `150.0.7871.181` / executable SHA-256
   `b724a4c5603cfc8b9d9f27a5153c8a39e7133e53666ced7f2a8b03bf49484f85`, or author-generated
   evidence is mislabeled as independent/human-approved.
-- A required test/tool/measurement is absent; audit has High/Critical; axe has Critical/Serious;
+- A required test/tool/measurement is absent; focused review has Critical/Important; axe has
+  Critical/Serious;
   S3, cleanup, protected hash, private-locator/PII/raw-record/source-map/remote-import scan, or
   exact-head review fails.
 - Controlled and environmental failure are conflated; four-grain/canonical-decision semantics or
@@ -138,6 +156,7 @@ may not imply a causal join, execute the failure, or relabel retained fixture ev
 
 ## Unresolved Questions
 
-None for this correction. It requires a fresh independent validation and then a separate fresh
-readiness audit. Stage B identities and allowlists remain absent because Issue #9 is unreleased;
-that absence blocks Stage B and does not weaken Stage A.
+None. Exact released dependencies, implementation base, paths, commands, operations, adapter,
+journey, acceptance, and rollback are specified. If the pinned local runtime cannot import the
+released progress/completion/evidence functions, cook must report that narrow dependency rather
+than clone or modify shared authority.
