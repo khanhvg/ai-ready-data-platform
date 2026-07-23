@@ -3,7 +3,7 @@
   "cookInputSha": "f6791555dc8b2ada6fa44747ca829a3d9cd87667",
   "integrationReleaseSha": "5644f01b4c0443a81f3af0bcce80f44c847cd986",
   "releasedStageASha": "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9",
-  "imageDigest": "sha256:48cd9943f975544310fdbb545a2d53528752b286685a13ceae9f4cd1fd657113",
+  "imageDigest": "sha256:04e43dfa45234a64e936fd8e98f56f69e584296df5eed525aa26c9a9abdb652b",
   "platform": "linux/arm64",
   "user": "65532:65532",
   "workdir": "/workspace",
@@ -24,16 +24,16 @@
   "sbom": {
     "format": "SPDX-2.3",
     "packages": 61,
-    "sha256": "3644a27f994f9c0723cefc192f631df1a4defb6f3f48f69526240a2395f6bfd1"
+    "sha256": "6fc4e89f5c51eb565e402a380c82b567b1f6b781d0954e7f86468fb8d32ebb22"
   },
   "vulnerability": {
     "scanner": "grype@0.116.0",
     "databaseSchema": "v6.1.9",
     "databaseBuilt": "2026-07-22T07:06:24Z",
-    "scanSha256": "dc10928497f73bb5a58a407cf208492a3f6ebf4f751810f44d4f9d0ef224d398",
+    "scanSha256": "ba81f8532d0093a725c79b75ae3343f021d174e1132c30075fea4d890bb5fbe9",
     "scannerCriticalHigh": 10,
     "openVexNotAffected": 10,
-    "openVexSha256": "12621f69349d1e09142d5bcd942ab28ef0e6d5e0b1754f075e0bbf50ad52eabc",
+    "openVexSha256": "8e2d854f5e42691382689082350b7bcba7fb623aba6f66345f0197e5d307a502",
     "unresolvedCriticalHigh": 0
   },
   "operations": [
@@ -46,8 +46,8 @@
     "promotion.verify",
     "workspace.reset"
   ],
-  "imageManifestDigest": "sha256:48cd9943f975544310fdbb545a2d53528752b286685a13ceae9f4cd1fd657113",
-  "imageConfigDigest": "sha256:c4dfa60bfbf90048f7a8ac6ac5cad8d0d18200e51744aa4054096ff4be46821e",
+  "imageManifestDigest": "sha256:04e43dfa45234a64e936fd8e98f56f69e584296df5eed525aa26c9a9abdb652b",
+  "imageConfigDigest": "sha256:3e7adaf4dc940e67a36eea9776b8862c8d63ea443700287797d2a1b14b62bcf4",
   "seccompSha256": "ad19b56e07dd87ad4375c1ecbc600704767308520290e17bb00cf04fdce54fc5",
   "assetResults": [
     {
@@ -103,7 +103,7 @@
   },
   "provenance": {
     "format": "runner-build-provenance-v1",
-    "sha256": "0b795697a649734aefa9d781f3f520f2a83c0f083044a4f6d415e4f3601711a8"
+    "sha256": "324959c972b534518c914b4fe398d7be548b9ac29f542e5ceb76a0447473964c"
   },
   "licenses": {
     "pythonPackages": 55,
