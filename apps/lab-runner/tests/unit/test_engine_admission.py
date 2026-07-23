@@ -20,10 +20,10 @@ class RedPublicPathTest(unittest.TestCase):
         from lab_runner.engine import EngineError
 
         class AmbiguousEngine:
-            def admit(self):
+            def admit(self, *, timeout=30):
                 return {"ID":"d"*32}
 
-            def inspect_optional(self, _container_id):
+            def inspect_optional(self, _container_id, *, timeout=30):
                 raise EngineError("RUNNER_ENGINE_OPERATION_FAILED")
 
         class RecordingStore:
