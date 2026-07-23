@@ -5,7 +5,7 @@
   "owner": "I5-05",
   "fragment": {
     "path": "mk/issue-5/i5-05.mk",
-    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    "sha256": "dc7c5027c783d9716d1f63f3f4ba998a860aea792410cb629b7c4fd40bfc4d1b"
   },
   "commands": [
     {"commandId": "learn", "availability": "implemented", "evidenceVersion": "fitness-result-v2"},

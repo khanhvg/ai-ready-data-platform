@@ -31,7 +31,7 @@ portal-visual-review:
 
 lesson-e2e:
 	@test -n "$(value LESSON)" || (echo "LESSON is required" >&2; exit 2)
-	@node $(PORTAL_ROOT)/scripts/portal-lifecycle.mjs blocked
+	@node $(PORTAL_ROOT)/scripts/portal-lifecycle.mjs blocked lesson-e2e
 
 local-journey-e2e:
-	@node $(PORTAL_ROOT)/scripts/portal-lifecycle.mjs blocked
+	@node $(PORTAL_ROOT)/scripts/portal-lifecycle.mjs blocked local-journey-e2e

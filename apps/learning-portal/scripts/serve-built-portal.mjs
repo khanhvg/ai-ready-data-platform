@@ -1,7 +1,7 @@
-import { createHash, randomUUID } from 'node:crypto';
+import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import { createServer } from 'node:http';
-import { chmod, mkdir, readFile, stat, writeFile } from 'node:fs/promises';
-import { dirname, extname, resolve, sep } from 'node:path';
+import { chmod, mkdir, open, readdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
+import { dirname, extname, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const appRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -11,6 +11,15 @@ const fixedTestPort = process.env.PORTAL_FIXED_TEST_PORT
   ? Number.parseInt(process.env.PORTAL_FIXED_TEST_PORT, 10)
   : 0;
 const semanticReady = false;
+const capability = randomBytes(32).toString('hex');
+const instanceNonce = randomUUID();
+const MAX_FILES = 128;
+const MAX_FILE_BYTES = 1024 * 1024;
+const MAX_TOTAL_BYTES = 16 * 1024 * 1024;
+
+function sha256(bytes) {
+  return createHash('sha256').update(bytes).digest('hex');
+}
 
 function contentType(pathname) {
   return new Map([
@@ -22,17 +31,86 @@ function contentType(pathname) {
   ]).get(extname(pathname)) ?? 'application/octet-stream';
 }
 
-function resolveRequestPath(url) {
-  const pathname = new URL(url, 'http://127.0.0.1').pathname;
-  const relative = pathname === '/' ? 'index.html' : pathname.replace(/^\/+/, '');
-  const candidate = resolve(distRoot, relative);
-  if (candidate !== distRoot && !candidate.startsWith(`${distRoot}${sep}`)) return null;
-  return candidate;
+async function buildInventory() {
+  const rows = [];
+  async function walk(directory) {
+    for (const entry of await readdir(directory, { withFileTypes: true })) {
+      const path = resolve(directory, entry.name);
+      if (entry.isDirectory()) {
+        await walk(path);
+        continue;
+      }
+      const metadata = await stat(path, { bigint: false });
+      if (
+        !entry.isFile() ||
+        !metadata.isFile() ||
+        metadata.nlink !== 1 ||
+        (metadata.mode & 0o111) !== 0 ||
+        metadata.size > MAX_FILE_BYTES ||
+        path.endsWith('.map')
+      ) throw new Error('PORTAL_BUILD_INVENTORY_INVALID');
+      const bytes = await readFile(path);
+      rows.push({
+        relativePath: relative(distRoot, path).split(sep).join('/'),
+        path,
+        bytes: bytes.length,
+        sha256: sha256(bytes),
+        mediaType: contentType(path)
+      });
+    }
+  }
+  await walk(distRoot);
+  if (
+    rows.length === 0 ||
+    rows.length > MAX_FILES ||
+    rows.reduce((sum, row) => sum + row.bytes, 0) > MAX_TOTAL_BYTES
+  ) throw new Error('PORTAL_BUILD_INVENTORY_INVALID');
+  return new Map(rows.map((row) => [row.relativePath, Object.freeze(row)]));
 }
 
+function resolveInventoryKey(rawTarget) {
+  if (
+    typeof rawTarget !== 'string' ||
+    rawTarget.length === 0 ||
+    rawTarget.length > 2048 ||
+    rawTarget.includes('\\') ||
+    rawTarget.includes('%') ||
+    rawTarget.includes('\0') ||
+    rawTarget.includes('//')
+  ) return undefined;
+  const queryIndex = rawTarget.indexOf('?');
+  const pathname = queryIndex === -1 ? rawTarget : rawTarget.slice(0, queryIndex);
+  if (pathname.split('/').some((part) => part === '.' || part === '..')) return undefined;
+  const relativePath = pathname === '/' ? 'index.html' : pathname.replace(/^\/+/, '');
+  return relativePath.endsWith('/') ? `${relativePath}index.html` : relativePath;
+}
+
+function authenticated(request) {
+  const suppliedNonce = request.headers['x-portal-instance'];
+  const authorization = request.headers.authorization;
+  if (
+    typeof suppliedNonce !== 'string' ||
+    suppliedNonce !== instanceNonce ||
+    typeof authorization !== 'string' ||
+    !authorization.startsWith('Bearer ')
+  ) return false;
+  const supplied = Buffer.from(authorization.slice(7));
+  const expected = Buffer.from(capability);
+  return supplied.length === expected.length && timingSafeEqual(supplied, expected);
+}
+
+const inventory = await buildInventory();
 const publicServer = createServer(async (request, response) => {
   const host = request.headers.host;
   if (!['127.0.0.1', `127.0.0.1:${fixedTestPort}`].includes(host) && !/^127\.0\.0\.1:\d+$/.test(host ?? '')) {
+    response.writeHead(400).end();
+    return;
+  }
+  if (
+    (request.headers['content-length'] !== undefined &&
+      request.headers['content-length'] !== '0') ||
+    request.headers['transfer-encoding'] !== undefined
+  ) {
     response.writeHead(400).end();
     return;
   }
@@ -40,20 +118,39 @@ const publicServer = createServer(async (request, response) => {
     response.writeHead(405).end();
     return;
   }
-  const target = resolveRequestPath(request.url ?? '/');
-  if (!target) {
+  const key = resolveInventoryKey(request.url ?? '/');
+  if (!key) {
+    response.writeHead(400).end();
+    return;
+  }
+  const row = inventory.get(key);
+  if (!row) {
     response.writeHead(404).end();
     return;
   }
   try {
-    const metadata = await stat(target);
-    const finalTarget = metadata.isDirectory() ? resolve(target, 'index.html') : target;
-    const bytes = await readFile(finalTarget);
+    const handle = await open(row.path, 'r');
+    let bytes;
+    try {
+      const metadata = await handle.stat();
+      if (!metadata.isFile() || metadata.nlink !== 1 || metadata.size !== row.bytes) {
+        response.writeHead(409).end();
+        return;
+      }
+      bytes = await handle.readFile();
+    } finally {
+      await handle.close();
+    }
+    if (sha256(bytes) !== row.sha256) {
+      response.writeHead(409).end();
+      return;
+    }
     response.writeHead(200, {
-      'content-type': contentType(finalTarget),
+      'content-type': row.mediaType,
       'content-length': bytes.length,
       'content-security-policy': "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'; worker-src 'none'",
-      'x-content-type-options': 'nosniff'
+      'x-content-type-options': 'nosniff',
+      'referrer-policy': 'no-referrer'
     });
     response.end(request.method === 'HEAD' ? undefined : bytes);
   } catch {
@@ -66,14 +163,18 @@ const controlServer = createServer((request, response) => {
     response.writeHead(400).end();
     return;
   }
+  if (!authenticated(request)) {
+    response.writeHead(403).end();
+    return;
+  }
   if (request.url === '/_control/status') {
-    const bytes = JSON.stringify({ state: 'running', semanticReady });
-    response.writeHead(200, { 'content-type': 'application/json' }).end(bytes);
+    const bytes = JSON.stringify({ state: 'running', semanticReady, instanceNonce });
+    response.writeHead(200, { 'content-type': 'application/json', 'content-length': Buffer.byteLength(bytes) }).end(bytes);
     return;
   }
   if (request.url === '/_control/stop') {
-    const bytes = JSON.stringify({ state: 'stopping', semanticReady });
-    response.writeHead(200, { 'content-type': 'application/json' }).end(bytes);
+    const bytes = JSON.stringify({ state: 'stopping', semanticReady, instanceNonce });
+    response.writeHead(200, { 'content-type': 'application/json', 'content-length': Buffer.byteLength(bytes) }).end(bytes);
     publicServer.close();
     controlServer.close();
     return;
@@ -83,22 +184,22 @@ const controlServer = createServer((request, response) => {
 
 await new Promise((resolveListen) => publicServer.listen(fixedTestPort, '127.0.0.1', resolveListen));
 await new Promise((resolveListen) => controlServer.listen(0, '127.0.0.1', resolveListen));
-const publicPort = publicServer.address().port;
-const controlPort = controlServer.address().port;
-const instanceNonce = randomUUID();
 const record = {
-  schemaVersion: 'portal-scaffold-control-v1',
+  schemaVersion: 'portal-stage-a-control-v1',
   instanceNonce,
-  publicPort,
-  controlPort,
+  capability,
+  publicPort: publicServer.address().port,
+  controlPort: controlServer.address().port,
   semanticReady,
-  pid: process.pid,
-  executableDigest: createHash('sha256').update(process.execPath).digest('hex')
+  executableDigest: sha256(await readFile(process.execPath))
 };
 
 if (lifecycleControlPath) {
   await mkdir(dirname(lifecycleControlPath), { recursive: true, mode: 0o700 });
-  await writeFile(lifecycleControlPath, `${JSON.stringify(record)}\n`, { mode: 0o600 });
+  await chmod(dirname(lifecycleControlPath), 0o700);
+  const pendingPath = `${lifecycleControlPath}.${instanceNonce}.pending`;
+  await writeFile(pendingPath, `${JSON.stringify(record)}\n`, { mode: 0o600, flag: 'wx' });
+  await rename(pendingPath, lifecycleControlPath);
   await chmod(lifecycleControlPath, 0o600);
   setTimeout(() => {
     publicServer.close();
