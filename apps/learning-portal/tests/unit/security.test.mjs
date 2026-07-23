@@ -29,15 +29,21 @@ async function waitForRecord(pathname) {
   throw new Error('server control record was not written');
 }
 
-function controlRequest(record, pathname) {
+function controlRequest(record, pathname, authenticate = false) {
   return new Promise((resolveRequest, reject) => {
+    const authenticationHeaders = authenticate
+      ? {
+          'x-portal-instance': record.instanceNonce,
+          authorization: `Bearer ${record.capability}`
+        }
+      : {};
     const request = http.request(
       {
         host: '127.0.0.1',
         port: record.controlPort,
         path: pathname,
         method: 'POST',
-        headers: { 'content-length': '0' }
+        headers: { 'content-length': '0', ...authenticationHeaders }
       },
       (response) => {
         response.resume();
@@ -93,9 +99,9 @@ async function withServer(run) {
     await run(record, controlPath);
   } finally {
     try {
-      await controlRequest(record, '/_control/stop');
+      await controlRequest(record, '/_control/stop', true);
     } catch {
-      // The scaffold also self-expires; cleanup never signals a mutable recorded PID.
+      // A test may already have completed authenticated self-shutdown.
     }
     await new Promise((resolveExit) => {
       if (child.exitCode !== null) resolveExit();
@@ -128,6 +134,29 @@ test('PTP-RED-A-024 lifecycle record is owner-private, authenticated, nonce-boun
     assert.match(record.instanceNonce, /^[0-9a-f-]{36}$/);
     assert.match(record.capability, /^[0-9a-f]{64}$/, 'PTP_RED_LIFECYCLE_AUTH_ABSENT');
     assert.equal(Object.hasOwn(record, 'pid'), false, 'PTP_RED_LIFECYCLE_AUTH_ABSENT');
+  });
+});
+
+test('authenticated lifecycle stays available until shutdown and removes its owned control record', async () => {
+  await withServer(async (record, controlPath) => {
+    await new Promise((resolveWait) => setTimeout(resolveWait, 12_250));
+    assert.equal((await rawRequest(record)).status, 200, 'PTP_RED_LIFECYCLE_AUTH_ABSENT');
+    assert.equal(
+      await controlRequest(record, '/_control/stop', true),
+      200,
+      'PTP_RED_LIFECYCLE_AUTH_ABSENT'
+    );
+    const deadline = Date.now() + 2_000;
+    while (Date.now() < deadline) {
+      try {
+        await lstat(controlPath);
+        await new Promise((resolveWait) => setTimeout(resolveWait, 25));
+      } catch (error) {
+        assert.equal(error?.code, 'ENOENT');
+        return;
+      }
+    }
+    assert.fail('owned lifecycle control record remained after shutdown');
   });
 });
 

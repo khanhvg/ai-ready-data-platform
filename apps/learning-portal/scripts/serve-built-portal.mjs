@@ -1,6 +1,6 @@
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import { createServer } from 'node:http';
-import { chmod, lstat, readdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
+import { chmod, lstat, readdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { dirname, extname, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -168,9 +168,16 @@ const controlServer = createServer((request, response) => {
   }
   if (request.url === '/_control/stop') {
     const bytes = JSON.stringify({ state: 'stopping', semanticReady, instanceNonce });
-    response.writeHead(200, { 'content-type': 'application/json', 'content-length': Buffer.byteLength(bytes) }).end(bytes);
-    publicServer.close();
-    controlServer.close();
+    response
+      .writeHead(200, {
+        'content-type': 'application/json',
+        'content-length': Buffer.byteLength(bytes)
+      })
+      .end(bytes, () => {
+        void shutdown().catch(() => {
+          process.exitCode = 1;
+        });
+      });
     return;
   }
   response.writeHead(404).end();
@@ -178,6 +185,29 @@ const controlServer = createServer((request, response) => {
 
 await new Promise((resolveListen) => publicServer.listen(fixedTestPort, '127.0.0.1', resolveListen));
 await new Promise((resolveListen) => controlServer.listen(0, '127.0.0.1', resolveListen));
+
+let shutdownPromise;
+function closeServer(server) {
+  return new Promise((resolveClose, reject) => {
+    if (!server.listening) {
+      resolveClose();
+      return;
+    }
+    server.close((error) => {
+      if (error) reject(error);
+      else resolveClose();
+    });
+  });
+}
+
+function shutdown() {
+  shutdownPromise ??= (async () => {
+    await Promise.all([closeServer(publicServer), closeServer(controlServer)]);
+    if (lifecycleControlPath) await rm(lifecycleControlPath, { force: true });
+  })();
+  return shutdownPromise;
+}
+
 const record = {
   schemaVersion: 'portal-stage-a-control-v1',
   instanceNonce,
@@ -207,10 +237,6 @@ if (lifecycleControlPath) {
   await writeFile(pendingPath, `${JSON.stringify(record)}\n`, { mode: 0o600, flag: 'wx' });
   await rename(pendingPath, lifecycleControlPath);
   await chmod(lifecycleControlPath, 0o600);
-  setTimeout(() => {
-    publicServer.close();
-    controlServer.close();
-  }, 12_000).unref();
 } else {
   process.stdout.write(`${JSON.stringify(record)}\n`);
 }
