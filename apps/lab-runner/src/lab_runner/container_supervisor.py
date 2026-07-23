@@ -1,6 +1,6 @@
 """PID-namespace supervisor and subreaper for one fixed semantic operation."""
 from __future__ import annotations
-import ctypes, hashlib, io, json, os, pathlib, resource, runpy, selectors, signal, struct, sys, tarfile, time
+import ctypes, hashlib, io, json, os, pathlib, resource, runpy, selectors, signal, struct, sys, tarfile, threading, time
 from .archive import extract_tar
 from .container_protocol import write
 from .operation_adapters import execute
@@ -103,6 +103,7 @@ def _main(operation:str,fixture:tuple[str,tuple[str,...]]|None=None,execute_seco
             resource.setrlimit(resource.RLIMIT_FSIZE,(134217728,134217728))
             resource.setrlimit(resource.RLIMIT_AS,(536870912,536870912))
             resource.setrlimit(resource.RLIMIT_NOFILE,(256,256))
+            threading.stack_size(1048576)
             result=_fixture(*fixture) if fixture is not None else execute(operation)
             (RUN/"worker-result.json").write_text(json.dumps(result,sort_keys=True,separators=(",",":"))+"\n")
             os._exit(0)
