@@ -46,7 +46,7 @@ from lab_runner.engine import Engine, EngineError
 from lab_runner.evidence import write as write_evidence
 from lab_runner.fence import acquire
 from lab_runner.registry import RegistryError, operation_ids, validate_request
-from lab_runner.release import ASSETS,validate as validate_release
+from lab_runner.release import ASSETS,manifest_bytes,publish as publish_release,validate as validate_release
 from lab_runner.service import RunnerService
 from lab_runner.state import StateError, Store
 from lab_runner.transport import TransportError, admit
@@ -326,6 +326,19 @@ class Gate:
             try: self.remove_test_container(cid)
             except EngineError: pass
 
+    def production_timeout(self) -> dict[str, object]:
+        root=self.root/"production-timeout";store=Store(root/"state");backend=Backend(self.engine,self.image,APP/"container/seccomp-runner-v1.json",root/"staging",store)
+        request=validate_request({"operationId":"workspace.prepare","idempotencyKey":"production-timeout-exact","workspaceRevision":0});admission=store.admit(request,9001);original=backend._spec
+        def fixture_spec(run_id:str,fence:int,operation_id:str,daemon_identity:str|None=None)->list[str]:
+            spec=original(run_id,fence,operation_id,daemon_identity);code="from lab_runner.container_supervisor import main_fixture;raise SystemExit(main_fixture('reparent_setsess_daemon.py',(),110))"
+            return [*spec[:-2],"--entrypoint","python3.12",self.image,"-I","-c",code]
+        backend._spec=fixture_spec  # type: ignore[method-assign]
+        archive=root/"input.tar";archive.parent.mkdir(mode=0o700,parents=True,exist_ok=True)
+        with tarfile.open(archive,"w"):pass
+        started=time.monotonic_ns();expect_error(EngineError,"RUNNER_TIMEOUT",lambda:backend.execute(admission.run_id,9001,"workspace.prepare",archive));duration=time.monotonic_ns()-started
+        if not 110_000_000_000<=duration<=120_000_000_000 or not self._no_runner_containers():raise AssertionError("production deadline")
+        return {"wallDurationNs":duration,"authority":"Backend.execute","containerAbsent":True,"deadlineSeconds":120}
+
     def direct(self, command: list[str]) -> dict[str, object]:
         run_id = hashlib.sha256(f"direct:{command}:{time.time_ns()}".encode()).hexdigest()[:32]
         spec = self.fixture_backend._spec(run_id, 1, "workspace.prepare")
@@ -358,10 +371,7 @@ class Gate:
         self.record("RED-PID-005", lambda: observations["fork_bomb.py:"] if 2 <= protocol("fork_bomb.py").get("descendantPeak", 0) <= 64 else (_ for _ in ()).throw(AssertionError("pids limit")))
         self.record("RED-PID-006", lambda: {"protocol":protocol("rapid_double_fork.py"),"containerAbsent":self._no_runner_containers(),"authority":"container-remove"} if protocol("rapid_double_fork.py").get("failureCode")=="RUNNER_DESCENDANT_SURVIVOR" and self._no_runner_containers() else (_ for _ in ()).throw(AssertionError("polling changed authority")))
 
-        timeout_started=time.monotonic_ns();exact_timeout = self.supervised("reparent_setsess_daemon.py", (), 110);timeout_duration=time.monotonic_ns()-timeout_started
-        exact_protocol = dict(exact_timeout.get("protocol") or {})
-        exact_timeout["wallDurationNs"]=timeout_duration
-        self.record("RED-TIM-001", lambda: exact_timeout if exact_protocol.get("failureCode") == "RUNNER_TIMEOUT" and 110_000_000_000<=timeout_duration<=120_000_000_000 else (_ for _ in ()).throw(AssertionError("deadline")))
+        self.record("RED-TIM-001",self.production_timeout)
 
         network = self.direct(["/opt/runner-fixtures/network_probe.py"])
         network_result = json.loads(str(network["stdout"]))
@@ -447,8 +457,9 @@ class Gate:
         export=next(row for row in results if row["operationId"]=="retail.export")
         if [row["assetId"] for row in export["result"]["assets"]] != list(ASSETS):raise AssertionError("release order")
         if export.get("releaseAssets")!=export["result"]["assets"]:raise AssertionError("host release validation")
-        release_pointer=json.loads((runtime/"releases/current.json").read_text());release_record=json.loads((runtime/"releases/generations"/release_pointer["generation"]).read_text())
-        if release_pointer["releaseId"]!=export["releaseManifest"]["releaseId"] or release_pointer["manifestSha256"]!=export["releaseManifest"]["manifestSha256"] or release_record["runId"]!=export["runId"] or release_record["fence"]!=export["fence"] or release_record["workspaceRevision"]!=export["workspaceRevision"]:raise AssertionError("release pointer binding")
+        release_pointer=json.loads((runtime/"releases/current.json").read_text());release_record=json.loads((runtime/"releases/generations"/f"{export['workspaceRevision']:020d}.json").read_text())
+        if release_pointer["schemaVersion"]!="curated-release-current-pointer-v1" or release_pointer["currentReleaseId"]!=export["releaseManifest"]["releaseId"] or release_pointer["manifestSha256"]!=export["releaseManifest"]["manifestSha256"] or release_record["runId"]!=export["runId"] or release_record["fence"]!=export["fence"] or release_record["workspaceRevision"]!=export["workspaceRevision"]:raise AssertionError("release pointer binding")
+        self.operations=results
 
         self.record("RED-OPS-001", lambda: {"operations": [row["operationId"] for row in results], "imageDigest": self.image})
         self.record("RED-OPS-002", lambda: {"models": dbt_run["result"]["models"], "assets": len(export["result"]["assets"]), "decision": next(row for row in results if row["operationId"]=="promotion.verify")["result"]["decision"]})
@@ -466,7 +477,6 @@ class Gate:
         self.record("RED-REC-002", lambda: self._stale_identity())
         self.record("RED-REC-003", self._durable_replay)
         self.record("RED-ROL-001", lambda: {"exactOwnedCleanup": self._no_runner_containers(), "foreignUnchanged": self._foreign_unchanged()})
-        self.operations=results
 
     def _idempotency_conflict(self, service: RunnerService, first: dict[str, object]) -> object:
         value={"operationId":"retail.generate","idempotencyKey":"gate-operation-01-exact","workspaceRevision":service.current_revision()}
@@ -482,6 +492,21 @@ class Gate:
         (export/f"{ASSETS[-1]}.parquet").unlink()
         expect_error(RuntimeError,"RUNNER_RELEASE_ASSET_SET_INVALID",lambda:validate_release(root))
         return {"missingRejected":True,"validHashes":[row["sha256"] for row in accepted],"assetCount":len(accepted)}
+
+    def _released_reader_and_replay(self) -> object:
+        runtime=self.root/"operations";pointer_path=runtime/"releases/current.json";pointer=json.loads(pointer_path.read_text())
+        manifest_path=runtime/"releases/manifests"/f"{pointer['currentReleaseId']}.json";manifest=json.loads(manifest_path.read_text())
+        spec=importlib.util.spec_from_file_location("runner_release_contract",ROOT/"scripts/golden/release_contract.py")
+        if spec is None or spec.loader is None:raise AssertionError("released reader unavailable")
+        reader=importlib.util.module_from_spec(spec);spec.loader.exec_module(reader);reader.validate_manifest(manifest);reader.validate_pointer(pointer,{manifest["releaseId"]:manifest})
+        old=next(row for row in self.operations if row["operationId"]=="retail.export");new=json.loads(json.dumps(old));new_revision=int(old["workspaceRevision"])+100;new_release="f"*64
+        assets=new["releaseManifest"]["assets"]
+        for row in assets:row["releaseId"]=new_release;row["stagedLocator"]=f"curated/releases/{new_release}/{row['assetId']}"
+        document={"schemaVersion":"curated-release-manifest-v1",**{key:assets[0][key] for key in ("releaseId","dataRunId","testedTreeSha","lockSha256","contractSetId","engineSnapshotId")},"profile":"small","seed":42,"assets":assets}
+        new["workspaceRevision"]=new_revision;new["fence"]=int(old["fence"])+100;new["runId"]="f"*32;new["releaseManifest"]={"releaseId":new_release,"manifestSha256":hashlib.sha256(manifest_bytes(document)).hexdigest(),"contractSchemaSha256":old["releaseManifest"]["contractSchemaSha256"],"assets":assets}
+        root=self.root/"release-replay";publish_release(root,old);publish_release(root,new);publish_release(root,old);observed=json.loads((root/"current.json").read_text())
+        if observed["currentReleaseId"]!=new_release or observed.get("previousReleaseId")!=old["releaseManifest"]["releaseId"]:raise AssertionError("stale replay rewound release")
+        return {"releasedManifest":True,"releasedPointer":True,"staleReplayIgnored":True,"currentReleaseId":observed["currentReleaseId"]}
 
     def _bounded_protocol_archive(self)->object:
         protocol=self.root/"oversize-protocol.json";protocol.write_bytes(b"{"+b"x"*65536+b"}")
@@ -511,7 +536,7 @@ class Gate:
             stop=True;future.result()
         expected={hashlib.sha256(path.read_bytes()).hexdigest() for path in archives}
         if not observed or set(observed)-expected:raise AssertionError("partial release")
-        return {"readerSamples":len(observed),"completeGenerationHashes":sorted(set(observed))}
+        return {"readerSamples":len(observed),"completeGenerationHashes":sorted(set(observed)),**self._released_reader_and_replay()}
 
     def _stale_revision_conflict(self,service:RunnerService)->object:
         before=self._no_runner_containers()

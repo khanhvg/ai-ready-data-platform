@@ -20,12 +20,12 @@ class Engine:
     def argv(self,args:Sequence[str])->list[str]:
         return [str(self.docker),"--host",f"unix://{self.socket}",*args]
 
-    def admit(self)->dict[str,object]:
+    def admit(self,*,timeout:float=30)->dict[str,object]:
         try: st=os.lstat(self.socket)
         except FileNotFoundError as exc: raise EngineError("RUNNER_ENGINE_UNAVAILABLE") from exc
         if not stat.S_ISSOCK(st.st_mode) or st.st_uid!=os.geteuid() or self.socket.is_symlink():
             raise EngineError("RUNNER_ENGINE_UNAVAILABLE")
-        value=self.json(["info","--format","{{json .}}"])
+        value=self.json(["info","--format","{{json .}}"],timeout=timeout)
         required=("MemoryLimit","SwapLimit","CpuCfsQuota","PidsLimit")
         if value.get("OSType")!="linux" or value.get("Architecture") not in ("aarch64","arm64") or value.get("CgroupVersion")!="2" or any(value.get(k) is not True for k in required):
             raise EngineError("RUNNER_CONTAINMENT_UNAVAILABLE")
@@ -54,8 +54,8 @@ class Engine:
         try: return json.loads(self.command(args,timeout=timeout).stdout)
         except json.JSONDecodeError as exc: raise EngineError("RUNNER_ENGINE_PROTOCOL_INVALID") from exc
 
-    def inspect_optional(self, container_id: str) -> dict[str, object] | None:
-        completed = self.command(["inspect", container_id], timeout=30, check=False)
+    def inspect_optional(self, container_id: str, *, timeout: float = 30) -> dict[str, object] | None:
+        completed = self.command(["inspect", container_id], timeout=timeout, check=False)
         if completed.returncode == 0:
             try:
                 value = json.loads(completed.stdout)

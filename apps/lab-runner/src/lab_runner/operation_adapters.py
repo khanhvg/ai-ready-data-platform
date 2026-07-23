@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib, importlib.util, json, os, pathlib, shutil, sys, time
 from typing import Callable
 from .registry import operation_ids
-from .release import create_manifest, validate as validate_release
+from .release import contract_schema_sha256, create_manifest, manifest_bytes, validate as validate_release
 
 PROJECT=pathlib.Path("/opt/project")
 STATE=pathlib.Path("/workspace/state")
@@ -92,8 +92,8 @@ def retail_export() -> dict[str,object]:
             if (len(rows),digest)!=(expected["rowCount"],expected["contentSha256"]):raise RuntimeError("RUNNER_EXPORT_GOLDEN_MISMATCH")
             semantic.append({"assetId":mart,"rowCount":len(rows),"contentSha256":digest})
     finally:connection.close()
-    manifest=create_manifest(STATE,semantic);manifest_raw=json.dumps(manifest,sort_keys=True,separators=(",",":")).encode()+b"\n"
-    return {"assets":assets,"rowCounts":counts,"semanticAssets":semantic,"releaseManifest":{"releaseId":manifest["releaseId"],"manifestSha256":hashlib.sha256(manifest_raw).hexdigest(),"contractSchemaSha256":manifest["contractSchemaSha256"],"assets":manifest["assets"]}}
+    manifest=create_manifest(STATE,semantic);manifest_raw=manifest_bytes(manifest)
+    return {"assets":assets,"rowCounts":counts,"semanticAssets":semantic,"releaseManifest":{"releaseId":manifest["releaseId"],"manifestSha256":hashlib.sha256(manifest_raw).hexdigest(),"contractSchemaSha256":contract_schema_sha256(),"assets":manifest["assets"]}}
 
 
 def promotion_configure() -> dict[str,object]:

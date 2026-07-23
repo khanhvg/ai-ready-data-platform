@@ -17,6 +17,8 @@ POLICY_LABEL="ai-ready.issue9.seccomp"
 WORKSPACE_ROLE="/"+"workspace"
 TMP_ROLE="/"+"tmp"
 RUN_ROLE="/"+"run"
+WALL_SECONDS=120.0
+TEARDOWN_RESERVE_SECONDS=10.0
 
 
 @dataclass(frozen=True,slots=True)
@@ -32,8 +34,14 @@ class Backend:
         self.engine=engine;self.image=image_digest;self.seccomp=seccomp.resolve();self.staging=staging;self.store=store
         staging.mkdir(mode=0o700,parents=True,exist_ok=True);os.chmod(staging,0o700)
 
-    def _daemon_identity(self)->str:
-        value=self.engine.admit();identifier=value.get("ID")
+    @staticmethod
+    def _remaining(deadline:float,limit:float)->float:
+        remaining=deadline-time.monotonic()
+        if remaining<=0:raise EngineError("RUNNER_TIMEOUT")
+        return min(limit,max(0.05,remaining))
+
+    def _daemon_identity(self,timeout:float=30)->str:
+        value=self.engine.admit(timeout=timeout);identifier=value.get("ID")
         if not isinstance(identifier,str) or len(identifier)<16:raise EngineError("RUNNER_CONTAINMENT_UNAVAILABLE")
         return hashlib.sha256(identifier.encode()).hexdigest()
 
@@ -53,8 +61,8 @@ class Backend:
         "--tmpfs",f"{RUN_ROLE}:rw,nosuid,nodev,size=16777216,uid=65532,gid=65532,mode=0700",
         "--shm-size","16777216",self.image,operation_id]
 
-    def _inspect(self,cid:str)->dict[str,object]:
-        value=self.engine.json(["inspect",cid])
+    def _inspect(self,cid:str,timeout:float=30)->dict[str,object]:
+        value=self.engine.json(["inspect",cid],timeout=timeout)
         if not isinstance(value,list) or len(value)!=1: raise EngineError("RUNNER_STALE_IDENTITY")
         return value[0]
 
@@ -91,22 +99,24 @@ class Backend:
         if not all(checks): raise EngineError("RUNNER_CONTAINMENT_UNAVAILABLE")
 
     def execute(self,run_id:str,fence:int,operation_id:str,input_archive:pathlib.Path)->Outcome:
-        daemon_identity=self._daemon_identity();work=self.staging/run_id;work.mkdir(mode=0o700)
+        deadline=time.monotonic()+WALL_SECONDS
+        daemon_identity=self._daemon_identity(self._remaining(deadline,30));work=self.staging/run_id;work.mkdir(mode=0o700)
         marker=work/"input.ready";marker.write_bytes(b"ready\n");os.chmod(marker,0o600)
         cid="";inspected={}
         try:
             self.store.transition(run_id,fence,"creating",daemon_identity=daemon_identity,image_digest=self.image)
-            cid=self.engine.command(self._spec(run_id,fence,operation_id,daemon_identity),timeout=30).stdout.strip()
+            cid=self.engine.command(self._spec(run_id,fence,operation_id,daemon_identity),timeout=self._remaining(deadline,30)).stdout.strip()
             if len(cid)<12: raise EngineError("RUNNER_CONTAINER_LOST")
             self.store.transition(run_id,fence,"created",container_id=cid,image_digest=self.image,daemon_identity=daemon_identity)
-            inspected=self._inspect(cid)
+            inspected=self._inspect(cid,self._remaining(deadline,30))
             if not self._identity(inspected,run_id,fence,daemon_identity): raise EngineError("RUNNER_STALE_IDENTITY")
             self.effective(inspected,self.image)
             self.store.transition(run_id,fence,"started-awaiting-input")
             input_raw=input_archive.read_bytes()
             if len(input_raw)>268435456:raise EngineError("RUNNER_INPUT_INVALID")
             self.store.transition(run_id,fence,"executing")
-            stdout,stderr=self.engine.attached(["start","--attach","--interactive",cid],b"I9IN"+struct.pack("!Q",len(input_raw))+input_raw,timeout=115)
+            execution_deadline=deadline-TEARDOWN_RESERVE_SECONDS
+            stdout,stderr=self.engine.attached(["start","--attach","--interactive",cid],b"I9IN"+struct.pack("!Q",len(input_raw))+input_raw,timeout=self._remaining(execution_deadline,115))
             if len(stderr)>2097152 or not stdout.startswith(b"I9OUT") or len(stdout)<17:raise EngineError("RUNNER_PROTOCOL_INVALID")
             protocol_length=struct.unpack("!I",stdout[5:9])[0]
             if protocol_length>65536 or len(stdout)<17+protocol_length:raise EngineError("RUNNER_PROTOCOL_INVALID")
@@ -119,12 +129,12 @@ class Backend:
                 output.write_bytes(archive_raw)
                 inspect_tar(output,require_manifest=True)
             else: raise EngineError(str(protocol.get("failureCode") or "RUNNER_OPERATION_FAILED"))
-            final_inspect=self._inspect(cid)
-            self._teardown(cid,run_id,fence,daemon_identity)
+            final_inspect=self._inspect(cid,self._remaining(deadline,30))
+            self._teardown(cid,run_id,fence,daemon_identity,deadline)
             return Outcome(protocol,output,final_inspect,cid)
         except Exception as primary:
             if cid:
-                try:self._teardown(cid,run_id,fence,daemon_identity)
+                try:self._teardown(cid,run_id,fence,daemon_identity,deadline)
                 except EngineError as cleanup: raise cleanup from primary
             raise
 
@@ -147,20 +157,21 @@ class Backend:
         self._teardown(container_id,run_id,fence,daemon_identity)
         self.store.transition(run_id,fence,"failed")
 
-    def _teardown(self,cid:str,run_id:str,fence:int,daemon_identity:str)->None:
-        if self._daemon_identity()!=daemon_identity:raise EngineError("RUNNER_STALE_IDENTITY")
-        value=self.engine.inspect_optional(cid)
+    def _teardown(self,cid:str,run_id:str,fence:int,daemon_identity:str,deadline:float|None=None)->None:
+        deadline=deadline or time.monotonic()+30
+        if self._daemon_identity(self._remaining(deadline,10))!=daemon_identity:raise EngineError("RUNNER_STALE_IDENTITY")
+        value=self.engine.inspect_optional(cid,timeout=self._remaining(deadline,10))
         if value is None:
             self.store.transition(run_id,fence,"removed");return
         if not self._identity(value,run_id,fence,daemon_identity): raise EngineError("RUNNER_STALE_IDENTITY")
         state=value.get("State",{})
         if state.get("Running"):
-            try:self.engine.command(["stop","--time","5",cid],timeout=7)
+            try:self.engine.command(["stop","--time","5",cid],timeout=self._remaining(deadline,7))
             except EngineError:
-                self.engine.command(["kill","--signal","KILL",cid],timeout=5)
-        try:self.engine.command(["wait",cid],timeout=5)
+                self.engine.command(["kill","--signal","KILL",cid],timeout=self._remaining(deadline,5))
+        try:self.engine.command(["wait",cid],timeout=self._remaining(deadline,5))
         except EngineError:pass
-        self.engine.command(["rm","--force",cid],timeout=10)
-        if self.engine.inspect_optional(cid) is None:
+        self.engine.command(["rm","--force",cid],timeout=self._remaining(deadline,10))
+        if self.engine.inspect_optional(cid,timeout=self._remaining(deadline,5)) is None:
             self.store.transition(run_id,fence,"removed");return
         raise EngineError("RUNNER_CONTAINER_RESIDUE")

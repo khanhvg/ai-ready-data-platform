@@ -7,7 +7,7 @@ from .engine import Engine,EngineError
 from .evidence import discard as discard_evidence, publish as publish_evidence, reconcile as reconcile_evidence, stage as stage_evidence
 from .fence import acquire
 from .registry import validate_request
-from .release import publish as publish_release, validate as validate_release, validate_manifest
+from .release import contract_schema_sha256, manifest_bytes, publish as publish_release, validate as validate_release, validate_manifest
 from .state import Store,StateError
 from .workspace import Workspace
 
@@ -61,7 +61,7 @@ class RunnerService:
                     validation_root=self.root/"release-validation";validation_root.mkdir(mode=0o700,exist_ok=True);os.chmod(validation_root,0o700)
                     with tempfile.TemporaryDirectory(prefix=f"{admission.run_id}-",dir=validation_root) as temporary:
                         extracted=pathlib.Path(temporary)/"workspace";extract_tar(outcome.output_archive,extracted);release_assets=validate_release(extracted);manifest=validate_manifest(extracted)
-                        protocol_manifest=dict(outcome.protocol["result"].get("releaseManifest") or {});manifest_raw=__import__("json").dumps(manifest,sort_keys=True,separators=(",",":")).encode()+b"\n";release_manifest={"releaseId":manifest["releaseId"],"manifestSha256":__import__("hashlib").sha256(manifest_raw).hexdigest(),"contractSchemaSha256":manifest["contractSchemaSha256"],"assets":manifest["assets"]}
+                        protocol_manifest=dict(outcome.protocol["result"].get("releaseManifest") or {});manifest_raw=manifest_bytes(manifest);release_manifest={"releaseId":manifest["releaseId"],"manifestSha256":__import__("hashlib").sha256(manifest_raw).hexdigest(),"contractSchemaSha256":contract_schema_sha256(),"assets":manifest["assets"]}
                         if protocol_manifest!=release_manifest or release_assets!=outcome.protocol["result"].get("assets"):raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID")
                 self.workspace.stage(outcome.output_archive,revision)
                 result={"schemaVersion":"runner-operation-result-v1","runId":admission.run_id,"operationId":request["operationId"],"workspaceRevision":revision,"fence":fence.epoch,"status":"pass","result":outcome.protocol["result"],"containerIdSha256":__import__("hashlib").sha256(outcome.container_id.encode()).hexdigest()}
