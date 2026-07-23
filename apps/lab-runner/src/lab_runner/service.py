@@ -7,7 +7,7 @@ from .engine import Engine,EngineError
 from .evidence import discard as discard_evidence, publish as publish_evidence, reconcile as reconcile_evidence, stage as stage_evidence
 from .fence import acquire
 from .registry import validate_request
-from .release import contract_schema_sha256, manifest_bytes, publish as publish_release, validate as validate_release, validate_manifest
+from .release import contract_schema_sha256, manifest_bytes, publish as publish_release, rollback as rollback_release, validate as validate_release, validate_manifest
 from .state import Store,StateError
 from .workspace import Workspace
 
@@ -82,3 +82,9 @@ class RunnerService:
                 raise RunnerError(str(exc)) from exc
 
     def current_revision(self)->int:return self.store.current_revision()
+
+    def rollback(self,expected_current_release_id:str)->dict[str,object]:
+        with acquire(self.root/"locks"):
+            for run_id,status,container_id,image_digest,run_fence,daemon_identity in self.store.incomplete():
+                self.backend.reconcile(run_id,status,container_id,image_digest,run_fence,daemon_identity)
+            return rollback_release(self.releases,expected_current_release_id)

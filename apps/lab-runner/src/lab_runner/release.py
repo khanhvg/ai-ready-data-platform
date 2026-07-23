@@ -38,7 +38,17 @@ def _footer(raw:bytes)->str:
     return hashlib.sha256(raw[-8-length:-8]).hexdigest()
 
 
-def validate_assets(workspace:pathlib.Path)->list[dict[str,object]]:
+def _host_expected_raw()->dict[str,str]|None:
+    path=pathlib.Path(__file__).resolve().parents[2]/"config/runner-image-release-v1.json"
+    if not path.is_file():return None
+    value=json.loads(path.read_text());rows=value.get("assetResults")
+    if not isinstance(rows,list):raise RuntimeError("RUNNER_RELEASE_ASSET_INVALID")
+    expected={str(row.get("assetId")):str(row.get("sha256")) for row in rows if isinstance(row,dict)}
+    if tuple(expected)!=ASSETS or any(len(value)!=64 for value in expected.values()):raise RuntimeError("RUNNER_RELEASE_ASSET_INVALID")
+    return expected
+
+
+def validate_assets(workspace:pathlib.Path,expected_raw:dict[str,str]|None=None)->list[dict[str,object]]:
     export=workspace/"serving/export"
     if not export.is_dir() or sorted(p.stem for p in export.glob("*.parquet"))!=sorted(ASSETS) or len(list(export.iterdir()))!=11:raise RuntimeError("RUNNER_RELEASE_ASSET_SET_INVALID")
     rows=[]
@@ -46,6 +56,10 @@ def validate_assets(workspace:pathlib.Path)->list[dict[str,object]]:
         path=export/f"{asset}.parquet";observed=path.stat(follow_symlinks=False)
         if not stat.S_ISREG(observed.st_mode) or path.is_symlink() or observed.st_nlink!=1 or stat.S_IMODE(observed.st_mode) not in (0o600,0o644):raise RuntimeError("RUNNER_RELEASE_ASSET_INVALID")
         raw=path.read_bytes();rows.append({"assetId":asset,"size":len(raw),"sha256":hashlib.sha256(raw).hexdigest(),"schemaSha256":_footer(raw)})
+    expected=_host_expected_raw() if expected_raw is None else expected_raw
+    if expected is not None:
+        observed={str(row["assetId"]):str(row["sha256"]) for row in rows}
+        if tuple(expected)!=ASSETS or observed!=expected:raise RuntimeError("RUNNER_RELEASE_ASSET_INVALID")
     return rows
 
 
@@ -65,7 +79,8 @@ def create_manifest(workspace:pathlib.Path,semantic:list[dict[str,object]])->dic
     return validate_manifest(workspace)
 
 
-def validate_manifest(workspace:pathlib.Path)->dict[str,object]:
+def validate_manifest(workspace:pathlib.Path,expected_raw:dict[str,str]|None=None)->dict[str,object]:
+    raw_assets={row["assetId"]:row for row in validate_assets(workspace,expected_raw)}
     schema,_=_schema();root=workspace/"curated/releases";manifests=list(root.glob("*/manifest.json")) if root.is_dir() else []
     if len(manifests)!=1:raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID")
     manifest=manifests[0];document=json.loads(manifest.read_text())
@@ -73,7 +88,6 @@ def validate_manifest(workspace:pathlib.Path)->dict[str,object]:
     except jsonschema.ValidationError as exc:raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID") from exc
     release_id=str(document["releaseId"]);release=root/release_id
     if manifest.parent!=release or {p.name for p in release.iterdir()}!={"manifest.json",*ASSETS} or [row["assetId"] for row in document["assets"]]!=list(ASSETS):raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID")
-    raw_assets={row["assetId"]:row for row in validate_assets(workspace)}
     expected={row["martId"]:row for row in _golden()["marts"]}
     for row in document["assets"]:
         asset=str(row["assetId"]);path=workspace/str(row["stagedLocator"]);observed=path.stat(follow_symlinks=False);raw=path.read_bytes()
@@ -86,9 +100,54 @@ def validate_manifest(workspace:pathlib.Path)->dict[str,object]:
     return document
 
 
-def validate(workspace:pathlib.Path)->list[dict[str,object]]:
-    if (workspace/"curated/releases").exists():validate_manifest(workspace)
-    return [{key:row[key] for key in ("assetId","size","sha256")} for row in validate_assets(workspace)]
+def rollback(root:pathlib.Path,expected_current_release_id:str)->dict[str,object]:
+    if not re_full_sha(expected_current_release_id):raise RuntimeError("RUNNER_ROLLBACK_INVALID")
+    pointer_path=root/"current.json";pointer=_load_regular_json(pointer_path,"RUNNER_ROLLBACK_INVALID")
+    schema,_=_schema();pointer_schema=dict(schema);pointer_schema["$ref"]="#/$defs/CuratedReleaseCurrentPointerV1"
+    try:jsonschema.Draft202012Validator(pointer_schema).validate(pointer)
+    except jsonschema.ValidationError as exc:raise RuntimeError("RUNNER_ROLLBACK_INVALID") from exc
+    current=str(pointer["currentReleaseId"]);previous=pointer.get("previousReleaseId")
+    if current!=expected_current_release_id:
+        if previous==expected_current_release_id:return pointer
+        raise RuntimeError("RUNNER_ROLLBACK_STALE")
+    if not isinstance(previous,str) or not re_full_sha(previous):raise RuntimeError("RUNNER_ROLLBACK_UNAVAILABLE")
+    manifests=root/"manifests";current_document=_load_regular_json(manifests/f"{current}.json","RUNNER_ROLLBACK_INVALID");previous_document=_load_regular_json(manifests/f"{previous}.json","RUNNER_ROLLBACK_INVALID")
+    for release_id,document in ((current,current_document),(previous,previous_document)):
+        try:jsonschema.Draft202012Validator(schema).validate(document)
+        except jsonschema.ValidationError as exc:raise RuntimeError("RUNNER_ROLLBACK_INVALID") from exc
+        if document.get("releaseId")!=release_id:raise RuntimeError("RUNNER_ROLLBACK_INVALID")
+    if hashlib.sha256(manifest_bytes(current_document)).hexdigest()!=pointer["manifestSha256"]:raise RuntimeError("RUNNER_ROLLBACK_INVALID")
+    restored={"schemaVersion":"curated-release-current-pointer-v1","currentReleaseId":previous,"manifestSha256":hashlib.sha256(manifest_bytes(previous_document)).hexdigest(),"previousReleaseId":current}
+    jsonschema.Draft202012Validator(pointer_schema).validate(restored);raw=manifest_bytes(restored);temporary=root/f".current.rollback.{os.getpid()}.tmp";temporary.write_bytes(raw);os.chmod(temporary,0o600);fd=os.open(temporary,os.O_RDONLY);os.fsync(fd);os.close(fd);os.replace(temporary,pointer_path);fd=os.open(root,os.O_RDONLY);os.fsync(fd);os.close(fd);return restored
+
+
+def re_full_sha(value:str)->bool:
+    return len(value)==64 and all(character in "0123456789abcdef" for character in value)
+
+
+def _load_regular_json(path:pathlib.Path,code:str)->dict[str,object]:
+    try:fd=os.open(path,os.O_RDONLY|getattr(os,"O_NOFOLLOW",0))
+    except FileNotFoundError as exc:raise RuntimeError(code) from exc
+    except OSError as exc:raise RuntimeError(code) from exc
+    try:
+        observed=os.fstat(fd)
+        if not stat.S_ISREG(observed.st_mode) or observed.st_nlink!=1 or stat.S_IMODE(observed.st_mode)!=0o600 or observed.st_size>1024*1024:raise RuntimeError(code)
+        raw=b""
+        while len(raw)<=observed.st_size:
+            chunk=os.read(fd,min(65536,observed.st_size+1-len(raw)))
+            if not chunk:break
+            raw+=chunk
+    finally:os.close(fd)
+    if len(raw)!=observed.st_size:raise RuntimeError(code)
+    try:value=json.loads(raw)
+    except (UnicodeDecodeError,json.JSONDecodeError) as exc:raise RuntimeError(code) from exc
+    if not isinstance(value,dict) or raw!=manifest_bytes(value):raise RuntimeError(code)
+    return value
+
+
+def validate(workspace:pathlib.Path,expected_raw:dict[str,str]|None=None)->list[dict[str,object]]:
+    if (workspace/"curated/releases").exists():validate_manifest(workspace,expected_raw)
+    return [{key:row[key] for key in ("assetId","size","sha256")} for row in validate_assets(workspace,expected_raw)]
 
 
 def publish(root:pathlib.Path,result:dict[str,object])->pathlib.Path:
