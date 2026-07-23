@@ -1,0 +1,10 @@
+views {
+  dynamic view DYN-OFFICE {
+    title 'Mở văn phòng, readiness, drain checkpoint và đóng'
+    autoLayout TopBottom 20 20
+    author -> verify 'mở văn phòng' { technology 'repository' }
+    verify -> publish 'readiness' { technology 'locked-tool' }
+    publish -> verify 'drain checkpoint' { technology 'repository' }
+    verify -> author 'đóng văn phòng' { technology 'repository' }
+  }
+}

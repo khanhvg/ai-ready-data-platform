@@ -1,0 +1,13 @@
+Triển khai private-subnet; OpenMetadata compute, database và search; adapters_instance -> retail_instance — DEP-AWS
+Loại view: deployment
+Nút:
+1. private-subnet | Mạng con riêng tư | công nghệ=không áp dụng | biên=gốc
+2. private-subnet.adapters_instance | Bộ điều hợp metadata | công nghệ=OpenMetadata | biên=private-subnet
+3. private-subnet.metadata_compute | OpenMetadata compute | công nghệ=không áp dụng | biên=private-subnet
+4. private-subnet.retail_instance | Kho bán lẻ | công nghệ=không áp dụng | biên=private-subnet
+5. private-subnet.metadata_database | OpenMetadata database | công nghệ=không áp dụng | biên=private-subnet
+6. private-subnet.metadata_search | OpenMetadata search | công nghệ=không áp dụng | biên=private-subnet
+Quan hệ:
+1. private-subnet.adapters_instance -> private-subnet.retail_instance | nạp catalog | công nghệ=OpenMetadata
+2. private-subnet.metadata_compute -> private-subnet.metadata_database | ghi metadata | công nghệ=PostgreSQL
+3. private-subnet.metadata_compute -> private-subnet.metadata_search | lập chỉ mục tìm kiếm | công nghệ=Elasticsearch

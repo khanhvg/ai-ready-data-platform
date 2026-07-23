@@ -1,0 +1,12 @@
+Biên sở hữu container và trust boundary — C4-L2-AWS
+Loại view: element
+Nút:
+1. author | Tác giả quyết định | công nghệ=không áp dụng | biên=gốc
+2. verify | Xác minh kiến trúc | công nghệ=repository | biên=gốc
+3. boundary:trust-data-platform | trust-data-platform | công nghệ=không áp dụng | biên=gốc
+4. publish | Xuất bản có kiểm chứng | công nghệ=locked-tool | biên=boundary:trust-data-platform
+5. restore | Khôi phục có bằng chứng | công nghệ=repository | biên=boundary:trust-data-platform
+Quan hệ:
+1. author -> verify | quyết định | công nghệ=repository
+2. verify -> publish | bằng chứng | công nghệ=locked-tool
+3. publish -> restore | khôi phục | công nghệ=repository

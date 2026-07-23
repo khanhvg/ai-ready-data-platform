@@ -1,0 +1,142 @@
+{
+  "schemaVersion": "i5-06-render-manifest-v2",
+  "renderer": "locked-likec4-dot-wasm-graphviz",
+  "deterministicRuns": 2,
+  "inProcessGraphvizPasses": 2,
+  "viewports": [
+    1440,
+    1024
+  ],
+  "normalization": [
+    "strip-xml-declaration-doctype-and-graphviz-generator-comment",
+    "add-svg-title-description-role-and-responsive-fit",
+    "map-locked-likec4-palette-to-wcag-readable-light-palette"
+  ],
+  "sourceSha256": "2d4b8d06dee22b42c94025a7790bc42765bee8ef3a945cf68211b68bc84f7934",
+  "sourceFiles": [
+    {
+      "bytes": 170,
+      "path": "architecture/expansions/i5-06/likec4/specification.c4",
+      "sha256": "eb1ac752f21f7d19925bf6b4a354a00f92f192e1360941a2fdc00a2ad4b174e3"
+    },
+    {
+      "bytes": 1638,
+      "path": "architecture/expansions/i5-06/likec4/model/architecture-curriculum.c4",
+      "sha256": "cfdd2c78db629590af388f4b54b8edba110f02fe388537ec9da446eab6c1b94a"
+    },
+    {
+      "bytes": 145,
+      "path": "architecture/expansions/i5-06/likec4/view-manifest.yaml",
+      "sha256": "2937fd3f7b5d67573513003332c3dba74d58d512657018cf60bf297bb84b1b3b"
+    },
+    {
+      "bytes": 278,
+      "path": "architecture/expansions/i5-06/likec4/views/C4-L2-AWS.c4",
+      "sha256": "68cbd15bf7037e96a644d45a31ed9671526e0d18593cb9a155822edccc9a8d09"
+    },
+    {
+      "bytes": 475,
+      "path": "architecture/expansions/i5-06/likec4/views/DEP-AWS.c4",
+      "sha256": "66040f51c8f4b7bde041dd91b915522c3b478b533565c37298e8ab5811e1aa03"
+    },
+    {
+      "bytes": 412,
+      "path": "architecture/expansions/i5-06/likec4/views/DYN-OFFICE.c4",
+      "sha256": "06b9312ac96d06d2e4e617acc743e3b95efc955af38dcd7e06aee209c3f01080"
+    },
+    {
+      "bytes": 464,
+      "path": "architecture/expansions/i5-06/likec4/views/DYN-PUBLISH.c4",
+      "sha256": "3ff8a91b4ae42a7d8e9991eb310a759ee735eeb8e8f8f96f47dc9e097eafbcb4"
+    },
+    {
+      "bytes": 498,
+      "path": "architecture/expansions/i5-06/likec4/views/DYN-RESTORE.c4",
+      "sha256": "2db11a5331878959884cb62fcf511cdf199e2c0e1a9792dbd1abed1f5552bae3"
+    }
+  ],
+  "toolIdentity": {
+    "graphvizPackage": "1.22.2",
+    "graphvizRuntime": "15.0.0",
+    "likec4": "1.59.1",
+    "node": "v22.22.3",
+    "packageLockSha256": "7a56d803a47454023f40a04bcdb3b037f4ab2c2a05321292ad3b7f7225c2118c"
+  },
+  "views": [
+    {
+      "viewId": "C4-L2-AWS",
+      "type": "element",
+      "nodes": 5,
+      "relations": 3,
+      "projectionSha256": "281388e8079561542dc3b8033c7d08deea5f2f682872c7d953b5375ab4a622a7",
+      "dotSha256": "18566ed06cfe061305cd171f74ed6cf32e11a3f01c6ccc61ad5c2a9d3ec91c63",
+      "rawSvgSha256": "e1d2b55de3b29d9ba9b1701e26a3f64c8c4950c1edc004170a77f713afb0465c",
+      "svgSha256": "c16f4a7cffc8271c4d6310a2cfe582dbacc716fa6f45cc4e5b3b39d1369cacb2",
+      "textSha256": "666da670d0d7c907ea1630a1d02ce03d2440d94327958448495ddd302ff9c450",
+      "fittedHtmlSha256": {
+        "1024": "3f0cebe90c3daab52eba9fc3f6a5aa410ca291858baf423090b0c54f3d876841",
+        "1440": "41d27f732008e66042645f01e4bf06a9e75d0e1e5baf43d34e6b7b21fcf69577"
+      }
+    },
+    {
+      "viewId": "DEP-AWS",
+      "type": "deployment",
+      "nodes": 6,
+      "relations": 3,
+      "projectionSha256": "669aa505393d86c9340a2f256645862bb719bcdb712bcd921262184e91108c90",
+      "dotSha256": "ef7e9ba640d345363306cef488a77adb33a8e50bd9bcee6adf51a95678271868",
+      "rawSvgSha256": "64975028191dd33c92e6ba8011353de0ef9c639dc01c6318b00db3a51808587a",
+      "svgSha256": "ae7be9813fb880095c656bbe54b42a523e635a2be86922438fed5eab2bf86a55",
+      "textSha256": "391649887051231d2a6e6f6e8b89782eb5670616b40469049bce58ed16805e69",
+      "fittedHtmlSha256": {
+        "1024": "0438d303334b06689cc9b0fd75a8681233790c478066b75464be2c53dd051935",
+        "1440": "47cab600ccbffc292f35da75620eca2b0d590daba18792082d013e3b32429dc3"
+      }
+    },
+    {
+      "viewId": "DYN-OFFICE",
+      "type": "dynamic",
+      "nodes": 3,
+      "relations": 4,
+      "projectionSha256": "58ea4c5b19eee21e298c3ed21218fa03442cdc722a1746f6a40a5f4d524e7d96",
+      "dotSha256": "e8d1c985037f4816b877b2cfade4825a605617d2e40e163a820fc8cda17dcfe5",
+      "rawSvgSha256": "4b5b7793d4befe357691a7dd6bed4484dedd7c163d6537cafbbc2966d5d93061",
+      "svgSha256": "7a980b275abcb8f9e2096e0396c1c49762aca9df75d5d6b4c89e534db549272c",
+      "textSha256": "315166569ab3efb5fd8899218c0894dd0f2e6008c082f7cf0c587791c5aad292",
+      "fittedHtmlSha256": {
+        "1024": "f54ddca53ef8ca31bcf748afd9760d4a0ecfff5a808d1597937e7e1bd1ddaa0b",
+        "1440": "de8f89f28d36246072ea7605b929b5bccab203d23640e171572742ba4012f8f1"
+      }
+    },
+    {
+      "viewId": "DYN-PUBLISH",
+      "type": "dynamic",
+      "nodes": 6,
+      "relations": 4,
+      "projectionSha256": "42a59aca613b45eddfffbd3f9d1e1e6216603e4d6789f40760233c7008c74c00",
+      "dotSha256": "705385e1ec9bd363650f5552ee2b14c6090c5c67e40994609a5c3b2b83d584dd",
+      "rawSvgSha256": "f12692d861519d892dc2bff0d0aadbba1859a7d944e6b8296909507fff3c313d",
+      "svgSha256": "4fa39a4546382cb3dd0f5420fd41617ecedd479f0082a3fc86b34bcfdc07605a",
+      "textSha256": "7dc6b10c6b67f3fabd9389f26fbe220774f72b941fc060c289d3072cb35b947e",
+      "fittedHtmlSha256": {
+        "1024": "8058e1c10c563978da560d6f6eae4c4c6ee2933292dfe59a91e31f93bae68d95",
+        "1440": "045e13b9f65f27971963cb492053e4904351d89009a5e006b36ff1cc1807e8f8"
+      }
+    },
+    {
+      "viewId": "DYN-RESTORE",
+      "type": "dynamic",
+      "nodes": 5,
+      "relations": 4,
+      "projectionSha256": "f7a50f23736d2776e9177cc2d76e4bbe7c1f026c2a567f195cfb4f47c7cb4236",
+      "dotSha256": "8bda0ecb694f41298c740fa8824d1bec5e0639e8ed48bc14925469d8c8b63e86",
+      "rawSvgSha256": "80792f066dab14dd8f1de45e947e03986548ad43d79d790b4b03f12a301b0154",
+      "svgSha256": "04f60954ebc3358e25bf047e0c3d300180c560bb51f158ab830e0cc439eac49a",
+      "textSha256": "cbba1c7bf745b90fe61e5d705abc19dc4452afdbb756b087cd1349ed109b17dd",
+      "fittedHtmlSha256": {
+        "1024": "8ae94ef6b665a66485012f8c5bdadcea81de47df6b1d8d35667d00f50eac831b",
+        "1440": "0290a492d1b2ea86521d3bfb607a2192b42f603a76adbacb1f2eb1ded49b7d39"
+      }
+    }
+  ]
+}
