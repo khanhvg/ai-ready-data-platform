@@ -113,6 +113,44 @@ def append_only_file_matches(path:pathlib.Path,baseline:dict[str,object])->bool:
         return False
 
 
+def _git_blob(revision:str,name:str)->str|None:
+    result=subprocess.run(
+        ["git","rev-parse","--verify",f"{revision}:{name}"],
+        cwd=ROOT,text=True,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,
+    )
+    return result.stdout.strip() if result.returncode==0 else None
+
+
+def inherited_merge_blobs(start:str,end:str="HEAD")->dict[str,str|None]:
+    merges=subprocess.run(
+        ["git","rev-list","--first-parent","--reverse","--merges",f"{start}..{end}"],
+        cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE,
+    ).stdout.splitlines()
+    inherited:dict[str,str|None]={}
+    for merge in merges:
+        parents=subprocess.run(
+            ["git","rev-list","--parents","-n","1",merge],
+            cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE,
+        ).stdout.split()
+        if len(parents)<3:
+            continue
+        first_parent=parents[1]
+        for merged_parent in parents[2:]:
+            common=subprocess.run(
+                ["git","merge-base",first_parent,merged_parent],
+                cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE,
+            ).stdout.strip()
+            names=subprocess.run(
+                ["git","diff","--name-only","-z",common,merged_parent],
+                cwd=ROOT,check=True,stdout=subprocess.PIPE,
+            ).stdout.decode().split("\0")
+            for name in filter(None,names):
+                merged_blob=_git_blob(merge,name)
+                if merged_blob==_git_blob(merged_parent,name):
+                    inherited[name]=merged_blob
+    return inherited
+
+
 def source_digest() -> str:
     digest = hashlib.sha256()
     paths = subprocess.run(
@@ -795,11 +833,16 @@ class Gate:
 
         def source() -> object:
             changed=subprocess.run(["git","diff","--name-only",COOK_INPUT],cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE).stdout.splitlines()
-            invalid=[name for name in changed if not (name.startswith("apps/lab-runner/") or name=="mk/issue-5/i5-04.mk")]
+            inherited=inherited_merge_blobs(COOK_INPUT)
+            invalid=[
+                name for name in changed
+                if not (name.startswith("apps/lab-runner/") or name=="mk/issue-5/i5-04.mk")
+                and (name not in inherited or _git_blob("HEAD",name)!=inherited[name])
+            ]
             if invalid:raise AssertionError(f"write lease:{invalid}")
             if (APP/".gitignore").read_text()!="/.local-state/\n":raise AssertionError("ignore rule")
             validate_released_contract(ROOT,APP/"config/released-contract-lock.json")
-            protected=[name for name in changed if not (name.startswith("apps/lab-runner/") or name=="mk/issue-5/i5-04.mk")]
+            protected=invalid
             if protected:raise AssertionError("protected drift")
             ignored=subprocess.run(["git","ls-files","--others","--ignored","--exclude-standard","-z"],cwd=ROOT,check=True,stdout=subprocess.PIPE).stdout.decode().split("\0");ignored=[name for name in ignored if name]
             owner_markers={

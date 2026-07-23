@@ -73,6 +73,12 @@ class RedPublicPathTest(unittest.TestCase):
         self.assertIn("os.fork()",fixture)
         self.assertIn('fixture==("resource_probe.py",("memory",)) and int(cgroup["memoryEvents"].get("oom_kill",0))>=1',supervisor)
 
+    def test_write_lease_recognizes_exact_content_inherited_from_a_merge(self) -> None:
+        inherited=gate.inherited_merge_blobs(gate.COOK_INPUT)
+        path="apps/learning-portal/index.html"
+        self.assertIn(path,inherited)
+        self.assertEqual(gate._git_blob("HEAD",path),inherited[path])
+
     def test_named_behavior_passes_public_gate(self) -> None:
         for case_id in ["RED-ENV-001","RED-ENV-002","RED-RES-001"]:
             with self.subTest(case_id=case_id):
