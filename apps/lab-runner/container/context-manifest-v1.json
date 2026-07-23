@@ -53,8 +53,8 @@
     {
       "path": "app/src/lab_runner/container_backend.py",
       "mode": "0644",
-      "size": 10826,
-      "sha256": "fa1f973e4eb8d322d6e8903f655a557ffff7d35c6b6b5debb251583521ee52ba"
+      "size": 11721,
+      "sha256": "19f684bff329cd0d48564a84cbdc98db6b9561d73cef8afe270c9d1cd3a5e36b"
     },
     {
       "path": "app/src/lab_runner/container_protocol.py",
@@ -77,8 +77,8 @@
     {
       "path": "app/src/lab_runner/engine.py",
       "mode": "0644",
-      "size": 3808,
-      "sha256": "3c4a1babed4f455e3693dc1faea8721470c289c6bb047d16b9e6349635434fb1"
+      "size": 3872,
+      "sha256": "197dacc02de8d612b93117ce7e13d3cdf1a514f9e1f0112fa1e02aef9897bb10"
     },
     {
       "path": "app/src/lab_runner/evidence.py",
@@ -95,8 +95,8 @@
     {
       "path": "app/src/lab_runner/operation_adapters.py",
       "mode": "0644",
-      "size": 9166,
-      "sha256": "f53a7a0aaed3f805e185a0ec193276d6088b0e2c7d6acb14c593aa6705e1d6e1"
+      "size": 9151,
+      "sha256": "d91625bc31fb464c77b95a46554f55c90bde5929f2a3577bbd08dcc467c29582"
     },
     {
       "path": "app/src/lab_runner/registry.py",
@@ -107,14 +107,14 @@
     {
       "path": "app/src/lab_runner/release.py",
       "mode": "0644",
-      "size": 8163,
-      "sha256": "1d63c6d5e819ba1d5bfcdffd8cb8119134466419fedd3c00116a99c899ddb753"
+      "size": 11039,
+      "sha256": "ff58b281413bc25607bc4e51c8d3b41200cb2d400c6948d59abd422cb340aabd"
     },
     {
       "path": "app/src/lab_runner/service.py",
       "mode": "0644",
-      "size": 6443,
-      "sha256": "8331c83b2cf332edc49a5cf68485c9a92c2f27bc4b25cbbcc62348f4b4bf74b5"
+      "size": 6414,
+      "sha256": "dc3631c4759abd2f7f037cfcb1c01770cf50a2bcdf7680bf354d72e1f1907e42"
     },
     {
       "path": "app/src/lab_runner/state.py",
