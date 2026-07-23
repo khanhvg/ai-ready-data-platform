@@ -191,7 +191,12 @@ class Gate:
             value={**expected_owner,"purpose":purpose}
             if path.exists() and json.loads(path.read_text())!=value:raise RuntimeError("RUNNER_EVIDENCE_OWNER_INVALID")
             path.write_bytes(_canonical_json(value));os.chmod(path,0o600)
-        baseline=(ROOT/".hermes/prompts/issue-9-container-runner-v2-cook.md",ROOT/".hermes/logs/claudekit/issue-9-container-runner-v2-cook.log")
+        baseline=(
+            ROOT/".hermes/prompts/issue-9-container-runner-v2-cook.md",
+            ROOT/".hermes/logs/claudekit/issue-9-container-runner-v2-cook.log",
+            ROOT/".hermes/prompts/issue-9-standard-lean-recovery.md",
+            ROOT/".hermes/logs/claudekit/issue-9-standard-lean-recovery.log",
+        )
         self.ignored_baseline={path.relative_to(ROOT).as_posix():_regular_file_baseline(path) for path in baseline}
         evidence_root = APP / ".local-state/evidence/gates"
         evidence_root.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -812,9 +817,10 @@ class Gate:
                 if name.startswith(".artifacts/evidence/data-contracts/"):
                     parts=pathlib.PurePosixPath(name).parts;run_root=ROOT/pathlib.Path(*parts[:4]);return (run_root/".data-contracts-owner.json").is_file() or (run_root/"result.json").is_file()
                 return name.startswith("apps/lab-runner/.pytest_cache/") or ("/__pycache__/" in name and name.endswith(".pyc"))
-            baseline={".hermes/logs/claudekit/issue-9-container-runner-v2-cook.log",".hermes/prompts/issue-9-container-runner-v2-cook.md"};unclassified={name for name in ignored if not runtime_path(name)}
-            prompt=".hermes/prompts/issue-9-container-runner-v2-cook.md";session_log=".hermes/logs/claudekit/issue-9-container-runner-v2-cook.log"
-            if unclassified!=baseline or _regular_file_baseline(ROOT/prompt)!=self.ignored_baseline[prompt] or not append_only_file_matches(ROOT/session_log,self.ignored_baseline[session_log]):raise AssertionError("ignored baseline drift")
+            prompts={".hermes/prompts/issue-9-container-runner-v2-cook.md",".hermes/prompts/issue-9-standard-lean-recovery.md"}
+            session_logs={".hermes/logs/claudekit/issue-9-container-runner-v2-cook.log",".hermes/logs/claudekit/issue-9-standard-lean-recovery.log"}
+            baseline=prompts|session_logs;unclassified={name for name in ignored if not runtime_path(name)}
+            if unclassified!=baseline or any(_regular_file_baseline(ROOT/name)!=self.ignored_baseline[name] for name in prompts) or any(not append_only_file_matches(ROOT/name,self.ignored_baseline[name]) for name in session_logs):raise AssertionError("ignored baseline drift")
             for name in baseline:
                 observed=(ROOT/name).stat(follow_symlinks=False)
                 if not stat.S_ISREG(observed.st_mode) or observed.st_nlink!=1:raise AssertionError("ignored baseline type")
