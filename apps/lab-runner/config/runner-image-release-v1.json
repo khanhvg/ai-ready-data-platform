@@ -97,7 +97,7 @@
   ],
   "staticSecurity": {
     "tool": "bandit@1.8.6",
-    "sha256": "dfd5805241d14060bf4113b9d29fcda86baa3a2aa27b49ce0d8bfab2d6efb469",
+    "sha256": "c176c30ab5ca80940559bba910ddbe04119cf81dfa4f99792b396f16176fad51",
     "unresolvedHigh": 0,
     "unresolvedMedium": 0
   },
