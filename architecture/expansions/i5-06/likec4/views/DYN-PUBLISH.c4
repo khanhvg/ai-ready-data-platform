@@ -1,5 +1,10 @@
-view DYN-PUBLISH {
-  title "Stage, verify, commit, retry resume và ingest catalog"
-  include author verify publish restore adapters_instance retail_instance
-  deployment private-subnet
+views {
+  dynamic view DYN-PUBLISH {
+    title 'Xuất bản: stage, verify, commit, retry resume và ingest catalog'
+    autoLayout TopBottom 20 20
+    author -> verify 'quyết định' { technology 'repository' }
+    verify -> publish 'bằng chứng' { technology 'locked-tool' }
+    adapters_instance -> retail_iceberg 'ingest physical' { technology 'OpenMetadata' }
+    adapters_instance -> retail_duckdb 'ingest logical' { technology 'OpenMetadata' }
+  }
 }

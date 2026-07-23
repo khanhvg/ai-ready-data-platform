@@ -1,1 +1,93 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 1200 675" style="background:#ffffff"><title>DYN-PUBLISH architecture decision</title><desc>Stage, verify, commit, retry resume và ingest catalog; văn bản thay thế tiếng Việt</desc><g id="boundary-private" aria-label="Biên private-subnet"><rect x="40" y="40" width="1120" height="580" fill="#ffffff" stroke="#111111"/></g><g id="node-a"><rect x="80" y="100" width="360" height="160" fill="#ffffff" stroke="#111111"/><text x="100" y="150" fill="#111111" font-size="18">1. DYN-PUBLISH source — Nguồn quyết định</text></g><g id="relation-1"><path d="M440 180 L700 420" stroke="#111111"/><text x="500" y="280" fill="#111111" font-size="18">2. xác minh — repository</text></g><g id="node-b"><rect x="680" y="360" width="400" height="170" fill="#ffffff" stroke="#111111"/><text x="700" y="420" fill="#111111" font-size="18">3. DYN-PUBLISH target — Đích có bằng chứng</text></g></svg>
+<!-- Pages: 1 -->
+<svg width="1030pt" height="701pt"
+ viewBox="0.00 0.00 1030.00 701.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-labelledby="DYN-PUBLISH-title DYN-PUBLISH-desc" preserveAspectRatio="xMidYMid meet" style="background:#ffffff;max-width:100%;height:auto">
+<title id="DYN-PUBLISH-title">Xuất bản: stage, verify, commit, retry resume và ingest catalog — DYN-PUBLISH</title>
+<desc id="DYN-PUBLISH-desc">Sơ đồ dynamic gồm 6 nút và 4 quan hệ.</desc>
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(15.05 686.25)">
+<!-- author -->
+<g id="node1" class="node">
+<title>author</title>
+<polygon fill="#dbeafe" stroke="#1d4ed8" stroke-width="0" points="320.04,-671.2 0,-671.2 0,-491.2 320.04,-491.2 320.04,-671.2"/>
+<text xml:space="preserve" text-anchor="start" x="66.65" y="-573.2" font-family="Arial" font-size="20.00" fill="#111827">Tác giả quyết định</text>
+</g>
+<!-- verify -->
+<g id="node2" class="node">
+<title>verify</title>
+<polygon fill="#dbeafe" stroke="#1d4ed8" stroke-width="0" points="320.04,-425.6 0,-425.6 0,-245.6 320.04,-245.6 320.04,-425.6"/>
+<text xml:space="preserve" text-anchor="start" x="75" y="-337.4" font-family="Arial" font-size="20.00" fill="#111827">Xác minh kiến trúc</text>
+<text xml:space="preserve" text-anchor="start" x="131.48" y="-316.4" font-family="Arial" font-size="13.00" fill="#1e3a8a">repository</text>
+</g>
+<!-- publish -->
+<g id="node3" class="node">
+<title>publish</title>
+<polygon fill="#dbeafe" stroke="#1d4ed8" stroke-width="0" points="320.04,-180 0,-180 0,0 320.04,0 320.04,-180"/>
+<text xml:space="preserve" text-anchor="start" x="41.64" y="-91.8" font-family="Arial" font-size="20.00" fill="#111827">Xuất bản có kiểm chứng</text>
+<text xml:space="preserve" text-anchor="start" x="128.59" y="-70.8" font-family="Arial" font-size="13.00" fill="#1e3a8a">locked&#45;tool</text>
+</g>
+<!-- adapters_instance -->
+<g id="node4" class="node">
+<title>adapters_instance</title>
+<polygon fill="#dbeafe" stroke="#1d4ed8" stroke-width="0" points="830.04,-671.2 510,-671.2 510,-491.2 830.04,-491.2 830.04,-671.2"/>
+<text xml:space="preserve" text-anchor="start" x="563.85" y="-583" font-family="Arial" font-size="20.00" fill="#111827">Bộ điều hợp metadata</text>
+<text xml:space="preserve" text-anchor="start" x="627.02" y="-562" font-family="Arial" font-size="13.00" fill="#1e3a8a">OpenMetadata</text>
+</g>
+<!-- retail_iceberg -->
+<g id="node5" class="node">
+<title>retail_iceberg</title>
+<polygon fill="#dbeafe" stroke="#1d4ed8" stroke-width="0" points="660.04,-425.6 340,-425.6 340,-245.6 660.04,-245.6 660.04,-425.6"/>
+<text xml:space="preserve" text-anchor="start" x="399.97" y="-337.4" font-family="Arial" font-size="20.00" fill="#111827">Catalog vật lý Iceberg</text>
+<text xml:space="preserve" text-anchor="start" x="459.2" y="-316.4" font-family="Arial" font-size="13.00" fill="#1e3a8a">Iceberg REST</text>
+</g>
+<!-- retail_duckdb -->
+<g id="node6" class="node">
+<title>retail_duckdb</title>
+<polygon fill="#dbeafe" stroke="#1d4ed8" stroke-width="0" points="1000.04,-425.6 680,-425.6 680,-245.6 1000.04,-245.6 1000.04,-425.6"/>
+<text xml:space="preserve" text-anchor="start" x="742.75" y="-337.4" font-family="Arial" font-size="20.00" fill="#111827">Catalog logic DuckDB</text>
+<text xml:space="preserve" text-anchor="start" x="816.18" y="-316.4" font-family="Arial" font-size="13.00" fill="#1e3a8a">DuckDB</text>
+</g>
+<!-- author&#45;&gt;verify -->
+<g id="edge1" class="edge">
+<title>author&#45;&gt;verify</title>
+<path fill="none" stroke="#374151" stroke-width="2" stroke-dasharray="5,2" d="M160.02,-491.22C160.02,-473.19 160.02,-454.11 160.02,-435.75"/>
+<polygon fill="#374151" stroke="#374151" stroke-width="2" points="162.65,-435.87 160.02,-428.37 157.4,-435.87 162.65,-435.87"/>
+<polygon fill="#f8fafc" fill-opacity="0.627451" stroke="none" points="163.02,-438.6 163.02,-478.2 187.02,-478.2 187.02,-438.6 163.02,-438.6"/>
+<text xml:space="preserve" text-anchor="start" x="171.13" y="-455.2" font-family="Arial" font-weight="bold" font-size="14.00" fill="#111827">0</text>
+<polygon fill="#f8fafc" fill-opacity="0.627451" stroke="none" points="190.02,-438.6 190.02,-478.2 273.06,-478.2 273.06,-438.6 190.02,-438.6"/>
+<text xml:space="preserve" text-anchor="start" x="193.02" y="-461.2" font-family="Arial" font-size="14.00" fill="#111827">quyết định</text>
+<text xml:space="preserve" text-anchor="start" x="200.81" y="-444.4" font-family="Arial" font-size="14.00" fill="#111827">repository</text>
+</g>
+<!-- verify&#45;&gt;publish -->
+<g id="edge2" class="edge">
+<title>verify&#45;&gt;publish</title>
+<path fill="none" stroke="#374151" stroke-width="2" stroke-dasharray="5,2" d="M160.02,-245.62C160.02,-227.59 160.02,-208.51 160.02,-190.15"/>
+<polygon fill="#374151" stroke="#374151" stroke-width="2" points="162.65,-190.27 160.02,-182.77 157.4,-190.27 162.65,-190.27"/>
+<polygon fill="#f8fafc" fill-opacity="0.627451" stroke="none" points="163.02,-193 163.02,-232.6 187.02,-232.6 187.02,-193 163.02,-193"/>
+<text xml:space="preserve" text-anchor="start" x="171.13" y="-209.6" font-family="Arial" font-weight="bold" font-size="14.00" fill="#111827">1</text>
+<polygon fill="#f8fafc" fill-opacity="0.627451" stroke="none" points="190.02,-193 190.02,-232.6 276.96,-232.6 276.96,-193 190.02,-193"/>
+<text xml:space="preserve" text-anchor="start" x="193.02" y="-215.6" font-family="Arial" font-size="14.00" fill="#111827">bằng chứng</text>
+<text xml:space="preserve" text-anchor="start" x="199.64" y="-198.8" font-family="Arial" font-size="14.00" fill="#111827">locked&#45;tool</text>
+</g>
+<!-- adapters_instance&#45;&gt;retail_iceberg -->
+<g id="edge3" class="edge">
+<title>adapters_instance&#45;&gt;retail_iceberg</title>
+<path fill="none" stroke="#374151" stroke-width="2" stroke-dasharray="5,2" d="M607.92,-491.22C594.93,-472.6 581.16,-452.87 567.97,-433.96"/>
+<polygon fill="#374151" stroke="#374151" stroke-width="2" points="570.12,-432.47 563.68,-427.82 565.82,-435.47 570.12,-432.47"/>
+<polygon fill="#f8fafc" fill-opacity="0.627451" stroke="none" points="603.25,-438.6 603.25,-478.2 627.25,-478.2 627.25,-438.6 603.25,-438.6"/>
+<text xml:space="preserve" text-anchor="start" x="611.35" y="-455.2" font-family="Arial" font-weight="bold" font-size="14.00" fill="#111827">2</text>
+<polygon fill="#f8fafc" fill-opacity="0.627451" stroke="none" points="630.25,-438.6 630.25,-478.2 728.87,-478.2 728.87,-438.6 630.25,-438.6"/>
+<text xml:space="preserve" text-anchor="start" x="633.64" y="-461.2" font-family="Arial" font-size="14.00" fill="#111827">ingest physical</text>
+<text xml:space="preserve" text-anchor="start" x="633.25" y="-444.4" font-family="Arial" font-size="14.00" fill="#111827">OpenMetadata</text>
+</g>
+<!-- adapters_instance&#45;&gt;retail_duckdb -->
+<g id="edge4" class="edge">
+<title>adapters_instance&#45;&gt;retail_duckdb</title>
+<path fill="none" stroke="#374151" stroke-width="2" stroke-dasharray="5,2" d="M732.12,-491.22C745.11,-472.6 758.88,-452.87 772.07,-433.96"/>
+<polygon fill="#374151" stroke="#374151" stroke-width="2" points="774.22,-435.47 776.36,-427.82 769.92,-432.47 774.22,-435.47"/>
+<polygon fill="#f8fafc" fill-opacity="0.627451" stroke="none" points="773.25,-438.6 773.25,-478.2 797.25,-478.2 797.25,-438.6 773.25,-438.6"/>
+<text xml:space="preserve" text-anchor="start" x="781.35" y="-455.2" font-family="Arial" font-weight="bold" font-size="14.00" fill="#111827">3</text>
+<polygon fill="#f8fafc" fill-opacity="0.627451" stroke="none" points="800.25,-438.6 800.25,-478.2 898.87,-478.2 898.87,-438.6 800.25,-438.6"/>
+<text xml:space="preserve" text-anchor="start" x="809.09" y="-461.2" font-family="Arial" font-size="14.00" fill="#111827">ingest logical</text>
+<text xml:space="preserve" text-anchor="start" x="803.25" y="-444.4" font-family="Arial" font-size="14.00" fill="#111827">OpenMetadata</text>
+</g>
+</g>
+</svg>

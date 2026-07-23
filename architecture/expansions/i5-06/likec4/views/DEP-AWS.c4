@@ -1,5 +1,15 @@
-view DEP-AWS {
-  title "private-subnet; OpenMetadata compute database search; adapters_instance -> retail_instance"
-  include author verify publish restore adapters_instance retail_instance
-  deployment private-subnet
+views {
+  deployment view DEP-AWS {
+    title 'Triển khai private-subnet; OpenMetadata compute, database và search; adapters_instance -> retail_instance'
+    autoLayout TopBottom 20 20
+    style * {
+      size sm
+    }
+    include private-subnet
+    include private-subnet.adapters_instance
+    include private-subnet.retail_instance
+    include private-subnet.metadata_compute
+    include private-subnet.metadata_database
+    include private-subnet.metadata_search
+  }
 }

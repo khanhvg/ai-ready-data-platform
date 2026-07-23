@@ -1,5 +1,14 @@
-DYN-PUBLISH — Stage, verify, commit, retry resume và ingest catalog
-1. DYN-PUBLISH source — Nguồn quyết định
-2. xác minh — repository
-3. DYN-PUBLISH target — Đích có bằng chứng
-Biên: private-subnet
+Xuất bản: stage, verify, commit, retry resume và ingest catalog — DYN-PUBLISH
+Loại view: dynamic
+Nút:
+1. author | Tác giả quyết định | công nghệ=không áp dụng | biên=gốc
+2. verify | Xác minh kiến trúc | công nghệ=repository | biên=gốc
+3. publish | Xuất bản có kiểm chứng | công nghệ=locked-tool | biên=gốc
+4. adapters_instance | Bộ điều hợp metadata | công nghệ=OpenMetadata | biên=gốc
+5. retail_iceberg | Catalog vật lý Iceberg | công nghệ=Iceberg REST | biên=gốc
+6. retail_duckdb | Catalog logic DuckDB | công nghệ=DuckDB | biên=gốc
+Quan hệ:
+0. author -> verify | quyết định | công nghệ=repository
+1. verify -> publish | bằng chứng | công nghệ=locked-tool
+2. adapters_instance -> retail_iceberg | ingest physical | công nghệ=OpenMetadata
+3. adapters_instance -> retail_duckdb | ingest logical | công nghệ=OpenMetadata

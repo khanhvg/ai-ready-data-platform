@@ -1,8 +1,48 @@
-specification architecture-curriculum
-relation author -> verify label "quyết định" technology "repository"
-relation verify -> publish label "bằng chứng" technology "locked-tool"
-relation publish -> restore label "khôi phục" technology "repository"
-relation adapters_instance -> retail_iceberg label "ingest physical" technology "OpenMetadata"
-relation adapters_instance -> retail_duckdb label "ingest logical" technology "OpenMetadata"
-deployment private-subnet binds DEP-AWS
-boundary trust-data-platform contains publish restore
+model {
+  author = actor 'Tác giả quyết định'
+  verify = system 'Xác minh kiến trúc' {
+    technology 'repository'
+  }
+  publish = container 'Xuất bản có kiểm chứng' {
+    technology 'locked-tool'
+  }
+  restore = container 'Khôi phục có bằng chứng' {
+    technology 'repository'
+  }
+  adapters_instance = system 'Bộ điều hợp metadata' {
+    technology 'OpenMetadata'
+  }
+  retail_instance = database 'Kho bán lẻ'
+  retail_iceberg = database 'Catalog vật lý Iceberg' {
+    technology 'Iceberg REST'
+  }
+  retail_duckdb = database 'Catalog logic DuckDB' {
+    technology 'DuckDB'
+  }
+
+  author -> verify 'quyết định' { technology 'repository' }
+  verify -> publish 'bằng chứng' { technology 'locked-tool' }
+  publish -> restore 'khôi phục' { technology 'repository' }
+  adapters_instance -> retail_iceberg 'ingest physical' { technology 'OpenMetadata' }
+  adapters_instance -> retail_duckdb 'ingest logical' { technology 'OpenMetadata' }
+}
+
+deployment {
+  private-subnet = private_subnet 'Mạng con riêng tư' {
+    adapters_instance = instanceOf adapters_instance
+    retail_instance = instanceOf retail_instance
+    metadata_compute = compute 'OpenMetadata compute'
+    metadata_database = state 'OpenMetadata database'
+    metadata_search = state 'OpenMetadata search'
+
+    adapters_instance -> retail_instance 'nạp catalog' {
+      technology 'OpenMetadata'
+    }
+    metadata_compute -> metadata_database 'ghi metadata' {
+      technology 'PostgreSQL'
+    }
+    metadata_compute -> metadata_search 'lập chỉ mục tìm kiếm' {
+      technology 'Elasticsearch'
+    }
+  }
+}

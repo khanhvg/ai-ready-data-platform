@@ -1,5 +1,10 @@
-view DYN-OFFICE {
-  title "Mở văn phòng, readiness, drain checkpoint và đóng"
-  include author verify publish restore adapters_instance retail_instance
-  deployment private-subnet
+views {
+  dynamic view DYN-OFFICE {
+    title 'Mở văn phòng, readiness, drain checkpoint và đóng'
+    autoLayout TopBottom 20 20
+    author -> verify 'mở văn phòng' { technology 'repository' }
+    verify -> publish 'readiness' { technology 'locked-tool' }
+    publish -> verify 'drain checkpoint' { technology 'repository' }
+    verify -> author 'đóng văn phòng' { technology 'repository' }
+  }
 }

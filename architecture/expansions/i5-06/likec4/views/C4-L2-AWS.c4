@@ -1,5 +1,15 @@
-view C4-L2-AWS {
-  title "Biên sở hữu container và trust boundary"
-  include author verify publish restore adapters_instance retail_instance
-  deployment private-subnet
+views {
+  view C4-L2-AWS {
+    title 'Biên sở hữu container và trust boundary'
+    autoLayout TopBottom 20 20
+    style * {
+      size sm
+    }
+    include author
+    include verify
+    group 'trust-data-platform' {
+      include publish
+      include restore
+    }
+  }
 }

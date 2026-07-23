@@ -1,5 +1,11 @@
-DYN-OFFICE — Mở văn phòng, readiness, drain checkpoint và đóng
-1. DYN-OFFICE source — Nguồn quyết định
-2. xác minh — repository
-3. DYN-OFFICE target — Đích có bằng chứng
-Biên: private-subnet
+Mở văn phòng, readiness, drain checkpoint và đóng — DYN-OFFICE
+Loại view: dynamic
+Nút:
+1. author | Tác giả quyết định | công nghệ=không áp dụng | biên=gốc
+2. verify | Xác minh kiến trúc | công nghệ=repository | biên=gốc
+3. publish | Xuất bản có kiểm chứng | công nghệ=locked-tool | biên=gốc
+Quan hệ:
+0. author -> verify | mở văn phòng | công nghệ=repository
+1. verify -> publish | readiness | công nghệ=locked-tool
+2. publish -> verify | drain checkpoint | công nghệ=repository
+3. verify -> author | đóng văn phòng | công nghệ=repository

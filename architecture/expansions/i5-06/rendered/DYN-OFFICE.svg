@@ -1,1 +1,72 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 1200 675" style="background:#ffffff"><title>DYN-OFFICE architecture decision</title><desc>Mở văn phòng, readiness, drain checkpoint và đóng; văn bản thay thế tiếng Việt</desc><g id="boundary-private" aria-label="Biên private-subnet"><rect x="40" y="40" width="1120" height="580" fill="#ffffff" stroke="#111111"/></g><g id="node-a"><rect x="80" y="100" width="360" height="160" fill="#ffffff" stroke="#111111"/><text x="100" y="150" fill="#111111" font-size="18">1. DYN-OFFICE source — Nguồn quyết định</text></g><g id="relation-1"><path d="M440 180 L700 420" stroke="#111111"/><text x="500" y="280" fill="#111111" font-size="18">2. xác minh — repository</text></g><g id="node-b"><rect x="680" y="360" width="400" height="170" fill="#ffffff" stroke="#111111"/><text x="700" y="420" fill="#111111" font-size="18">3. DYN-OFFICE target — Đích có bằng chứng</text></g></svg>
+<!-- Pages: 1 -->
+<svg width="388pt" height="701pt"
+ viewBox="0.00 0.00 388.00 701.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-labelledby="DYN-OFFICE-title DYN-OFFICE-desc" preserveAspectRatio="xMidYMid meet" style="background:#ffffff;max-width:100%;height:auto">
+<title id="DYN-OFFICE-title">Mở văn phòng, readiness, drain checkpoint và đóng — DYN-OFFICE</title>
+<desc id="DYN-OFFICE-desc">Sơ đồ dynamic gồm 3 nút và 4 quan hệ.</desc>
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(15.05 686.25)">
+<!-- author -->
+<g id="node1" class="node">
+<title>author</title>
+<polygon fill="#dbeafe" stroke="#1d4ed8" stroke-width="0" points="320.04,-671.2 0,-671.2 0,-491.2 320.04,-491.2 320.04,-671.2"/>
+<text xml:space="preserve" text-anchor="start" x="66.65" y="-573.2" font-family="Arial" font-size="20.00" fill="#111827">Tác giả quyết định</text>
+</g>
+<!-- verify -->
+<g id="node2" class="node">
+<title>verify</title>
+<polygon fill="#dbeafe" stroke="#1d4ed8" stroke-width="0" points="320.04,-425.6 0,-425.6 0,-245.6 320.04,-245.6 320.04,-425.6"/>
+<text xml:space="preserve" text-anchor="start" x="75" y="-337.4" font-family="Arial" font-size="20.00" fill="#111827">Xác minh kiến trúc</text>
+<text xml:space="preserve" text-anchor="start" x="131.48" y="-316.4" font-family="Arial" font-size="13.00" fill="#1e3a8a">repository</text>
+</g>
+<!-- publish -->
+<g id="node3" class="node">
+<title>publish</title>
+<polygon fill="#dbeafe" stroke="#1d4ed8" stroke-width="0" points="320.04,-180 0,-180 0,0 320.04,0 320.04,-180"/>
+<text xml:space="preserve" text-anchor="start" x="41.64" y="-91.8" font-family="Arial" font-size="20.00" fill="#111827">Xuất bản có kiểm chứng</text>
+<text xml:space="preserve" text-anchor="start" x="128.59" y="-70.8" font-family="Arial" font-size="13.00" fill="#1e3a8a">locked&#45;tool</text>
+</g>
+<!-- author&#45;&gt;verify -->
+<g id="edge1" class="edge">
+<title>author&#45;&gt;verify</title>
+<path fill="none" stroke="#374151" stroke-width="2" stroke-dasharray="5,2" d="M86.43,-491.32C84.94,-487.98 83.6,-484.61 82.42,-481.2 75.81,-462.04 75.81,-454.76 82.42,-435.6 82.49,-435.39 82.57,-435.17 82.64,-434.96"/>
+<polygon fill="#374151" stroke="#374151" stroke-width="2" points="84.96,-436.23 85.31,-428.29 80.09,-434.28 84.96,-436.23"/>
+<polygon fill="#f8fafc" fill-opacity="0.627451" stroke="none" points="85.42,-438.6 85.42,-478.2 109.42,-478.2 109.42,-438.6 85.42,-438.6"/>
+<text xml:space="preserve" text-anchor="start" x="93.53" y="-455.2" font-family="Arial" font-weight="bold" font-size="14.00" fill="#111827">0</text>
+<polygon fill="#f8fafc" fill-opacity="0.627451" stroke="none" points="112.42,-438.6 112.42,-478.2 211.02,-478.2 211.02,-438.6 112.42,-438.6"/>
+<text xml:space="preserve" text-anchor="start" x="115.42" y="-461.2" font-family="Arial" font-size="14.00" fill="#111827">mở văn phòng</text>
+<text xml:space="preserve" text-anchor="start" x="130.99" y="-444.4" font-family="Arial" font-size="14.00" fill="#111827">repository</text>
+</g>
+<!-- author&#45;&gt;verify -->
+<g id="edge4" class="edge">
+<title>author&#45;&gt;verify</title>
+<path fill="none" stroke="#374151" stroke-width="2" stroke-dasharray="5,2" d="M214.94,-481.52C214.96,-481.41 214.99,-481.31 215.02,-481.2 220.1,-461.58 220.1,-455.22 215.02,-435.6 214.13,-432.17 213.1,-428.74 211.94,-425.32"/>
+<polygon fill="#374151" stroke="#374151" stroke-width="2" points="212.46,-480.65 212.81,-488.58 217.49,-482.16 212.46,-480.65"/>
+<polygon fill="#f8fafc" fill-opacity="0.627451" stroke="none" points="221.83,-438.6 221.83,-478.2 245.83,-478.2 245.83,-438.6 221.83,-438.6"/>
+<text xml:space="preserve" text-anchor="start" x="229.94" y="-455.2" font-family="Arial" font-weight="bold" font-size="14.00" fill="#111827">3</text>
+<polygon fill="#f8fafc" fill-opacity="0.627451" stroke="none" points="248.83,-438.6 248.83,-478.2 355.23,-478.2 355.23,-438.6 248.83,-438.6"/>
+<text xml:space="preserve" text-anchor="start" x="251.83" y="-461.2" font-family="Arial" font-size="14.00" fill="#111827">đóng văn phòng</text>
+<text xml:space="preserve" text-anchor="start" x="271.3" y="-444.4" font-family="Arial" font-size="14.00" fill="#111827">repository</text>
+</g>
+<!-- verify&#45;&gt;publish -->
+<g id="edge2" class="edge">
+<title>verify&#45;&gt;publish</title>
+<path fill="none" stroke="#374151" stroke-width="2" stroke-dasharray="5,2" d="M97.8,-245.63C96.5,-242.31 95.33,-238.96 94.32,-235.6 88.46,-216.2 88.46,-209.4 94.32,-190 94.35,-189.9 94.38,-189.79 94.41,-189.69"/>
+<polygon fill="#374151" stroke="#374151" stroke-width="2" points="96.81,-190.77 96.8,-182.83 91.85,-189.05 96.81,-190.77"/>
+<polygon fill="#f8fafc" fill-opacity="0.627451" stroke="none" points="97.32,-193 97.32,-232.6 121.32,-232.6 121.32,-193 97.32,-193"/>
+<text xml:space="preserve" text-anchor="start" x="105.42" y="-209.6" font-family="Arial" font-weight="bold" font-size="14.00" fill="#111827">1</text>
+<polygon fill="#f8fafc" fill-opacity="0.627451" stroke="none" points="124.32,-193 124.32,-232.6 198.02,-232.6 198.02,-193 124.32,-193"/>
+<text xml:space="preserve" text-anchor="start" x="130.82" y="-215.6" font-family="Arial" font-size="14.00" fill="#111827">readiness</text>
+<text xml:space="preserve" text-anchor="start" x="127.32" y="-198.8" font-family="Arial" font-size="14.00" fill="#111827">locked&#45;tool</text>
+</g>
+<!-- verify&#45;&gt;publish -->
+<g id="edge3" class="edge">
+<title>verify&#45;&gt;publish</title>
+<path fill="none" stroke="#374151" stroke-width="2" stroke-dasharray="5,2" d="M201.73,-235.6C206,-214.05 205.55,-207.38 202.02,-190 201.33,-186.62 200.52,-183.2 199.62,-179.78"/>
+<polygon fill="#374151" stroke="#374151" stroke-width="2" points="199.18,-234.98 200.23,-242.85 204.32,-236.04 199.18,-234.98"/>
+<polygon fill="#f8fafc" fill-opacity="0.627451" stroke="none" points="208.05,-193 208.05,-232.6 232.05,-232.6 232.05,-193 208.05,-193"/>
+<text xml:space="preserve" text-anchor="start" x="216.16" y="-209.6" font-family="Arial" font-weight="bold" font-size="14.00" fill="#111827">2</text>
+<polygon fill="#f8fafc" fill-opacity="0.627451" stroke="none" points="235.05,-193 235.05,-232.6 343,-232.6 343,-193 235.05,-193"/>
+<text xml:space="preserve" text-anchor="start" x="238.05" y="-215.6" font-family="Arial" font-size="14.00" fill="#111827">drain checkpoint</text>
+<text xml:space="preserve" text-anchor="start" x="258.29" y="-198.8" font-family="Arial" font-size="14.00" fill="#111827">repository</text>
+</g>
+</g>
+</svg>

@@ -1,5 +1,13 @@
-DYN-RESTORE — Khôi phục object, catalog, analytics, governance và evidence
-1. DYN-RESTORE source — Nguồn quyết định
-2. xác minh — repository
-3. DYN-RESTORE target — Đích có bằng chứng
-Biên: private-subnet
+Khôi phục object, catalog, analytics, governance và evidence — DYN-RESTORE
+Loại view: dynamic
+Nút:
+1. author | Tác giả quyết định | công nghệ=không áp dụng | biên=gốc
+2. restore | Khôi phục có bằng chứng | công nghệ=repository | biên=gốc
+3. retail_iceberg | Catalog vật lý Iceberg | công nghệ=Iceberg REST | biên=gốc
+4. retail_duckdb | Catalog logic DuckDB | công nghệ=DuckDB | biên=gốc
+5. adapters_instance | Bộ điều hợp metadata | công nghệ=OpenMetadata | biên=gốc
+Quan hệ:
+0. author -> restore | yêu cầu khôi phục | công nghệ=repository
+1. restore -> retail_iceberg | khôi phục object và catalog | công nghệ=Iceberg REST
+2. restore -> retail_duckdb | xác minh analytics | công nghệ=DuckDB
+3. restore -> adapters_instance | khôi phục governance và evidence | công nghệ=OpenMetadata

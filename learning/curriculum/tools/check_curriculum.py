@@ -9,6 +9,7 @@ import re
 import stat
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Sequence
 
@@ -217,7 +218,11 @@ def _validate_trace(root: Path, curriculum: dict[str, object]) -> None:
     if bridge.get("runtimeClaim") is not False:
         raise _issue("I11_BRIDGE_RUNTIME_CLAIM")
     source = (root / "architecture/expansions/i5-06/likec4/model/architecture-curriculum.c4").read_text()
-    relations = [line.strip() for line in source.splitlines() if line.strip().startswith("relation ")]
+    relations = [
+        line.strip().removeprefix("relation ")
+        for line in source.splitlines()
+        if " -> " in line and not line.strip().startswith("//")
+    ]
     if len(relations) >= 3 and not (
         "author -> verify" in relations[0]
         and "verify -> publish" in relations[1]
@@ -252,12 +257,10 @@ def _validate_released_and_protected(root: Path) -> None:
             raise _issue("I11_PROTECTED_IDENTITY_DRIFT")
 
 
-def _validate_render(root: Path) -> None:
-    rendered = root / "architecture/expansions/i5-06/rendered"
-    if (rendered / "repeat-render.svg").exists():
-        raise _issue("I11_RENDER_NONDETERMINISTIC")
+def _validate_legacy_render_contract(root: Path, rendered: Path, manifest: Path) -> None:
+    """Preserve the frozen C2 generic fixture contract while v2 proves real rendering."""
+
     source = root / "architecture/expansions/i5-06/likec4/model/architecture-curriculum.c4"
-    manifest = rendered / "render-manifest.json"
     if source.stat().st_mtime_ns > manifest.stat().st_mtime_ns:
         raise _issue("I11_RENDER_STALE")
     svg = (rendered / "C4-L2-AWS.svg").read_text()
@@ -280,12 +283,174 @@ def _validate_render(root: Path) -> None:
         raise _issue("I11_VISUAL_OVERLAP")
     if 'width="12"' in svg:
         raise _issue("I11_VISUAL_CLIPPING")
-    if re.search(r"<text[^>]+fill=\"#ffffff\"", svg):
+    if re.search(r'<text[^>]+fill="#ffffff"', svg):
         raise _issue("I11_VISUAL_CONTRAST")
     if "<title>C4-L2-AWS architecture decision</title>" not in svg:
         raise _issue("I11_VISUAL_ACCESSIBILITY")
     if "different visible target" in text:
         raise _issue("I11_VISUAL_TEXT_PARITY")
+    evidence = root / ".claude/evidence/control/human-review.json"
+    if (root / ".claude/evidence/control").exists() and not evidence.exists():
+        raise _issue("I11_VISUAL_HUMAN_REVIEW_MISSING")
+
+
+def _validate_render(root: Path) -> None:
+    rendered = root / "architecture/expansions/i5-06/rendered"
+    if (rendered / "repeat-render.svg").exists():
+        raise _issue("I11_RENDER_NONDETERMINISTIC")
+    manifest = rendered / "render-manifest.json"
+    source_paths = (
+        "architecture/expansions/i5-06/likec4/specification.c4",
+        "architecture/expansions/i5-06/likec4/model/architecture-curriculum.c4",
+        "architecture/expansions/i5-06/likec4/view-manifest.yaml",
+        "architecture/expansions/i5-06/likec4/views/C4-L2-AWS.c4",
+        "architecture/expansions/i5-06/likec4/views/DEP-AWS.c4",
+        "architecture/expansions/i5-06/likec4/views/DYN-OFFICE.c4",
+        "architecture/expansions/i5-06/likec4/views/DYN-PUBLISH.c4",
+        "architecture/expansions/i5-06/likec4/views/DYN-RESTORE.c4",
+    )
+    expected_views = ("C4-L2-AWS", "DEP-AWS", "DYN-OFFICE", "DYN-PUBLISH", "DYN-RESTORE")
+    try:
+        render_manifest = json.loads(manifest.read_text())
+    except (OSError, json.JSONDecodeError):
+        raise _issue("I11_RENDER_STALE")
+    if isinstance(render_manifest, dict) and render_manifest.get("schemaVersion") == "render-manifest-v1":
+        _validate_legacy_render_contract(root, rendered, manifest)
+        return
+    if (
+        not isinstance(render_manifest, dict)
+        or render_manifest.get("schemaVersion") != "i5-06-render-manifest-v2"
+        or render_manifest.get("renderer") != "locked-likec4-dot-wasm-graphviz"
+        or render_manifest.get("deterministicRuns") != 2
+        or render_manifest.get("inProcessGraphvizPasses") != 2
+        or render_manifest.get("viewports") != [1440, 1024]
+    ):
+        raise _issue("I11_RENDER_STALE")
+    tool_identity = render_manifest.get("toolIdentity")
+    if not isinstance(tool_identity, dict) or tool_identity.get("likec4") != "1.59.1":
+        raise _issue("I11_DEPENDENCY_LOCK_DRIFT")
+    if tool_identity.get("graphvizPackage") != "1.22.2":
+        raise _issue("I11_DEPENDENCY_LOCK_DRIFT")
+    source_hasher = hashlib.sha256()
+    source_rows: list[dict[str, object]] = []
+    for relative in source_paths:
+        path = root / relative
+        if not path.is_file() or path.is_symlink():
+            raise _issue("I11_RENDER_STALE")
+        value = path.read_bytes()
+        source_rows.append({"bytes": len(value), "path": relative, "sha256": hashlib.sha256(value).hexdigest()})
+        source_hasher.update(relative.encode())
+        source_hasher.update(b"\0")
+        source_hasher.update(value)
+        source_hasher.update(b"\0")
+    if render_manifest.get("sourceFiles") != source_rows or render_manifest.get("sourceSha256") != source_hasher.hexdigest():
+        raise _issue("I11_RENDER_STALE")
+    view_rows = render_manifest.get("views")
+    if not isinstance(view_rows, list) or tuple(row.get("viewId") for row in view_rows if isinstance(row, dict)) != expected_views:
+        raise _issue("I11_VIEW_COVERAGE_MISSING")
+    expected_files = {"render-manifest.json"}
+    for view_id in expected_views:
+        expected_files.update({f"{view_id}.svg", f"{view_id}.txt"})
+    if {path.name for path in rendered.iterdir() if path.is_file()} != expected_files:
+        raise _issue("I11_RENDER_STALE")
+    for row in view_rows:
+        if not isinstance(row, dict):
+            raise _issue("I11_RENDER_STALE")
+        view_id = str(row["viewId"])
+        svg_path = rendered / f"{view_id}.svg"
+        text_path = rendered / f"{view_id}.txt"
+        svg = svg_path.read_text()
+        text = text_path.read_text()
+        published = f"{svg}\n{text}\n{manifest.read_text()}"
+        if re.search(
+            r"<script|javascript:|<foreignObject|<!ENTITY|\son[a-z]+\s*=|(?:href|src)\s*=\s*[\"'](?!#)",
+            svg,
+            re.I,
+        ):
+            raise _issue("I11_RENDER_UNSAFE")
+        if re.search(r"(?:/private/|/Users/|/tmp/|pid[=:])", published, re.I):
+            raise _issue("I11_PRIVATE_PATH_DISCLOSURE")
+        if "fuente" in text:
+            raise _issue("I11_VISUAL_LANGUAGE")
+        if "9. C4" in svg:
+            raise _issue("I11_VISUAL_NUMBERING")
+        if re.search(r'font-size="(?:[0-9](?:\.[0-9]+)?)"', svg):
+            raise _issue("I11_VISUAL_FIT_FONT")
+        view_box = re.search(r'viewBox="([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)"', svg)
+        if not view_box:
+            raise _issue("I11_VISUAL_CLIPPING")
+        width, height = float(view_box.group(3)), float(view_box.group(4))
+        if width <= 0 or height <= 0 or max(width / height, height / width) > 6:
+            raise _issue("I11_VISUAL_ASPECT")
+        if "background:#000000" in svg or "background:#000" in svg:
+            raise _issue("I11_VISUAL_CANVAS")
+        if 'x="100" y="130"' in svg and svg.count('x="100" y="130"') > 1:
+            raise _issue("I11_VISUAL_OVERLAP")
+        if 'width="12"' in svg:
+            raise _issue("I11_VISUAL_CLIPPING")
+        if re.search(r'<text[^>]+fill="#(?:fff|ffffff)"', svg, re.I) or "#194b9e" in svg.lower():
+            raise _issue("I11_VISUAL_CONTRAST")
+        try:
+            document = ET.fromstring(svg)
+        except ET.ParseError:
+            raise _issue("I11_RENDER_UNSAFE") from None
+        if document.attrib.get("role") != "img" or "aria-labelledby" not in document.attrib:
+            raise _issue("I11_VISUAL_ACCESSIBILITY")
+        titles = [item for item in document if item.tag.endswith("title")]
+        descriptions = [item for item in document if item.tag.endswith("desc")]
+        if not titles or not descriptions or view_id not in "".join(item.text or "" for item in titles):
+            raise _issue("I11_VISUAL_ACCESSIBILITY")
+        visible_text = " ".join(
+            "".join(item.itertext()) for item in document.iter() if item.tag.endswith("text")
+        ).casefold()
+        relation_lines = [line for line in text.splitlines() if " -> " in line and " | " in line]
+        node_lines = [line for line in text.splitlines() if " | " in line and " -> " not in line]
+        for line in node_lines:
+            parts = line.split(" | ")
+            if len(parts) < 3 or parts[1].casefold() not in visible_text:
+                raise _issue("I11_RENDER_SEMANTIC_ERASURE")
+            technology = parts[2].removeprefix("công nghệ=")
+            if technology != "không áp dụng" and technology.casefold() not in visible_text:
+                raise _issue("I11_RENDER_SEMANTIC_ERASURE")
+        for index, line in enumerate(relation_lines):
+            parts = line.split(" | ")
+            if len(parts) < 3 or parts[1].casefold() not in visible_text:
+                raise _issue("I11_VISUAL_TEXT_PARITY")
+            technology = parts[2].removeprefix("công nghệ=")
+            if technology != "không áp dụng" and technology.casefold() not in visible_text:
+                raise _issue("I11_VISUAL_TEXT_PARITY")
+            if row.get("type") == "dynamic" and not parts[0].startswith(f"{index}."):
+                raise _issue("I11_VISUAL_NUMBERING")
+        edge_endpoints = []
+        for group in document.iter():
+            if group.attrib.get("class") != "edge":
+                continue
+            title = next((child for child in group if child.tag.endswith("title")), None)
+            if title is None or title.text is None:
+                raise _issue("I11_VISUAL_TEXT_PARITY")
+            edge_endpoints.append("".join(title.itertext()).replace(" ", ""))
+        text_endpoints = []
+        for line in relation_lines:
+            endpoint = re.match(r"^(?:\d+\.)?\s*([^|]+?)\s*\|", line)
+            if endpoint is None:
+                raise _issue("I11_VISUAL_TEXT_PARITY")
+            text_endpoints.append(endpoint.group(1).replace(" ", ""))
+        def canonical_endpoint(value: str) -> str:
+            source, target = value.split("->", 1)
+            return "<->".join(sorted((source.split(".")[-1], target.split(".")[-1])))
+
+        if sorted(map(canonical_endpoint, edge_endpoints)) != sorted(map(canonical_endpoint, text_endpoints)):
+            raise _issue("I11_VISUAL_TEXT_PARITY")
+        node_count = sum(1 for item in document.iter() if item.attrib.get("class") in {"node", "cluster"})
+        edge_count = sum(1 for item in document.iter() if item.attrib.get("class") == "edge")
+        if node_count != row.get("nodes") or edge_count != row.get("relations"):
+            raise _issue("I11_RENDER_SEMANTIC_ERASURE")
+        if "different visible target" in text:
+            raise _issue("I11_VISUAL_TEXT_PARITY")
+        if hashlib.sha256(svg.encode()).hexdigest() != row.get("svgSha256"):
+            raise _issue("I11_RENDER_SEMANTIC_ERASURE")
+        if hashlib.sha256(text.encode()).hexdigest() != row.get("textSha256"):
+            raise _issue("I11_VISUAL_TEXT_PARITY")
     evidence = root / ".claude/evidence/control/human-review.json"
     if (root / ".claude/evidence/control").exists() and not evidence.exists():
         raise _issue("I11_VISUAL_HUMAN_REVIEW_MISSING")
