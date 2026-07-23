@@ -1,53 +1,84 @@
 ---
-title: "I5-07 — Data-platform guided labs without golden semantic drift"
-description: "Kế hoạch Standard-lane theo ba stage; Stage A contract-bound candidate đã đủ dependency, Stage B/C vẫn fail-closed."
-status: in-progress
+title: I5-07 — Data-platform guided labs without golden semantic drift
+description: >-
+  Stage A đã merge; Stage B đã resolve runner/lease nhưng bị chặn bởi
+  reset-rerun recovery; Stage C chờ Issue #10 Stage B.
+status: pending
 priority: P1
 issue: 12
-branch: "plan/issue-12-data-labs"
-tags: [issue-5, i5-07, data-platform, tdd, security-s3, recovery, labs]
+branch: plan/issue-12-data-labs
+tags:
+  - issue-5
+  - i5-07
+  - data-platform
+  - tdd
+  - security-s3
+  - recovery
+  - labs
 blockedBy: []
 blocks: []
-created: "2026-07-22"
-createdBy: "ck:plan"
+created: '2026-07-22'
+createdBy: 'ck:plan'
 source: skill
-planningMode: "deep-tdd-planner-only"
-deliveryLane: "standard-lean"
-cookScope: "stage-a-only"
-plannerInputSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
-initialValidationInputSha: "24ff21db72e0d08d34b62c3280e76ab6329665eb"
-goldenAuthoritySha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
-dependencyIssue8ReleaseSha: "5644f01b4c0443a81f3af0bcce80f44c847cd986"
-dependencyIssue9ReleaseSha: ""
-dependencyIssue10StageAMergeSha: "041d4ca866e927a331e159fdf8216838b481a595"
-dependencyIssue10StageBMergeSha: ""
-stageAImplementationBaseSha: "041d4ca866e927a331e159fdf8216838b481a595"
+planningMode: deep-tdd-planner-only
+deliveryLane: standard-lean
+cookScope: none
+plannerInputSha: 24be3b34c6b0fcdbd07c5800dcab349054e34713
+initialValidationInputSha: 24ff21db72e0d08d34b62c3280e76ab6329665eb
+goldenAuthoritySha: 24be3b34c6b0fcdbd07c5800dcab349054e34713
+dependencyIssue8ReleaseSha: 5644f01b4c0443a81f3af0bcce80f44c847cd986
+dependencyIssue9ReleaseSha: 671201f78024786a9f2eba5e9e5fce7c78b4443d
+dependencyIssue9ReviewedHeadSha: 86a6c259ad384591777cf1d46f2f6c9ea6327361
+dependencyIssue10StageAMergeSha: 041d4ca866e927a331e159fdf8216838b481a595
+dependencyIssue10StageBMergeSha: ''
+stageAImplementationBaseSha: 041d4ca866e927a331e159fdf8216838b481a595
+stageAMergeSha: 8ffbd420aed8dee6f5b4b0fb6d3734e094200a87
+stageAReviewedHeadSha: 941307931b29ef8c1a75b0f75afe480690fa8424
+stageBImplementationBaseSha: 8ffbd420aed8dee6f5b4b0fb6d3734e094200a87
 stageAPathCount: 10
 stageACommandCount: 12
-currentImplementationPaths:
-  - "learning/labs/data-platform/deterministic-ingest/lab-v1.json"
-  - "learning/labs/data-platform/deterministic-ingest/content.vi.md"
-  - "learning/labs/data-platform/model-quality/lab-v1.json"
-  - "learning/labs/data-platform/model-quality/content.vi.md"
-  - "learning/labs/data-platform/weighted-metrics/lab-v1.json"
-  - "learning/labs/data-platform/weighted-metrics/content.vi.md"
-  - "learning/labs/data-platform/verify_stage_a.py"
-  - "learning/labs/data-platform/tests/test_stage_a.py"
-  - "learning/labs/data-platform/command-owner-activation.stage-a.json"
-  - "mk/issue-5/i5-07.mk"
-currentImplementationCommands:
-  - "python3 -m unittest discover -s learning/labs/data-platform/tests -p 'test_*.py'"
-  - "python3 learning/labs/data-platform/verify_stage_a.py check"
-  - "python3 learning/labs/data-platform/verify_stage_a.py self-test"
-  - "make -f mk/issue-5/i5-07.mk lake-contracts-check"
-  - "make lake-contracts-check"
-  - "make learning-contracts-check api-contracts-check evidence-contracts-check"
-  - "make lesson-check LESSON=promotion-trust"
-  - "make evidence-verify EVIDENCE=\"$EVIDENCE_LOCATOR\""
-  - "make data-contracts-check migration-contracts-check"
-  - "make help"
-  - "git diff --check"
-  - "fresh detached-worktree Stage A focused smoke (exact block in Phase 2)"
+stageBPathCount: 12
+stageBCommandCount: 16
+runnerOperationCount: 8
+stageAImplementationPaths:
+  - learning/labs/data-platform/deterministic-ingest/lab-v1.json
+  - learning/labs/data-platform/deterministic-ingest/content.vi.md
+  - learning/labs/data-platform/model-quality/lab-v1.json
+  - learning/labs/data-platform/model-quality/content.vi.md
+  - learning/labs/data-platform/weighted-metrics/lab-v1.json
+  - learning/labs/data-platform/weighted-metrics/content.vi.md
+  - learning/labs/data-platform/verify_stage_a.py
+  - learning/labs/data-platform/tests/test_stage_a.py
+  - learning/labs/data-platform/command-owner-activation.stage-a.json
+  - mk/issue-5/i5-07.mk
+stageAImplementationCommands:
+  - >-
+    python3 -m unittest discover -s learning/labs/data-platform/tests -p
+    'test_*.py'
+  - python3 learning/labs/data-platform/verify_stage_a.py check
+  - python3 learning/labs/data-platform/verify_stage_a.py self-test
+  - make -f mk/issue-5/i5-07.mk lake-contracts-check
+  - make lake-contracts-check
+  - make learning-contracts-check api-contracts-check evidence-contracts-check
+  - make lesson-check LESSON=promotion-trust
+  - make evidence-verify EVIDENCE="$EVIDENCE_LOCATOR"
+  - make data-contracts-check migration-contracts-check
+  - make help
+  - git diff --check
+  - fresh detached-worktree Stage A focused smoke (exact block in Phase 2)
+stageBImplementationPaths:
+  - learning/labs/data-platform/deterministic-ingest/lab-v1.json
+  - learning/labs/data-platform/deterministic-ingest/content.vi.md
+  - learning/labs/data-platform/model-quality/lab-v1.json
+  - learning/labs/data-platform/model-quality/content.vi.md
+  - learning/labs/data-platform/weighted-metrics/lab-v1.json
+  - learning/labs/data-platform/weighted-metrics/content.vi.md
+  - learning/labs/data-platform/verify_stage_b.py
+  - learning/labs/data-platform/tests/test_stage_b.py
+  - learning/labs/data-platform/stage-b-operation-bindings.json
+  - learning/labs/data-platform/tests/fixtures/stage-b-controlled-failures.json
+  - learning/labs/data-platform/command-owner-activation.stage-b.json
+  - mk/issue-5/i5-07.mk
 ---
 
 # I5-07 — Data-platform guided labs without golden semantic drift
@@ -58,19 +89,22 @@ Lập kế hoạch Vietnamese-first từ foundation đến mid cho các lab data
 lỗi có kiểm soát, xác minh, evidence và reset; output cuối không được là docs dump. Kế hoạch bảo
 vệ tuyệt đối semantic golden của Issue #6 tại authority SHA
 `24be3b34c6b0fcdbd07c5800dcab349054e34713`. Initial validation bắt đầu từ plan-only child
-`24ff21db72e0d08d34b62c3280e76ab6329665eb`; nó không coi label/plan/branch là release. Amendment
-hiện tại chỉ nâng authority bằng exact live merge handoffs ghi bên dưới.
+`24ff21db72e0d08d34b62c3280e76ab6329665eb`; nó không coi label/plan/branch là release.
 
-Amendment Standard lean này chỉ cấp `COOK_SCOPE=stage-a-only` cho content/verifier candidate.
-Không product code được triển khai trong audit. Runner-backed Stage B và portal-executable Stage C
-vẫn bị chặn; không lab nào được xác nhận runnable hoặc complete.
+Stage A đã merge qua PR #33 tại `8ffbd420aed8dee6f5b4b0fb6d3734e094200a87` từ reviewed head
+`941307931b29ef8c1a75b0f75afe480690fa8424`, đủ 10 paths và post-merge contract smoke. Issue #9
+đã ship qua PR #32 tại `671201f78024786a9f2eba5e9e5fce7c78b4443d`, reviewed head
+`86a6c259ad384591777cf1d46f2f6c9ea6327361`, với đúng tám operations. Fresh OrbStack consumer
+smoke tại exact Stage B base `8ffbd420...` phát hiện blocker reset-rerun trong released host
+release state; vì vậy amendment này giữ `COOK_SCOPE=none`. Stage C vẫn bị chặn bởi Issue #10
+Stage B chưa merge.
 
 ## Phases
 
 | Phase | Name | Status |
 |-------|------|--------|
 | 1 | [Dependency Amendment and Immutable Characterization](./phase-01-dependency-amendment-and-immutable-characterization.md) | Completed for Stage A; reopen for B/C |
-| 2 | [Stage A Contract-Bound Foundation Labs](./phase-02-stage-a-contract-bound-foundation-labs.md) | Pending |
+| 2 | [Stage A Contract-Bound Foundation Labs](./phase-02-stage-a-contract-bound-foundation-labs.md) | Completed |
 | 3 | [Stage B Local Runner and Data Fault Exercises](./phase-03-stage-b-local-runner-and-data-fault-exercises.md) | Pending |
 | 4 | [Stage C Portal Publication and Real Journey](./phase-04-stage-c-portal-publication-and-real-journey.md) | Pending |
 | 5 | [Release Evidence, Recovery, and PR Handoff](./phase-05-release-evidence-recovery-and-human-handoff.md) | Pending |
@@ -80,34 +114,35 @@ vẫn bị chặn; không lab nào được xác nhận runnable hoặc complete
 | Stage | Dependency bắt buộc | Phạm vi sớm nhất | Claim tối đa |
 |---|---|---|---|
 | A | Issue #8 release `5644f01b4c0443a81f3af0bcce80f44c847cd986` | 10 exact paths trong register | Contract-bound candidate; không runnable |
-| B | Exact released Issue #9 runner + lease data-contract/pipeline riêng, hẹp, được ghi nhận | Local runner/pipeline exercises, fault/recovery seams | Local exercise evidence; không browser/portal completion |
+| B | Runner merge `671201f...` + Issue #12 lease 12 paths + released I5-04 reset-rerun repair | Ba local data-fault labs; không shared data/pipeline write | Local exercise evidence; không browser/portal completion |
 | C | Exact merged runner-backed Issue #10 Stage B | Publication, renderer/API integration và real-journey E2E | Stage duy nhất được claim complete learner experience |
 
-Stage A dependency amendment này đã ghi exact SHA/path/command và sẵn sàng cook. Stage B chỉ được
-amend khi Issue #9 có exact merged runner release **và** bounded lease; Stage C chỉ được amend khi
-runner-backed Issue #10 Stage B đã merge. Không lặp per-stage red-team/security/human ceremony
-trong critical path; xem [dependency and authority register](./dependency-and-authority-register.md).
+Stage A đã merge. Stage B đã resolve runner SHA, 12-path local lease, eight-operation binding và
+16 verification entries, nhưng không được cook trước I5-04 reset-rerun repair release. Stage C chỉ
+được amend khi runner-backed Issue #10 Stage B đã merge. Không lặp per-stage red-team/security/
+human ceremony trong critical path; xem
+[dependency and authority register](./dependency-and-authority-register.md).
 
 ## Standard lean delivery path
 
-Một delivery context duy nhất giữ vai trò implementer → focused reviewer → fresh tester → PR/CI →
-merge/post-merge smoke. Reviewer phải còn `0 Critical / 0 Important`; fresh tester chạy 12 command
-entries của Stage A trên exact head, gồm focused tests, released #6/#8 blast radius và detached
-clean-checkout smoke. S3 negatives, golden immutability, reset/evidence và cloud prohibition vẫn là
-functional acceptance, không phải một audit lane riêng. Audit hiện tại không tạo PR hoặc merge.
+Sau khi blocker release được pin, một delivery context duy nhất giữ vai trò implementer → focused
+reviewer → fresh tester → PR/CI → merge/post-merge smoke. Reviewer phải còn
+`0 Critical / 0 Important`; fresh tester chạy 16 Stage B command entries trên exact head. S3
+functional negatives, golden immutability, reset/evidence và cloud prohibition vẫn là acceptance,
+không phải audit lane riêng. Audit hiện tại không tạo PR hoặc merge.
 
 ## Phạm vi học tập
 
 1. `small`, seed `42`: deterministic ingest, model, quality, grain và truth bất biến.
-2. Airflow local operators: retry, idempotency, timeout, backpressure; browser không có quyền
-   thực thi đặc quyền.
-3. Weighted/additive metric đúng và controlled failure average-of-averages sai.
-4. Atomic curated release đúng 11 assets: manifest/hash/pointer all-or-none và crash recovery.
-5. Iceberg commit/snapshot/conflict/orphan recovery trên semantics object store/catalog cục bộ đã
-   được compatibility-test thật.
-6. OpenMetadata reconciliation theo namespace/FQN chính xác: create/update/delete policy
-   idempotent, không prefix collision, không broad delete.
-7. Mọi service/pattern phải trỏ tới failure, quality attribute và evidence cụ thể; không pattern
+2. Fixed runner operations tái hiện ingest prerequisite, dbt model/quality và 11 Rill-compatible
+   Parquet marts trong private workspace.
+3. Weighted/additive metric đúng và controlled failure average-of-averages sai trên DuckDB đọc
+   `mart_fulfillment_performance` private export.
+4. Runner evidence index, reset, rerun/idempotency, timeout/resource classification và zero
+   container residue được kiểm tra thật trên OrbStack.
+5. Airflow, Iceberg và OpenMetadata là optional/blocked ở Stage B này vì tám released operations
+   không cung cấp operation tương ứng; không sửa pipeline/governance để tạo bài học giả.
+6. Mọi service/pattern phải trỏ tới failure, quality attribute và evidence cụ thể; không pattern
    theater.
 
 Mỗi lab bắt buộc có: prerequisite checks, starter, task, controlled failure, progressive hints,
@@ -116,13 +151,14 @@ verify, immutable evidence, reset, gated solution và reflection. Reflection/hin
 
 ## Ranh giới authority
 
-- Stage A được ghi đúng 10 paths trong register: Issue #12-owned
+- Stage A đã merge đúng 10 paths; Stage B lease chỉ gồm 12 Issue #12-owned paths trong register:
   `learning/labs/data-platform/**` và `mk/issue-5/i5-07.mk`.
 - Chỉ đọc: contracts/data/views/fixtures/readers Issue #6 và toàn bộ golden semantics; released
   completion/evidence authority của #8, private runner authority của #9 và renderer/API authority
   của #10. Không copy schema, tạo parallel registry, duplicate truth hoặc invented adapter.
 - Bảo vệ: root `Makefile`, `release-manifest.json`, `docs/code-standards.md`, shared contracts,
-  architecture views, portal, runner và pipeline ngoài lease chính xác.
+  architecture views, Issue #10 portal, Issue #11 `learning/curriculum/**`, runner và pipeline.
+  I5-04 repair lease là dependency riêng; Issue #12 không được dùng lease đó để sửa runner.
 - Không AWS/Terraform apply/destroy, cloud resource hoặc destructive migration. PR/merge chỉ thuộc
   Standard delivery context sau cook/review/fresh tests và không được thực hiện bởi audit này.
 
@@ -156,11 +192,11 @@ không được dùng để claim lab service-backed đã pass.
 ## Acceptance
 
 - [ ] Trace requirements/risk/threat/data architecture/test/evidence/recovery không có lỗ hổng.
-- [x] Issue #8 release, Issue #10 static Stage A merge, 10 Stage A paths và 12 Stage A commands đã
-      resolve; Issue #9 và Issue #10 runner-backed Stage B fields vẫn rỗng.
-- [x] Stage A có exact cook scope; Stage B/C có exact dependency STOP riêng.
-- [ ] Stable test IDs bao phủ ingest/model/quality, orchestration, metrics, 11-asset atomicity,
-      Iceberg, OpenMetadata, evidence, exact six-view oracle và protected semantics.
+- [x] Issue #8 release, runner PR #32, Issue #12 Stage A PR #33, 12 Stage B paths, 16 Stage B
+      commands và eight-operation binding đã resolve.
+- [x] Stage B/C có exact dependency STOP riêng; current cook scope là `none`.
+- [ ] Stable test IDs bao phủ ingest/model/quality, metrics, eight-operation recovery, evidence,
+      exact six-view oracle và protected semantics; optional-service absence được báo trung thực.
 - [ ] Pristine-checkout, observability và docs/release-impact gates có stable IDs và evidence.
 - [ ] Standard focused review có `Critical=0`, `Important=0`; fresh tests, PR/CI và post-merge
       smoke pass trên đúng delivery head.
@@ -177,7 +213,8 @@ không được dùng để claim lab service-backed đã pass.
 
 ## Open questions
 
-None. Dependency outputs are unresolved gates, not planner assumptions.
+None. I5-04 repair release và Issue #10 Stage B là unresolved gates, không phải câu hỏi để planner
+đoán.
 
 ## Validation Log
 
@@ -268,3 +305,29 @@ outputs remain unresolved gates rather than questions to guess.
   test strategy, risk model and protected baseline reconciled.
 - Active-plan findings: `Critical=0`, `Important=0`; unresolved contradictions: 0.
 - No new deep/high-assurance, red-team, security-only or human-approval audit was started.
+
+### Standard-lane Stage B dependency/lease amendment — 2026-07-23
+
+- Exact audit input: `876b5eaa79a48fc07e5d6a3a49a6152b20d39e53`.
+- Runner release: PR #32 merge `671201f78024786a9f2eba5e9e5fce7c78b4443d`, reviewed head
+  `86a6c259ad384591777cf1d46f2f6c9ea6327361`, eight operations and clean shipped smoke.
+- Stage A: PR #33 merge/implementation base
+  `8ffbd420aed8dee6f5b4b0fb6d3734e094200a87`, reviewed head
+  `941307931b29ef8c1a75b0f75afe480690fa8424`, 10 paths and post-merge contract smoke PASS.
+- Fresh detached OrbStack first cycle: three prerequisite failures classified by the runner as
+  `RUNNER_OPERATION_FAILED`; all eight released operations then passed; timeout and memory probes
+  returned `RUNNER_TIMEOUT` and `RUNNER_RESOURCE_LIMIT`; protected hashes and direct/root Stage A
+  Make passed; no runner container remained.
+- Blocking empirical result: after `workspace.reset`, a fresh second cycle passed
+  `workspace.prepare`, `retail.generate`, `retail.load`, `retail.dbt-build`, then
+  `retail.export` returned `RUNNER_RELEASE_POINTER_INVALID`. The export was already committed,
+  left a staged evidence directory, and the next owner-CLI call crashed during recovery with the
+  same code. This violates Stage B reset → rerun/idempotency and clean recovery acceptance.
+- State/evidence inspection then proved 13 committed results and 13 valid published evidence
+  indexes, including the second export whose caller received failure; this confirms a
+  committed-but-client-failed boundary rather than an evidence-integrity failure.
+- Exact local Stage B lease is recorded for 12 paths, but it does not authorize runner repair.
+  I5-04 must release the bounded repair in the register before this plan can move to cook.
+- Stage B disposition: `blocked`; `COOK_SCOPE=none`; `NEXT=fix-plan` after exact repair handoff.
+- Stage C disposition: `blocked-on-issue10-stage-b`; Issue #10 has no merged Stage B authority.
+- No product, runner, pipeline, golden, portal, curriculum or cloud mutation occurred.

@@ -1,11 +1,12 @@
 ---
 phase: 2
-title: "Stage A Contract-Bound Foundation Labs"
-status: pending
+title: Stage A Contract-Bound Foundation Labs
+status: completed
 priority: P1
-dependencies: [1]
+dependencies:
+  - 1
 externalDependencies: []
-effort: "bounded 10-path Stage A cook"
+effort: bounded 10-path Stage A cook
 ---
 
 # Phase 2: Stage A Contract-Bound Foundation Labs
