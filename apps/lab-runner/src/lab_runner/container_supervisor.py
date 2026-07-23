@@ -16,7 +16,12 @@ FIXTURES={
 
 
 def _workspace_file_count(root:pathlib.Path)->int:
-    return sum(path.is_file() for path in root.rglob("*"))
+    count=0
+    for path in root.rglob("*"):
+        if path.is_file():
+            count+=1
+            if count>4096:raise RuntimeError("RUNNER_RESOURCE_LIMIT")
+    return count
 
 
 def _subreaper()->None:
@@ -139,6 +144,9 @@ def _main(operation:str,fixture:tuple[str,tuple[str,...]]|None=None,execute_seco
             got,_=os.waitpid(-1,os.WNOHANG)
             if got==0: time.sleep(.02)
         except ChildProcessError: break
+    if rc==0 and failure is None:
+        try:_workspace_file_count(WORKSPACE/"state")
+        except RuntimeError as exc:failure=str(exc)
     survivors=_descendant_pids()
     if survivors:
         for child in survivors:

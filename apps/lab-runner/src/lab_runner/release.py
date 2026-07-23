@@ -100,6 +100,20 @@ def validate_manifest(workspace:pathlib.Path,expected_raw:dict[str,str]|None=Non
     return document
 
 
+def _validate_release_document(document:dict[str,object],schema:dict[str,object])->None:
+    try:jsonschema.Draft202012Validator(schema).validate(document)
+    except jsonschema.ValidationError as exc:raise RuntimeError("RUNNER_ROLLBACK_INVALID") from exc
+    assets=document.get("assets")
+    if not isinstance(assets,list) or [row.get("assetId") for row in assets if isinstance(row,dict)]!=list(ASSETS):raise RuntimeError("RUNNER_ROLLBACK_INVALID")
+    release_id=str(document.get("releaseId"))
+    for row in assets:
+        if not isinstance(row,dict):raise RuntimeError("RUNNER_ROLLBACK_INVALID")
+        asset=str(row["assetId"])
+        for field in ("releaseId","dataRunId","testedTreeSha","lockSha256","contractSetId","engineSnapshotId"):
+            if row.get(field)!=document.get(field):raise RuntimeError("RUNNER_ROLLBACK_INVALID")
+        if row.get("logicalFqn")!=f"retail_duckdb.retail.main_marts.{asset}" or row.get("physicalFqn")!=f"retail_iceberg.default.retail.{asset}" or row.get("stagedLocator")!=f"curated/releases/{release_id}/{asset}":raise RuntimeError("RUNNER_ROLLBACK_INVALID")
+
+
 def rollback(root:pathlib.Path,expected_current_release_id:str)->dict[str,object]:
     if not re_full_sha(expected_current_release_id):raise RuntimeError("RUNNER_ROLLBACK_INVALID")
     pointer_path=root/"current.json";pointer=_load_regular_json(pointer_path,"RUNNER_ROLLBACK_INVALID")
@@ -113,8 +127,7 @@ def rollback(root:pathlib.Path,expected_current_release_id:str)->dict[str,object
     if not isinstance(previous,str) or not re_full_sha(previous):raise RuntimeError("RUNNER_ROLLBACK_UNAVAILABLE")
     manifests=root/"manifests";current_document=_load_regular_json(manifests/f"{current}.json","RUNNER_ROLLBACK_INVALID");previous_document=_load_regular_json(manifests/f"{previous}.json","RUNNER_ROLLBACK_INVALID")
     for release_id,document in ((current,current_document),(previous,previous_document)):
-        try:jsonschema.Draft202012Validator(schema).validate(document)
-        except jsonschema.ValidationError as exc:raise RuntimeError("RUNNER_ROLLBACK_INVALID") from exc
+        _validate_release_document(document,schema)
         if document.get("releaseId")!=release_id:raise RuntimeError("RUNNER_ROLLBACK_INVALID")
     if hashlib.sha256(manifest_bytes(current_document)).hexdigest()!=pointer["manifestSha256"]:raise RuntimeError("RUNNER_ROLLBACK_INVALID")
     restored={"schemaVersion":"curated-release-current-pointer-v1","currentReleaseId":previous,"manifestSha256":hashlib.sha256(manifest_bytes(previous_document)).hexdigest(),"previousReleaseId":current}

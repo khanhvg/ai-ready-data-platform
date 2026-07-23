@@ -386,7 +386,7 @@ class Gate:
         memory=dict(protocol("resource_probe.py",("memory",)).get("cgroup") or {});events=dict(memory.get("memoryEvents") or {})
         self.record("RED-RES-001", lambda: {"memory": effective["Memory"], "swap": effective["MemorySwap"], "pids": effective["PidsLimit"],"pressure":memory,"authority":"aggregate-cgroup-v2"} if (effective["Memory"], effective["MemorySwap"], effective["PidsLimit"]) == (536870912, 536870912, 64) and protocol("resource_probe.py",("memory",)).get("failureCode")=="RUNNER_RESOURCE_LIMIT" and memory.get("memoryMax")=="536870912" and memory.get("memorySwapMax")=="0" and 0<int(memory.get("memoryPeak",0))<=536870912 and int(events.get("oom",0))>=1 and int(events.get("oom_kill",0))>=1 else (_ for _ in ()).throw(AssertionError("cgroup")))
         self.record("RED-RES-002", lambda: observations["resource_probe.py:cpu"] if protocol("resource_probe.py", ("cpu",)).get("failureCode") == "RUNNER_TIMEOUT" and effective["NanoCpus"] == 2000000000 else (_ for _ in ()).throw(AssertionError("cpu")))
-        self.record("RED-RES-003", lambda: {"fds": observations["resource_probe.py:fds"], "files": observations["resource_probe.py:files"], "tmpfs": effective["Tmpfs"]})
+        self.record("RED-RES-003", lambda: {"fds": observations["resource_probe.py:fds"], "files": observations["resource_probe.py:files"], "tmpfs": effective["Tmpfs"],"fileQuota":4096} if protocol("resource_probe.py",("files",)).get("failureCode")=="RUNNER_RESOURCE_LIMIT" and protocol("resource_probe.py",("files",)).get("status")=="fail" and protocol("resource_probe.py",("fds",)).get("status")=="fail" else (_ for _ in ()).throw(AssertionError("file/fd quota")))
 
     def archives_files_env(self) -> None:
         attack_script = APP / "tests/fixtures/archive_attacks.py"
@@ -518,12 +518,29 @@ class Gate:
             value=json.loads(path.read_text());reader.validate_manifest(value);manifests[str(value["releaseId"])]=value
         reader.validate_pointer(restored,manifests)
         self.rollback_observation={"rollbackAttempts":2,"restoredReleaseId":restored["currentReleaseId"],"idempotent":restored==replayed,"releasedReader":True}
+        self.rollback_old=old;self.rollback_new=new
         return {"releasedManifest":True,"releasedPointer":True,"staleReplayIgnored":True,"currentReleaseId":observed["currentReleaseId"],**self.rollback_observation}
 
     def _rollback_rehearsal(self)->object:
-        if self.rollback_observation.get("rollbackAttempts")!=2 or not self.rollback_observation.get("idempotent"):raise AssertionError("rollback rehearsal absent")
-        if not self._no_runner_containers() or not self._foreign_unchanged():raise AssertionError("rollback cleanup drift")
-        return {**self.rollback_observation,"exactOwnedCleanup":True,"foreignUnchanged":True}
+        root=self.root/"rollback-matrix";service=RunnerService(root,self.image,APP/"container/seccomp-runner-v1.json");old=self.rollback_old;new=self.rollback_new;new_id=str(new["releaseManifest"]["releaseId"])
+        publish_release(service.releases,old);publish_release(service.releases,new)
+        absent=service.store.admit(validate_request({"operationId":"workspace.prepare","idempotencyKey":"rollback-absent","workspaceRevision":0}),101);transient=service._owned_directory(root/"inputs",absent.run_id,101,"input");(transient/"input.tar").write_bytes(b"interrupted");os.chmod(transient/"input.tar",0o600)
+        restored_absent=service.rollback(new_id);absent_status=service.store.db.execute("SELECT status FROM runs WHERE run_id=?",(absent.run_id,)).fetchone()[0]
+        publish_release(service.releases,new)
+        with acquire(root/"locks") as fence:
+            request=validate_request({"operationId":"workspace.prepare","idempotencyKey":"rollback-live","workspaceRevision":0});live=service.store.admit(request,fence.epoch);daemon=service.backend._daemon_identity();service.store.transition(live.run_id,fence.epoch,"creating",image_digest=self.image,daemon_identity=daemon);spec=service.backend._spec(live.run_id,fence.epoch,"workspace.prepare",daemon);spec=[*spec[:-2],"--entrypoint","python3.12",self.image,"-I","-c","import time;time.sleep(30)"];cid=self.engine.command(spec,timeout=30).stdout.strip();service.store.transition(live.run_id,fence.epoch,"created",container_id=cid);self.engine.command(["start",cid],timeout=10)
+        restored_live=service.rollback(new_id);live_status=service.store.db.execute("SELECT status FROM runs WHERE run_id=?",(live.run_id,)).fetchone()[0];live_absent=self.engine.inspect_optional(cid) is None
+        publish_release(service.releases,new)
+        stale_cid=self._probe_container(create_only=True);stale_value=self.engine.json(["inspect",stale_cid])[0]
+        try:
+            stale=service.store.admit(validate_request({"operationId":"workspace.prepare","idempotencyKey":"rollback-stale","workspaceRevision":0}),303);service.store.transition(stale.run_id,303,"creating",image_digest=self.image,daemon_identity=service.backend._daemon_identity());service.store.transition(stale.run_id,303,"created",container_id=stale_cid)
+            expect_error(EngineError,"RUNNER_STALE_IDENTITY",lambda:service.rollback(new_id));stale_preserved=self.engine.inspect_optional(stale_cid) is not None;pointer_after_stale=json.loads((service.releases/"current.json").read_text())
+        finally:self.remove_test_container(stale_cid)
+        audit_events=[json.loads(row[0])["event"]["kind"] for row in service.store.db.execute("SELECT payload FROM audit ORDER BY sequence")];rollback_evidence=list(service.evidence.glob("rollback-*/index.json"))
+        checks=(absent_status=="failed",not transient.exists(),restored_absent["currentReleaseId"]==old["releaseManifest"]["releaseId"],live_status=="failed",live_absent,restored_live["currentReleaseId"]==old["releaseManifest"]["releaseId"],stale_preserved,pointer_after_stale["currentReleaseId"]==new_id,audit_events.count("rollback-completed")==2,len(rollback_evidence)==2,self._no_runner_containers(),self._foreign_unchanged())
+        if not all(checks):raise AssertionError("rollback matrix incomplete")
+        self.rollback_observation={"rollbackAttempts":2,"absentReconciled":True,"liveRemoved":True,"stalePreserved":True,"foreignUnchanged":True,"auditRecorded":True,"evidenceRecorded":True,"restoredReleaseId":restored_live["currentReleaseId"],"idempotent":True,"releasedReader":True}
+        return {**self.rollback_observation,"exactOwnedCleanup":True}
 
     def _bounded_protocol_archive(self)->object:
         protocol=self.root/"oversize-protocol.json";protocol.write_bytes(b"{"+b"x"*65536+b"}")
@@ -595,6 +612,12 @@ class Gate:
                 rejected.append(name)
             else:raise AssertionError(f"audit {name} accepted")
         db.close()
+        tamper_root=self.root/f"audit-copy-result-{time.monotonic_ns()}";tamper_root.mkdir(mode=0o700);tamper_db=sqlite3.connect(tamper_root/"runner.sqlite3");source_db=sqlite3.connect(state_root/"runner.sqlite3");source_db.backup(tamper_db);source_db.close();tamper_db.execute("UPDATE runs SET result_json='{\"status\":\"hostile\"}' WHERE status='committed'");tamper_db.commit();tamper_db.close();shutil.copyfile(state_root/"audit-anchor.json",tamper_root/"audit-anchor.json");os.chmod(tamper_root/"audit-anchor.json",0o600)
+        try:Store(tamper_root)
+        except StateError as exc:
+            if str(exc)!="RUNNER_AUDIT_TAMPERED":raise
+            rejected.append("committed-result")
+        else:raise AssertionError("committed result tamper accepted")
         recovered=[]
         for mode in ("rollback-before-commit","commit-before-finalize","anchor-before-pending-unlink"):
             recovery=self.root/f"audit-recovery-{mode}-{time.monotonic_ns()}";store=Store(recovery);store.db.execute("BEGIN IMMEDIATE");store._append({"kind":"fault-injection","mode":mode});store._prepare_anchor();store.db.execute("ROLLBACK" if mode=="rollback-before-commit" else "COMMIT")
@@ -666,13 +689,23 @@ class Gate:
             validate_released_contract(ROOT,APP/"config/released-contract-lock.json")
             protected=[name for name in changed if not (name.startswith("apps/lab-runner/") or name=="mk/issue-5/i5-04.mk")]
             if protected:raise AssertionError("protected drift")
-            return {"changed":changed,"protected":True,"releasedPins":38}
+            ignored=subprocess.run(["git","ls-files","--others","--ignored","--exclude-standard","-z"],cwd=ROOT,check=True,stdout=subprocess.PIPE).stdout.decode().split("\0");ignored=[name for name in ignored if name]
+            def runtime_path(name:str)->bool:
+                return name.startswith((".artifacts/build/issue-9/","apps/lab-runner/.local-state/",".artifacts/evidence/golden/",".artifacts/workspaces/golden/",".artifacts/evidence/data-contracts/","apps/lab-runner/.pytest_cache/")) or ("/__pycache__/" in name and name.endswith(".pyc"))
+            baseline={".hermes/logs/claudekit/issue-9-container-runner-v2-cook.log",".hermes/prompts/issue-9-container-runner-v2-cook.md"};unclassified={name for name in ignored if not runtime_path(name)}
+            if unclassified!=baseline or sha256(ROOT/".hermes/prompts/issue-9-container-runner-v2-cook.md")!="278c9eecb2252a6a263f8966bbbb6c3dc648ea5e71942ecc0d20ba308287bd07":raise AssertionError("ignored baseline drift")
+            for name in baseline:
+                observed=(ROOT/name).stat(follow_symlinks=False)
+                if not stat.S_ISREG(observed.st_mode) or observed.st_nlink!=1:raise AssertionError("ignored baseline type")
+            neighbor=APP/"neighbor-unlisted";probe=subprocess.run(["git","check-ignore","-q",neighbor.relative_to(ROOT).as_posix()],cwd=ROOT)
+            if probe.returncode==0 or any(".local-state" in row["path"] for row in json.loads((APP/"container/context-manifest-v1.json").read_text())["files"]):raise AssertionError("ignore scope")
+            return {"changed":changed,"protected":True,"releasedPins":38,"ignoredInclusive":True,"ignoredEntries":len(ignored),"preexistingIgnored":sorted(baseline),"neighborVisible":True}
 
         def supply() -> object:
             build_lock=json.loads((APP/"config/container-build-lock-v1.json").read_text());release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
             path=ROOT/".artifacts/build/issue-9/vulnerability-grype-current.json"
             if not path.is_file():raise AssertionError("vulnerability evidence missing")
-            value=json.loads(path.read_text());findings=sorted({row["vulnerability"]["id"] for row in value["matches"] if row["vulnerability"]["severity"] in ("High","Critical")})
+            value=json.loads(path.read_text());findings=sorted({row["vulnerability"]["id"] for row in value["matches"] if row["vulnerability"]["severity"] in ("Medium","High","Critical")})
             vex_path=ROOT/".artifacts/build/issue-9/openvex-current.json";vex=json.loads(vex_path.read_text())
             statements={row["vulnerability"]["name"]:row for row in vex["statements"]}
             product=f"pkg:oci/ai-ready-lab-runner@{self.image}"

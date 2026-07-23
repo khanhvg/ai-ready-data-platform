@@ -100,7 +100,7 @@ class Backend:
 
     def execute(self,run_id:str,fence:int,operation_id:str,input_archive:pathlib.Path)->Outcome:
         deadline=time.monotonic()+WALL_SECONDS
-        daemon_identity=self._daemon_identity(self._remaining(deadline,30));work=self.staging/run_id;work.mkdir(mode=0o700)
+        daemon_identity=self._daemon_identity(self._remaining(deadline,30));work=self.staging/run_id;work.mkdir(mode=0o700);observed=work.stat(follow_symlinks=False);owner={"schemaVersion":"runner-transient-owner-v1","runId":run_id,"fence":fence,"purpose":"staging","device":observed.st_dev,"inode":observed.st_ino};owner_path=work/".runner-owner.json";owner_path.write_text(json.dumps(owner,sort_keys=True,separators=(",",":"))+"\n");os.chmod(owner_path,0o600)
         marker=work/"input.ready";marker.write_bytes(b"ready\n");os.chmod(marker,0o600)
         cid="";inspected={}
         try:

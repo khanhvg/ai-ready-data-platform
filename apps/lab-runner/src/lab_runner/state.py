@@ -55,7 +55,7 @@ class Store:
         self.verify_audit()
 
     def verify_audit(self) -> None:
-        previous="0"*64; expected_sequence=1
+        previous="0"*64; expected_sequence=1;committed={}
         for sequence,stored_previous,payload,entry_digest in self.db.execute("SELECT sequence,previous_sha256,payload,entry_sha256 FROM audit ORDER BY sequence"):
             if sequence!=expected_sequence or stored_previous!=previous or hashlib.sha256(payload).hexdigest()!=entry_digest:
                 raise StateError("RUNNER_AUDIT_TAMPERED")
@@ -63,6 +63,12 @@ class Store:
             except (TypeError,json.JSONDecodeError) as exc: raise StateError("RUNNER_AUDIT_TAMPERED") from exc
             if value.get("sequence")!=sequence or value.get("previousSha256")!=previous or set(value)!={"sequence","previousSha256","event"}:
                 raise StateError("RUNNER_AUDIT_TAMPERED")
+            event=value["event"]
+            if not isinstance(event,dict):raise StateError("RUNNER_AUDIT_TAMPERED")
+            if event.get("kind")=="committed":
+                run_id=event.get("runId");result_sha=event.get("resultSha256")
+                if not isinstance(run_id,str) or run_id in committed or not isinstance(result_sha,str) or len(result_sha)!=64:raise StateError("RUNNER_AUDIT_TAMPERED")
+                committed[run_id]=result_sha
             previous=entry_digest;expected_sequence+=1
         anchor=None
         if self.anchor_path.exists():
@@ -74,10 +80,17 @@ class Store:
             if pending is not None:
                 if pending["previous"]!=anchor and pending["next"]!=anchor:raise StateError("RUNNER_AUDIT_TAMPERED")
                 self.pending_anchor_path.unlink();self._fsync_parent()
-            return
+            self._verify_committed_results(committed);return
         if pending is not None and pending["previous"]==anchor and pending["next"]==observed:
-            self._write_document(self.anchor_path,observed);self.pending_anchor_path.unlink();self._fsync_parent();return
+            self._write_document(self.anchor_path,observed);self.pending_anchor_path.unlink();self._fsync_parent();self._verify_committed_results(committed);return
         raise StateError("RUNNER_AUDIT_TAMPERED")
+
+    def _verify_committed_results(self,committed:dict[str,str])->None:
+        observed={}
+        for run_id,result in self.db.execute("SELECT run_id,result_json FROM runs WHERE status='committed'"):
+            if not isinstance(result,str):raise StateError("RUNNER_AUDIT_TAMPERED")
+            observed[str(run_id)]=hashlib.sha256(result.encode()).hexdigest()
+        if observed!=committed:raise StateError("RUNNER_AUDIT_TAMPERED")
 
     def _read_pending(self)->dict[str,object]:
         try:value=json.loads(self.pending_anchor_path.read_text())
@@ -190,6 +203,16 @@ class Store:
         payload,digest=chained(previous,sequence,event)
         self.db.execute("INSERT INTO audit VALUES(?,?,?,?)",(sequence,previous,payload,digest))
 
+    def record_event(self,event:dict[str,object])->None:
+        self.verify_audit()
+        if event.get("kind") not in ("rollback-started","rollback-completed"):raise StateError("RUNNER_AUDIT_EVENT_INVALID")
+        self.db.execute("BEGIN IMMEDIATE")
+        try:self._append(event);self._prepare_anchor();self.db.execute("COMMIT");self._finalize_anchor()
+        except Exception:
+            if self.db.in_transaction:self.db.execute("ROLLBACK")
+            if self.pending_anchor_path.exists():self.verify_audit()
+            raise
+
     def current_revision(self) -> int:
         return int(self.db.execute("SELECT revision FROM workspaces WHERE id='promotion-trust'").fetchone()[0])
 
@@ -203,4 +226,5 @@ class Store:
         return list(self.db.execute("SELECT run_id,status,container_id,image_digest,fence,daemon_identity FROM runs WHERE status NOT IN ('committed','failed')"))
 
     def committed(self)->list[tuple[str,dict[str,object]]]:
+        self.verify_audit()
         return [(run_id,json.loads(result)) for run_id,result in self.db.execute("SELECT run_id,result_json FROM runs WHERE status='committed' ORDER BY created_ns")]

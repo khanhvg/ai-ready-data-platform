@@ -1,10 +1,10 @@
 """Host control-plane composition for one admitted semantic operation."""
 from __future__ import annotations
-import os, pathlib, subprocess, tempfile
+import json, os, pathlib, stat, subprocess, tempfile
 from .archive import extract_tar
 from .container_backend import Backend
 from .engine import Engine,EngineError
-from .evidence import discard as discard_evidence, publish as publish_evidence, reconcile as reconcile_evidence, stage as stage_evidence
+from .evidence import discard as discard_evidence, publish as publish_evidence, reconcile as reconcile_evidence, stage as stage_evidence, verify as verify_evidence, write as write_evidence
 from .fence import acquire
 from .registry import validate_request
 from .release import contract_schema_sha256, manifest_bytes, publish as publish_release, rollback as rollback_release, validate as validate_release, validate_manifest
@@ -38,6 +38,25 @@ class RunnerService:
         total=int(subprocess.run(["/usr/sbin/sysctl","-n","hw.memsize"],text=True,stdout=subprocess.PIPE,check=True,timeout=5,env={"PATH":"/usr/bin:/bin:/usr/sbin"}).stdout)
         if total*percent//100 < 6*1024**3: raise RunnerError("RUNNER_RESOURCE_UNAVAILABLE")
 
+    @staticmethod
+    def _owned_directory(base:pathlib.Path,run_id:str,fence:int,purpose:str)->pathlib.Path:
+        base.mkdir(mode=0o700,parents=True,exist_ok=True);path=base/run_id;path.mkdir(mode=0o700,exist_ok=False);observed=path.stat(follow_symlinks=False);owner={"schemaVersion":"runner-transient-owner-v1","runId":run_id,"fence":fence,"purpose":purpose,"device":observed.st_dev,"inode":observed.st_ino};marker=path/".runner-owner.json";marker.write_text(json.dumps(owner,sort_keys=True,separators=(",",":"))+"\n");os.chmod(marker,0o600);return path
+
+    @staticmethod
+    def _cleanup_owned(base:pathlib.Path,run_id:str,fence:int,purpose:str,allowed:set[str])->bool:
+        path=base/run_id
+        if not path.exists():return False
+        observed=path.stat(follow_symlinks=False);marker=path/".runner-owner.json"
+        try:owner=json.loads(marker.read_text())
+        except (OSError,json.JSONDecodeError) as exc:raise RunnerError("RUNNER_TRANSIENT_IDENTITY_INVALID") from exc
+        expected={"schemaVersion":"runner-transient-owner-v1","runId":run_id,"fence":fence,"purpose":purpose,"device":observed.st_dev,"inode":observed.st_ino}
+        if path.is_symlink() or not stat.S_ISDIR(observed.st_mode) or stat.S_IMODE(observed.st_mode)!=0o700 or owner!=expected or {child.name for child in path.iterdir()}-({".runner-owner.json"}|allowed):raise RunnerError("RUNNER_TRANSIENT_IDENTITY_INVALID")
+        for child in path.iterdir():
+            child_state=child.stat(follow_symlinks=False)
+            if not stat.S_ISREG(child_state.st_mode) or child.is_symlink() or child_state.st_nlink!=1:raise RunnerError("RUNNER_TRANSIENT_IDENTITY_INVALID")
+        for child in path.iterdir():child.unlink()
+        path.rmdir();fd=os.open(base,os.O_RDONLY);os.fsync(fd);os.close(fd);return True
+
     def run(self,request_value:object)->dict[str,object]:
         request=validate_request(request_value)
         self._reserve()
@@ -50,7 +69,7 @@ class RunnerService:
                 self.workspace.reconcile(self.store.current_revision());reconcile_evidence(self.evidence,admission.run_id,admission.replay)
                 if admission.replay.get("operationId")=="retail.export":publish_release(self.releases,admission.replay)
                 return admission.replay
-            run_dir=self.root/"inputs"/admission.run_id;run_dir.mkdir(mode=0o700,parents=True,exist_ok=False)
+            run_dir=self._owned_directory(self.root/"inputs",admission.run_id,fence.epoch,"input")
             input_archive=run_dir/"input.tar";self.workspace.input_archive(int(request["workspaceRevision"]),input_archive)
             committed=False;staged_evidence=None
             try:
@@ -85,6 +104,17 @@ class RunnerService:
 
     def rollback(self,expected_current_release_id:str)->dict[str,object]:
         with acquire(self.root/"locks"):
-            for run_id,status,container_id,image_digest,run_fence,daemon_identity in self.store.incomplete():
+            incomplete=self.store.incomplete();cleaned=[]
+            for run_id,status,container_id,image_digest,run_fence,daemon_identity in incomplete:
                 self.backend.reconcile(run_id,status,container_id,image_digest,run_fence,daemon_identity)
-            return rollback_release(self.releases,expected_current_release_id)
+                if self._cleanup_owned(self.root/"inputs",run_id,run_fence,"input",{"input.tar"}):cleaned.append(f"inputs/{run_id}")
+                if self._cleanup_owned(self.root/"staging",run_id,run_fence,"staging",{"input.ready","result.json","output.tar"}):cleaned.append(f"staging/{run_id}")
+            self.workspace.reconcile(self.store.current_revision())
+            for run_id,result in self.store.committed():reconcile_evidence(self.evidence,run_id,result)
+            self.store.record_event({"kind":"rollback-started","expectedCurrentReleaseId":expected_current_release_id})
+            pointer=rollback_release(self.releases,expected_current_release_id)
+            self.store.record_event({"kind":"rollback-completed","expectedCurrentReleaseId":expected_current_release_id,"restoredReleaseId":pointer["currentReleaseId"],"manifestSha256":pointer["manifestSha256"],"cleaned":cleaned})
+            evidence={"schemaVersion":"runner-rollback-result-v1","status":"pass","expectedCurrentReleaseId":expected_current_release_id,"restoredReleaseId":pointer["currentReleaseId"],"manifestSha256":pointer["manifestSha256"],"cleaned":cleaned,"preserved":["audit","evidence","immutable-releases"]};rollback_id="rollback-"+__import__("hashlib").sha256(json.dumps(evidence,sort_keys=True,separators=(",",":")).encode()).hexdigest()[:32]
+            if (self.evidence/rollback_id).is_dir():verify_evidence(self.evidence,rollback_id,evidence)
+            else:write_evidence(self.evidence,rollback_id,evidence)
+            return pointer

@@ -23,7 +23,7 @@ class Engine:
     def admit(self,*,timeout:float=30)->dict[str,object]:
         try: st=os.lstat(self.socket)
         except FileNotFoundError as exc: raise EngineError("RUNNER_ENGINE_UNAVAILABLE") from exc
-        if not stat.S_ISSOCK(st.st_mode) or st.st_uid!=os.geteuid() or self.socket.is_symlink():
+        if not stat.S_ISSOCK(st.st_mode) or st.st_uid!=os.geteuid() or stat.S_IMODE(st.st_mode)&0o022 or self.socket.is_symlink():
             raise EngineError("RUNNER_ENGINE_UNAVAILABLE")
         value=self.json(["info","--format","{{json .}}"],timeout=timeout)
         required=("MemoryLimit","SwapLimit","CpuCfsQuota","PidsLimit")
