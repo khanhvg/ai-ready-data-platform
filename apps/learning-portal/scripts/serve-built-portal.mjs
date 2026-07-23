@@ -1,6 +1,6 @@
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import { createServer } from 'node:http';
-import { chmod, mkdir, open, readdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
+import { chmod, lstat, readdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
 import { dirname, extname, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -53,6 +53,7 @@ async function buildInventory() {
       rows.push({
         relativePath: relative(distRoot, path).split(sep).join('/'),
         path,
+        content: bytes,
         bytes: bytes.length,
         sha256: sha256(bytes),
         mediaType: contentType(path)
@@ -129,19 +130,8 @@ const publicServer = createServer(async (request, response) => {
     return;
   }
   try {
-    const handle = await open(row.path, 'r');
-    let bytes;
-    try {
-      const metadata = await handle.stat();
-      if (!metadata.isFile() || metadata.nlink !== 1 || metadata.size !== row.bytes) {
-        response.writeHead(409).end();
-        return;
-      }
-      bytes = await handle.readFile();
-    } finally {
-      await handle.close();
-    }
-    if (sha256(bytes) !== row.sha256) {
+    const bytes = row.content;
+    if (bytes.length !== row.bytes || sha256(bytes) !== row.sha256) {
       response.writeHead(409).end();
       return;
     }
@@ -150,7 +140,10 @@ const publicServer = createServer(async (request, response) => {
       'content-length': bytes.length,
       'content-security-policy': "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'; worker-src 'none'",
       'x-content-type-options': 'nosniff',
-      'referrer-policy': 'no-referrer'
+      'referrer-policy': 'no-referrer',
+      'cross-origin-opener-policy': 'same-origin',
+      'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+      'cache-control': 'no-store'
     });
     response.end(request.method === 'HEAD' ? undefined : bytes);
   } catch {
@@ -195,8 +188,20 @@ const record = {
 };
 
 if (lifecycleControlPath) {
-  await mkdir(dirname(lifecycleControlPath), { recursive: true, mode: 0o700 });
-  await chmod(dirname(lifecycleControlPath), 0o700);
+  const controlDirectory = dirname(lifecycleControlPath);
+  const directoryMetadata = await lstat(controlDirectory);
+  if (
+    !directoryMetadata.isDirectory() ||
+    directoryMetadata.isSymbolicLink() ||
+    directoryMetadata.uid !== process.getuid() ||
+    (directoryMetadata.mode & 0o777) !== 0o700
+  ) throw new Error('PORTAL_RUNTIME_ROOT_INVALID');
+  try {
+    await lstat(lifecycleControlPath);
+    throw new Error('PORTAL_CONTROL_RECORD_EXISTS');
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error;
+  }
   const pendingPath = `${lifecycleControlPath}.${instanceNonce}.pending`;
   await writeFile(pendingPath, `${JSON.stringify(record)}\n`, { mode: 0o600, flag: 'wx' });
   await rename(pendingPath, lifecycleControlPath);

@@ -8,7 +8,7 @@
     "npm": "10.9.8"
   },
   "scripts": {
-    "build": "vite build && node scripts/generate-static-routes.mjs",
+    "build": "node scripts/verify-stage-a-release.mjs --build",
     "serve": "node scripts/serve-built-portal.mjs",
     "test": "npm run test:unit",
     "test:unit": "node --test tests/unit/module-catalog.test.mjs tests/unit/portal-router.test.mjs tests/unit/release-binding.test.mjs tests/unit/released-learning-adapter.test.mjs tests/unit/render.test.mjs tests/unit/security.test.mjs",

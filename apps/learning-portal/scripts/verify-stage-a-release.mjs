@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { chmod, mkdir, mkdtemp, readFile, readdir } from 'node:fs/promises';
+import { chmod, lstat, mkdir, mkdtemp, open, readFile, readdir, rm } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createReleasedLearningAdapter } from '../src/contracts/released-learning-adapter.mjs';
@@ -16,6 +16,13 @@ const expectedChrome = '150.0.7871.181';
 const expectedChromeSha256 = 'b724a4c5603cfc8b9d9f27a5153c8a39e7133e53666ced7f2a8b03bf49484f85';
 const expectedPythonFreezeSha256 =
   'cdb87ed71e0996f90041371cc25138afa02d78b134cbdc4afe9c25baa6649bba';
+const expectedRuntimeMarker = Object.freeze({
+  inputSha: 'abcaa2de7247d99c642fcad1535c24870f08c79f',
+  lockSha256: 'f41c727b39f99106f95b7937b2811e8d27db89d1d5106e9f1d9effd4403143d2',
+  planSha256: '5ab9e91b888ab9fdfc20a59497fd7796f24d0ea19cc66ed794a9ad095fcac3fa',
+  schemaVersion: 'learning-runtime-admission-v1',
+  toolSha256: '6a8aaa88c4d38b85c8a889779be900d1d99d95f7bbca3977a03a3a4f2642808d'
+});
 const releasedInputPaths = Object.freeze([
   'docs/decisions/0005-web-stack.md',
   'docs/decisions/evidence/adr-0005-web-stack-scorecard.json',
@@ -117,21 +124,91 @@ function assertCondition(condition, code) {
 }
 
 async function ensureReleasedPythonRuntime() {
+  const artifactsRoot = resolve(repositoryRoot, '.artifacts');
+  const workspacesRoot = resolve(artifactsRoot, 'workspaces');
   const runtimeRoot = resolve(repositoryRoot, '.artifacts/workspaces/golden');
-  await mkdir(runtimeRoot, { recursive: true, mode: 0o700 });
-  await chmod(runtimeRoot, 0o700);
+  for (const directory of [artifactsRoot, workspacesRoot, runtimeRoot]) {
+    try {
+      await mkdir(directory, { mode: 0o700 });
+    } catch (error) {
+      if (error?.code !== 'EEXIST') throw error;
+    }
+    const metadata = await lstat(directory);
+    assertCondition(
+      metadata.isDirectory() &&
+        !metadata.isSymbolicLink() &&
+        metadata.uid === process.getuid() &&
+        (metadata.mode & 0o777) === 0o700,
+      'PORTAL_RUNTIME_IDENTITY_MISMATCH'
+    );
+  }
+  const admissionLockPath = resolve(runtimeRoot, '.portal-stage-a-admission.lock');
+  let admissionLock;
+  const admissionDeadline = Date.now() + 120_000;
+  while (!admissionLock && Date.now() < admissionDeadline) {
+    try {
+      admissionLock = await open(admissionLockPath, 'wx', 0o600);
+    } catch (error) {
+      if (error?.code !== 'EEXIST') throw error;
+      await new Promise((resolveWait) => setTimeout(resolveWait, 50));
+    }
+  }
+  assertCondition(Boolean(admissionLock), 'PORTAL_RUNTIME_ADMISSION_LOCKED');
+  try {
+  const measureEnvironment = (interpreter) => {
+    execFileSync(interpreter, ['-m', 'pip', 'check'], {
+      cwd: repositoryRoot,
+      stdio: 'pipe',
+      timeout: 120_000
+    });
+    const freezeLines = execFileSync(interpreter, ['-m', 'pip', 'freeze', '--all'], {
+      cwd: repositoryRoot,
+      encoding: 'utf8',
+      timeout: 120_000
+    })
+      .trim()
+      .split('\n')
+      .filter(Boolean)
+      .sort();
+    return sha256(`${freezeLines.join('\n')}\n`);
+  };
   for (const name of await readdir(runtimeRoot)) {
     try {
-      const marker = JSON.parse(
-        await readFile(resolve(runtimeRoot, name, 'runtime-admission.json'), 'utf8')
+      const candidate = resolve(runtimeRoot, name);
+      const markerPath = resolve(candidate, 'runtime-admission.json');
+      const [candidateMetadata, markerMetadata] = await Promise.all([
+        lstat(candidate),
+        lstat(markerPath)
+      ]);
+      assertCondition(
+        candidateMetadata.isDirectory() &&
+          !candidateMetadata.isSymbolicLink() &&
+          candidateMetadata.uid === process.getuid() &&
+          (candidateMetadata.mode & 0o777) === 0o700 &&
+          markerMetadata.isFile() &&
+          !markerMetadata.isSymbolicLink() &&
+          markerMetadata.nlink === 1 &&
+          markerMetadata.uid === process.getuid() &&
+          markerMetadata.size <= 2 * 1024 * 1024,
+        'PORTAL_RUNTIME_IDENTITY_MISMATCH'
       );
-      const interpreter = resolve(runtimeRoot, name, 'venv/bin/python');
+      const marker = JSON.parse(await readFile(markerPath, 'utf8'));
+      const interpreter = resolve(candidate, 'venv/bin/python');
       const interpreterBytes = await readFile(interpreter);
-      if (sha256(interpreterBytes) === marker.interpreterSha256) {
+      const markerIdentityMatches =
+        Object.entries(expectedRuntimeMarker).every(([key, value]) => marker[key] === value) &&
+        Object.keys(marker).sort().join('\n') ===
+          [...Object.keys(expectedRuntimeMarker), 'interpreterSha256'].sort().join('\n');
+      const freezeSha256 = measureEnvironment(interpreter);
+      if (
+        markerIdentityMatches &&
+        sha256(interpreterBytes) === marker.interpreterSha256 &&
+        freezeSha256 === expectedPythonFreezeSha256
+      ) {
         return {
           runtimeRoot,
           interpreterSha256: marker.interpreterSha256,
-          freezeSha256: expectedPythonFreezeSha256
+          freezeSha256
         };
       }
     } catch {
@@ -167,21 +244,7 @@ async function ensureReleasedPythonRuntime() {
       env: { PATH: process.env.PATH ?? '/usr/bin:/bin', LANG: 'C.UTF-8', LC_ALL: 'C.UTF-8' }
     }
   );
-  execFileSync(interpreter, ['-m', 'pip', 'check'], {
-    cwd: repositoryRoot,
-    stdio: 'pipe',
-    timeout: 120_000
-  });
-  const freezeLines = execFileSync(interpreter, ['-m', 'pip', 'freeze', '--all'], {
-    cwd: repositoryRoot,
-    encoding: 'utf8',
-    timeout: 120_000
-  })
-    .trim()
-    .split('\n')
-    .filter(Boolean)
-    .sort();
-  const freezeSha256 = sha256(`${freezeLines.join('\n')}\n`);
+  const freezeSha256 = measureEnvironment(interpreter);
   assertCondition(freezeSha256 === expectedPythonFreezeSha256, 'PORTAL_RUNTIME_IDENTITY_MISMATCH');
   const interpreterSha256 = sha256(await readFile(interpreter));
   execFileSync(
@@ -194,7 +257,23 @@ async function ensureReleasedPythonRuntime() {
     ],
     { cwd: repositoryRoot, stdio: 'pipe', timeout: 120_000 }
   );
+  const marker = JSON.parse(
+    await readFile(resolve(candidate, 'runtime-admission.json'), 'utf8')
+  );
+  assertCondition(
+    Object.entries(expectedRuntimeMarker).every(([key, value]) => marker[key] === value) &&
+      marker.interpreterSha256 === interpreterSha256,
+    'PORTAL_RUNTIME_IDENTITY_MISMATCH'
+  );
+  assertCondition(
+    measureEnvironment(interpreter) === expectedPythonFreezeSha256,
+    'PORTAL_RUNTIME_IDENTITY_MISMATCH'
+  );
   return { runtimeRoot, interpreterSha256, freezeSha256 };
+  } finally {
+    await admissionLock.close();
+    await rm(admissionLockPath, { force: true });
+  }
 }
 
 const sourceHead = git('rev-parse', 'HEAD').toString('utf8').trim();
@@ -301,3 +380,37 @@ const release = {
   semanticReady: true
 };
 process.stdout.write(`${JSON.stringify(release)}\n`);
+
+if (process.argv[2] === '--build') {
+  const buildLockPath = resolve(pythonRuntime.runtimeRoot, '.portal-stage-a-build.lock');
+  let buildLock;
+  const buildDeadline = Date.now() + 120_000;
+  while (!buildLock && Date.now() < buildDeadline) {
+    try {
+      buildLock = await open(buildLockPath, 'wx', 0o600);
+    } catch (error) {
+      if (error?.code !== 'EEXIST') throw error;
+      await new Promise((resolveWait) => setTimeout(resolveWait, 50));
+    }
+  }
+  assertCondition(Boolean(buildLock), 'PORTAL_BUILD_LOCKED');
+  try {
+    execFileSync(resolve(appRoot, 'node_modules/.bin/vite'), ['build'], {
+      cwd: appRoot,
+      stdio: 'inherit',
+      timeout: 120_000,
+      env: { PATH: process.env.PATH ?? '/usr/bin:/bin' }
+    });
+    execFileSync(process.execPath, [resolve(appRoot, 'scripts/generate-static-routes.mjs')], {
+      cwd: appRoot,
+      stdio: 'inherit',
+      timeout: 120_000,
+      env: { PATH: process.env.PATH ?? '/usr/bin:/bin' }
+    });
+  } finally {
+    await buildLock.close();
+    await rm(buildLockPath, { force: true });
+  }
+} else if (process.argv.length > 2) {
+  throw new Error('PORTAL_VERIFY_ARGUMENT_INVALID');
+}

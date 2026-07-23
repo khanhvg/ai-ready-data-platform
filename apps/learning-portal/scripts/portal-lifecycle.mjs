@@ -1,14 +1,17 @@
 import { createHash } from 'node:crypto';
 import { execFileSync, spawn } from 'node:child_process';
-import { chmod, lstat, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { chmod, lstat, mkdir, open, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import http from 'node:http';
 
 const appRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const repositoryRoot = resolve(appRoot, '../..');
+const artifactsRoot = resolve(repositoryRoot, '.artifacts');
+const runtimeParent = resolve(artifactsRoot, 'runtime');
 const runtimeRoot = resolve(repositoryRoot, '.artifacts/runtime/i5-05-stage-a');
 const controlPath = resolve(runtimeRoot, 'control.json');
+const startLockPath = resolve(runtimeRoot, 'start.lock');
 const command = process.argv[2];
 const commandId = process.argv[3];
 
@@ -34,10 +37,12 @@ async function readControl() {
   if (
     !directoryMetadata.isDirectory() ||
     directoryMetadata.isSymbolicLink() ||
+    directoryMetadata.uid !== process.getuid() ||
     (directoryMetadata.mode & 0o777) !== 0o700 ||
     !metadata.isFile() ||
     metadata.isSymbolicLink() ||
     metadata.nlink !== 1 ||
+    metadata.uid !== process.getuid() ||
     (metadata.mode & 0o777) !== 0o600 ||
     bytes.length > 2 * 1024 * 1024
   ) throw new Error('PORTAL_CONTROL_RECORD_INVALID');
@@ -49,6 +54,30 @@ async function readControl() {
     !Number.isInteger(record.controlPort)
   ) throw new Error('PORTAL_CONTROL_RECORD_INVALID');
   return record;
+}
+
+async function ensurePrivateDirectory(path) {
+  try {
+    await mkdir(path, { mode: 0o700 });
+  } catch (error) {
+    if (error?.code !== 'EEXIST') throw error;
+  }
+  const metadata = await lstat(path);
+  if (
+    !metadata.isDirectory() ||
+    metadata.isSymbolicLink() ||
+    metadata.uid !== process.getuid() ||
+    (metadata.mode & 0o777) !== 0o700
+  ) throw new Error('PORTAL_RUNTIME_ROOT_INVALID');
+}
+
+async function assertControlAbsent() {
+  try {
+    await lstat(controlPath);
+    throw new Error('PORTAL_ALREADY_RUNNING_OR_STALE');
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error;
+  }
 }
 
 function requestControl(record, pathname) {
@@ -82,38 +111,46 @@ function requestControl(record, pathname) {
 }
 
 async function start() {
-  await mkdir(runtimeRoot, { recursive: true, mode: 0o700 });
-  await chmod(runtimeRoot, 0o700);
-  await rm(controlPath, { force: true });
-  const child = spawn(process.execPath, [resolve(appRoot, 'scripts/serve-built-portal.mjs')], {
-    cwd: appRoot,
-    detached: true,
-    stdio: 'ignore',
-    env: {
-      PATH: process.env.PATH ?? '/usr/bin:/bin',
-      PORTAL_LIFECYCLE_CONTROL_PATH: controlPath
-    }
-  });
-  child.unref();
-  const deadline = Date.now() + 15_000;
-  while (Date.now() < deadline) {
-    try {
-      const record = await readControl();
-      process.stdout.write(
-        `${JSON.stringify({
-          state: 'running',
-          publicPort: record.publicPort,
-          semanticReady: false,
-          runner: 'unavailable',
-          completion: 'disabled'
-        })}\n`
-      );
-      return;
-    } catch {
-      await new Promise((resolveWait) => setTimeout(resolveWait, 50));
-    }
+  for (const directory of [artifactsRoot, runtimeParent, runtimeRoot]) {
+    await ensurePrivateDirectory(directory);
   }
-  throw new Error('Portal did not become ready within the bounded window');
+  let startLock;
+  try {
+    startLock = await open(startLockPath, 'wx', 0o600);
+    await assertControlAbsent();
+    const child = spawn(process.execPath, [resolve(appRoot, 'scripts/serve-built-portal.mjs')], {
+      cwd: appRoot,
+      detached: true,
+      stdio: 'ignore',
+      env: {
+        PATH: process.env.PATH ?? '/usr/bin:/bin',
+        PORTAL_LIFECYCLE_CONTROL_PATH: controlPath
+      }
+    });
+    child.unref();
+    const deadline = Date.now() + 15_000;
+    while (Date.now() < deadline) {
+      try {
+        const record = await readControl();
+        process.stdout.write(
+          `${JSON.stringify({
+            state: 'running',
+            publicPort: record.publicPort,
+            semanticReady: false,
+            runner: 'unavailable',
+            completion: 'disabled'
+          })}\n`
+        );
+        return;
+      } catch {
+        await new Promise((resolveWait) => setTimeout(resolveWait, 50));
+      }
+    }
+    throw new Error('Portal did not become ready within the bounded window');
+  } finally {
+    await startLock?.close();
+    if (startLock) await rm(startLockPath, { force: true });
+  }
 }
 
 async function status() {

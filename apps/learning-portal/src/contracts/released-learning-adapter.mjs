@@ -129,6 +129,18 @@ const CAPABILITIES = new Proxy(NEGATIVE_CAPABILITIES, {
   has(target, property) {
     if (property === 'progress' || property === 'completion') return false;
     return Reflect.has(target, property);
+  },
+  set() {
+    return false;
+  },
+  defineProperty() {
+    return false;
+  },
+  deleteProperty() {
+    return false;
+  },
+  setPrototypeOf() {
+    return false;
   }
 });
 
