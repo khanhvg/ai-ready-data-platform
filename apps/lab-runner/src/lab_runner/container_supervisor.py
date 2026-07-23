@@ -93,8 +93,6 @@ def _main(operation:str,fixture:tuple[str,tuple[str,...]]|None=None,execute_seco
     (RUN/"input.tar").write_bytes(input_raw)
     extract_tar(RUN/"input.tar",WORKSPACE/"state")
     (WORKSPACE/"state/.runner-output-manifest.json").unlink(missing_ok=True)
-    if fixture is None and operation=="retail.dbt-build":
-        import dbt.cli.main, duckdb  # preload fixed native/runtime mappings before RLIMIT_AS
     out_read,out_write=os.pipe();err_read,err_write=os.pipe()
     pid=os.fork()
     if pid==0:
