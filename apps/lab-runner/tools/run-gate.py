@@ -475,8 +475,9 @@ class Gate:
 
     def _release_invalid(self) -> object:
         root=self.root/"invalid-release";export=root/"serving/export";export.mkdir(parents=True)
+        valid_probe=b"PAR1x"+(1).to_bytes(4,"little")+b"PAR1"
         for asset in ASSETS:
-            path=export/f"{asset}.parquet";path.write_bytes(b"PAR1validPAR1");os.chmod(path,0o600)
+            path=export/f"{asset}.parquet";path.write_bytes(valid_probe);os.chmod(path,0o600)
         accepted=validate_release(root)
         (export/f"{ASSETS[-1]}.parquet").unlink()
         expect_error(RuntimeError,"RUNNER_RELEASE_ASSET_SET_INVALID",lambda:validate_release(root))
