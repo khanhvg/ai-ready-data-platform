@@ -119,8 +119,8 @@
     {
       "path": "app/src/lab_runner/state.py",
       "mode": "0644",
-      "size": 12569,
-      "sha256": "66d10087288717707db6beedc58abbd40d7dbc294e6f2ca42da24807d4936e1d"
+      "size": 13382,
+      "sha256": "333fbce0df1f7b82bd7c77cb5cb986f915fa97d82bfbdb656edcb200fea6e68e"
     },
     {
       "path": "app/src/lab_runner/transport.py",

@@ -4,6 +4,7 @@ import pathlib
 import sqlite3
 import unittest
 import tempfile
+from unittest import mock
 
 APP = pathlib.Path(__file__).resolve()
 while APP.name != "lab-runner":
@@ -32,6 +33,28 @@ class RedPublicPathTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root=pathlib.Path(temporary);store=Store(root)
             store.db.execute("BEGIN IMMEDIATE");store._append({"kind":"fault-after-commit"});store._prepare_anchor();store.db.execute("COMMIT");store.db.close()
+            recovered=Store(root)
+            self.assertFalse(recovered.pending_anchor_path.exists())
+            recovered.verify_audit()
+
+    def test_completed_anchor_discards_pending_unlink_after_crash(self) -> None:
+        from lab_runner.state import Store
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root=pathlib.Path(temporary);store=Store(root)
+            store.db.execute("BEGIN IMMEDIATE");store._append({"kind":"fault-after-anchor"});store._prepare_anchor();store.db.execute("COMMIT")
+            pending=store._read_pending();store._write_document(store.anchor_path,pending["next"]);store.db.close()
+            recovered=Store(root)
+            self.assertFalse(recovered.pending_anchor_path.exists())
+            recovered.verify_audit()
+
+    def test_genesis_commit_recovers_before_anchor_publication(self) -> None:
+        from lab_runner.state import Store
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root=pathlib.Path(temporary)
+            with mock.patch.object(Store,"_finalize_anchor",side_effect=RuntimeError("simulated crash")):
+                with self.assertRaisesRegex(RuntimeError,"simulated crash"):Store(root)
             recovered=Store(root)
             self.assertFalse(recovered.pending_anchor_path.exists())
             recovered.verify_audit()

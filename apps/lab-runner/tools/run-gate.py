@@ -551,8 +551,10 @@ class Gate:
             else:raise AssertionError(f"audit {name} accepted")
         db.close()
         recovered=[]
-        for mode in ("rollback-before-commit","commit-before-finalize"):
-            recovery=self.root/f"audit-recovery-{mode}-{time.monotonic_ns()}";store=Store(recovery);store.db.execute("BEGIN IMMEDIATE");store._append({"kind":"fault-injection","mode":mode});store._prepare_anchor();store.db.execute("ROLLBACK" if mode=="rollback-before-commit" else "COMMIT");store.db.close();reopened=Store(recovery);reopened.verify_audit()
+        for mode in ("rollback-before-commit","commit-before-finalize","anchor-before-pending-unlink"):
+            recovery=self.root/f"audit-recovery-{mode}-{time.monotonic_ns()}";store=Store(recovery);store.db.execute("BEGIN IMMEDIATE");store._append({"kind":"fault-injection","mode":mode});store._prepare_anchor();store.db.execute("ROLLBACK" if mode=="rollback-before-commit" else "COMMIT")
+            if mode=="anchor-before-pending-unlink":store._write_document(store.anchor_path,store._read_pending()["next"])
+            store.db.close();reopened=Store(recovery);reopened.verify_audit()
             if reopened.pending_anchor_path.exists():raise AssertionError("audit pending residue")
             recovered.append(mode)
         return {"updateDenied":True,"deleteDenied":True,"chainMutationsRejected":rejected,"crashWindowsRecovered":recovered}

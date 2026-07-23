@@ -44,11 +44,14 @@ class Store:
             self.db.execute("ALTER TABLE runs ADD COLUMN daemon_identity TEXT")
         os.chmod(self.path, 0o600)
         if self.db.execute("SELECT COUNT(*) FROM audit").fetchone()[0]==0:
+            if self.pending_anchor_path.exists():
+                pending=self._read_pending()
+                if self.anchor_path.exists() or pending["previous"] is not None:raise StateError("RUNNER_AUDIT_TAMPERED")
+                self.pending_anchor_path.unlink();self._fsync_parent()
             if self.anchor_path.exists():raise StateError("RUNNER_AUDIT_TAMPERED")
             self.db.execute("BEGIN IMMEDIATE")
             self._append({"kind":"genesis"})
-            self._write_anchor()
-            self.db.execute("COMMIT")
+            self._prepare_anchor();self.db.execute("COMMIT");self._finalize_anchor()
         self.verify_audit()
 
     def verify_audit(self) -> None:
@@ -61,21 +64,30 @@ class Store:
             if value.get("sequence")!=sequence or value.get("previousSha256")!=previous or set(value)!={"sequence","previousSha256","event"}:
                 raise StateError("RUNNER_AUDIT_TAMPERED")
             previous=entry_digest;expected_sequence+=1
-        try:anchor=json.loads(self.anchor_path.read_text())
-        except (OSError,json.JSONDecodeError) as exc:raise StateError("RUNNER_AUDIT_TAMPERED") from exc
-        observed={"schemaVersion":"runner-audit-anchor-v1","sequence":expected_sequence-1,"entrySha256":previous}
-        pending=None
-        if self.pending_anchor_path.exists():
-            try:pending=json.loads(self.pending_anchor_path.read_text())
+        anchor=None
+        if self.anchor_path.exists():
+            try:anchor=json.loads(self.anchor_path.read_text())
             except (OSError,json.JSONDecodeError) as exc:raise StateError("RUNNER_AUDIT_TAMPERED") from exc
+        observed={"schemaVersion":"runner-audit-anchor-v1","sequence":expected_sequence-1,"entrySha256":previous}
+        pending=self._read_pending() if self.pending_anchor_path.exists() else None
         if anchor==observed:
             if pending is not None:
-                if pending.get("previous")!=anchor:raise StateError("RUNNER_AUDIT_TAMPERED")
+                if pending["previous"]!=anchor and pending["next"]!=anchor:raise StateError("RUNNER_AUDIT_TAMPERED")
                 self.pending_anchor_path.unlink();self._fsync_parent()
             return
-        if pending is not None and pending.get("previous")==anchor and pending.get("next")==observed:
+        if pending is not None and pending["previous"]==anchor and pending["next"]==observed:
             self._write_document(self.anchor_path,observed);self.pending_anchor_path.unlink();self._fsync_parent();return
         raise StateError("RUNNER_AUDIT_TAMPERED")
+
+    def _read_pending(self)->dict[str,object]:
+        try:value=json.loads(self.pending_anchor_path.read_text())
+        except (OSError,json.JSONDecodeError) as exc:raise StateError("RUNNER_AUDIT_TAMPERED") from exc
+        if set(value)!={"schemaVersion","previous","next"} or value.get("schemaVersion")!="runner-audit-pending-v1":raise StateError("RUNNER_AUDIT_TAMPERED")
+        for anchor in (value["previous"],value["next"]):
+            if anchor is None:continue
+            if not isinstance(anchor,dict) or set(anchor)!={"schemaVersion","sequence","entrySha256"} or anchor.get("schemaVersion")!="runner-audit-anchor-v1" or type(anchor.get("sequence")) is not int or anchor["sequence"]<1 or not isinstance(anchor.get("entrySha256"),str) or len(anchor["entrySha256"])!=64:raise StateError("RUNNER_AUDIT_TAMPERED")
+        if value["next"] is None:raise StateError("RUNNER_AUDIT_TAMPERED")
+        return value
 
     def _write_document(self,path:pathlib.Path,value:dict[str,object])->None:
         raw=json.dumps(value,sort_keys=True,separators=(",",":")).encode()+b"\n";temporary=path.with_name(f".{path.name}.{os.getpid()}.tmp")
@@ -89,21 +101,18 @@ class Store:
         try:os.fsync(parent)
         finally:os.close(parent)
 
-    def _write_anchor(self) -> None:
-        row=self.db.execute("SELECT sequence,entry_sha256 FROM audit ORDER BY sequence DESC LIMIT 1").fetchone()
-        if row is None:raise StateError("RUNNER_AUDIT_TAMPERED")
-        self._write_document(self.anchor_path,{"schemaVersion":"runner-audit-anchor-v1","sequence":row[0],"entrySha256":row[1]})
-
     def _prepare_anchor(self)->None:
         rows=list(self.db.execute("SELECT sequence,entry_sha256 FROM audit ORDER BY sequence DESC LIMIT 2"))
         if not rows:raise StateError("RUNNER_AUDIT_TAMPERED")
         next_value={"schemaVersion":"runner-audit-anchor-v1","sequence":rows[0][0],"entrySha256":rows[0][1]}
-        previous={"schemaVersion":"runner-audit-anchor-v1","sequence":rows[1][0],"entrySha256":rows[1][1]} if len(rows)==2 else {"schemaVersion":"runner-audit-anchor-v1","sequence":0,"entrySha256":"0"*64}
-        if json.loads(self.anchor_path.read_text())!=previous:raise StateError("RUNNER_AUDIT_TAMPERED")
+        previous={"schemaVersion":"runner-audit-anchor-v1","sequence":rows[1][0],"entrySha256":rows[1][1]} if len(rows)==2 else None
+        if self.anchor_path.exists():
+            if json.loads(self.anchor_path.read_text())!=previous:raise StateError("RUNNER_AUDIT_TAMPERED")
+        elif previous is not None:raise StateError("RUNNER_AUDIT_TAMPERED")
         self._write_document(self.pending_anchor_path,{"schemaVersion":"runner-audit-pending-v1","previous":previous,"next":next_value})
 
     def _finalize_anchor(self)->None:
-        pending=json.loads(self.pending_anchor_path.read_text());self._write_document(self.anchor_path,pending["next"]);self.pending_anchor_path.unlink();self._fsync_parent()
+        pending=self._read_pending();self._write_document(self.anchor_path,pending["next"]);self.pending_anchor_path.unlink();self._fsync_parent()
 
     @staticmethod
     def digest(request: dict[str, object]) -> str:
