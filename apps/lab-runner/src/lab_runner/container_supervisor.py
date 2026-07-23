@@ -35,6 +35,11 @@ def _descendant_pids()->list[int]:
     return [int(p.name) for p in pathlib.Path("/proc").iterdir() if p.name.isdigit() and int(p.name) not in (1,os.getpid())]
 
 
+def _cgroup()->dict[str,object]:
+    root=pathlib.Path("/sys/fs/cgroup");events=dict(line.split() for line in (root/"memory.events").read_text().splitlines())
+    return {"memoryMax":(root/"memory.max").read_text().strip(),"memorySwapMax":(root/"memory.swap.max").read_text().strip(),"memoryPeak":int((root/"memory.peak").read_text()),"memoryEvents":{key:int(value) for key,value in events.items()}}
+
+
 def _archive_output(path:pathlib.Path,state:pathlib.Path=WORKSPACE/"state")->None:
     rows=[]
     with tarfile.open(path,"w",format=tarfile.PAX_FORMAT) as tf:
@@ -121,6 +126,8 @@ def _main(operation:str,fixture:tuple[str,tuple[str,...]]|None=None,execute_seco
         if failure:
             _,status=os.waitpid(pid,0); rc=os.waitstatus_to_exitcode(status); break
     drain(0)
+    cgroup=_cgroup()
+    if fixture is not None and fixture==("resource_probe.py",("memory",)) and rc==-signal.SIGKILL and int(cgroup["memoryEvents"].get("oom_kill",0))>=1:failure="RUNNER_RESOURCE_LIMIT"
     reap_end=time.monotonic()+2
     while time.monotonic()<reap_end:
         observed,saw=_descendants();peak=max(peak,observed);tracker=tracker or saw
@@ -151,7 +158,7 @@ def _main(operation:str,fixture:tuple[str,tuple[str,...]]|None=None,execute_seco
         result=json.loads((RUN/"worker-result.json").read_text()); _archive_output(OUTPUT); status="pass"
     else:
         result=None; status="fail"; failure=failure or "RUNNER_OPERATION_FAILED"
-    write(RUN/"result.json",{"schemaVersion":"runner-container-result-v1","operationId":operation,"status":status,"result":result,"failureCode":failure,"stdoutBytes":stdout_size,"stderrBytes":stderr_size,"descendantPeak":peak,"resourceTrackerObserved":tracker})
+    write(RUN/"result.json",{"schemaVersion":"runner-container-result-v1","operationId":operation,"status":status,"result":result,"failureCode":failure,"stdoutBytes":stdout_size,"stderrBytes":stderr_size,"descendantPeak":peak,"resourceTrackerObserved":tracker,"cgroup":cgroup})
     protocol=(RUN/"result.json").read_bytes();archive=OUTPUT.read_bytes() if status=="pass" else b""
     sys.stdout.buffer.write(b"I9OUT"+struct.pack("!I",len(protocol))+protocol+struct.pack("!Q",len(archive))+archive);sys.stdout.buffer.flush()
     return 0 if status=="pass" else 1

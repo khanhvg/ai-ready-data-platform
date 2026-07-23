@@ -203,4 +203,4 @@ class Store:
         return list(self.db.execute("SELECT run_id,status,container_id,image_digest,fence,daemon_identity FROM runs WHERE status NOT IN ('committed','failed')"))
 
     def committed(self)->list[tuple[str,dict[str,object]]]:
-        return [(run_id,json.loads(result)) for run_id,result in self.db.execute("SELECT run_id,result_json FROM runs WHERE status='committed'")]
+        return [(run_id,json.loads(result)) for run_id,result in self.db.execute("SELECT run_id,result_json FROM runs WHERE status='committed' ORDER BY created_ns")]

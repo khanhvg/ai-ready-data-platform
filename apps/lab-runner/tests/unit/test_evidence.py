@@ -32,8 +32,16 @@ class RedPublicPathTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root=pathlib.Path(temporary)/"evidence";run_id="b"*32
             stage(root,run_id,{"status":"pass"})
-            index=reconcile(root,run_id)
+            index=reconcile(root,run_id,{"status":"pass"})
             self.assertEqual(run_id,json.loads(index.read_text())["runId"])
+
+    def test_published_evidence_tamper_is_rejected(self) -> None:
+        from lab_runner.evidence import reconcile, write
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root=pathlib.Path(temporary)/"evidence";run_id="c"*32;value={"status":"pass"}
+            write(root,run_id,value);(root/run_id/"result.json").write_text("{}\n")
+            with self.assertRaisesRegex(RuntimeError,"RUNNER_EVIDENCE_RECOVERY_INVALID"):reconcile(root,run_id,value)
 
     def test_named_behavior_is_not_yet_implemented(self) -> None:
         for case_id in ["S3-EVD-001"]:

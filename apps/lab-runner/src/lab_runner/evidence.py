@@ -20,19 +20,31 @@ def stage(root: pathlib.Path, run_id: str, value: dict[str,object]) -> pathlib.P
     return temporary
 
 
-def publish(root:pathlib.Path,run_id:str,temporary:pathlib.Path)->pathlib.Path:
+def verify(root:pathlib.Path,run_id:str,expected:dict[str,object])->pathlib.Path:
     run=root/run_id
-    if run.exists():raise RuntimeError("RUNNER_EVIDENCE_CONFLICT")
-    os.replace(temporary,run);root_fd=os.open(root,os.O_RDONLY);os.fsync(root_fd);os.close(root_fd)
+    if run.is_symlink() or not run.is_dir() or stat.S_IMODE(run.stat(follow_symlinks=False).st_mode)!=0o700 or {p.name for p in run.iterdir()}!={"result.json","index.json"}:raise RuntimeError("RUNNER_EVIDENCE_RECOVERY_INVALID")
+    raw=json.dumps(expected,sort_keys=True,separators=(",",":"),allow_nan=False).encode()+b"\n"
+    for name in ("result.json","index.json"):
+        path=run/name;observed=path.stat(follow_symlinks=False)
+        if not stat.S_ISREG(observed.st_mode) or observed.st_nlink!=1 or stat.S_IMODE(observed.st_mode)!=0o600:raise RuntimeError("RUNNER_EVIDENCE_RECOVERY_INVALID")
+    index=json.loads((run/"index.json").read_text());wanted={"schemaVersion":"runner-evidence-index-v1","runId":run_id,"artifacts":[{"locator":"result.json","size":len(raw),"sha256":hashlib.sha256(raw).hexdigest()}]}
+    if index!=wanted or (run/"result.json").read_bytes()!=raw:raise RuntimeError("RUNNER_EVIDENCE_RECOVERY_INVALID")
     return run/"index.json"
 
 
-def reconcile(root:pathlib.Path,run_id:str)->pathlib.Path:
+def publish(root:pathlib.Path,run_id:str,temporary:pathlib.Path,expected:dict[str,object]|None=None)->pathlib.Path:
+    run=root/run_id
+    if run.exists():raise RuntimeError("RUNNER_EVIDENCE_CONFLICT")
+    os.replace(temporary,run);root_fd=os.open(root,os.O_RDONLY);os.fsync(root_fd);os.close(root_fd)
+    return verify(root,run_id,expected) if expected is not None else run/"index.json"
+
+
+def reconcile(root:pathlib.Path,run_id:str,expected:dict[str,object])->pathlib.Path:
     published=root/run_id
-    if published.is_dir():return published/"index.json"
+    if published.is_dir():return verify(root,run_id,expected)
     candidates=list(root.glob(f".{run_id}.*.tmp"))
     if len(candidates)!=1:raise RuntimeError("RUNNER_EVIDENCE_RECOVERY_INVALID")
-    return publish(root,run_id,candidates[0])
+    return publish(root,run_id,candidates[0],expected)
 
 
 def discard(temporary:pathlib.Path)->None:

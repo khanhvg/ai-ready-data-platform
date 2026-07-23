@@ -372,8 +372,8 @@ class Gate:
         self.record("RED-OUT-001", lambda: observations["output_flood.py:"] if protocol("output_flood.py").get("failureCode") == "RUNNER_OUTPUT_LIMIT" and protocol("output_flood.py").get("stdoutBytes") <= 2097152 else (_ for _ in ()).throw(AssertionError("stream cap")))
         self.record("RED-OUT-002", self._bounded_protocol_archive)
         effective = network["inspect"]["HostConfig"]
-        memory=dict(protocol("resource_probe.py",("memory",)).get("result") or {}).get("observation") or {}
-        self.record("RED-RES-001", lambda: {"memory": effective["Memory"], "swap": effective["MemorySwap"], "pids": effective["PidsLimit"],"pressure":memory,"authority":"aggregate-cgroup-v2"} if (effective["Memory"], effective["MemorySwap"], effective["PidsLimit"]) == (536870912, 536870912, 64) and memory.get("allocatedBytes")==268435456 and memory.get("memoryMax")=="536870912" and memory.get("memorySwapMax")=="0" and 268435456<int(memory.get("memoryPeak",0))<=536870912 and 268435456<int(memory.get("memoryCurrent",0))<=536870912 else (_ for _ in ()).throw(AssertionError("cgroup")))
+        memory=dict(protocol("resource_probe.py",("memory",)).get("cgroup") or {});events=dict(memory.get("memoryEvents") or {})
+        self.record("RED-RES-001", lambda: {"memory": effective["Memory"], "swap": effective["MemorySwap"], "pids": effective["PidsLimit"],"pressure":memory,"authority":"aggregate-cgroup-v2"} if (effective["Memory"], effective["MemorySwap"], effective["PidsLimit"]) == (536870912, 536870912, 64) and protocol("resource_probe.py",("memory",)).get("failureCode")=="RUNNER_RESOURCE_LIMIT" and memory.get("memoryMax")=="536870912" and memory.get("memorySwapMax")=="0" and 0<int(memory.get("memoryPeak",0))<=536870912 and int(events.get("oom",0))>=1 and int(events.get("oom_kill",0))>=1 else (_ for _ in ()).throw(AssertionError("cgroup")))
         self.record("RED-RES-002", lambda: observations["resource_probe.py:cpu"] if protocol("resource_probe.py", ("cpu",)).get("failureCode") == "RUNNER_TIMEOUT" and effective["NanoCpus"] == 2000000000 else (_ for _ in ()).throw(AssertionError("cpu")))
         self.record("RED-RES-003", lambda: {"fds": observations["resource_probe.py:fds"], "files": observations["resource_probe.py:files"], "tmpfs": effective["Tmpfs"]})
 
@@ -447,6 +447,8 @@ class Gate:
         export=next(row for row in results if row["operationId"]=="retail.export")
         if [row["assetId"] for row in export["result"]["assets"]] != list(ASSETS):raise AssertionError("release order")
         if export.get("releaseAssets")!=export["result"]["assets"]:raise AssertionError("host release validation")
+        release_pointer=json.loads((runtime/"releases/current.json").read_text());release_record=json.loads((runtime/"releases/generations"/release_pointer["generation"]).read_text())
+        if release_pointer["releaseId"]!=export["releaseManifest"]["releaseId"] or release_pointer["manifestSha256"]!=export["releaseManifest"]["manifestSha256"] or release_record["runId"]!=export["runId"] or release_record["fence"]!=export["fence"] or release_record["workspaceRevision"]!=export["workspaceRevision"]:raise AssertionError("release pointer binding")
 
         self.record("RED-OPS-001", lambda: {"operations": [row["operationId"] for row in results], "imageDigest": self.image})
         self.record("RED-OPS-002", lambda: {"models": dbt_run["result"]["models"], "assets": len(export["result"]["assets"]), "decision": next(row for row in results if row["operationId"]=="promotion.verify")["result"]["decision"]})

@@ -65,8 +65,8 @@
     {
       "path": "app/src/lab_runner/container_supervisor.py",
       "mode": "0644",
-      "size": 8809,
-      "sha256": "d6c65bf5afbbc16dfd62ecc919e4d91cdac5d9e5c01e5b65380bfe405d1b3e14"
+      "size": 9431,
+      "sha256": "70f39921e6431fe5a1c4cc3d19ae5405c952d1068ccd7dd13626c4e52bf603c9"
     },
     {
       "path": "app/src/lab_runner/contract.py",
@@ -83,8 +83,8 @@
     {
       "path": "app/src/lab_runner/evidence.py",
       "mode": "0644",
-      "size": 2448,
-      "sha256": "95cc0779b9306afa49aa2171b954e0669d55e96783ec54d381c45020b5f39496"
+      "size": 3649,
+      "sha256": "c8d3535c76cc58f410d9a6413906ae35f89c417f4948533edbdb5f3a2b91d62a"
     },
     {
       "path": "app/src/lab_runner/fence.py",
@@ -95,8 +95,8 @@
     {
       "path": "app/src/lab_runner/operation_adapters.py",
       "mode": "0644",
-      "size": 8823,
-      "sha256": "52dd1bf197ab085783cecab0e550cffa2f4b269784baeab29c58c86753bccc49"
+      "size": 9166,
+      "sha256": "f53a7a0aaed3f805e185a0ec193276d6088b0e2c7d6acb14c593aa6705e1d6e1"
     },
     {
       "path": "app/src/lab_runner/registry.py",
@@ -107,20 +107,20 @@
     {
       "path": "app/src/lab_runner/release.py",
       "mode": "0644",
-      "size": 1251,
-      "sha256": "99b47299ec2fb866dcc465634d67c7a4a35a8929eab1c5f293b2070497999722"
+      "size": 8163,
+      "sha256": "1d63c6d5e819ba1d5bfcdffd8cb8119134466419fedd3c00116a99c899ddb753"
     },
     {
       "path": "app/src/lab_runner/service.py",
       "mode": "0644",
-      "size": 5102,
-      "sha256": "267a548d806a91aa2502be543e53f27d831ef68ef60272d017c4a118b1aaaa74"
+      "size": 6443,
+      "sha256": "8331c83b2cf332edc49a5cf68485c9a92c2f27bc4b25cbbcc62348f4b4bf74b5"
     },
     {
       "path": "app/src/lab_runner/state.py",
       "mode": "0644",
-      "size": 13382,
-      "sha256": "333fbce0df1f7b82bd7c77cb5cb986f915fa97d82bfbdb656edcb200fea6e68e"
+      "size": 13402,
+      "sha256": "388fdab484717bcb98041501158dded6f7d67d691523c10e1cbdf4a84a27d679"
     },
     {
       "path": "app/src/lab_runner/transport.py",
@@ -215,8 +215,8 @@
     {
       "path": "app/tests/fixtures/resource_probe.py",
       "mode": "0644",
-      "size": 874,
-      "sha256": "e5f2cd0f7cc6f2943bb0d6b69e958d0d1c62bdfdee1fb915f2521bbffc0c2dd5"
+      "size": 458,
+      "sha256": "d3f1d7fa101c27cf8be2f90a330e88f21172318397ce2574b77f0a25c064228b"
     },
     {
       "path": "project/contracts/data/curated-release-manifest.schema.json",
