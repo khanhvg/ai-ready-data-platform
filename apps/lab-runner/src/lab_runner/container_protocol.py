@@ -14,7 +14,7 @@ def read(path:pathlib.Path)->dict[str,object]:
     raw=path.read_bytes()
     if len(raw)>LIMIT: raise RuntimeError("RUNNER_PROTOCOL_LIMIT")
     value=json.loads(raw)
-    if type(value) is not dict or set(value)-{"schemaVersion","operationId","status","result","failureCode","stdoutBytes","stderrBytes","descendantPeak","resourceTrackerObserved"}:
+    if type(value) is not dict or set(value)-{"schemaVersion","operationId","status","result","failureCode","stdoutBytes","stderrBytes","descendantPeak","resourceTrackerObserved","cgroup"}:
         raise RuntimeError("RUNNER_PROTOCOL_INVALID")
     if value.get("schemaVersion")!="runner-container-result-v1" or value.get("status") not in ("pass","fail"):
         raise RuntimeError("RUNNER_PROTOCOL_INVALID")

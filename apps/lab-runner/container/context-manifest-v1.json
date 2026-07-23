@@ -59,8 +59,8 @@
     {
       "path": "app/src/lab_runner/container_protocol.py",
       "mode": "0644",
-      "size": 950,
-      "sha256": "818f9423a434d267bb38c83107ecf581053c07c09024a9f11115cbfa67a0c0b9"
+      "size": 959,
+      "sha256": "77f03bd9e32200ab29797d9a8e8c0485571f89e3373c55fae3e114adcde9bcd6"
     },
     {
       "path": "app/src/lab_runner/container_supervisor.py",
