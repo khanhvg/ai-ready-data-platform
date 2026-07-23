@@ -1,6 +1,8 @@
 from __future__ import annotations
 import importlib.util
+import hashlib
 import pathlib
+import tempfile
 import unittest
 
 APP = pathlib.Path(__file__).resolve()
@@ -49,6 +51,27 @@ class RedPublicPathTest(unittest.TestCase):
         changed={"tables":17,"manifestSha256":"a"*64,"nested":{"dataRunId":"b"*64,"models":51}}
         self.assertEqual(gate.stable_result_sha256(first),gate.stable_result_sha256(replay))
         self.assertNotEqual(gate.stable_result_sha256(first),gate.stable_result_sha256(changed))
+
+    def test_supply_lock_requires_every_selected_wheel_hash(self) -> None:
+        expected={"selected.whl":"a"*64,"second.whl":"b"*64}
+        lock="package==1 --hash=sha256:"+"a"*64+" --hash=sha256:"+"b"*64+" --hash=sha256:"+"c"*64
+        self.assertTrue(gate.wheelhouse_lock_complete(expected,lock))
+        self.assertFalse(gate.wheelhouse_lock_complete({**expected,"missing.whl":"d"*64},lock))
+
+    def test_ignored_session_log_may_only_append_to_the_baseline(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path=pathlib.Path(temporary)/"session.log";path.write_bytes(b"baseline")
+            baseline={"size":path.stat().st_size,"sha256":hashlib.sha256(path.read_bytes()).hexdigest()}
+            path.write_bytes(b"baseline-appended")
+            self.assertTrue(gate.append_only_file_matches(path,baseline))
+            path.write_bytes(b"rewritten-appended")
+            self.assertFalse(gate.append_only_file_matches(path,baseline))
+
+    def test_memory_probe_uses_multiple_rlimit_bounded_workers_for_aggregate_cgroup(self) -> None:
+        fixture=(APP/"tests/fixtures/resource_probe.py").read_text()
+        supervisor=(APP/"src/lab_runner/container_supervisor.py").read_text()
+        self.assertIn("os.fork()",fixture)
+        self.assertIn('fixture==("resource_probe.py",("memory",)) and int(cgroup["memoryEvents"].get("oom_kill",0))>=1',supervisor)
 
     def test_named_behavior_passes_public_gate(self) -> None:
         for case_id in ["RED-ENV-001","RED-ENV-002","RED-RES-001"]:
