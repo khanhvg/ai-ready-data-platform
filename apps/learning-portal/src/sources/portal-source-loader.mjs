@@ -55,6 +55,14 @@ function readJson(path) {
   return JSON.parse(readAuthority(path));
 }
 
+function plainInlineMarkdown(value) {
+  return value
+    .replace(/\*\*([^*\n]+)\*\*/g, '$1')
+    .replace(/`([^`\n]+)`/g, '$1')
+    .replaceAll('**', '')
+    .replaceAll('`', '');
+}
+
 function sections(markdown) {
   const result = {};
   let key = 'Giới thiệu';
@@ -65,7 +73,9 @@ function sections(markdown) {
       result[key] = [];
     } else if (result[key]) result[key].push(line);
   }
-  return Object.fromEntries(Object.entries(result).map(([name, lines]) => [name, lines.join('\n').trim()]));
+  return Object.fromEntries(
+    Object.entries(result).map(([name, lines]) => [name, plainInlineMarkdown(lines.join('\n').trim())])
+  );
 }
 
 function assertExact(condition, code) {
