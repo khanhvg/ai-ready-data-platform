@@ -458,13 +458,21 @@ class Gate:
         export=next(row for row in results if row["operationId"]=="retail.export")
         if [row["assetId"] for row in export["result"]["assets"]] != list(ASSETS):raise AssertionError("release order")
         if export.get("releaseAssets")!=export["result"]["assets"]:raise AssertionError("host release validation")
+        repro_service=RunnerService(self.root / "operations-export-repro", self.image, APP / "container/seccomp-runner-v1.json")
+        repro_export=None
+        for index, operation in enumerate(operation_ids()[:5], 1):
+            repro_export=repro_service.run({"operationId":operation,"idempotencyKey":f"gate-export-repro-{index:02d}","workspaceRevision":repro_service.current_revision()})
+        if repro_export is None or repro_export["operationId"]!="retail.export":raise AssertionError("export reproducibility sequence")
+        original_assets=[(row["assetId"],row["size"],row["sha256"]) for row in export["result"]["assets"]]
+        reproduced_assets=[(row["assetId"],row["size"],row["sha256"]) for row in repro_export["result"]["assets"]]
+        if reproduced_assets!=original_assets:raise AssertionError("export raw bytes are not reproducible")
         release_pointer=json.loads((runtime/"releases/current.json").read_text());release_record=json.loads((runtime/"releases/generations"/f"{export['workspaceRevision']:020d}.json").read_text())
         if release_pointer["schemaVersion"]!="curated-release-current-pointer-v1" or release_pointer["currentReleaseId"]!=export["releaseManifest"]["releaseId"] or release_pointer["manifestSha256"]!=export["releaseManifest"]["manifestSha256"] or release_record["runId"]!=export["runId"] or release_record["fence"]!=export["fence"] or release_record["workspaceRevision"]!=export["workspaceRevision"]:raise AssertionError("release pointer binding")
         self.operations=results
         self.operation_service=service
 
         self.record("RED-OPS-001", lambda: {"operations": [row["operationId"] for row in results], "imageDigest": self.image})
-        self.record("RED-OPS-002", lambda: {"models": dbt_run["result"]["models"], "assets": len(export["result"]["assets"]), "decision": next(row for row in results if row["operationId"]=="promotion.verify")["result"]["decision"]})
+        self.record("RED-OPS-002", lambda: {"models": dbt_run["result"]["models"], "assets": len(export["result"]["assets"]), "rawExportReproduced": reproduced_assets==original_assets, "decision": next(row for row in results if row["operationId"]=="promotion.verify")["result"]["decision"]})
         self.record("RED-IDM-001", lambda: {"replayEqual": replay==results[0],"resetReplayEqual":reset_replay==results[-1],"resetPreserved":results[-1]["result"]["preserved"], "runId": results[0]["runId"]})
         self.record("RED-IDM-002", lambda: self._idempotency_conflict(service, results[0]))
         self.record("RED-REL-001", lambda: self._release_invalid())
