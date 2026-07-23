@@ -53,8 +53,8 @@
     {
       "path": "app/src/lab_runner/container_backend.py",
       "mode": "0644",
-      "size": 11721,
-      "sha256": "19f684bff329cd0d48564a84cbdc98db6b9561d73cef8afe270c9d1cd3a5e36b"
+      "size": 12059,
+      "sha256": "0f096d8630acc764cb1344da03d74b5b12251867cf8cefeb7ef0da318e8d2858"
     },
     {
       "path": "app/src/lab_runner/container_protocol.py",
@@ -65,8 +65,8 @@
     {
       "path": "app/src/lab_runner/container_supervisor.py",
       "mode": "0644",
-      "size": 9431,
-      "sha256": "70f39921e6431fe5a1c4cc3d19ae5405c952d1068ccd7dd13626c4e52bf603c9"
+      "size": 9803,
+      "sha256": "f574c0875bd395020151ae2543170ec0940f47f42b979f2d0f7de06bb01ec3fe"
     },
     {
       "path": "app/src/lab_runner/contract.py",
@@ -77,8 +77,8 @@
     {
       "path": "app/src/lab_runner/engine.py",
       "mode": "0644",
-      "size": 3872,
-      "sha256": "197dacc02de8d612b93117ce7e13d3cdf1a514f9e1f0112fa1e02aef9897bb10"
+      "size": 3906,
+      "sha256": "694275a707095ffaf8805f504518f9b657f3472e8305ee927158fee435c7201a"
     },
     {
       "path": "app/src/lab_runner/evidence.py",
@@ -107,20 +107,20 @@
     {
       "path": "app/src/lab_runner/release.py",
       "mode": "0644",
-      "size": 15388,
-      "sha256": "3f5d54f4a81c89671dfd8298cf1ddbd85c80e0ce01851e7739df8fb84f5cf45e"
+      "size": 16373,
+      "sha256": "43756d6e331127bdea41c2de887aad0cad05eaafdc7d39da8a64daad495bff81"
     },
     {
       "path": "app/src/lab_runner/service.py",
       "mode": "0644",
-      "size": 6855,
-      "sha256": "3e7ca742cf5455db1b8d1d00f68a05d8f13b04154fe0ce4c5457501c9083f753"
+      "size": 10216,
+      "sha256": "fb55e64a9fa98b9c848c0af710a0b8b809ca3548fa9b0120096092a041984b2d"
     },
     {
       "path": "app/src/lab_runner/state.py",
       "mode": "0644",
-      "size": 13402,
-      "sha256": "388fdab484717bcb98041501158dded6f7d67d691523c10e1cbdf4a84a27d679"
+      "size": 14958,
+      "sha256": "e40de902b1c20af40c67f1d210a1626c897055de1033ccf1b03750520a47835a"
     },
     {
       "path": "app/src/lab_runner/transport.py",
