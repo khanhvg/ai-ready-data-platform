@@ -140,7 +140,7 @@ async function start() {
           `${JSON.stringify({
             state: 'running',
             publicPort: record.publicPort,
-            semanticReady: false,
+            semanticReady: true,
             runner: 'unavailable',
             completion: 'disabled'
           })}\n`
@@ -166,16 +166,16 @@ async function status() {
     Object.keys(statusValue).sort().join('\n') !==
       ['instanceNonce', 'semanticReady', 'state'].sort().join('\n') ||
     statusValue.state !== 'running' ||
-    statusValue.semanticReady !== false ||
+    statusValue.semanticReady !== true ||
     statusValue.instanceNonce !== record.instanceNonce
   ) throw new Error('PORTAL_CONTROL_RESPONSE_INVALID');
   process.stdout.write(
     `${JSON.stringify({
       state: statusValue.state,
       publicPort: record.publicPort,
-      semanticReady: false,
+      semanticReady: true,
       runner: 'unavailable',
-      stageB: 'blocked-on-issue9',
+      stageB: 'deferred',
       completion: 'disabled'
     })}\n`
   );
@@ -191,17 +191,17 @@ async function down() {
       Object.keys(statusValue).sort().join('\n') !==
         ['instanceNonce', 'semanticReady', 'state'].sort().join('\n') ||
       statusValue.state !== 'stopping' ||
-      statusValue.semanticReady !== false ||
+      statusValue.semanticReady !== true ||
       statusValue.instanceNonce !== record.instanceNonce
     ) throw new Error('PORTAL_CONTROL_RESPONSE_INVALID');
     await rm(controlPath, { force: true });
     process.stdout.write(
-      `${JSON.stringify({ state: 'stopped', semanticReady: false, evidencePreserved: true })}\n`
+      `${JSON.stringify({ state: 'stopped', semanticReady: true, evidencePreserved: true })}\n`
     );
   } catch (error) {
     if (error?.code !== 'ENOENT') throw error;
     process.stdout.write(
-      `${JSON.stringify({ state: 'already-stopped', semanticReady: false, evidencePreserved: true })}\n`
+      `${JSON.stringify({ state: 'already-stopped', semanticReady: true, evidencePreserved: true })}\n`
     );
   }
 }
@@ -215,8 +215,8 @@ async function blocked(id) {
     `${JSON.stringify({
       schemaVersion: 'stage-b-blocked-diagnostic-v1',
       commandId: id,
-      failureCode: 'STAGE_B_DEPENDENCY_UNAVAILABLE',
-      stageB: 'blocked-on-issue9',
+      failureCode: 'STAGE_B_DEFERRED_BY_OWNER',
+      stageB: 'deferred',
       action: 'none'
     })}\n`
   );
@@ -280,8 +280,8 @@ async function blocked(id) {
       parameters: []
     },
     status: 'fail',
-    failureCode: 'STAGE_B_DEPENDENCY_UNAVAILABLE',
-    remediation: 'Issue #9 must publish a reviewed exact runner release before Stage B.',
+    failureCode: 'STAGE_B_DEFERRED_BY_OWNER',
+    remediation: 'The owner must explicitly reactivate actionable Stage B work before execution.',
     inputSha: '0972fa20dc7ec2dd30468fa700946a3e20808e43',
     testedTreeSha,
     dependencyMergeShas: ['5644f01b4c0443a81f3af0bcce80f44c847cd986'],

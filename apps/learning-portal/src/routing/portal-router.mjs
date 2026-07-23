@@ -1,81 +1,28 @@
 export function derivePortalRoutes(catalog) {
-  const root = Object.freeze({
-    kind: 'catalog',
-    path: '/',
-    label: 'Danh mục học tập'
-  });
-  if (!Array.isArray(catalog.modules) || catalog.modules.length === 0) {
-    const route = { ...root };
-    Object.defineProperty(route, 'navigation', {
-      value: Object.freeze([{ path: '/', label: root.label }]),
-      enumerable: false
-    });
-    return Object.freeze([Object.freeze(route)]);
-  }
-  const lessonRoutes = catalog.modules.flatMap((module) =>
-    module.lessons.flatMap((lesson) => [
-      {
-        kind: 'lesson',
-        path: `/lessons/${encodeURIComponent(lesson.id)}`,
-        label: lesson.titleVi ?? lesson.title,
-        moduleId: module.id,
-        lessonId: lesson.id
-      },
-      ...[...lesson.narrativeSteps]
-        .sort((left, right) => left.order - right.order)
-        .map((step) => ({
-          kind: 'step',
-          path: `/lessons/${encodeURIComponent(lesson.id)}/steps/${encodeURIComponent(step.id)}`,
-          label: `Bước ${step.order}: ${step.id}`,
-          moduleId: module.id,
-          lessonId: lesson.id,
-          stepId: step.id
-        }))
-    ])
-  );
-  const moduleRoutes = catalog.modules.map((module, index) => ({
-    kind: 'module',
-    path: index === 0 ? '/module' : `/modules/${encodeURIComponent(module.id)}`,
-    label: module.title ?? 'Mô-đun học tập',
-    moduleId: module.id
-  }));
   const routes = [
-    root,
-    ...moduleRoutes,
-    ...lessonRoutes
+    { kind: 'home', path: '/', label: 'Trang chủ' },
+    { kind: 'curriculum', path: '/curriculum', label: 'Lộ trình học' },
+    ...catalog.curriculum.modules.map((module) => ({
+      kind: 'module', path: `/curriculum/${module.id.toLowerCase()}`, label: `${module.id} · ${module.outcome}`, moduleId: module.id
+    })),
+    { kind: 'architecture', path: '/architecture', label: 'Kiến trúc' },
+    { kind: 'labs', path: '/labs', label: 'Lab thủ công' },
+    ...catalog.labs.map((lab) => ({ kind: 'lab', path: `/labs/${lab.slug}`, label: lab.title, labSlug: lab.slug })),
+    { kind: 'promotion', path: '/lessons/promotion-trust', label: catalog.promotionTrust.title },
+    ...catalog.promotionTrust.lesson.narrativeSteps.map((step) => ({
+      kind: 'promotion-step', path: `/lessons/promotion-trust/steps/${step.id}`, label: `Bước ${step.order}: ${step.id}`, stepId: step.id
+    }))
   ];
-  if (new Set(routes.map(({ path }) => path)).size !== routes.length) {
-    throw new TypeError('Portal route structure contains duplicate paths');
-  }
-  const navigation = Object.freeze(
-    routes.map(({ path, label }) => Object.freeze({ path, label }))
-  );
-  return Object.freeze(
-    routes.map((source) => {
-      const route = { ...source };
-      Object.defineProperty(route, 'navigation', { value: navigation, enumerable: false });
-      return Object.freeze(route);
-    })
-  );
+  if (new Set(routes.map(({ path }) => path)).size !== routes.length) throw new Error('PORTAL_ROUTE_DUPLICATE');
+  return Object.freeze(routes.map((route, index) => Object.freeze({
+    ...route,
+    previous: index > 0 ? { path: routes[index - 1].path, label: routes[index - 1].label } : null,
+    next: index < routes.length - 1 ? { path: routes[index + 1].path, label: routes[index + 1].label } : null
+  })));
 }
 
 export function resolvePortalRoute(pathname, routes) {
-  if (
-    typeof pathname !== 'string' ||
-    pathname.length === 0 ||
-    pathname.length > 2048 ||
-    pathname.includes('\\') ||
-    pathname.includes('//')
-  ) return undefined;
-  let decoded;
-  try {
-    decoded = decodeURIComponent(pathname);
-  } catch {
-    return undefined;
-  }
-  if (
-    decoded !== pathname ||
-    decoded.split('/').some((segment) => segment === '.' || segment === '..')
-  ) return undefined;
-  return routes.find((candidate) => candidate.path === pathname);
+  if (typeof pathname !== 'string' || pathname.length === 0 || pathname.length > 2048 || pathname.includes('\\') || pathname.includes('//') || pathname.includes('%')) return undefined;
+  if (pathname.split('/').some((part) => part === '.' || part === '..')) return undefined;
+  return routes.find((route) => route.path === pathname);
 }

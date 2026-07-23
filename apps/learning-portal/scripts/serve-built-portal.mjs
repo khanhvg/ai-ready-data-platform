@@ -10,7 +10,7 @@ const lifecycleControlPath = process.env.PORTAL_LIFECYCLE_CONTROL_PATH;
 const fixedTestPort = process.env.PORTAL_FIXED_TEST_PORT
   ? Number.parseInt(process.env.PORTAL_FIXED_TEST_PORT, 10)
   : 0;
-const semanticReady = false;
+const semanticReady = true;
 const capability = randomBytes(32).toString('hex');
 const instanceNonce = randomUUID();
 const MAX_FILES = 128;
