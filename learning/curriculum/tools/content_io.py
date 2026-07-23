@@ -72,7 +72,7 @@ class OwnedDirectory:
     inode: int
 
 
-_SKIPPED_DIRECTORIES = frozenset({".git", ".claude", ".artifacts", "__pycache__"})
+_SKIPPED_DIRECTORIES = frozenset({".git", ".claude", ".artifacts", ".hermes", "__pycache__"})
 _CONTROLLER_KEYS = frozenset(
     {
         "PATH",

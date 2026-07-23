@@ -280,7 +280,7 @@ def _validate_render(root: Path) -> None:
         raise _issue("I11_VISUAL_OVERLAP")
     if 'width="12"' in svg:
         raise _issue("I11_VISUAL_CLIPPING")
-    if svg.count('fill="#ffffff"') > 1:
+    if re.search(r"<text[^>]+fill=\"#ffffff\"", svg):
         raise _issue("I11_VISUAL_CONTRAST")
     if "<title>C4-L2-AWS architecture decision</title>" not in svg:
         raise _issue("I11_VISUAL_ACCESSIBILITY")
