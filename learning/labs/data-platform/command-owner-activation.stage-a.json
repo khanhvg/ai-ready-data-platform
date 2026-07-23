@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "command-owner-activation-v1",
+  "baseRegistryPath": "learning/contracts/command-owner-registry-v1.json",
+  "baseRegistrySha256": "a94ac86bda0b70643edef9f144a59d8753d91f963b83d22cd510adbc31970e80",
+  "owner": "I5-07",
+  "fragment": {
+    "path": "mk/issue-5/i5-07.mk",
+    "sha256": "79934a998db219fda99ee5353b892b9a6b4c3764c96e6380718dbc08a7238c40"
+  },
+  "commands": [
+    {
+      "commandId": "lake-contracts-check",
+      "availability": "implemented-static-contract",
+      "evidenceVersion": "fitness-result-v2"
+    }
+  ]
+}
