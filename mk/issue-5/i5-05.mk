@@ -4,10 +4,9 @@ endif
 
 PORTAL_ROOT := apps/learning-portal
 
-.PHONY: learn learn-status learn-down portal-test portal-a11y portal-e2e lesson-e2e local-journey-e2e portal-visual-review
+.PHONY: learn learn-status learn-down portal-test portal-a11y portal-e2e portal-release-check lesson-e2e local-journey-e2e portal-visual-review
 
 learn:
-	@test -n "$(value LESSON)" || (echo "LESSON is required" >&2; exit 2)
 	@node $(PORTAL_ROOT)/scripts/portal-lifecycle.mjs start
 
 learn-status:
@@ -28,6 +27,9 @@ portal-e2e:
 
 portal-visual-review:
 	@npm --prefix $(PORTAL_ROOT) run test:visual -- --workers=1 --retries=0
+
+portal-release-check:
+	@npm --prefix $(PORTAL_ROOT) run verify:release
 
 lesson-e2e:
 	@test -n "$(value LESSON)" || (echo "LESSON is required" >&2; exit 2)
