@@ -1,9 +1,0 @@
-{
-  "$schema":"https://json-schema.org/draft/2020-12/schema",
-  "$id":"urn:ai-ready-data-platform:retail-golden-v1",
-  "type":"object",
-  "required":["contractId","schemaVersion","inputIdentity","generator","anomalies","dbt","marts","martSummarySha256","legacyDiscoverySummarySha256","assertions","integrity"],
-  "properties":{
-    "contractId":{"const":"retail-golden-v1"},"schemaVersion":{"const":"retail-golden-v1"},"inputIdentity":{"type":"object"},"generator":{"type":"object"},"anomalies":{"type":"object"},"dbt":{"type":"object"},"marts":{"type":"array","minItems":11,"maxItems":11},"martSummarySha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"legacyDiscoverySummarySha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"assertions":{"type":"array"},"integrity":{"type":"object"}
-  },"additionalProperties":false
-}

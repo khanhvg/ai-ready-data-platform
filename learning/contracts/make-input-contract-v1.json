@@ -1,7 +1,0 @@
-{
-  "schemaVersion": "make-input-contract-v1",
-  "implementationInputSha": "5f2be0caf993e3139ba2085a0ddaba150dfc7943",
-  "makefileBlobSha": "41b385c2119520e8925fb1a48ef291e9e64154cb",
-  "targets": ["venv", "up", "down", "seed", "load", "health", "dbt", "dbt-docs", "airflow", "bi", "catalog", "lake-up", "lake-publish", "catalog-ingest", "clean"],
-  "rootChange": ["ISSUE_5_MAKE_FRAGMENTS := $(sort $(wildcard mk/issue-5/*.mk))", "-include $(ISSUE_5_MAKE_FRAGMENTS)"]
-}

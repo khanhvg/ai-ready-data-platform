@@ -1,4 +1,0 @@
-{
-  "schemaVersion": "runner-browser-request-fixtures-v1",
-  "cases": ["missing-host", "duplicate-host", "origin", "cookie", "fetch-metadata", "preflight", "simple-form", "stale-bearer", "missing-csrf", "oversize"]
-}

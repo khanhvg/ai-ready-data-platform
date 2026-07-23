@@ -1,6 +1,0 @@
-{
-  "schemaVersion": "runner-fixture-manifest-v1",
-  "safety": "container-only-adversarial-execution",
-  "profile": "small-42",
-  "operations": ["workspace.prepare", "retail.generate", "retail.load", "retail.dbt-build", "retail.export", "promotion.configure", "promotion.verify", "workspace.reset"]
-}

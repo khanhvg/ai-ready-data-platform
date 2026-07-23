@@ -1,9 +1,0 @@
-specification {
-  element actor
-  element system
-  element container
-  element database
-  deploymentNode private_subnet
-  deploymentNode compute
-  deploymentNode state
-}

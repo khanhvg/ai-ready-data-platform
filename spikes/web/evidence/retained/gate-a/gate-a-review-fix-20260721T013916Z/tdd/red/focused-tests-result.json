@@ -1,9 +1,0 @@
-{
-  "schemaVersion": "post-cook-review-red-result-v1",
-  "command": "node --test spikes/web/common/tests/static-facts.test.mjs spikes/web/common/tests/state-navigation.test.mjs",
-  "startedAtUtc": "2026-07-21T01:39:44Z",
-  "endedAtUtc": "2026-07-21T01:39:44Z",
-  "exitCode": 1,
-  "intendedFailure": true,
-  "tapSha256": "b9b2296f28be3fc49f77a88e35950cabb3a119e3cf240f5221b78e9bd2154462"
-}

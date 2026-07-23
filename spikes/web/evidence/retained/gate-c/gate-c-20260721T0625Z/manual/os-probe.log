@@ -1,8 +1,0 @@
-2026-07-21T06:30Z System Events accessibility probes started as issue-owned process groups 98886 and 99017.
-Both probes waited without returning a UI-elements-enabled value or accessible Chrome state.
-2026-07-21T06:31Z Exact issue-owned osascript/shell probes were terminated. No foreign listener or AgentOps process was signalled.
-macOS: 26.5.1 build 25F80 arm64
-Google Chrome: 150.0.7871.129
-VoiceOver application metadata version: 10
-reduceMotion preference key: absent; actual UI setting was not changed or reviewed.
-No keyboard, VoiceOver, zoom, reduced-motion, or no-JS action is claimed.

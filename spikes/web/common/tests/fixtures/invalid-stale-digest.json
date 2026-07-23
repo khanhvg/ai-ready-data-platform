@@ -1,5 +1,0 @@
-{
-  "fixtureKind": "synthetic-preview",
-  "fixtureDigest": "sha256:stale-fixture-digest",
-  "persistedStateDigest": "sha256:older-fixture-digest"
-}
