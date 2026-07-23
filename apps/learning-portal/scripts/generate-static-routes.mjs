@@ -16,12 +16,15 @@ const viteDocument = await readFile(resolve(appRoot, 'dist/index.html'), 'utf8')
 const scripts = [...viteDocument.matchAll(/<script[^>]+src="([^"]+)"[^>]*><\/script>/g)].map(
   (match) => match[1]
 );
+const styles = [...viteDocument.matchAll(/<link[^>]+rel="stylesheet"[^>]+href="([^"]+)"[^>]*>/g)].map(
+  (match) => match[1]
+);
 
 for (const route of routes) {
   const output = route.path === '/' ? 'index.html' : `${route.path.slice(1)}/index.html`;
   const target = resolve(appRoot, 'dist', output);
   await mkdir(dirname(target), { recursive: true });
-  await writeFile(target, renderStaticDocument(route, catalog, { scripts }), {
+  await writeFile(target, renderStaticDocument(route, catalog, { scripts, styles }), {
     encoding: 'utf8',
     mode: 0o644
   });

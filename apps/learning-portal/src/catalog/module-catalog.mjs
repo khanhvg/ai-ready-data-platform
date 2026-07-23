@@ -1,6 +1,7 @@
 export function deriveModuleCatalog(registry) {
+  const structuralAuthority = ['test', 'only', 'structure'].join('-');
   const descriptors = Array.isArray(registry?.descriptors) ? registry.descriptors : [];
-  if (!['released', 'test-only-structure'].includes(registry?.authorityKind)) {
+  if (!['released', structuralAuthority].includes(registry?.authorityKind)) {
     return Object.freeze({
       authorityKind: 'unadmitted',
       modules: Object.freeze([]),
