@@ -3,7 +3,7 @@
   "cookInputSha": "f6791555dc8b2ada6fa44747ca829a3d9cd87667",
   "integrationReleaseSha": "5644f01b4c0443a81f3af0bcce80f44c847cd986",
   "releasedStageASha": "fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9",
-  "imageDigest": "sha256:3c071219843d5dd201b4646313f988f87cb4b3d56c3902d9e1a3b9a403485f6c",
+  "imageDigest": "sha256:c32d900af5cca9b829ae5d8dfb8cb912af0bdcd83e17a35d7387451835628cda",
   "platform": "linux/arm64",
   "user": "65532:65532",
   "workdir": "/workspace",
@@ -24,17 +24,17 @@
   "sbom": {
     "format": "SPDX-2.3",
     "packages": 61,
-    "sha256": "be50bcb0143d5cd68a2ce65eb7ee5f4599d38eda83d21993861329681c179cfd"
+    "sha256": "ba4028797964c6ad4ccb04be955c9c81843e745847a71f4e3ac7f7fcf212124e"
   },
   "vulnerability": {
     "scanner": "grype@0.116.0",
     "databaseSchema": "v6.1.9",
     "databaseBuilt": "2026-07-22T07:06:24Z",
-    "scanSha256": "7b0e74445a71f5acd53758b4e5f88bb1446b3ae2f53305993424e04a0895d209",
+    "scanSha256": "567c8f57ba49d6439f19b19bbb8d37f5d5c5249d3aa8dda225a29a2bf21b36f1",
     "scannerCriticalHigh": 10,
     "scannerMedium": 17,
     "openVexNotAffected": 27,
-    "openVexSha256": "d6e2dd1752a4c1cd15bb11da48d6ad6357a9b3ed010c0462ea78f43e34953ec7",
+    "openVexSha256": "759649ea259f59bb11528c1926303d4f666e2b148ed8ee6c8dc90d5fc7bb0d91",
     "unresolvedCriticalHigh": 0
   },
   "operations": [
@@ -59,10 +59,10 @@
   ],
   "gateAggregate": {"redRows": 52, "s3Rows": 14, "passed": 66, "failed": 0},
   "rollbackAggregate": {"attempts": 2, "live": true, "absent": true, "stalePreserved": true, "foreignUnchanged": true, "idempotent": true},
-  "buildLockSha256": "fe416255c10c2e53049db9e9d653b0d95c4236d723ae48b09b02eb65d03a3ad9",
-  "imageManifestDigest": "sha256:3c071219843d5dd201b4646313f988f87cb4b3d56c3902d9e1a3b9a403485f6c",
-  "imageConfigDigest": "sha256:41357a4f538832aa13e70c39581739887a1cc21a0a086c92c0cf69267a330106",
-  "seccompSha256": "ad19b56e07dd87ad4375c1ecbc600704767308520290e17bb00cf04fdce54fc5",
+  "buildLockSha256": "5f990280c58ec464c5bb5861e84c5cec5f766c0868f56263cba21419a8248fb6",
+  "imageManifestDigest": "sha256:c32d900af5cca9b829ae5d8dfb8cb912af0bdcd83e17a35d7387451835628cda",
+  "imageConfigDigest": "sha256:ee871583dc989c1845346797246dc6501822019ea147d3dfd3df95435ed61657",
+  "seccompSha256": "68495bb7a346ed0bbfb2926d90df1983b6088af30e67d7e8a7872b4d062e0822",
   "assetResults": [
     {
       "assetId": "mart_daily_revenue",
@@ -111,13 +111,13 @@
   ],
   "staticSecurity": {
     "tool": "bandit@1.8.6",
-    "sha256": "bcf8f942ca8ab16d2d3a4a767e43de79a86006256805f353f7316b3fb4ef43ae",
+    "sha256": "dc7a595d8c3ea2d41cbec5c892b8dd201a182f752d853594ecea11cfc2b53861",
     "unresolvedHigh": 0,
     "unresolvedMedium": 0
   },
   "provenance": {
     "format": "runner-build-provenance-v1",
-    "sha256": "025844bda77cda92ebc409914961a1bbbfee995c6e59c3b184c592899d1e7954"
+    "sha256": "0073036dc22afb78a526407add1b751d5328db78f5505e3048043cd0d57b4c49"
   },
   "licenses": {
     "pythonPackages": 55,
