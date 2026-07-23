@@ -1,6 +1,7 @@
 from __future__ import annotations
 import importlib.util
 import pathlib
+import tempfile
 import unittest
 
 APP = pathlib.Path(__file__).resolve()
@@ -14,6 +15,13 @@ ROWS = {row["id"]: row for row in __import__("json").loads((APP / "tests/red-man
 
 
 class RedPublicPathTest(unittest.TestCase):
+    def test_workspace_file_quota_rejects_4097_files(self) -> None:
+        from lab_runner.container_supervisor import _workspace_file_count
+        with tempfile.TemporaryDirectory() as temporary:
+            root=pathlib.Path(temporary)
+            for index in range(4097):(root/f"f-{index}").touch()
+            with self.assertRaisesRegex(RuntimeError,"RUNNER_RESOURCE_LIMIT"):_workspace_file_count(root)
+
     def test_named_behavior_is_not_yet_implemented(self) -> None:
         for case_id in ["RED-CMD-002","RED-IMG-001","RED-NET-002"]:
             with self.subTest(case_id=case_id):

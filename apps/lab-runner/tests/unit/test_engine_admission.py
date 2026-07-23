@@ -3,6 +3,7 @@ import importlib.util
 import pathlib
 import tempfile
 import unittest
+from unittest import mock
 
 APP = pathlib.Path(__file__).resolve()
 while APP.name != "lab-runner":
@@ -15,6 +16,11 @@ ROWS = {row["id"]: row for row in __import__("json").loads((APP / "tests/red-man
 
 
 class RedPublicPathTest(unittest.TestCase):
+    def test_group_or_other_writable_engine_socket_is_rejected(self) -> None:
+        from lab_runner.engine import Engine, EngineError
+        observed=__import__("os").stat_result((__import__("stat").S_IFSOCK|0o666,0,0,1,__import__("os").geteuid(),0,0,0,0,0))
+        with mock.patch("lab_runner.engine.os.lstat",return_value=observed),mock.patch("lab_runner.engine.pathlib.Path.is_symlink",return_value=False):
+            with self.assertRaisesRegex(EngineError,"RUNNER_ENGINE_UNAVAILABLE"):Engine().admit()
     def test_ambiguous_inspect_failure_never_authorizes_removal(self) -> None:
         from lab_runner.container_backend import Backend
         from lab_runner.engine import EngineError

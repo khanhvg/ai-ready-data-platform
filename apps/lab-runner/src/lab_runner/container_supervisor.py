@@ -15,6 +15,10 @@ FIXTURES={
 }
 
 
+def _workspace_file_count(root:pathlib.Path)->int:
+    return sum(path.is_file() for path in root.rglob("*"))
+
+
 def _subreaper()->None:
     if ctypes.CDLL(None,use_errno=True).prctl(36,1,0,0,0)!=0:
         raise OSError(ctypes.get_errno(),"PR_SET_CHILD_SUBREAPER")

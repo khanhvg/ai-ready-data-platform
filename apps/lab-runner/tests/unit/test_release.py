@@ -125,6 +125,11 @@ class RedPublicPathTest(unittest.TestCase):
             self.assertEqual("1"*64,first["currentReleaseId"])
             self.assertEqual("2"*64,first["previousReleaseId"])
 
+    def test_rollback_rejects_released_reader_invalid_previous_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root=pathlib.Path(temporary);publish(root,self._publish_result(1));publish(root,self._publish_result(2));path=root/"manifests"/("1"*64+".json");document=json.loads(path.read_text());document["assets"][0]["dataRunId"]="mixed-generation";path.write_bytes(json.dumps(document,sort_keys=True,separators=(",",":")).encode());os.chmod(path,0o600)
+            with self.assertRaisesRegex(RuntimeError,"RUNNER_ROLLBACK_INVALID"):rollback(root,"2"*64)
+
     def test_named_behavior_is_not_yet_implemented(self) -> None:
         for case_id in ["RED-REL-001","RED-REL-002"]:
             with self.subTest(case_id=case_id):

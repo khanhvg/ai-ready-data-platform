@@ -46,6 +46,13 @@ class RedPublicPathTest(unittest.TestCase):
             with self.assertRaisesRegex(StateError, "RUNNER_ILLEGAL_TRANSITION"):
                 store.transition(admitted.run_id, 1, "failed")
 
+    def test_committed_result_tamper_is_rejected_before_replay(self) -> None:
+        from lab_runner.state import StateError, Store
+
+        with tempfile.TemporaryDirectory() as temporary:
+            store=Store(pathlib.Path(temporary));request={"operationId":"workspace.prepare","idempotencyKey":"tamper-replay-key","workspaceRevision":0};admitted=store.admit(request,1);store.transition(admitted.run_id,1,"creating");store.transition(admitted.run_id,1,"created");store.transition(admitted.run_id,1,"removed");store.commit(admitted.run_id,1,{"status":"pass"},1);store.db.execute("UPDATE runs SET result_json=? WHERE run_id=?",('{"status":"hostile"}',admitted.run_id))
+            with self.assertRaisesRegex(StateError,"RUNNER_AUDIT_TAMPERED"):store.admit(request,2)
+
     def test_ambiguous_external_identity_remains_reconcilable(self) -> None:
         from lab_runner.state import Store
 
