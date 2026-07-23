@@ -382,6 +382,22 @@ const release = {
 process.stdout.write(`${JSON.stringify(release)}\n`);
 
 if (process.argv[2] === '--build') {
+  const distRoot = resolve(appRoot, 'dist');
+  assertCondition(dirname(distRoot) === appRoot, 'PORTAL_BUILD_ROOT_INVALID');
+  const validateDistRoot = async (required) => {
+    const metadata = await lstat(distRoot).catch((error) => {
+      if (!required && error?.code === 'ENOENT') return undefined;
+      throw error;
+    });
+    if (!metadata) return;
+    assertCondition(
+      metadata.isDirectory() &&
+        !metadata.isSymbolicLink() &&
+        metadata.uid === process.getuid(),
+      'PORTAL_BUILD_ROOT_INVALID'
+    );
+  };
+  await validateDistRoot(false);
   const buildLockPath = resolve(pythonRuntime.runtimeRoot, '.portal-stage-a-build.lock');
   let buildLock;
   const buildDeadline = Date.now() + 120_000;
@@ -407,6 +423,7 @@ if (process.argv[2] === '--build') {
       timeout: 120_000,
       env: { PATH: process.env.PATH ?? '/usr/bin:/bin' }
     });
+    await validateDistRoot(true);
   } finally {
     await buildLock.close();
     await rm(buildLockPath, { force: true });

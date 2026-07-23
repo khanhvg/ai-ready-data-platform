@@ -33,16 +33,20 @@ export function derivePortalRoutes(catalog) {
         }))
     ])
   );
+  const moduleRoutes = catalog.modules.map((module, index) => ({
+    kind: 'module',
+    path: index === 0 ? '/module' : `/modules/${encodeURIComponent(module.id)}`,
+    label: module.title ?? 'Mô-đun học tập',
+    moduleId: module.id
+  }));
   const routes = [
     root,
-    {
-      kind: 'module',
-      path: '/module',
-      label: catalog.modules[0]?.title ?? 'Mô-đun học tập',
-      moduleId: catalog.modules[0]?.id
-    },
+    ...moduleRoutes,
     ...lessonRoutes
   ];
+  if (new Set(routes.map(({ path }) => path)).size !== routes.length) {
+    throw new TypeError('Portal route structure contains duplicate paths');
+  }
   const navigation = Object.freeze(
     routes.map(({ path, label }) => Object.freeze({ path, label }))
   );

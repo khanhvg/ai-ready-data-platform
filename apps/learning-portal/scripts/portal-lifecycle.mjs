@@ -1,6 +1,6 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync, spawn } from 'node:child_process';
-import { chmod, lstat, mkdir, open, readFile, rm, writeFile } from 'node:fs/promises';
+import { chmod, lstat, mkdir, open, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import http from 'node:http';
@@ -99,12 +99,16 @@ function requestControl(record, pathname) {
         response.setEncoding('utf8');
         response.on('data', (chunk) => {
           bytes += chunk;
+          if (Buffer.byteLength(bytes) > 2 * 1024 * 1024) {
+            request.destroy(new Error('PORTAL_CONTROL_RESPONSE_INVALID'));
+          }
         });
         response.on('end', () =>
           resolveRequest({ status: response.statusCode, body: bytes })
         );
       }
     );
+    request.setTimeout(2_000, () => request.destroy(new Error('PORTAL_CONTROL_TIMEOUT')));
     request.on('error', reject);
     request.end();
   });
@@ -158,6 +162,13 @@ async function status() {
   const response = await requestControl(record, '/_control/status');
   if (response.status !== 200) throw new Error('PORTAL_CONTROL_AUTH_FAILED');
   const statusValue = JSON.parse(response.body);
+  if (
+    Object.keys(statusValue).sort().join('\n') !==
+      ['instanceNonce', 'semanticReady', 'state'].sort().join('\n') ||
+    statusValue.state !== 'running' ||
+    statusValue.semanticReady !== false ||
+    statusValue.instanceNonce !== record.instanceNonce
+  ) throw new Error('PORTAL_CONTROL_RESPONSE_INVALID');
   process.stdout.write(
     `${JSON.stringify({
       state: statusValue.state,
@@ -175,6 +186,14 @@ async function down() {
     const record = await readControl();
     const response = await requestControl(record, '/_control/stop');
     if (response.status !== 200) throw new Error('PORTAL_CONTROL_AUTH_FAILED');
+    const statusValue = JSON.parse(response.body);
+    if (
+      Object.keys(statusValue).sort().join('\n') !==
+        ['instanceNonce', 'semanticReady', 'state'].sort().join('\n') ||
+      statusValue.state !== 'stopping' ||
+      statusValue.semanticReady !== false ||
+      statusValue.instanceNonce !== record.instanceNonce
+    ) throw new Error('PORTAL_CONTROL_RESPONSE_INVALID');
     await rm(controlPath, { force: true });
     process.stdout.write(
       `${JSON.stringify({ state: 'stopped', semanticReady: false, evidencePreserved: true })}\n`
@@ -201,12 +220,41 @@ async function blocked(id) {
       action: 'none'
     })}\n`
   );
-  const diagnosticDirectory = resolve(appRoot, '.artifacts/stage-b-blocked');
+  const appArtifactsRoot = resolve(appRoot, '.artifacts');
+  const diagnosticDirectory = resolve(appArtifactsRoot, 'stage-b-blocked');
   const diagnosticPath = resolve(diagnosticDirectory, `${id}.json`);
-  await mkdir(diagnosticDirectory, { recursive: true, mode: 0o700 });
-  await chmod(diagnosticDirectory, 0o700);
-  await writeFile(diagnosticPath, diagnostic, { mode: 0o600 });
-  await chmod(diagnosticPath, 0o600);
+  for (const directory of [appArtifactsRoot, diagnosticDirectory]) {
+    try {
+      await mkdir(directory, { mode: 0o700 });
+    } catch (error) {
+      if (error?.code !== 'EEXIST') throw error;
+    }
+    const metadata = await lstat(directory);
+    if (
+      !metadata.isDirectory() ||
+      metadata.isSymbolicLink() ||
+      metadata.uid !== process.getuid()
+    ) throw new Error('PORTAL_DIAGNOSTIC_ROOT_INVALID');
+    await chmod(directory, 0o700);
+  }
+  const existingDiagnostic = await lstat(diagnosticPath).catch((error) => {
+    if (error?.code === 'ENOENT') return undefined;
+    throw error;
+  });
+  if (
+    existingDiagnostic &&
+    (!existingDiagnostic.isFile() ||
+      existingDiagnostic.isSymbolicLink() ||
+      existingDiagnostic.nlink !== 1 ||
+      existingDiagnostic.uid !== process.getuid() ||
+      (existingDiagnostic.mode & 0o777) !== 0o600)
+  ) throw new Error('PORTAL_DIAGNOSTIC_TARGET_INVALID');
+  const pendingDiagnostic = resolve(
+    diagnosticDirectory,
+    `.${id}.${randomUUID()}.pending`
+  );
+  await writeFile(pendingDiagnostic, diagnostic, { mode: 0o600, flag: 'wx' });
+  await rename(pendingDiagnostic, diagnosticPath);
   const publicArgv =
     id === 'lesson-e2e'
       ? ['make', 'lesson-e2e', 'LESSON=promotion-trust']

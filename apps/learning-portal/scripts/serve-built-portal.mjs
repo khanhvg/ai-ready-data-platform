@@ -103,7 +103,8 @@ function authenticated(request) {
 const inventory = await buildInventory();
 const publicServer = createServer(async (request, response) => {
   const host = request.headers.host;
-  if (!['127.0.0.1', `127.0.0.1:${fixedTestPort}`].includes(host) && !/^127\.0\.0\.1:\d+$/.test(host ?? '')) {
+  const boundPort = publicServer.address()?.port;
+  if (!Number.isInteger(boundPort) || host !== `127.0.0.1:${boundPort}`) {
     response.writeHead(400).end();
     return;
   }
