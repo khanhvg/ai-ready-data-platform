@@ -11,7 +11,7 @@
     "build": "node scripts/verify-stage-a-release.mjs --build",
     "serve": "node scripts/serve-built-portal.mjs",
     "test": "npm run test:unit",
-    "test:unit": "node --test tests/unit/module-catalog.test.mjs tests/unit/portal-router.test.mjs tests/unit/release-binding.test.mjs tests/unit/released-learning-adapter.test.mjs tests/unit/render.test.mjs tests/unit/security.test.mjs",
+    "test:unit": "node --test --test-concurrency=1 tests/unit/module-catalog.test.mjs tests/unit/portal-router.test.mjs tests/unit/release-binding.test.mjs tests/unit/released-learning-adapter.test.mjs tests/unit/render.test.mjs tests/unit/security.test.mjs",
     "test:stage-a": "npm run build && playwright test tests/e2e/stage-a.spec.mjs --config playwright.config.mjs",
     "test:visual": "npm run build && playwright test tests/e2e/visual-review.spec.mjs --config playwright.config.mjs",
     "verify:release": "node scripts/verify-stage-a-release.mjs",
