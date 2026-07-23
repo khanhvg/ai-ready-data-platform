@@ -1,214 +1,272 @@
-# Issue #11 Stage A Exact-Release Readiness Audit
+# Issue #11 Stage A v4 Recovered Readiness Audit
 
 ## Verdict
 
-`STAGE_A_READY`
+**READY TO COOK for the whole Stage A v4 plan.** The exact audited input is clean commit
+`68bfc6b53ced963997266dbc4960aff4a8ca52d4`. The final plan/readiness delta contains the eight
+recovered plan files plus this tracked report. It changes no product, test, runtime, protected,
+released, or dependency path.
 
-Issue #11 may cook one bounded Stage A from pristine released integration
-`fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9`. Authority is exactly the 50 create-only paths and
-16 command shapes in the [Stage A Exact-Release Amendment](../stage-a-release-amendment.md).
-Shared contracts, the active Issue #8 Vite binding, Issue #10, portal, runner, data-platform,
-protected architecture, root Make, release manifest, docs, cloud, AWS, Terraform, and every other
-path remain non-authorities.
+The two bounded readiness corrections are valid and do not weaken any requirement:
 
-Stage A can honestly deliver a useful Vietnamese-first foundation-to-mid static curriculum:
-20 machine-valid sequenced modules, 12 versioned templates, reciprocal business-to-evidence trace,
-one static promotion-publication example, conceptual local/AWS mapping, and five deterministic
-accessible architecture expansions. It cannot claim a portal, executable lab, runner, reset,
-progress, completion, fresh learner evidence, or learner effectiveness. Stage B remains empty and
-blocked on a passing merged Issue #10 portal/journey release.
+1. the command controller now has an exact `env -i` environment and interpreter boundary; and
+2. actual released-command `.artifacts` evidence/workspace byproducts now have closed
+   full-directory copy, verification, ownership, retention, and exact-source cleanup rules.
 
-## Audit Identity and Method
+No frozen count, create-only path, command shape, RED assertion, template/module/trace/render
+contract, promotion result, Stage B boundary, or cook chronology changed. This verdict grants only
+`stage-a-v4-whole-plan` cook authority. It is not product implementation, product evidence,
+independent implementation review, approval, merge, release, runner, container, or cloud authority.
+The containing output SHA is recorded externally after commit and push rather than self-referenced
+here.
 
-| Field | Exact value |
-|---|---|
-| Role | Fresh independent dependency-release amendment and readiness auditor |
-| Runtime | Herdr-managed Codex `gpt-5.6-sol`, reasoning effort `xhigh` |
-| Codex CLI | `0.144.1` |
-| Session | `019f88fa-c467-7933-8086-bac77f14bf85` |
-| Branch | `plan/issue-11-architecture-curriculum` |
-| Clean start/local/upstream/live | `ab653f6edec73e5ef875723945d2e3cd7814b4e6` |
-| Released Stage A | `fecf6bb8e5dfa7cc69f9766f72ac6f5b9301dad9` |
-| Released tree | `27fc3667ef37892dad5c3fbfd76769f65a0760be` |
-| Workflow | `ck:plan` plus plan-to-cook-equivalent exact-release amendment; no exposed `ck:plan-to-cook` skill |
-| Mutations | Plan/audit artifacts only |
+## Recovery Provenance and Runtime
 
-The tracked report does not claim the commit that contains itself. The final 40-hex output commit
-is recorded in the external Issue #11 handoff after commit and push.
-
-## Fresh Dependency Findings
-
-### Issue #8 released Stage A — PASS
-
-- Fresh remote `refs/heads/integration/issue-5-local-learning` equals `fecf6bb8…`.
-- The commit has ordered parents `5c2244c2c860234d0df49cf0a42ad950c6495717` and
-  `734cf637a20ae186597e23d96a194ed4e30220ea`; the PR #23 merge is an ancestor.
-- [Owner release evidence](https://github.com/khanhvg/ai-ready-data-platform/issues/8#issuecomment-5043195549)
-  reports `STAGE_A_MERGED_VERIFIED_RELEASED`, 56/56, invalid 65/65, API 16, final 4/4, and
-  inherited 19/19 + 1/1 + 13/13. This audit makes no separate CI-success claim.
-- `learning-contract-set-v1.json` has Git blob
-  `0a85119871f769a17dc464591bf0623524e9a97e` and SHA-256
-  `92aaf9a573f5d23b5bf5d8d7db1e68150d4b0944f0e6ab6e651b1a3d34408638`; all 21 descriptor
-  content hashes recompute from the released Git object.
-- The released 16-operation matrix and `region`/`category`/`dq` identifiers suffice for static
-  Stage A content. No Vite aliases are read.
-
-### Issue #8 Stage B binding — explicit non-authority — PASS
-
-Issue #8 is OPEN with an active exclusive lease whose exact scope marker is
-`promotion-trust-vite-identifier-binding-v1`. The amendment writes no shared contract, Vite,
-OpenAPI, lesson/lab, portal, runner, or registry truth and consumes no unmerged alias. The lease
-does not overlap Stage A; any later need for it stops the cook for a new amendment.
-
-### Issue #10 portal — blocked Stage B — PASS
-
-Issue #10 is OPEN, labelled `blocked-dependency`, and has no released portal/journey. Its latest
-cook attempt ended before implementation with a clean unchanged input. All Issue #11 Stage B
-file, command, dependency, and renderer lists are `[]`; no Issue #10 SHA/path is predicted.
-
-## Command and Evidence Binding
-
-The released command registry reserves four I5-06 commands as `future-owner`/`not-runnable`, all
-with `fitness-result-v1`. Stage A creates one schema-valid activation instance for only
-`curriculum-check` and `traceability-check`. The root Makefile already loads sorted
-`mk/issue-5/*.mk` fragments, so no root Make edit is required.
-
-`architecture-visual-review` stays unavailable because its released acceptance definition needs
-the portal/browser contexts and human readability review. `architecture-lab-e2e` stays unavailable
-because Issue #10 is not released. Neither is reported pass. Released `fitness-result-v2` is
-read-only and declares `emissionFallback: null`; Stage A emits no learner evidence, progress, or
-completion record.
-
-## Additions-Only Architecture Lease — PASS
-
-Fresh inspection proves the Issue #6 checker, finalizer, JS renderer, and pipeline hard-code six
-view IDs and the old source/output roots. Appending a row or output would mutate released truth.
-The admitted lease `i5-06-stage-a-architecture-expansion-v1` therefore creates exactly 19 paths
-under `architecture/expansions/i5-06/**`, with extension-only source/render manifests and five
-views: `DYN-PUBLISH`, `C4-L2-AWS`, `DEP-AWS`, `DYN-OFFICE`, and `DYN-RESTORE`.
-
-The renderer assembles an allocator-owned temporary union from byte-copied protected sources plus
-new extension sources, validates with the same locked LikeC4/WASM Graphviz toolchain, and publishes
-only extension outputs. A union checker rejects duplicate or aliased IDs, keys, paths, elements,
-relations, and concerns. Existing source/render manifests and all six view pairs are untouched.
-
-The master sequence's prior lease assumed a shared placeholder `architecture/structurizr/**` seam.
-This lease consumes none of that absent shared seam and writes no Issue #10 asset. It is therefore
-a separate non-overlapping static Stage A lease, not a bypass of Stage B portal authority.
-
-## Protected Bytes and Tool Availability — PASS
-
-- 25 Issue #6 source/view/SVG/text/render-manifest paths: exact SHA-256 and Git blob identities
-  match at amendment start, released integration, and the current worktree.
-- Eight protected tool/lock/Make-fragment paths: exact SHA-256 and Git blobs match at the same
-  three points. Total protected inventory: 33.
-- `git diff` between `fecf6bb8…` and `ab653f6…` over all protected paths is empty.
-- Host contract: Darwin arm64; Python 3.12.3; Node 22.22.3; npm 10.9.8.
-- The read-only `check_tool_contract()` passes. The lock pins LikeC4 1.59.1,
-  `@hpcc-js/wasm-graphviz` 1.22.2, and Graphviz 15.0.0. A local `node_modules` directory is not a
-  prerequisite: the released pipeline installs twice into allocator-owned temporary roots from
-  the exact lock and fails on missing/mismatched bootstrap.
-
-The authoritative identity inventory is in
-[Verification, Evidence, and Protected Assets](../verification-evidence-and-protected-assets.md).
-
-## Closed Stage A Scope — PASS
-
-Mechanical extraction of the amendment produces:
-
-| Catalogue | Count | Result |
-|---|---:|---|
-| Create-only tracked paths | 50 unique; all absent at `fecf6bb8…` | PASS |
-| Isolated architecture expansion paths | 19 | PASS |
-| Implementation/verification command shapes | 16 | PASS |
-| Stage A requirements | 16 | PASS |
-| Stage A scenarios | 12 | PASS |
-| TDD RED IDs | 15 | PASS |
-| Stage A S3 controls | 14 | PASS |
-| Curriculum modules | 20 | PASS |
-| Structured templates | 12 | PASS |
-| Expansion views | 5 | PASS |
-
-Path-overlap checking found zero writes under protected Issue #6 roots, released/shared contracts,
-OpenAPI, portal, runner, Vite, root Make, release manifest, docs, data-platform runtime, Terraform,
-AWS, cloud, or another worktree. There are zero modifies and zero deletes.
-
-## Curriculum and TDD Fitness — PASS
-
-The amendment fixes the exact prerequisite graph from F01 through M04, Vietnamese-first content
-fields, non-mutating probes, assessment/reflection, and `not-executed-static-only` runtime state.
-Every module must close:
+The first fresh readiness session was Herdr/Codex thread
+`019f8b7e-f873-7872-92e7-797b417234fa`, using Herdr `0.7.3`, Codex CLI `0.144.1`,
+`gpt-5.6-sol`, and reasoning effort `xhigh`. Its ignored transcript
+`.hermes/logs/claudekit/issue-11-stage-a-v4-readiness-audit.log` is 1,477,555 bytes with SHA-256
+`b8d750773802b5875557306b41936bcdc55e27f16176d54f504670c70a0bc0ec`. It ended immediately after
+the final bounded validator emitted only:
 
 ```text
-business outcome -> capability/value stream -> stakeholder concern -> FR/NFR/ASR
--> options/forces/trade-offs -> concern-driven C4/data/integration/security/deployment views
--> ADR/admitted pattern -> implementation intent -> automated fitness/evidence
--> operations/resilience/security/cost/governance consequences
+audit/stage-a-readiness-audit-report.md:placeholder marker
+threat-model-and-security.md:private-locator-like wording
 ```
 
-Every critical authority/state/deployment/security/resilience/recovery flow requires both an
-ordered dynamic/sequence view and a deployment view. C4 L3 is admitted only for a valuable
-high-risk component boundary. OpenAPI references only the released 16 operations; AsyncAPI states
-that no released channel is admitted. AWS is conceptual mapping only.
+The next record is `context compacted`; there is no semantic verdict, commit, push, issue comment,
+or label transition in that transcript. Its ignored report draft never became authority.
 
-Real-path TDD requires all 15 semantic RED cases to fail for their intended reason before behavior
-writes. The cook then runs strict schema, graph, reciprocal trace, render determinism/freshness,
-semantic mutation, text parity, accessibility, S3, protected-byte, evidence-index, cleanup, and
-rollback gates. No unconditional failure, missing-tool RED, mock result, or fabricated learner
-completion can satisfy the gate.
+This completion is a distinct fresh Herdr/Codex thread
+`019f8cd8-7ca0-7753-ae05-a2175c6a31e7`, again using Herdr `0.7.3`, Codex CLI `0.144.1`,
+`gpt-5.6-sol`, and reasoning effort `xhigh`. Its live ignored transcript is
+`.hermes/logs/claudekit/issue-11-stage-a-v4-readiness-recovery.log`; because it continues through
+publication, this tracked report does not claim a final transcript hash.
 
-## Output, Security, Cleanup, and Rollback — PASS
+At takeover, the worktree matched the recovery contract exactly: eight modified files, 171
+insertions, 46 deletions, all under this plan directory, with no product/test change. The
+continuation inspected bounded hunks for every file, preserved the technical corrections, replaced
+only stale status/provenance, fixed both scanner findings unambiguously, and reran the current
+validation matrix.
 
-The amendment fixes file/count/depth/string/array bounds, SVG/text/total-render bounds, UTF-8/NFC/
-LF rules, regular-file/mode rules, and two-run byte determinism. Parser-based checks reject script,
-event handlers, `foreignObject`, raw HTML, external/local URLs, images/data URIs, unsafe SVG,
-secrets, credentials, private paths, cloud/account/resource identifiers, source maps, and hidden
-deployment claims. Stage A creates no HTML.
+CK is CLI `4.5.2` with kit `engineer@v2.20.0`. Current host feasibility is 16 GiB RAM, eight
+logical CPUs, more than 24 GiB free disk, and file-descriptor ceiling 1,048,575. No container,
+browser, native GUI, AWS, Terraform, provider, or cloud action was performed.
 
-Evidence is bounded `fitness-result-v1` command evidence with a closed hash index, not learner
-evidence. Cleanup operates only on marker/inode/manifest-verified temporary roots and preserves
-retained evidence. Before merge, rollback removes only the exact 50 new tracked paths; after merge,
-rollback is a reviewed revert. No broad clean/delete, reset, rebase, history rewrite, dependency
-revert, or other-worktree action is allowed.
+## Exact Input, Integration, and Writers
 
-## Validation Results
+Before the recovered diff, all identities were equal:
+
+| Identity | Exact value |
+|---|---|
+| Branch | `plan/issue-11-architecture-curriculum` |
+| Local input | `68bfc6b53ced963997266dbc4960aff4a8ca52d4` |
+| Configured upstream | `68bfc6b53ced963997266dbc4960aff4a8ca52d4` |
+| Fresh live branch | `68bfc6b53ced963997266dbc4960aff4a8ca52d4` |
+| Integration release/live branch | `5644f01b4c0443a81f3af0bcce80f44c847cd986` |
+| Integration tree | `a38594d420fe7df2b30265a8a72bb5fad1698012` |
+
+Integration is the exact merge base and ancestor. The ten post-integration commits are linear,
+single-parent, and plan-only. The direct integration-to-input diff contains zero non-plan path.
+Failed Issue #11 heads `0f765d36958a2b97f2b95ccb23e3830aa0dd685f`,
+`482591de3838589ccc37177c71d9e87f6e01ca14`, and
+`eebcce4a3ae8327b189297378456ea6293927654`, plus
+`c07c9a080be7be88447aac497bdf0a2b5fddd020`, are not ancestors. Their worktrees remain immutable
+failed history and had no active cwd holder.
+
+Herdr/process inspection found no Issue #11 product writer. The only Issue #11 live process is
+this plan/readiness completion. Concurrent Issue #9 runner and Issue #10 portal cooks use their own
+worktrees and disjoint leases.
+
+All 50 future paths are absent at integration and input. All 33 protected identities match
+integration/input/working bytes by Git blob. All 21 released contracts match the descriptor
+content SHA-256 and integration/input/working blobs; the descriptor blob is
+`0a85119871f769a17dc464591bf0623524e9a97e` in all three states.
+
+## Closed Catalogues and Ownership
+
+Fresh machine parsing returned:
+
+| Catalogue | Result |
+|---|---:|
+| Stage A tracked writes | 50 unique, create-only, all absent |
+| Chronology | C1 `7`, direct-child C2 `5`, semantic complement `38` |
+| Literal top-level commands | 16 unique |
+| Repository RED | 22 families / 82 unique exact codes |
+| Template registry | 12 exact active `1.0.0` IDs |
+| Curriculum modules | 20 exact IDs and prerequisite vectors |
+| Critical flows / conceptual bridges | 11 / 8 |
+| Source-derived expansion views | 5 |
+| Protected / released identities | 33 / 21 |
+| OpenAPI operations / released AsyncAPI channels | 16 / 0 |
+
+There is no modify, delete, or third tracked class. The 50 write paths, 33 protected paths, and 21
+released contracts are pairwise disjoint.
+
+Fresh lease sampling found:
+
+- Issue #9 is open at `ready to cook`, plan head
+  `308c736f8811ac9aeaf41ad5b27dea07d2e60b2e`, with an active runner cook. Its
+  `apps/lab-runner/**` and `mk/issue-5/i5-04.mk` write lease overlaps none of Issue #11.
+- Issue #10 is open at `ready to cook` only for static Stage A v3, plan head
+  `8c77957ad3be84dc97e4633cdafd898ea9e431fa`, with an active portal RED checkpoint. Its exact 33
+  `apps/learning-portal/**` / `i5-05.mk` paths overlap none.
+- Issue #12 remains open at `ready for plan audit` with empty current implementation authority;
+  its future `learning/labs/data-platform/**` / `i5-07.mk` write lease overlaps none.
+- Issue #13 remains open at `ready for plan audit` with dependency-empty profile/Compose
+  authority; its future profile paths and `i5-08.mk` overlap none.
+
+Issue #12/#13 plan histories contain the released shared contracts as ancestry/read-only bytes,
+not write authority. Exact Issue #11 write overlap is zero for every sampled lane.
+
+## Repository-Level RED Cookability
+
+The [normative amendment](../stage-a-release-amendment.md) closes real scaffold-first TDD:
+
+1. C1 creates exactly seven semantics-free callable/router paths.
+2. Direct-child C2 creates four complete tests plus one fixture, unchanged through first GREEN.
+3. Complete mode-0700 repositories and initialized Git fixtures reach `check_repository()`,
+   `_verify_repository()`, `_toolchain_verification()`, and `_repository_handoff()`, plus matching
+   public CLI/Make routes.
+4. Only after contemporaneous repository RED may C3+ add the 38 semantic paths.
+
+Every one of the 82 mutations changes real file/schema/template/instance/trace/LikeC4/topology/
+visible-render/process/resource/raw-evidence/index/mode/type/link/porcelain state. Resource cases
+really spawn descendants, ignore TERM, allocate memory, flood output, and create files. The
+harness strips expected codes, IDs, and assertion prose before invoking production.
+
+Abstract Boolean/dictionary predicates, expected-code echo or fallback, fixture-ID dispatch,
+hard-coded pass/fail, predicate-only checking, mocks, monkeypatches, skips, missing
+tool/import/path failures, and test-only behavior are explicitly rejected. Exact source, tree,
+fixture, tool, ancestry, raw output, result, resource, render, and cleanup evidence is mandatory.
+
+## Literal Commands and Resource Admission
+
+All 16 literal command lines are unique and pass Bash syntax. Current target, interpreter, lock,
+module, and future-owner routing resolves without an undocumented path:
+
+- command 2 is the sole admitted host `python3.12` venv creation;
+- commands 3, 4, 9, 10, and 16 use exact `$I11_RUNTIME/venv/bin/python`;
+- released Make commands preserve their frozen host launchers while admitting the same candidate;
+- future commands bind only `learning.curriculum.tools.architecture_expansion` and `i5-06.mk`;
+- caller Make, Python, proxy, loader, cloud, authentication, Node/npm, and tool overrides are
+  absent under the exact `env -i` table.
+
+The interrupted session’s real private replay used one mode-0700 parent/candidate, Python 3.12.3,
+the full hash-locked install, `pip check`, released admission, and exact interpreter path. It took
+26 seconds, installed about 220 MiB, and executed commands 1–5 plus 15; released routes 6–8 and
+13–14 were dry-resolved, while future 9–12 and 16 correctly remained absent at input.
+
+That replay exposed real command-registry evidence creation. Source inspection then closed all
+command-registry, learning-contract, architecture workspace/check/render, and renderer-transient
+layouts. Complete evidence directories must be copied and verified before nonce/purpose/path/
+device/inode/manifest-bound source cleanup. Pre-existing bytes cannot be adopted or deleted; any
+unlisted byproduct or residual byte fails handoff.
+
+The plan ceilings remain feasible: focused tests 120 seconds; sequential bootstrap/two-render/
+validation parent 180 seconds; 16 processes; 1.5 GiB aggregate RSS; 1 MiB command output; 4,096
+staging files; 2.5 GiB tool plus staging bytes; 2 MiB final renders. Breach handling is owned-PGID
+TERM, five-second wait, KILL survivors, wait/reap, and zero-descendant proof.
+
+## Lifecycle, Governance, Render, and Evidence
+
+- **Templates:** exactly 12 active rows; canonical hash; stable unique instance ID; exact
+  registry/template/version/hash/compatibility reciprocity; monotonic successor, migration,
+  rollback, readable predecessor, replacement, tombstone, and removal rules. Real duplicate,
+  ID-drift, compatibility-drift, orphan, successor, and removal mutations are required.
+- **Modules:** exactly 20 Vietnamese-first modules with module-specific starter, task, controlled
+  failure, verify, evidence, reset, progressive hints, gated solution, trade-off reflection, and
+  operations consequence. Learning signatures and meaningful bodies must be unique and
+  progressively harder.
+- **Flows/governance:** 11 ordered flows and eight conceptual-only bridges. `BR-GOVERNANCE-01`
+  binds protected `learning.adapters -> retail` to
+  `local.developer_host.adapters_instance -> local.developer_host.retail_instance`, with reciprocal
+  `DYN-PUBLISH` and `DEP-AWS` identities. One-sided and both-wrong real mutations must fail; the
+  physical `retail_iceberg` and logical `retail_duckdb` views remain separate.
+- **Render:** all five views derive projection, DOT, raw Graphviz SVG, normalized visible SVG,
+  fitted HTML, text, and manifest from locked LikeC4/DOT/WASM Graphviz only. Relation mutations
+  must visibly change SVG/HTML/text and hashes. Two-run determinism, Vietnamese-first semantics,
+  single numbering, parity, accessibility, and 1440/1024 fit are blocking.
+- **Evidence:** bounded raw RED stdout/stderr remains retained and indexed, never replaced by a
+  hash-only claim. Sanitized logs are separate and source-bound. Owner/privacy/media/count/size/
+  mode/type/link/hash/index/resource/render/S3/byproduct/cleanup records are closed. Cook visual
+  evidence is honest self-inspection with `independent=false`; future independent review is a
+  separate immutable bundle.
+
+Promotion remains exactly `decision=insufficient-evidence` and `reason=no-common-grain` against
+the released schema. Stage A emits no runtime, reset, progress, completion, learner-evidence,
+hosted, deployed, runner, container, or cloud claim.
+
+## Stage B and Security Decision
+
+Fresh Issue #10 state is not a renderer release. Its v3 plan is ready only to cook a static Stage A
+portal. Rejected PR #29 remains open/unmerged at
+`28a71ccc9028c61084a0aaed7fb1b426a62b6ba8`; no passing merged real journey or released renderer
+exists. Therefore the exact Stage B implementation-file, command, dependency-SHA, and
+portal-renderer arrays remain empty. Stage B is blocked independently of this Stage A verdict.
+
+S3 rejects secrets, authentication material, host-private locators, caller environment dumps,
+unsafe external/local references, unsafe SVG/HTML, account/resource IDs, executable cloud
+commands, AWS/Terraform/provider actions, and stage/deployment claims. Evidence and temporary
+state remain owner/mode/type/link/device/inode bounded. No product test, failed-history write,
+feature-worktree write, container, runner, cloud, AWS, Terraform, PR, merge, approval, or release
+action occurred.
+
+## Final Validation Matrix
 
 | Check | Result |
 |---|---|
-| `ck plan status` | PASS; seven pending implementation phases, valid branch/tags |
-| `ck plan validate --strict --json` | PASS; `valid: true`, zero issues |
-| Markdown H1/required structure | PASS |
-| Local links and anchors | PASS |
-| Placeholder/TODO/future-SHA invention scan | PASS |
-| Released dependency object/path/blob/hash recomputation | PASS |
-| 33 protected identity inventory | PASS |
-| Architecture host/tool-lock availability | PASS |
-| Exact allow-list count/absence/overlap | PASS |
-| Requirement/scenario/RED/S3 catalogues | PASS |
-| Stage B empty-authority scan | PASS |
-| Exact changed-path scope | PASS; plan/audit directory only |
-| Diff/cached whitespace hygiene | PASS |
-| Secret/private-path/credential/runtime/cloud-action scan | PASS |
-| Whole-plan consistency sweep | PASS; 17 Markdown artifacts |
+| `ck plan validate plan.md --strict --json` with CK 4.5.2 | PASS; `valid=true`, seven phases, zero issues |
+| `ck plan status --json` with CK 4.5.2 | PASS; seven pending, zero in progress/completed |
+| Markdown UTF-8/NFC/H1/local links/anchors | PASS; zero failures |
+| Unresolved-marker and private-locator/secret scans | PASS; zero failures |
+| Path/command/RED/template/module/flow/bridge/view catalogues | PASS; `50/16/22/82/12/20/11/8/5` |
+| Template instance/compatibility and module lifecycle tokens | PASS |
+| Render parity/freshness and evidence truth contract | PASS |
+| Protected/released identity recomputation | PASS; `33/33`, `21/21` |
+| Direct integration derivation and failed-head exclusion | PASS |
+| Active ownership overlap | PASS; zero write overlap |
+| S3 and resource feasibility | PASS |
+| Stage B empty authority and Issue #10 release gate | PASS; blocked |
+| `git diff --check` and plan/readiness-only scope | PASS |
+| Whole-plan consistency | PASS |
 
-The original independent validation report and blocked readiness report are preserved as
-historical snapshots. Their stale dependency conclusions are not edited; current normative files
-link this amendment and audit and distinguish Stage A authority from empty Stage B authority.
+The exact current CK commands were:
 
-## Residual Gates and Handoff
+```text
+ck plan validate plans/260721-011-architecture-curriculum/plan.md --strict --json
+(cd plans/260721-011-architecture-curriculum && ck plan status --json)
+```
 
-This audit authorizes a cook, not a merge. Before any Stage A merge, the implementation still needs
-real RED provenance, full exact-command evidence, protected-byte pre/post proof, bounded cleanup/
-rollback rehearsal, a fresh independent implementation review, and repository-authorized human
-exact-head approval. Any release, lease, path, tool, output, or authority drift stops before write.
+## Handoff
 
-No curriculum/render/product implementation, PR, merge, credential access, AWS/Terraform/cloud
-action, destructive action, or other-worktree write occurred in this audit.
+After this report and the recovered plan corrections are committed and pushed, local HEAD,
+configured upstream, remote-tracking, and fresh live branch must equal the external output SHA and
+the worktree/index must be clean. Only then may Issue #11 move from `ready for plan audit` to
+`ready to cook` for Stage A v4.
 
-## Audit Decision
+The next phase is `cook-issue11-stage-a-v4`. The cook must start from the exact pushed readiness
+output and reproduce all preflight gates before any write. Fresh independent exact-head
+implementation review and repository-authorized human approval remain later gates.
 
-- Stage A: ready to cook from exact `fecf6bb8…`, exact 50-path create-only scope.
-- Stage B: blocked on Issue #10; all lists remain empty.
-- Issue #11: keep OPEN and transition workflow label from `ready for plan audit` to
-  `ready to cook` only after this exact plan/audit commit is pushed.
-- Next phase: `cook-issue11-stage-a`.
+`READINESS_VERDICT=READY_TO_COOK`
+`INPUT_SHA=68bfc6b53ced963997266dbc4960aff4a8ca52d4`
+`RECOVERED_PLAN_FILES=8/8`
+`INTEGRATION_RELEASE_SHA=5644f01b4c0443a81f3af0bcce80f44c847cd986`
+`INTEGRATION_DERIVATION=pass`
+`REPOSITORY_LEVEL_RED=pass`
+`COMMANDS=16/16`
+`TEMPLATE_LIFECYCLE=pass`
+`VISIBLE_RENDER_PARITY=pass`
+`MODULE_LIFECYCLE=20/20`
+`GOVERNANCE_BRIDGE=pass`
+`EVIDENCE_TRUTH=pass`
+`STAGE_A_PATHS=50/50`
+`PROTECTED_IDENTITIES=33/33`
+`OWNERSHIP_OVERLAP=pass`
+`S3=pass`
+`RESOURCE_FEASIBILITY=pass`
+`STAGE_B=blocked`
+`COOK_SCOPE=stage-a-v4-whole-plan`
+`CLOUD_ACTION=none`
+`NEXT_PHASE=cook-issue11-stage-a-v4`

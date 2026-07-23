@@ -2,10 +2,11 @@
 
 ## Current Authority
 
-The v4 plan passed fresh independent validation with one bounded plan-only template-instance fix.
-Implementation authority remains `none`. Historical v1/v2/v3 validation and readiness reports
-remain immutable evidence for old SHAs and cannot authorize this contract. The only next gate is a
-fresh readiness audit that binds the exact pushed validation result before any cook.
+The v4 plan passed fresh independent validation and a separate fresh readiness audit. Readiness
+added only bounded plan-level controller-environment and released-byproduct cleanup closure; the
+frozen product scope did not change. Historical v1/v2/v3 validation and readiness reports remain
+immutable evidence for old SHAs and cannot authorize this contract. The exact pushed readiness
+output is the only Stage A v4 cook input and is attested externally after push.
 
 | Authority | Exact identity | Disposition |
 |---|---|---|
@@ -17,6 +18,8 @@ fresh readiness audit that binds the exact pushed validation result before any c
 | v4 recovery | [comment 5050513064](https://github.com/khanhvg/ai-ready-data-platform/issues/11#issuecomment-5050513064) | Plan-only reconstruction from integration |
 | Fresh v4 validation input | `dfd8e4c7704de5e1392d1028f5a25757a3e77166` | Independently validated; containing output is attested after push |
 | Fresh v4 validation report | [validation/260723-stage-a-v4-independent-validation-report.md](./validation/260723-stage-a-v4-independent-validation-report.md) | PASS with one bounded plan-only fix; not readiness |
+| Fresh v4 readiness input | `68bfc6b53ced963997266dbc4960aff4a8ca52d4` | Exact clean local/upstream/live validation head |
+| Fresh v4 readiness report | [audit/stage-a-readiness-audit-report.md](./audit/stage-a-readiness-audit-report.md) | `READY_TO_COOK`; recovered audit plus fresh completion, with exact containing output attested externally |
 | Stage B dependency | Passing merged Issue #10 real journey and released renderer | Missing; Stage B blocked and empty |
 
 `c07c9a080be7be88447aac497bdf0a2b5fddd020` and every failed v1/v2/v3 product/test/render/evidence
@@ -65,15 +68,17 @@ The author report was input, never the independent verdict.
 
 ## Gate A3 — Fresh Readiness
 
-Status is pending after Gate A2 PASS. A different fresh reviewer binds the exact pushed validation
-head, repeats live dependency/remote/diff/count/security checks, and decides whether one Stage A
-cook may start. Readiness must not infer cook authority from a label, author comment, historical
-report, or validation alone. Only a later explicit passing readiness output may fill
-`stageAImplementationInputSha`.
+Status is PASS. A role-separated fresh reviewer bound exact pushed validation head
+`68bfc6b53ced963997266dbc4960aff4a8ca52d4`, literal-admitted the 16-command runtime, and closed two
+bounded plan-only gaps: the exact `env -i` controller table and actual released `.artifacts`
+byproduct copy/cleanup layouts. After that session ended at context compaction without a semantic
+verdict, a fresh xhigh completion session preserved and reviewed all eight edits and repeated the
+live dependency/remote/diff/count/security/whole-plan matrix. The tracked readiness report and its
+externally attested containing output are the authority; neither interrupted transcript is.
 
 ## Gate A4 — Stage A Cook and Review
 
-Status is blocked on Gate A3. The cook may follow only the exact 7-path scaffold, direct-child
+Status is authorized but not started. The cook may follow only the exact 7-path scaffold, direct-child
 5-path tests/fixture, real repository RED, and 38-path semantic complement chronology. It creates
 exactly 50 product/test paths and no other tracked path. Cook visual evidence is self-inspection,
 not independent review. After bounded handoff, a fresh implementation reviewer uses a detached

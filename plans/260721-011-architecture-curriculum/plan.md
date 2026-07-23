@@ -1,6 +1,6 @@
 ---
 title: "I5-06 — Architecture curriculum, templates, and fitness functions"
-description: "Stage A v4 correction independently validated; fresh readiness audit is next."
+description: "Stage A v4 passed fresh readiness with bounded plan-only environment and byproduct closure."
 status: pending
 priority: P1
 issue: 11
@@ -20,9 +20,12 @@ integrationReleaseTree: "a38594d420fe7df2b30265a8a72bb5fad1698012"
 validationStatus: passed-independent-stage-a-v4-with-bounded-plan-fix
 validationInputSha: "dfd8e4c7704de5e1392d1028f5a25757a3e77166"
 currentValidationReport: "validation/260723-stage-a-v4-independent-validation-report.md"
-readinessVerdict: null
-implementationAuthority: none
-stageAStatus: plan-validated-pending-fresh-readiness-audit
+readinessVerdict: ready-to-cook-stage-a-v4
+readinessInputSha: "68bfc6b53ced963997266dbc4960aff4a8ca52d4"
+currentReadinessReport: "audit/stage-a-readiness-audit-report.md"
+implementationAuthority: stage-a-v4-whole-plan
+cookScope: stage-a-v4-whole-plan
+stageAStatus: ready-to-cook-stage-a-v4
 stageBStatus: blocked-on-passing-merged-issue-10-journey
 stageAAmendment: "stage-a-release-amendment.md"
 stageAFileAuthority: "stage-a-release-amendment.md#exact-stage-a-tracked-write-allowlist"
@@ -40,8 +43,9 @@ correctionReport: "reports/260723-stage-a-v4-post-review-correction-report.md"
 
 ## Outcome
 
-This v4 author correction withdraws every prior Issue #11 Stage A readiness or cook claim. It
-defines a plan-only lineage rooted directly at released integration
+This corrected v4 plan withdraws every prior Issue #11 Stage A readiness or cook claim and has now
+passed fresh independent validation plus a separate fresh readiness audit. It defines a plan-only
+lineage rooted directly at released integration
 `5644f01b4c0443a81f3af0bcce80f44c847cd986`, repository-level TDD for all 22 RED families and 82
 codes, one exact 16-command runtime contract, a closed 12-template lifecycle, source-derived
 visible render parity, meaningful lifecycle content for exactly 20 modules, the corrected local
@@ -54,7 +58,8 @@ The recovery authority is
 The complete normative contract is the
 [Stage A v4 amendment](./stage-a-release-amendment.md); the
 [correction report](./reports/260723-stage-a-v4-post-review-correction-report.md) records the
-author's checks. Neither document is independent validation or readiness evidence.
+author's checks. Neither document is the readiness verdict; the separate current result is the
+[Stage A v4 readiness report](./audit/stage-a-readiness-audit-report.md).
 
 ## Frozen scope
 
@@ -97,7 +102,7 @@ each validation, readiness, and cook handoff.
 
 | Phase | Name | Status |
 |---|---|---|
-| 1 | [Freeze authority and dependency gates](./phase-01-freeze-authority-and-dependency-gates.md) | Validation passed; pending fresh readiness |
+| 1 | [Freeze authority and dependency gates](./phase-01-freeze-authority-and-dependency-gates.md) | Readiness passed; cook preflight pending |
 | 2 | [Repository-level scaffold-first TDD](./phase-02-stage-a-tests-first-contract-and-preservation.md) | Blocked on Phase 1 |
 | 3 | [Curriculum, templates, and source-derived views](./phase-03-stage-a-curriculum-templates-and-static-expansion.md) | Blocked on recorded repository RED |
 | 4 | [Truthful evidence and bounded handoff](./phase-04-stage-a-evidence-and-bounded-handoff.md) | Blocked on Phases 1–3 |
@@ -125,11 +130,16 @@ placeholder/future-SHA checks, exact path/command/RED/template/render/trace/evid
 S3/private-path/secret scans, protected/released identity comparisons, and the direct integration
 diff. The result and one bounded template-instance correction are recorded in the
 [Stage A v4 independent validation report](./validation/260723-stage-a-v4-independent-validation-report.md).
-A separate fresh readiness reviewer must bind the exact pushed validation head. Author checks and
-independent validation do not themselves grant readiness or cook authority.
+A separate fresh readiness reviewer bound exact pushed validation head
+`68bfc6b53ced963997266dbc4960aff4a8ca52d4`, closed the literal controller environment and actual
+released-command byproduct/cleanup layouts with bounded plan-only fixes, and returned
+`READY_TO_COOK` for the whole Stage A v4 scope. The containing readiness output is attested after
+push rather than self-referenced in a tracked file.
 
-The next authorized phase is only `fresh-plan-readiness-audit`. The Issue may move from
-`ready for plan validation` to `ready for plan audit`; it must not move to a cook label.
+The next authorized phase is `cook-issue11-stage-a-v4`. The Issue may move only from
+`ready for plan audit` to `ready to cook`. This grants no product result, independent
+implementation review, approval, merge, release, Stage B, runner, container, cloud, AWS, or
+Terraform authority.
 
 ## Validation log
 
@@ -160,3 +170,19 @@ as v4 validation/readiness evidence.
   lifecycle and its real repository mutations; frozen counts and public scope did not change.
 - Returned PASS for plan validation only. Fresh readiness remains separate and implementation
   authority remains `none`.
+
+### Sessions 8–9 — 2026-07-23 — recovered and completed Stage A v4 readiness
+
+- Session 8 bound exact clean local/upstream/live input
+  `68bfc6b53ced963997266dbc4960aff4a8ca52d4` in a role-separated Herdr/Codex xhigh session.
+- Reproduced integration derivation, active-lane separation, all frozen catalogues, protected and
+  released bytes, repository-level RED cookability, template/module/render/governance/evidence
+  closure, S3/resource bounds, and empty blocked Stage B authority.
+- Literal-admitted all 16 command shapes with one mode-0700 `$I11_RUNTIME`, the full hash-locked
+  Python install, released admission, current target resolution, and exact future route seams.
+- Added only the exact `env -i` controller table and the real released `.artifacts` byproduct
+  copy/cleanup contract discovered during literal replay; product scope and counts are unchanged.
+- Session 8 ended at context compaction before a semantic verdict or publication. Session 9
+  preserved and reviewed all eight edits, fixed the two bounded scanner findings, repeated the
+  exact current validation matrix and live lease/release audit, and finalized the tracked report.
+- Returned `READY_TO_COOK` only for `stage-a-v4-whole-plan`; exact output identity is external.

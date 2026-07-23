@@ -8,10 +8,12 @@ future commands, repository-level RED rules, render parity, raw/sanitized eviden
 independent-review separation are normative in the
 [Stage A v4 amendment](./stage-a-release-amendment.md).
 
-Fresh independent plan validation must bind the exact pushed head and repeat CK 4.5.2 strict
+Fresh independent plan validation bound the correction output and repeated CK 4.5.2 strict
 validation/status, links/anchors/placeholders, exact counts, lineage, fresh remote equality,
-protected/released bytes, S3/private-path/secret scans, and staged diff scope. Fresh readiness is a
-later separate role and SHA. Neither may reuse the author report as its verdict.
+protected/released bytes, S3/private-path/secret scans, and staged diff scope. A later separate
+readiness role bound exact validation output `68bfc6b53ced963997266dbc4960aff4a8ca52d4` and passed with
+bounded plan-only environment/byproduct closure. Neither reused the author report as its verdict;
+the exact readiness output is attested externally after push.
 
 ## Released Contract Identities
 
@@ -119,7 +121,9 @@ The closed private index must contain, at minimum:
 5. exact callable plus CLI/Make result records for every valid control and all 82 mutations;
 6. process/RSS/output/file/deadline/TERM/KILL/reap measurements;
 7. both render runs and projection/DOT/raw-SVG/normalized-SVG/text/fitted-HTML records;
-8. cook self-inspection truth, S3/privacy result, owner markers, index/count/size/mode/type/link
+8. complete copied released-command byproduct directories with original locator/owner metadata and
+   verified exact-owner source-cleanup receipts; and
+9. cook self-inspection truth, S3/privacy result, owner markers, index/count/size/mode/type/link
    closure, ignored-inclusive cleanup, rollback, and 33/21 identity results.
 
 Raw bytes are not deleted and replaced by a hash claim. Passing raw evidence remains mode 0600

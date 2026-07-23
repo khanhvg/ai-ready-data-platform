@@ -18,7 +18,7 @@ blocked on a passing merged Issue #10 journey.
 | `I11-AUTH-03` | Preserve 33 protected and 21 released identities | Per-path Git blob and content-byte comparison at every gate |
 | `I11-TDD-01` | C1 seven generic callables, C2 five complete tests/fixture, real repository RED, then 38-path semantics | Parent/path/AST inspection and contemporaneous raw RED bundle |
 | `I11-TDD-02` | All 22 families/82 codes use complete valid repositories and real single mutations | `check_repository()`, `_verify_repository()`, `_toolchain_verification()`, `_repository_handoff()`, CLI/Make results |
-| `I11-CMD-01` | Exactly 16 commands use `$I11_RUNTIME/venv/bin/python` and one closed private candidate root | Literal command parser, mode/env/argv/tool evidence, fresh reviewer replay |
+| `I11-CMD-01` | Exactly 16 commands use one `$I11_RUNTIME` candidate, the exact venv interpreter for every I5-06 workload, frozen released launchers for released Make targets, and the exact `env -i` controller table | Literal command parser, mode/env/argv/tool evidence, released-byproduct closure, fresh reviewer replay |
 | `I11-CUR-01` | Exactly 20 distinct Vietnamese-first modules preserve the fixed prerequisite progression | Set/graph/locale/level checks |
 | `I11-CUR-02` | Every module has starter, task, controlled failure, verify, evidence, reset, progressive hints, gated solution, trade-off reflection, operations consequences | Strict schema, reciprocal trace, nonempty type checks |
 | `I11-CUR-03` | Module learning signatures and meaningful lifecycle content are non-duplicate and level-appropriate | Canonical signature/body uniqueness and progression mutations |
@@ -31,7 +31,7 @@ blocked on a passing merged Issue #10 journey.
 | `I11-RENDER-01` | Five useful views derive visible SVG/HTML/text semantics from locked LikeC4/DOT/Graphviz | Sole-source parser, visible parity, real relation mutation |
 | `I11-RENDER-02` | Two-run deterministic, Vietnamese-first, text-equivalent and readable at 1440/1024 | Projection/DOT/SVG/text/HTML hashes and visual metrics |
 | `I11-RES-01` | Enforce deadline, process, RSS, output, file, TERM/KILL/reap bounds on real processes | Descendant, TERM-resistant, allocation, flood, and file mutations |
-| `I11-EVID-01` | Retain contemporaneous raw bytes plus separate sanitized logs and exact source/tree/fixture/tool hashes | Closed private index, raw-missing/hash-only mutation |
+| `I11-EVID-01` | Retain contemporaneous raw bytes, complete copied released-command evidence directories, separate sanitized logs, and exact source/tree/fixture/tool hashes | Closed private index, byproduct copy/cleanup receipts, raw-missing/hash-only mutation |
 | `I11-EVID-02` | Cook visual evidence is truthful self-inspection; independent review is separate future evidence | Role/class/independence/synthesis mutation and immutable bundles |
 | `I11-CLEAN-01` | Zero nonignored porcelain bytes and complete ignored-inclusive owner classification | Real bounded Git repositories and subprocess output |
 | `I11-S3-01` | No secret/private path/unsafe URL/cloud action; evidence modes/types/links are closed | Content/render/raw/privacy scans and negative repositories |

@@ -25,6 +25,8 @@ do not merge, approve, or begin Stage B.
 
 - Retain metadata-stripped mutation bytes, exact bounded raw stdout/stderr, production/CLI results,
   and separate sanitized logs with source hashes/redaction summaries.
+- Copy and verify every complete released-command evidence directory from the exact enumerated
+  `.artifacts` layouts, then clean only the newly marker-owned source evidence/workspace run dirs.
 - Index source/tree/fixture/tool hashes, owner markers, resource/render/S3 records, counts, sizes,
   modes, types, links, privacy, ignored-inclusive cleanup, and 33/21 results.
 - Cook visual evidence says `cook-self-inspection`, `independent=false`, and truthful synthesis.
@@ -39,8 +41,11 @@ root. Temporary package/cache/render staging is separately owned and removable.
 
 ## Implementation Steps
 
-1. Run exact 16 commands under the closed runtime and capture bounded raw/sanitized records.
-2. Close the evidence index and self-excluded index hash; verify privacy/mode/type/link closure.
+1. Run exact 16 commands under the enumerated `env -i` runtime and capture bounded raw/sanitized
+   records plus pre/post `.artifacts` inventories.
+2. Copy complete released-command byproduct directories into the primary bundle, verify their
+   locators/owners/hashes, clean exact owned sources, then close the self-excluded index hash and
+   privacy/mode/type/link closure.
 3. Record truthful self-inspection for all five views at both widths.
 4. Prove zero nonignored porcelain bytes and classify every ignored-inclusive record.
 5. Rehearse exact-owner rollback while preserving evidence and re-proving 33/21/unrelated bytes.
@@ -55,6 +60,8 @@ Every failure traverses `_repository_handoff()` and the public clean-handoff CLI
 ## Acceptance Criteria
 
 - [ ] Closed evidence retains exact raw bytes and separate sanitized derivatives.
+- [ ] Released command evidence copies and exact-owner source cleanup are closed; no unlisted or
+      residual `.artifacts` byte remains.
 - [ ] Resource/render/S3/owner/privacy/count/size/mode/type/link/cleanup records all pass.
 - [ ] Self-inspection is truthful; no fresh-independent claim exists in the cook bundle.
 - [ ] Exact candidate is pushed/equal and handed off; no merge/approval/Stage B/cloud action occurs.

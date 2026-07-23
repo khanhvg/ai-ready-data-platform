@@ -2,9 +2,11 @@
 
 ## Decision
 
-This is the plan author's corrected proposal. It is **ready only for fresh independent plan
-validation**. It is not a readiness result, cook authority, implementation approval, or release
-claim. The eight findings in
+This section records the plan author's handoff state at correction output `dfd8e4c…`: the author
+proposal was **ready only for fresh independent plan validation**. This document is not itself a
+readiness result, cook authority, implementation approval, or release claim. Current validation
+and readiness state is recorded separately in `plan.md` and the current reports; the normative
+implementation contract below remains in force. The eight findings in
 [PR #30 review 5050486239](https://github.com/khanhvg/ai-ready-data-platform/pull/30#issuecomment-5050486239)
 are corrected under the exact recovery authority in
 [Issue #11 comment 5050513064](https://github.com/khanhvg/ai-ready-data-platform/issues/11#issuecomment-5050513064).
@@ -159,6 +161,37 @@ runtime requires a candidate direct child of its root, every public Make call us
 `LEARNING_RUNTIME_CANDIDATE="$I11_RUNTIME"`. This controller admission is a prerequisite protocol,
 not an extra operator command shape.
 
+The controller starts with `env -i`; caller values are not inherited. It resolves `python3.12`
+once before launch, proves the resolved executable is a regular admitted Python 3.12 binary, and
+sets `PATH` by the exact construction
+`dirname(realpath(admittedPython312)) + ":/usr/bin:/bin:/usr/sbin:/sbin"`. The admitted executable
+role is resolved once, is not an exported variable or guessed installation path, and its resolved
+path and SHA-256 are private evidence. The complete controller environment is:
+
+| Key | Exact value / phase |
+|---|---|
+| `PATH` | Exact admitted Python parent plus `/usr/bin:/bin:/usr/sbin:/sbin` as above |
+| `HOME` | `$I11_RUNTIME/home` |
+| `TMPDIR` | `$I11_RUNTIME/tmp` |
+| `XDG_CACHE_HOME` | `$I11_RUNTIME/cache` |
+| `PIP_CACHE_DIR` | `$I11_RUNTIME/pip-cache` |
+| `TZ`, `LC_ALL`, `LANG` | `UTC`, `C.UTF-8`, `C.UTF-8` |
+| `PYTHONNOUSERSITE`, `PYTHONDONTWRITEBYTECODE` | `1`, `1` |
+| `PIP_DISABLE_PIP_VERSION_CHECK`, `PIP_NO_INPUT`, `PIP_REQUIRE_VIRTUALENV` | `1`, `1`, `1` |
+| `GIT_CONFIG_NOSYSTEM`, `GIT_CONFIG_GLOBAL`, `GIT_OPTIONAL_LOCKS` | `1`, `/dev/null`, `0` |
+| `GIT_PAGER`, `PAGER`, `NO_COLOR`, `CI` | `cat`, `cat`, `1`, `1` |
+| `I11_RUNTIME` | Exact absolute controller-owned candidate; present for all 16 commands |
+| `I11_RUNTIME_SHA256` | Absent for commands 1–2; set once after command 2 from the exact venv interpreter and immutable thereafter |
+
+Commands 5–14 receive only their literal Make command-line variables shown below; command 7 also
+receives only `LESSON=promotion-trust`. Caller `MAKEFLAGS`, `MFLAGS`, `MAKELEVEL`, `PYTHONPATH`,
+Python startup/user-site, proxy, loader-injection, cloud, credential, Node/npm, and tool override
+variables are absent. Make-created `MAKEFLAGS`/`MFLAGS`/`MAKELEVEL` descendants and the locked
+architecture pipeline's already released Node tool environment are the only tool-generated
+additions; their exact values/argv are recorded and checked. The future I5-06 subprocess
+controller constructs child environments from this table or the locked Node table in
+`scripts/golden/architecture_pipeline.py`; it never copies `os.environ`.
+
 The machine-parsed allowlist contains exactly these 16 unique nonblank top-level command shapes,
 in this order and literally with the same runtime shape:
 
@@ -181,6 +214,36 @@ git diff --check
 "$I11_RUNTIME/venv/bin/python" -m learning.curriculum.tools.architecture_expansion clean-handoff
 ```
 
+Static admission must also account for real released command side effects. Before command 1, the
+controller records the byte-exact nonignored and ignored-inclusive state and a NUL-delimited
+inventory of `.artifacts` without following links. These are the only released byproduct layouts:
+
+```text
+.artifacts/evidence/command-registry/<run-id>/{.golden-owner.json,result.json}
+.artifacts/evidence/learning-contracts/<run-id>/{.golden-owner.json,result.json,invalid-fixture-results.json,fitness-result-v2.json}
+.artifacts/workspaces/golden/<architecture-run-id>/**
+.artifacts/evidence/architecture-check/<architecture-run-id>/{.golden-owner.json,result.json}
+.artifacts/evidence/architecture-render/<architecture-run-id>/{.golden-owner.json,result.json}
+```
+
+Each of the three learning-contract runs has a distinct random run ID and owner-marker purpose
+equal to its exact command ID. All random run IDs must match their stdout and owner markers;
+architecture workspace/evidence pairs must use the same run ID. The controller copies each
+complete evidence directory—not a selected result or hash—into the primary private evidence
+bundle under `released-command-byproducts/<command-id>/<source-run-id>/`, retains the original
+relative locator, mode/type/link/size/hash inventory and copy receipt, and verifies the copy before
+cleanup. It then
+removes only the newly created source evidence/workspace directories after nonce, purpose, path,
+device, inode, manifest, and pre/post-inventory checks. Parent directories are removed only if the
+controller created them and they are empty. Pre-existing `.artifacts` bytes are never adopted,
+deleted, or counted as this run's evidence. Any unlisted released byproduct, run-ID collision,
+owner mismatch, incomplete copy, or residual nonignored byte fails handoff.
+
+`architecture/.rendered-stage-<run-id>` and `.rendered-backup-<run-id>` are permitted only as the
+locked renderer's transient atomic names. They must not exist before or after the command. A stale
+protected render, publication attempt that changes any of the 33 identities, or residual transient
+name fails rather than becoming an authorized modification.
+
 The private controllers launch only fixed argv from code, each child in its own session/process
 group, using admitted executable hashes. They do not accept shell text or caller executable names.
 Network opens only for the exact hash/lock-verified Python and Node bootstrap and closes before
@@ -188,6 +251,14 @@ checks/renders. Missing or alternate tools fail; mocks, fallback renderers, nati
 browser substitutes, undocumented layout correction, and skipped commands are forbidden. A
 future independent reviewer repeats the exact 16 shapes in a fresh detached checkout of the exact
 tested pushed head with matching tree, fixture, source, and tool hashes.
+
+Interpreter ownership is explicit rather than implied: command 2 uses the one admitted host
+`python3.12` only to create the candidate; direct I5-06 Python commands 3, 4, 9, 10, and 16 use the
+exact candidate interpreter; released commands 5–8 use their frozen host launcher only to admit
+and select that candidate before launching released checks; and commands 1, 13, and 14 retain the
+protected I5-01 host/locked-Node pipeline. The protected pipeline's marker-owned tool workspaces
+are released byproducts governed by the layout and cleanup contract above, not a second I5-06
+Python candidate or undocumented fallback.
 
 ## Repository-Level Scaffold-First TDD
 
@@ -422,6 +493,8 @@ For every RED mutation, retain contemporaneously and without reconstruction:
 - bounded byte-exact raw stdout and raw stderr plus their hashes;
 - exact production result record and public CLI/Make result;
 - a separate sanitized human-readable log with source hashes and redaction summary;
+- complete released-command evidence-directory copies, their original relative locators/owners,
+  and verified exact-owner cleanup receipts for the enumerated `.artifacts` source directories;
 - resource/process records, render projection/DOT/raw-SVG/normalized-SVG/text/fitted-HTML records,
   S3 result, owner markers, privacy scan, and cleanup/rollback result.
 
@@ -453,6 +526,7 @@ S3, protected/released identities, or Stage B block differs. Stop on product/tes
 this plan correction, cloud/container/AWS/Terraform action, merge, approval, feature-worktree
 write, or any attempt to inherit failed evidence.
 
-After this author correction is pushed and local/upstream/live equality is proven, the only next
-phase is fresh independent plan validation. A later separate readiness audit is required before
-any cook. Stage B remains blocked with empty authority until a passing merged Issue #10 journey.
+At author correction output, the only next phase was fresh independent plan validation, followed
+by a separate readiness audit before any cook. Those role-separated plan gates are now recorded in
+`plan.md`; only their exact pushed readiness output may authorize Stage A. Stage B remains blocked
+with empty authority until a passing merged Issue #10 journey.

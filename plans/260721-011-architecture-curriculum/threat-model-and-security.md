@@ -34,11 +34,22 @@ not independent review.
 
 ## Closed Runtime and Process Boundary
 
-The controller owns a mode-0700 parent and `$I11_RUNTIME`, applies `umask 077`, uses only
-`$I11_RUNTIME/venv/bin/python`, fixes cwd to a clean exact checkout, and admits a minimal explicit
-environment. It rejects caller root/interpreter/PATH/tool overrides. Children use fixed argv and
-admitted hashes; no shell text or caller executable is accepted. Network is open only for exact
-hash/lock-verified bootstrap and is closed before validation/rendering.
+The controller owns a mode-0700 parent and `$I11_RUNTIME`, applies `umask 077`, uses
+`$I11_RUNTIME/venv/bin/python` for every future I5-06 workload while preserving the frozen
+released Make launchers, fixes cwd to a clean exact checkout, and admits a minimal explicit
+`env -i` environment. The normative command amendment enumerates every key/value and phase,
+including the admitted Python-parent `PATH`, private HOME/TMP/cache roots, locale, pip/Git controls,
+and the exact command-specific Make additions. It rejects caller root/interpreter/PATH/tool,
+proxy, loader, cloud, and credential overrides. Children use fixed argv and constructed
+environments with admitted hashes; no shell text, caller executable, or `os.environ` copy is
+accepted. Network is open only for exact hash/lock-verified bootstrap and is closed before
+validation/rendering.
+
+Released commands create only the enumerated `.artifacts/evidence/**` and
+`.artifacts/workspaces/golden/**` layouts. Complete evidence directories are copied and verified in
+the private bundle before exact-owner source cleanup; unlisted byproducts, run-ID collisions,
+pre-existing-byte adoption, or residual nonignored bytes fail. Locked renderer stage and backup
+names are transient only, and any protected-render change fails.
 
 Every child starts a new session/process group. The controller streams stdout and stderr while it
 samples all descendants, enforces the amendment's deadline/RSS/process/output/file bounds, and on
@@ -68,7 +79,8 @@ source hashes and redaction summaries. A hash without retained raw bytes is not 
 The closed index covers owner markers, every payload, byte count, hash, media type, mode, file
 type/link status, render/resource/S3 records, and cleanup. It rejects missing, duplicate, orphan,
 extra, stale, tampered, executable, linked, or wrong-owner content. It stores symbolic root IDs,
-never host user/home/worktree paths or environment dumps.
+never host-local user-directory, home-directory, or worktree locators, and never caller
+environment dumps or authentication material.
 
 ## Cleanup and Rollback Boundary
 
