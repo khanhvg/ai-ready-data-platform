@@ -81,7 +81,15 @@ def _repository_handoff(
     if receipt.returncode != 0:
         raise RuntimeError("Git porcelain command failed")
     evidence_root = root_path / ".claude/evidence"
-    indexed = evidence_index(evidence_root, limits) if evidence_root.is_dir() else []
+    evidence_limits = RepositoryLimits(
+        max_files=limits.max_files,
+        max_depth=limits.max_depth,
+        max_file_bytes=max(limits.max_file_bytes, 16 * 1024 * 1024),
+        max_total_bytes=limits.max_total_bytes,
+        max_output_bytes=limits.max_output_bytes,
+        timeout_seconds=limits.timeout_seconds,
+    )
+    indexed = evidence_index(evidence_root, evidence_limits) if evidence_root.is_dir() else []
     return {
         "gitStatusLength": len(receipt.stdout),
         "gitStatusSha256": hashlib.sha256(receipt.stdout).hexdigest(),
