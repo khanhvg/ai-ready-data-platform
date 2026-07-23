@@ -68,7 +68,9 @@ def create_manifest(workspace:pathlib.Path,semantic:list[dict[str,object]])->dic
     if list(semantic_by_id)!=list(ASSETS):raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID")
     schema,_=_schema();golden=_golden();data_run=_sha(workspace/"data/raw/manifest.json");engine="duckdb-1.5.4";lock=str(golden["inputIdentity"]["pythonLockSha256"])
     release_id=hashlib.sha256(json.dumps({"assets":assets,"semantic":semantic},sort_keys=True,separators=(",",":")).encode()).hexdigest()
-    release=workspace/"curated/releases"/release_id;release.mkdir(mode=0o700,parents=True)
+    release=workspace/"curated/releases"/release_id
+    if release.exists():return validate_manifest(workspace,release_id=release_id)
+    release.mkdir(mode=0o700,parents=True)
     rows=[]
     for row in assets:
         asset=str(row["assetId"]);source=workspace/"serving/export"/f"{asset}.parquet";target=release/asset;shutil.copyfile(source,target);os.chmod(target,0o600)
@@ -76,18 +78,24 @@ def create_manifest(workspace:pathlib.Path,semantic:list[dict[str,object]])->dic
     document={"schemaVersion":"curated-release-manifest-v1","releaseId":release_id,"dataRunId":data_run,"testedTreeSha":INTEGRATION,"lockSha256":lock,"contractSetId":"golden-contract-set-v1","engineSnapshotId":engine,"profile":"small","seed":42,"assets":rows}
     jsonschema.Draft202012Validator(schema).validate(document)
     manifest=release/"manifest.json";manifest.write_bytes(manifest_bytes(document));os.chmod(manifest,0o600)
-    return validate_manifest(workspace)
+    return validate_manifest(workspace,release_id=release_id)
 
 
-def validate_manifest(workspace:pathlib.Path,expected_raw:dict[str,str]|None=None)->dict[str,object]:
+def validate_manifest(workspace:pathlib.Path,expected_raw:dict[str,str]|None=None,release_id:str|None=None)->dict[str,object]:
     raw_assets={row["assetId"]:row for row in validate_assets(workspace,expected_raw)}
     schema,_=_schema();root=workspace/"curated/releases";manifests=list(root.glob("*/manifest.json")) if root.is_dir() else []
-    if len(manifests)!=1:raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID")
-    manifest=manifests[0];document=json.loads(manifest.read_text())
+    if release_id is None:
+        if len(manifests)!=1:raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID")
+        manifest=manifests[0]
+    else:
+        if not re_full_sha(release_id):raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID")
+        manifest=root/release_id/"manifest.json"
+        if manifest not in manifests:raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID")
+    document=json.loads(manifest.read_text())
     try:jsonschema.Draft202012Validator(schema).validate(document)
     except jsonschema.ValidationError as exc:raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID") from exc
-    release_id=str(document["releaseId"]);release=root/release_id
-    if manifest.parent!=release or {p.name for p in release.iterdir()}!={"manifest.json",*ASSETS} or [row["assetId"] for row in document["assets"]]!=list(ASSETS):raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID")
+    document_release_id=str(document["releaseId"]);release=root/document_release_id
+    if (release_id is not None and document_release_id!=release_id) or manifest.parent!=release or {p.name for p in release.iterdir()}!={"manifest.json",*ASSETS} or [row["assetId"] for row in document["assets"]]!=list(ASSETS):raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID")
     expected={row["martId"]:row for row in _golden()["marts"]}
     for row in document["assets"]:
         asset=str(row["assetId"]);path=workspace/str(row["stagedLocator"]);observed=path.stat(follow_symlinks=False);raw=path.read_bytes()
@@ -95,7 +103,7 @@ def validate_manifest(workspace:pathlib.Path,expected_raw:dict[str,str]|None=Non
         if not stat.S_ISREG(observed.st_mode) or observed.st_nlink!=1 or stat.S_IMODE(observed.st_mode)!=0o600 or hashlib.sha256(raw).hexdigest()!=raw_assets[asset]["sha256"] or _footer(raw)!=row["schemaSha256"] or row["contentSha256"]!=semantic["contentSha256"] or row["rowCount"]!=semantic["rowCount"]:raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID")
         for field in ("releaseId","dataRunId","testedTreeSha","lockSha256","contractSetId","engineSnapshotId"):
             if row[field]!=document[field]:raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID")
-        if row["logicalFqn"]!=f"retail_duckdb.retail.main_marts.{asset}" or row["physicalFqn"]!=f"retail_iceberg.default.retail.{asset}" or row["stagedLocator"]!=f"curated/releases/{release_id}/{asset}":raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID")
+        if row["logicalFqn"]!=f"retail_duckdb.retail.main_marts.{asset}" or row["physicalFqn"]!=f"retail_iceberg.default.retail.{asset}" or row["stagedLocator"]!=f"curated/releases/{document_release_id}/{asset}":raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID")
     if manifest.read_bytes()!=manifest_bytes(document):raise RuntimeError("RUNNER_RELEASE_MANIFEST_INVALID")
     return document
 
@@ -159,8 +167,12 @@ def _load_regular_json(path:pathlib.Path,code:str)->dict[str,object]:
 
 
 def validate(workspace:pathlib.Path,expected_raw:dict[str,str]|None=None)->list[dict[str,object]]:
-    if (workspace/"curated/releases").exists():validate_manifest(workspace,expected_raw)
-    return [{key:row[key] for key in ("assetId","size","sha256")} for row in validate_assets(workspace,expected_raw)]
+    assets=validate_assets(workspace,expected_raw)
+    if (workspace/"curated/releases").exists():
+        semantic=[{"assetId":row["martId"],"rowCount":row["rowCount"],"contentSha256":row["contentSha256"]} for row in _golden()["marts"]]
+        release_id=hashlib.sha256(json.dumps({"assets":assets,"semantic":semantic},sort_keys=True,separators=(",",":")).encode()).hexdigest()
+        validate_manifest(workspace,expected_raw,release_id)
+    return [{key:row[key] for key in ("assetId","size","sha256")} for row in assets]
 
 
 def publish(root:pathlib.Path,result:dict[str,object])->pathlib.Path:

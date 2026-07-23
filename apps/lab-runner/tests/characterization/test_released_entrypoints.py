@@ -22,7 +22,7 @@ class RedPublicPathTest(unittest.TestCase):
         for option in ("--state-root","--image-lock"):
             result=subprocess.run([sys.executable,"-m","lab_runner",option,"/tmp/caller-controlled","run","workspace.prepare","--idempotency-key","entrypoint-override-test"],cwd=APP.parents[1],env=environment,text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             self.assertEqual(2,result.returncode)
-            self.assertIn("unrecognized arguments",result.stderr)
+            self.assertIn("lab-runner: error:",result.stderr)
 
     def test_named_behavior_passes_public_gate(self) -> None:
         for case_id in ["RED-CMD-001","RED-OPS-001"]:

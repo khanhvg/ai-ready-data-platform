@@ -24,19 +24,23 @@ class RunnerService:
         self.evidence=self.root/"evidence";self.evidence.mkdir(mode=0o700,parents=True,exist_ok=True);os.chmod(self.evidence,0o700)
         self.workspace.reconcile(self.store.current_revision())
         self.releases=self.root/"releases"
+        self.reserve_observations:list[dict[str,int]]=[]
         for run_id,result in self.store.committed():
             reconcile_evidence(self.evidence,run_id,result)
             if result.get("operationId")=="retail.export":publish_release(self.releases,result)
 
-    def _reserve(self)->None:
+    def _reserve(self)->dict[str,int]:
         disk=os.statvfs(self.root)
-        if disk.f_bavail*disk.f_frsize < 6*1024**3: raise RunnerError("RUNNER_RESOURCE_UNAVAILABLE")
+        disk_free=disk.f_bavail*disk.f_frsize
+        if disk_free < 6*1024**3: raise RunnerError("RUNNER_RESOURCE_UNAVAILABLE")
         probe=subprocess.run(["/usr/bin/memory_pressure","-Q"],text=True,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=5,check=True,env={"PATH":"/usr/bin:/bin"})
         line=next((x for x in probe.stdout.splitlines() if "free percentage" in x),"")
         try:percent=int(line.rsplit(" ",1)[1].rstrip("%"))
         except ValueError as exc: raise RunnerError("RUNNER_RESOURCE_UNAVAILABLE") from exc
         total=int(subprocess.run(["/usr/sbin/sysctl","-n","hw.memsize"],text=True,stdout=subprocess.PIPE,check=True,timeout=5,env={"PATH":"/usr/bin:/bin:/usr/sbin"}).stdout)
-        if total*percent//100 < 6*1024**3: raise RunnerError("RUNNER_RESOURCE_UNAVAILABLE")
+        memory_free=total*percent//100
+        if memory_free < 6*1024**3: raise RunnerError("RUNNER_RESOURCE_UNAVAILABLE")
+        return {"memoryFree":memory_free,"diskFree":disk_free}
 
     @staticmethod
     def _owned_directory(base:pathlib.Path,run_id:str,fence:int,purpose:str)->pathlib.Path:
@@ -59,7 +63,7 @@ class RunnerService:
 
     def run(self,request_value:object)->dict[str,object]:
         request=validate_request(request_value)
-        self._reserve()
+        self.reserve_observations.append(self._reserve())
         with acquire(self.root/"locks") as fence:
             self.workspace.reconcile(self.store.current_revision())
             for run_id,status,container_id,image_digest,run_fence,daemon_identity in self.store.incomplete():

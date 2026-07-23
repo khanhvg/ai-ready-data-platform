@@ -77,6 +77,22 @@ def git_identity()->tuple[str,str,str]:
     return head,tree,source_digest()
 
 
+def _canonical_json(value:object)->bytes:
+    return json.dumps(value,sort_keys=True,separators=(",",":"),allow_nan=False).encode()+b"\n"
+
+
+def verify_gate_evidence(value:dict[str,object],gate_root:pathlib.Path)->None:
+    results=value.get("results")
+    if not isinstance(results,list) or any(not isinstance(row,dict) for row in results):raise RuntimeError("RUNNER_GATE_EVIDENCE_TAMPERED")
+    expected_ids=[row["id"] for row in json.loads(MANIFEST.read_text())["rows"]]
+    if [row.get("id") for row in results]!=expected_ids:raise RuntimeError("RUNNER_GATE_EVIDENCE_TAMPERED")
+    result_path=gate_root/"gate-result.json";rows_root=gate_root/"rows"
+    if result_path.read_bytes()!=_canonical_json(value) or not rows_root.is_dir():raise RuntimeError("RUNNER_GATE_EVIDENCE_TAMPERED")
+    if {path.name for path in rows_root.iterdir()}!={f"{case_id}.json" for case_id in expected_ids}:raise RuntimeError("RUNNER_GATE_EVIDENCE_TAMPERED")
+    for row in results:
+        if (rows_root/f"{row['id']}.json").read_bytes()!=_canonical_json(row):raise RuntimeError("RUNNER_GATE_EVIDENCE_TAMPERED")
+
+
 def expect_error(error: type[BaseException], code: str, call: Callable[[], object]) -> None:
     try:
         call()
@@ -102,6 +118,15 @@ class Gate:
         if release.get("imageDigest")!=self.image:raise RuntimeError("RUNNER_IMAGE_RELEASE_MISMATCH")
         self.rows: dict[str, dict[str, object]] = {}
         self.rollback_observation:dict[str,object]={}
+        build_owner=ROOT/".artifacts/build/issue-9/owner.json";local_owner=APP/".local-state/.runner-owner.json"
+        expected_owner={"schemaVersion":"runner-external-root-owner-v1","owner":"issue-9","cookInputSha":COOK_INPUT}
+        for path,purpose in ((build_owner,"build-evidence"),(local_owner,"runtime-evidence")):
+            path.parent.mkdir(mode=0o700,parents=True,exist_ok=True)
+            value={**expected_owner,"purpose":purpose}
+            if path.exists() and json.loads(path.read_text())!=value:raise RuntimeError("RUNNER_EVIDENCE_OWNER_INVALID")
+            path.write_bytes(_canonical_json(value));os.chmod(path,0o600)
+        baseline=(ROOT/".hermes/prompts/issue-9-container-runner-v2-cook.md",ROOT/".hermes/logs/claudekit/issue-9-container-runner-v2-cook.log")
+        self.ignored_baseline={path.relative_to(ROOT).as_posix():sha256(path) for path in baseline}
         evidence_root = APP / ".local-state/evidence/gates"
         evidence_root.mkdir(mode=0o700, parents=True, exist_ok=True)
         os.chmod(evidence_root, 0o700)
@@ -167,7 +192,10 @@ class Gate:
             huge = b"{" + b"x" * 16384
             huge_headers = self.valid_headers(huge)
             expect_error(TransportError, "RUNNER_BODY_TOO_LARGE", lambda: admit(method="POST", headers=huge_headers, body=huge, bearer="bearer", csrf="csrf", peer_uid=os.geteuid(), effective_uid=os.geteuid()))
-            return {"bodyLimit": 16384}
+            framing=([row for row in headers if row[0]!="Content-Length"],[*headers,("Transfer-Encoding","chunked")],[*headers,("Content-Length",str(len(body)))])
+            for changed in framing:expect_error(TransportError,"RUNNER_FRAMING_INVALID" if len(changed)!=len(headers)+1 or changed[-1][0]!="Content-Length" else "RUNNER_HEADER_AMBIGUOUS",lambda c=changed:admit(method="POST",headers=c,body=body,bearer="bearer",csrf="csrf",peer_uid=os.geteuid(),effective_uid=os.geteuid()))
+            malformed=b"{not-json}";expect_error(TransportError,"RUNNER_JSON_INVALID",lambda:admit(method="POST",headers=self.valid_headers(malformed),body=malformed,bearer="bearer",csrf="csrf",peer_uid=os.geteuid(),effective_uid=os.geteuid()))
+            return {"bodyLimit": 16384,"chunkedRejected":True,"ambiguousLengthRejected":True,"invalidJsonRejected":True}
 
         def trn5() -> object:
             expect_error(TransportError, "RUNNER_PEER_FORBIDDEN", lambda: admit(method="POST", headers=headers, body=body, bearer="bearer", csrf="csrf", peer_uid=os.geteuid()+1, effective_uid=os.geteuid()))
@@ -276,10 +304,10 @@ class Gate:
             return {"files": len(value["files"]), "tarSha256": value["tarSha256"]}
 
         def img3() -> object:
-            synthetic = {"matches": [{"vulnerability": {"severity": "High"}}]}
-            denied = any(row["vulnerability"]["severity"] in ("High", "Critical") for row in synthetic["matches"])
-            if not denied: raise AssertionError("supply gate")
-            return {"syntheticHighRejected": True}
+            manifest=json.loads((APP/"requirements/wheelhouse-manifest-v1.json").read_text());wheelhouse=ROOT/".artifacts/build/issue-9/wheelhouse";observed={path.name:sha256(path) for path in wheelhouse.iterdir() if path.is_file()}
+            expected={row["file"]:row["sha256"] for row in manifest["wheels"]};lock=(APP/"requirements/runner-py312-linux-arm64.lock").read_text();dockerfile=(APP/"container/runner.Dockerfile").read_text();release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
+            if observed!=expected or any(not name.endswith(".whl") for name in observed) or lock.count("--hash=sha256:")!=len(expected) or "--no-index" not in dockerfile or "--require-hashes" not in dockerfile or release.get("buildLockSha256")!=sha256(APP/"config/container-build-lock-v1.json"):raise AssertionError("supply admission")
+            return {"hashCompleteWheels":len(expected),"sdists":0,"onlineInstall":False,"releaseRecordBound":True}
 
         for case_id, call in (
             ("RED-CMD-001", cmd1), ("RED-CMD-002", cmd2), ("RED-CMD-003", cmd3),
@@ -436,7 +464,7 @@ class Gate:
     def operations_state_release(self) -> None:
         runtime = self.root / "operations"
         service = RunnerService(runtime, self.image, APP / "container/seccomp-runner-v1.json")
-        results=[]; replay=None;reset_replay=None
+        results=[]; replay=None;reset_replay=None;repeat_export=None
         for index, operation in enumerate(operation_ids(), 1):
             request={"operationId":operation,"idempotencyKey":f"gate-operation-{index:02d}-exact","workspaceRevision":service.current_revision()}
             result=service.run(request);results.append(result)
@@ -448,6 +476,9 @@ class Gate:
             if operation=="workspace.reset":
                 before=len(self.engine.command(["ps","-a","--filter","label=ai-ready.issue9.owner=issue-9","--format","{{.ID}}"],check=True).stdout.splitlines());reset_replay=service.run(request);after=len(self.engine.command(["ps","-a","--filter","label=ai-ready.issue9.owner=issue-9","--format","{{.ID}}"],check=True).stdout.splitlines())
                 if reset_replay!=result or before!=after or result["result"]["preserved"]!=["evidence.json","progress.json"]:raise AssertionError("reset replay")
+            if operation=="retail.export":
+                repeat_export=service.run({"operationId":"retail.export","idempotencyKey":"gate-repeat-export-exact","workspaceRevision":service.current_revision()})
+                if repeat_export["result"]["assets"]!=result["result"]["assets"] or repeat_export["releaseManifest"]!=result["releaseManifest"]:raise AssertionError("repeat export generation")
         if tuple(row["operationId"] for row in results)!=EXPECTED_COMMANDS or any(row["status"]!="pass" for row in results):raise AssertionError("operation closure")
         dbt_run=next(row for row in results if row["operationId"]=="retail.dbt-build")
         dbt_protocol=None
@@ -472,7 +503,7 @@ class Gate:
         self.operation_service=service
 
         self.record("RED-OPS-001", lambda: {"operations": [row["operationId"] for row in results], "imageDigest": self.image})
-        self.record("RED-OPS-002", lambda: {"models": dbt_run["result"]["models"], "assets": len(export["result"]["assets"]), "rawExportReproduced": reproduced_assets==original_assets, "decision": next(row for row in results if row["operationId"]=="promotion.verify")["result"]["decision"]})
+        self.record("RED-OPS-002", lambda: {"models": dbt_run["result"]["models"], "assets": len(export["result"]["assets"]), "rawExportReproduced": reproduced_assets==original_assets, "repeatExportAdmitted":repeat_export is not None, "decision": next(row for row in results if row["operationId"]=="promotion.verify")["result"]["decision"]})
         self.record("RED-IDM-001", lambda: {"replayEqual": replay==results[0],"resetReplayEqual":reset_replay==results[-1],"resetPreserved":results[-1]["result"]["preserved"], "runId": results[0]["runId"]})
         self.record("RED-IDM-002", lambda: self._idempotency_conflict(service, results[0]))
         self.record("RED-REL-001", lambda: self._release_invalid())
@@ -557,6 +588,8 @@ class Gate:
         with tarfile.open(archive,"w") as tf:
             info=tarfile.TarInfo("huge");info.uid=info.gid=65532;info.mode=0o600;info.size=2;tf.addfile(info,io.BytesIO(b"xx"))
         expect_error(ArchiveError,"RUNNER_ARCHIVE_QUOTA",lambda:inspect_tar(archive,limits=Limits(total_bytes=1,file_bytes=1,files=1)))
+        protocol.unlink();archive.unlink()
+        if protocol.exists() or archive.exists():raise AssertionError("rejected raw persisted")
         return {"protocolOverflowRejected":True,"archiveOverflowRejected":True,"rawPersisted":False}
 
     def _release_reader_atomicity(self)->object:
@@ -698,16 +731,29 @@ class Gate:
             protected=[name for name in changed if not (name.startswith("apps/lab-runner/") or name=="mk/issue-5/i5-04.mk")]
             if protected:raise AssertionError("protected drift")
             ignored=subprocess.run(["git","ls-files","--others","--ignored","--exclude-standard","-z"],cwd=ROOT,check=True,stdout=subprocess.PIPE).stdout.decode().split("\0");ignored=[name for name in ignored if name]
+            owner_markers={
+                ".artifacts/build/issue-9/":ROOT/".artifacts/build/issue-9/owner.json",
+                "apps/lab-runner/.local-state/":APP/".local-state/.runner-owner.json",
+            }
+            for prefix,marker in owner_markers.items():
+                expected={"schemaVersion":"runner-external-root-owner-v1","owner":"issue-9","cookInputSha":COOK_INPUT,"purpose":"build-evidence" if prefix.startswith(".artifacts") else "runtime-evidence"}
+                observed=marker.stat(follow_symlinks=False)
+                if not stat.S_ISREG(observed.st_mode) or observed.st_nlink!=1 or stat.S_IMODE(observed.st_mode)!=0o600 or json.loads(marker.read_text())!=expected:raise AssertionError("runtime owner marker")
             def runtime_path(name:str)->bool:
-                return name.startswith((".artifacts/build/issue-9/","apps/lab-runner/.local-state/",".artifacts/evidence/golden/",".artifacts/workspaces/golden/",".artifacts/evidence/data-contracts/","apps/lab-runner/.pytest_cache/")) or ("/__pycache__/" in name and name.endswith(".pyc"))
+                if any(name.startswith(prefix) for prefix in owner_markers):return True
+                if name.startswith((".artifacts/evidence/golden/",".artifacts/workspaces/golden/")):
+                    parts=pathlib.PurePosixPath(name).parts;run_root=ROOT/pathlib.Path(*parts[:4]);return (run_root/".golden-owner.json").is_file()
+                if name.startswith(".artifacts/evidence/data-contracts/"):
+                    parts=pathlib.PurePosixPath(name).parts;run_root=ROOT/pathlib.Path(*parts[:4]);return (run_root/".data-contracts-owner.json").is_file() or (run_root/"result.json").is_file()
+                return name.startswith("apps/lab-runner/.pytest_cache/") or ("/__pycache__/" in name and name.endswith(".pyc"))
             baseline={".hermes/logs/claudekit/issue-9-container-runner-v2-cook.log",".hermes/prompts/issue-9-container-runner-v2-cook.md"};unclassified={name for name in ignored if not runtime_path(name)}
-            if unclassified!=baseline or sha256(ROOT/".hermes/prompts/issue-9-container-runner-v2-cook.md")!="278c9eecb2252a6a263f8966bbbb6c3dc648ea5e71942ecc0d20ba308287bd07":raise AssertionError("ignored baseline drift")
+            if unclassified!=baseline or any(sha256(ROOT/name)!=digest for name,digest in self.ignored_baseline.items()):raise AssertionError("ignored baseline drift")
             for name in baseline:
                 observed=(ROOT/name).stat(follow_symlinks=False)
                 if not stat.S_ISREG(observed.st_mode) or observed.st_nlink!=1:raise AssertionError("ignored baseline type")
             neighbor=APP/"neighbor-unlisted";probe=subprocess.run(["git","check-ignore","-q",neighbor.relative_to(ROOT).as_posix()],cwd=ROOT)
             if probe.returncode==0 or any(".local-state" in row["path"] for row in json.loads((APP/"container/context-manifest-v1.json").read_text())["files"]):raise AssertionError("ignore scope")
-            return {"changed":changed,"protected":True,"releasedPins":38,"ignoredInclusive":True,"ignoredEntries":len(ignored),"preexistingIgnored":sorted(baseline),"neighborVisible":True}
+            return {"changed":changed,"protected":True,"releasedPins":38,"ignoredInclusive":True,"ignoredEntries":len(ignored),"preexistingIgnored":sorted(baseline),"baselineHashes":self.ignored_baseline,"markerOwnedRoots":sorted(owner_markers),"neighborVisible":True}
 
         def supply() -> object:
             build_lock=json.loads((APP/"config/container-build-lock-v1.json").read_text());release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
@@ -717,11 +763,11 @@ class Gate:
             vex_path=ROOT/".artifacts/build/issue-9/openvex-current.json";vex=json.loads(vex_path.read_text())
             statements={row["vulnerability"]["name"]:row for row in vex["statements"]}
             product=f"pkg:oci/ai-ready-lab-runner@{self.image}"
-            unresolved=[finding for finding in findings if finding not in statements or statements[finding].get("status")!="not_affected" or statements[finding].get("justification") not in ("vulnerable_code_not_in_execute_path","component_not_present") or statements[finding].get("products")!= [{"component":{"@id":product}}] or not statements[finding].get("references")]
+            unresolved=[finding for finding in findings if finding not in statements or statements[finding].get("status")!="not_affected" or statements[finding].get("justification") not in ("vulnerable_code_not_in_execute_path","component_not_present","inline_mitigations_already_exist") or statements[finding].get("products")!= [{"component":{"@id":product}}] or not statements[finding].get("references")]
             if unresolved:raise AssertionError("unresolved:"+",".join(unresolved))
             sbom_path=ROOT/".artifacts/build/issue-9/sbom-spdx-current.json";observed={"sbomSha256":sha256(sbom_path),"vulnerabilityScanSha256":sha256(path),"openVexSha256":sha256(vex_path)}
             expected={key:build_lock[key] for key in observed}
-            if observed!=expected or release["sbom"]["sha256"]!=observed["sbomSha256"] or release["vulnerability"]["scanSha256"]!=observed["vulnerabilityScanSha256"] or release["vulnerability"]["openVexSha256"]!=observed["openVexSha256"]:raise AssertionError("supply evidence lock mismatch")
+            if observed!=expected or release["buildLockSha256"]!=sha256(APP/"config/container-build-lock-v1.json") or release["sbom"]["sha256"]!=observed["sbomSha256"] or release["vulnerability"]["scanSha256"]!=observed["vulnerabilityScanSha256"] or release["vulnerability"]["openVexSha256"]!=observed["openVexSha256"]:raise AssertionError("supply evidence lock mismatch")
             sbom=json.loads(sbom_path.read_text());packages=sbom.get("packages",[])
             if sbom.get("spdxVersion")!="SPDX-2.3" or len(packages)!=release["sbom"]["packages"]:raise AssertionError("SBOM closure")
             if len(critical_high)!=release["vulnerability"]["scannerCriticalHigh"] or len(medium)!=release["vulnerability"]["scannerMedium"] or len(findings)!=release["vulnerability"]["openVexNotAffected"]:raise AssertionError("vulnerability count closure")
@@ -780,7 +826,8 @@ class Gate:
             bandit["generated_at"]="1970-01-01T00:00:00Z";bandit_output.write_text(json.dumps(bandit,sort_keys=True,separators=(",",":"))+"\n");os.chmod(bandit_output,0o600)
             version=(bandit_root/"bandit-1.8.6.dist-info/METADATA").read_text()
             build_lock=json.loads((APP/"config/container-build-lock-v1.json").read_text());release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
-            if "Version: 1.8.6\n" not in version or blocking or unsafe or seccomp.get("defaultAction")!="SCMP_ACT_ERRNO" or denied!={2,10,16,17} or sha256(bandit_output)!=build_lock["staticSecuritySha256"] or release["staticSecurity"]["sha256"]!=build_lock["staticSecuritySha256"]:raise AssertionError(f"policy:{blocking}:{unsafe}:{denied}")
+            allowed_syscalls={name for row in seccomp["syscalls"] if row.get("action")=="SCMP_ACT_ALLOW" for name in row.get("names",[])}
+            if "Version: 1.8.6\n" not in version or blocking or unsafe or seccomp.get("defaultAction")!="SCMP_ACT_ERRNO" or denied!={2,10,16,17} or not {"ptrace","process_vm_readv","process_vm_writev"}.isdisjoint(allowed_syscalls) or sha256(bandit_output)!=build_lock["staticSecuritySha256"] or release["staticSecurity"]["sha256"]!=build_lock["staticSecuritySha256"]:raise AssertionError(f"policy:{blocking}:{unsafe}:{denied}")
             return {"fixedArrays":True,"forbidden":[],"astFiles":len(paths),"banditVersion":"1.8.6","banditFindings":{"high":0,"medium":0,"low":sum(row["issue_severity"]=="LOW" for row in bandit["results"])},"banditSha256":sha256(bandit_output),"seccompDefault":"SCMP_ACT_ERRNO","deniedInternetFamilies":sorted(denied),"seccompSha256":sha256(APP/"container/seccomp-runner-v1.json")}
 
         def evidence() -> object:
@@ -825,7 +872,7 @@ class Gate:
         self.record("S3-SRC-001",source)
         self.record("S3-SEC-001",secret)
         self.record("S3-EVD-001",evidence)
-        self.record("S3-OPS-001",lambda:{"operations":len(self.operations),"dbtTracker":self.dbt_tracker} if len(self.operations)==8 and self.dbt_tracker else (_ for _ in ()).throw(AssertionError("operations")))
+        self.record("S3-OPS-001",self._operation_release_aggregate)
         self.record("S3-RES-001",lambda:self._resource_aggregate())
         self.record("S3-RAC-001",lambda:{"audit":self._audit_immutable(self.root/"operations"),"durableReplay":self._durable_replay(),"cas":self._lock_serialization(),"rollback":self.rollback_observation,"foreignUnchanged":self._foreign_unchanged()} if self._foreign_unchanged() and self.rollback_observation.get("idempotent") else (_ for _ in ()).throw(AssertionError("foreign or rollback drift")))
         self.record("S3-CLOUD-001",self._cloud_absence)
@@ -834,7 +881,16 @@ class Gate:
         value=self.direct(["/opt/runner-fixtures/process_tree_probe.py"])["inspect"];self.fixture_backend.effective(value,self.image);host=self.engine.admit()
         running=self.engine.command(["ps","--filter","label=ai-ready.issue9.owner=issue-9","--format","{{.ID}}"],check=True).stdout.splitlines()
         if len(running)>1:raise AssertionError("multiple active")
-        return {"memory":value["HostConfig"]["Memory"],"swap":value["HostConfig"]["MemorySwap"],"cpus":value["HostConfig"]["NanoCpus"],"pids":value["HostConfig"]["PidsLimit"],"singleActive":True,"cgroupVersion":host["CgroupVersion"]}
+        after=self.operation_service._reserve();observations=[*self.operation_service.reserve_observations,after];minimum_memory=min(row["memoryFree"] for row in observations);minimum_disk=min(row["diskFree"] for row in observations)
+        projected_memory=minimum_memory-536870912;projected_disk=minimum_disk-268435456
+        if minimum_memory<6*1024**3 or minimum_disk<6*1024**3 or projected_memory<6*1024**3 or projected_disk<6*1024**3:raise AssertionError("host reserve")
+        return {"memory":value["HostConfig"]["Memory"],"swap":value["HostConfig"]["MemorySwap"],"cpus":value["HostConfig"]["NanoCpus"],"pids":value["HostConfig"]["PidsLimit"],"singleActive":True,"cgroupVersion":host["CgroupVersion"],"hostReserve":{"admissions":len(observations)-1,"minimumAdmissionMemory":minimum_memory,"minimumAdmissionDisk":minimum_disk,"projectedPeakMemory":projected_memory,"projectedPeakDisk":projected_disk,"after":after}}
+
+    def _operation_release_aggregate(self)->object:
+        release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
+        observed=[{"operationId":row["operationId"],"resultSha256":hashlib.sha256(json.dumps(row["result"],sort_keys=True,separators=(",",":"),allow_nan=False).encode()).hexdigest()} for row in self.operations]
+        if len(self.operations)!=8 or not self.dbt_tracker or release.get("operationResults")!=observed or release.get("gateAggregate")!={"redRows":52,"s3Rows":14,"passed":66,"failed":0} or release.get("rollbackAggregate")!={"attempts":2,"live":True,"absent":True,"stalePreserved":True,"foreignUnchanged":True,"idempotent":True}:raise AssertionError("operation release aggregate")
+        return {"operations":len(self.operations),"dbtTracker":self.dbt_tracker,"releaseResults":len(observed),"rollbackAttempts":2}
 
     def _cloud_absence(self)->object:
         changed=subprocess.run(["git","diff","--name-only",COOK_INPUT],cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE).stdout.splitlines()
@@ -890,6 +946,13 @@ def evaluate_case(row: dict[str, object]) -> dict[str, object]:
         head=subprocess.run(["git","rev-parse","HEAD"],cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE).stdout.strip()
         tree=subprocess.run(["git","rev-parse","HEAD^{tree}"],cwd=ROOT,text=True,check=True,stdout=subprocess.PIPE).stdout.strip()
         if value.get("headSha")!=head or value.get("treeSha")!=tree or value.get("policySha256")!=sha256(APP/"container/seccomp-runner-v1.json"):raise RuntimeError("RUNNER_GATE_EVIDENCE_STALE")
+        role=value.get("evidenceRole")
+        if not isinstance(role,str) or not role.startswith(".local-state/evidence/gates/exact-") or "/" in role.removeprefix(".local-state/evidence/gates/"):raise RuntimeError("RUNNER_GATE_EVIDENCE_TAMPERED")
+        verify_gate_evidence(value,APP/role)
+        release=json.loads((APP/"config/runner-image-release-v1.json").read_text());build=json.loads((APP/"config/container-build-lock-v1.json").read_text());image=str(value.get("imageDigest"))
+        if release.get("imageDigest")!=image or build.get("imageDigest")!=image or release.get("buildLockSha256")!=sha256(APP/"config/container-build-lock-v1.json"):raise RuntimeError("RUNNER_GATE_EVIDENCE_STALE")
+        engine=Engine();engine.admit();inspected=engine.json(["image","inspect",image])
+        if not isinstance(inspected,list) or len(inspected)!=1 or inspected[0].get("Id")!=image:raise RuntimeError("RUNNER_GATE_EVIDENCE_STALE")
         _EVALUATED={item["id"]:item for item in value["results"]}
     return _EVALUATED[str(row["id"])]
 
@@ -900,7 +963,7 @@ def emit_fitness(command_id:str,gate_value:dict[str,object],started:float)->dict
     manifest=json.loads(MANIFEST.read_text());expected=[row["id"] for row in manifest["rows"]]
     results=gate_value.get("results")
     if not isinstance(results,list) or [row.get("id") for row in results]!=expected or any(row.get("status")!="pass" for row in results):raise RuntimeError("RUNNER_GATE_EVIDENCE_INCOMPLETE")
-    gate_root=APP/str(gate_value["evidenceRole"]);gate_result=gate_root/"gate-result.json"
+    gate_root=APP/str(gate_value["evidenceRole"]);verify_gate_evidence(gate_value,gate_root);gate_result=gate_root/"gate-result.json"
     artifacts=[]
     for case_id in expected:
         path=gate_root/"rows"/f"{case_id}.json"

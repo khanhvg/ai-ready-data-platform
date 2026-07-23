@@ -22,7 +22,7 @@ class RedPublicPathTest(unittest.TestCase):
         value=json.loads(latest.read_text())
         source=APP/value["evidenceRole"]
         with tempfile.TemporaryDirectory() as temporary:
-            target=pathlib.Path(temporary);shutil.copytree(source,target,dirs_exist_ok=True)
+            target=pathlib.Path(temporary);shutil.copy2(source/"gate-result.json",target/"gate-result.json");shutil.copytree(source/"rows",target/"rows")
             gate.verify_gate_evidence(value,target)
             row=target/"rows"/f"{value['results'][0]['id']}.json"
             row.write_text('{"status":"fail"}\n')

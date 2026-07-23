@@ -35,14 +35,14 @@
     {
       "path": "app/src/lab_runner/__main__.py",
       "mode": "0644",
-      "size": 1988,
-      "sha256": "437e75d0714dd2bcf6971e2dce01d02ce48482f32a720b2bd2ce627af7edfce2"
+      "size": 2942,
+      "sha256": "1cad0f12f793d2893049774d9852b604eb45e7d7e2e05b1b540aba9c0f023c40"
     },
     {
       "path": "app/src/lab_runner/archive.py",
       "mode": "0644",
-      "size": 4729,
-      "sha256": "e2e025644d290c3369f191447882ed14cfcc6ed918b6837b25056433916ead58"
+      "size": 4784,
+      "sha256": "637894739ff4b052e540bdb3f05143bd32a83150659c874612552ce2facd076e"
     },
     {
       "path": "app/src/lab_runner/audit.py",
@@ -53,8 +53,8 @@
     {
       "path": "app/src/lab_runner/container_backend.py",
       "mode": "0644",
-      "size": 12059,
-      "sha256": "0f096d8630acc764cb1344da03d74b5b12251867cf8cefeb7ef0da318e8d2858"
+      "size": 12849,
+      "sha256": "aa22f5a5261550d702b6a494341119ea6ffe980381bd5a0817ec5e7a3fcdb227"
     },
     {
       "path": "app/src/lab_runner/container_protocol.py",
@@ -65,8 +65,8 @@
     {
       "path": "app/src/lab_runner/container_supervisor.py",
       "mode": "0644",
-      "size": 9803,
-      "sha256": "f574c0875bd395020151ae2543170ec0940f47f42b979f2d0f7de06bb01ec3fe"
+      "size": 9876,
+      "sha256": "48fe111a7ed71e4443d56ace270431a94c8493844246f6dec5b2001fe59c4dae"
     },
     {
       "path": "app/src/lab_runner/contract.py",
@@ -107,14 +107,14 @@
     {
       "path": "app/src/lab_runner/release.py",
       "mode": "0644",
-      "size": 16373,
-      "sha256": "43756d6e331127bdea41c2de887aad0cad05eaafdc7d39da8a64daad495bff81"
+      "size": 17198,
+      "sha256": "b6d37bcd68d0e8a1f89605c90f8e781addc29616c86310895ea8acf4258c3c97"
     },
     {
       "path": "app/src/lab_runner/service.py",
       "mode": "0644",
-      "size": 10216,
-      "sha256": "fb55e64a9fa98b9c848c0af710a0b8b809ca3548fa9b0120096092a041984b2d"
+      "size": 10439,
+      "sha256": "4e9466638cd8e7ad27f07e1ef7334598f98fc5ebc6e7a4b598b38ee3d3a75cd8"
     },
     {
       "path": "app/src/lab_runner/state.py",

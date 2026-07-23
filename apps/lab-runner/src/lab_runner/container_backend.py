@@ -98,6 +98,20 @@ class Backend:
         ]
         if not all(checks): raise EngineError("RUNNER_CONTAINMENT_UNAVAILABLE")
 
+    @staticmethod
+    def effective_protocol(value:dict[str,object],operation_id:str)->None:
+        cgroup=value.get("cgroup")
+        if not isinstance(cgroup,dict):raise EngineError("RUNNER_CONTAINMENT_UNAVAILABLE")
+        peak=cgroup.get("memoryPeak");events=cgroup.get("memoryEvents")
+        checks=(
+            value.get("operationId")==operation_id,
+            cgroup.get("memoryMax")=="536870912",
+            cgroup.get("memorySwapMax")=="0",
+            type(peak) is int and 0<=peak<=536870912,
+            isinstance(events,dict) and all(isinstance(key,str) and type(item) is int and item>=0 for key,item in events.items()),
+        )
+        if not all(checks):raise EngineError("RUNNER_CONTAINMENT_UNAVAILABLE")
+
     def execute(self,run_id:str,fence:int,operation_id:str,input_archive:pathlib.Path)->Outcome:
         deadline=time.monotonic()+WALL_SECONDS
         daemon_identity=self._daemon_identity(self._remaining(deadline,30));work=self.staging/run_id;work.mkdir(mode=0o700);observed=work.stat(follow_symlinks=False);owner={"schemaVersion":"runner-transient-owner-v1","runId":run_id,"fence":fence,"purpose":"staging","device":observed.st_dev,"inode":observed.st_ino};owner_path=work/".runner-owner.json";owner_path.write_text(json.dumps(owner,sort_keys=True,separators=(",",":"))+"\n");os.chmod(owner_path,0o600)
@@ -124,6 +138,7 @@ class Backend:
             archive_raw=stdout[17+protocol_length:]
             if archive_length!=len(archive_raw) or archive_length>268435456:raise EngineError("RUNNER_OUTPUT_INVALID")
             result_path=work/"result.json";result_path.write_bytes(protocol_raw);protocol=read_protocol(result_path)
+            self.effective_protocol(protocol,operation_id)
             output=work/"output.tar"
             if protocol["status"]=="pass":
                 output.write_bytes(archive_raw)

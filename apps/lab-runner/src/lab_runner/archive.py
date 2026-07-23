@@ -1,6 +1,6 @@
 """Closed archive admission for private workspace and container output."""
 from __future__ import annotations
-import hashlib, json, os, pathlib, shutil, stat, tarfile, tempfile, unicodedata
+import hashlib, json, os, pathlib, shutil, stat, tarfile, tempfile
 from dataclasses import dataclass
 
 
@@ -18,8 +18,10 @@ class Limits:
 def _parts(name: str) -> tuple[str,...]:
     if not isinstance(name,str) or not name or "\x00" in name or "\\" in name or name.startswith("/"):
         raise ArchiveError("RUNNER_ARCHIVE_PATH_INVALID")
+    try:raw_name=name.encode("ascii","strict")
+    except UnicodeEncodeError as exc:raise ArchiveError("RUNNER_ARCHIVE_PATH_INVALID") from exc
     p=pathlib.PurePosixPath(name)
-    if any(x in ("",".","..") for x in p.parts) or len(name.encode())>512:
+    if any(x in ("",".","..") for x in p.parts) or len(raw_name)>512:
         raise ArchiveError("RUNNER_ARCHIVE_PATH_INVALID")
     return p.parts
 
@@ -36,8 +38,8 @@ def inspect_tar(path: pathlib.Path, *, limits: Limits=Limits(), require_manifest
         for item in tf:
             parts=_parts(item.name)
             key="/".join(parts)
-            collision=unicodedata.normalize("NFC",key).casefold()
-            if key!=unicodedata.normalize("NFC",key) or key in seen or collision in folded: raise ArchiveError("RUNNER_ARCHIVE_DUPLICATE")
+            collision=key.casefold()
+            if key in seen or collision in folded: raise ArchiveError("RUNNER_ARCHIVE_DUPLICATE")
             seen.add(key);folded.add(collision);count+=1
             if count>limits.files:raise ArchiveError("RUNNER_ARCHIVE_QUOTA")
             if not (item.isdir() or item.isreg()) or item.issparse():
