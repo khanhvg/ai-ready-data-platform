@@ -1,0 +1,145 @@
+{
+  "schemaVersion": "lab-v1",
+  "id": "data-platform-model-quality-v1",
+  "version": "1.0.0",
+  "lessonId": "data-platform-model-quality",
+  "risk": {
+    "class": "bounded-local",
+    "network": "denied",
+    "privilege": "unprivileged"
+  },
+  "profile": {
+    "id": "small",
+    "seed": 42
+  },
+  "inputs": [
+    {
+      "id": "profile",
+      "type": "enum",
+      "allowed": ["small"],
+      "default": "small"
+    },
+    {
+      "id": "seed",
+      "type": "integer",
+      "minimum": 42,
+      "maximum": 42,
+      "default": 42
+    }
+  ],
+  "workspace": {
+    "template": "data-platform-stage-a-candidate",
+    "allowedPaths": ["workspace/model-map", "workspace/evidence"],
+    "quotaBytes": 67108864,
+    "cleanup": "atomic-marker-nonce-inode",
+    "retention": "ephemeral"
+  },
+  "commands": [
+    {
+      "id": "candidate.inspect-model-graph",
+      "arguments": [],
+      "timeoutSeconds": 30,
+      "memoryBytes": 134217728,
+      "network": "denied"
+    },
+    {
+      "id": "candidate.classify-quality",
+      "arguments": [],
+      "timeoutSeconds": 30,
+      "memoryBytes": 134217728,
+      "network": "denied"
+    },
+    {
+      "id": "candidate.reset-workspace",
+      "arguments": [],
+      "timeoutSeconds": 30,
+      "memoryBytes": 134217728,
+      "network": "denied"
+    }
+  ],
+  "starter": {
+    "source": "issue-6-model-reader",
+    "expectedState": "candidate-ready"
+  },
+  "controlledFailure": {
+    "trigger": "warning-severity-misclassified",
+    "symptom": "Cảnh báo có chủ đích bị đổi thành lỗi hoặc bị bỏ qua.",
+    "expectedEvidence": ["QUALITY_WARNING_MISMATCH"],
+    "boundary": "workspace-only"
+  },
+  "stateMachine": {
+    "authority": "learning-progress-authority-v1",
+    "initial": "not-started",
+    "transitions": [
+      {"from": "not-started", "to": "preparing"},
+      {"from": "preparing", "to": "ready"},
+      {"from": "ready", "to": "running"},
+      {"from": "running", "to": "verified"},
+      {"from": "verified", "to": "evidenced"},
+      {"from": "evidenced", "to": "completed"}
+    ],
+    "lock": "one-mutation-per-workspace",
+    "crashRecovery": "last-committed-transition"
+  },
+  "reset": {
+    "scope": "workspace",
+    "atomic": true,
+    "preserveProgress": true,
+    "preserveEvidence": true,
+    "postResetState": "ready"
+  },
+  "verify": {
+    "verifierId": "stage-a.model-quality",
+    "assertions": [
+      {
+        "id": "DL-MOD-001",
+        "severity": "critical",
+        "failureCode": "MODEL_GRAIN_MISMATCH"
+      },
+      {
+        "id": "DL-DQ-001",
+        "severity": "critical",
+        "failureCode": "QUALITY_WARNING_MISMATCH"
+      },
+      {
+        "id": "DL-DQ-002",
+        "severity": "critical",
+        "failureCode": "QUALITY_SEVERITY_DRIFT"
+      }
+    ],
+    "deterministicInputs": true
+  },
+  "solution": {
+    "version": "1.0.0",
+    "revealAfterHints": 3,
+    "separateFromStarter": true
+  },
+  "evidence": {
+    "schemaVersion": "learning-evidence-v1",
+    "requiredMetadata": ["operationId", "contractHashes", "fixtureHashes", "expectedActual"],
+    "retentionClass": "review-bundle"
+  },
+  "accessibility": {
+    "announcedStatus": true,
+    "nonColorCues": true,
+    "keyboard": true,
+    "staticEquivalent": true
+  },
+  "remediation": [
+    {
+      "failureCode": "MODEL_GRAIN_MISMATCH",
+      "likelyCause": "Sơ đồ lớp dùng sai nguồn, đích hoặc grain.",
+      "action": "Đối chiếu source, staging, intermediate, core và mart theo reader Issue #6."
+    },
+    {
+      "failureCode": "QUALITY_WARNING_MISMATCH",
+      "likelyCause": "Một warning có kiểm soát bị coi là lỗi môi trường.",
+      "action": "Ghi expected và actual theo đúng identity; không đổi severity."
+    },
+    {
+      "failureCode": "QUALITY_SEVERITY_DRIFT",
+      "likelyCause": "Cấu hình chất lượng vàng bị sửa.",
+      "action": "Dừng và phục hồi tệp được bảo vệ; chỉ sửa bản đồ riêng."
+    }
+  ]
+}
