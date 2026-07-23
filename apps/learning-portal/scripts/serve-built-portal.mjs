@@ -123,7 +123,7 @@ const publicServer = createServer(async (request, response) => {
     response.writeHead(400).end();
     return;
   }
-  const row = inventory.get(key);
+  const row = inventory.get(key) ?? inventory.get(`${key}/index.html`);
   if (!row) {
     response.writeHead(404).end();
     return;
