@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib, importlib.util, json, os, pathlib, shutil, sys, time
 from typing import Callable
 from .registry import operation_ids
-from .release import contract_schema_sha256, create_manifest, manifest_bytes, validate as validate_release
+from .release import ASSETS, contract_schema_sha256, create_manifest, manifest_bytes, validate as validate_release
 
 PROJECT=pathlib.Path("/opt/project")
 STATE=pathlib.Path("/workspace/state")
@@ -78,20 +78,30 @@ def retail_dbt_build() -> dict[str,object]:
 
 def retail_export() -> dict[str,object]:
     _base(); module=_load("runner_exporter",PROJECT/"serving/export_marts_snapshot.py")
-    counts=module.export_marts(STATE/"warehouse/retail.duckdb",STATE/"serving/export")
-    assets=validate_release(STATE)
-    if list(counts)!=[row["assetId"] for row in assets]: raise RuntimeError("RUNNER_EXPORT_ORDER_INVALID")
+    export_dir=STATE/"serving/export";counts=module.export_marts(STATE/"warehouse/retail.duckdb",export_dir)
+    if list(counts)!=list(ASSETS): raise RuntimeError("RUNNER_EXPORT_ORDER_INVALID")
     golden_module=_load("runner_golden_worker",PROJECT/"scripts/golden/golden_worker.py")
     golden=json.loads((PROJECT/"contracts/data/retail-golden-v1.json").read_text());semantic=[]
     import duckdb
     connection=duckdb.connect(str(STATE/"warehouse/retail.duckdb"),read_only=True)
     try:
+        connection.execute("SET threads=1")
+        for mart in ASSETS:
+            target=export_dir/f"{mart}.parquet";temporary=export_dir/f".{mart}.parquet.tmp"
+            connection.execute(f"COPY (SELECT * FROM main_marts.{mart} ORDER BY ALL) TO '{temporary}' (FORMAT parquet)")
+            os.chmod(temporary,0o600)
+            with temporary.open("rb") as stream:os.fsync(stream.fileno())
+            os.replace(temporary,target)
+        directory_fd=os.open(export_dir,os.O_RDONLY|os.O_DIRECTORY)
+        try:os.fsync(directory_fd)
+        finally:os.close(directory_fd)
         for expected in golden["marts"]:
             mart=expected["martId"];cursor=connection.execute("select * from query_table(?) order by all",[f"main_marts.{mart}"]);rows=cursor.fetchall();columns=[entry[0] for entry in cursor.description]
             digest=hashlib.sha256(golden_module.mart_csv(columns,rows)).hexdigest()
             if (len(rows),digest)!=(expected["rowCount"],expected["contentSha256"]):raise RuntimeError("RUNNER_EXPORT_GOLDEN_MISMATCH")
             semantic.append({"assetId":mart,"rowCount":len(rows),"contentSha256":digest})
     finally:connection.close()
+    assets=validate_release(STATE)
     manifest=create_manifest(STATE,semantic);manifest_raw=manifest_bytes(manifest)
     return {"assets":assets,"rowCounts":counts,"semanticAssets":semantic,"releaseManifest":{"releaseId":manifest["releaseId"],"manifestSha256":hashlib.sha256(manifest_raw).hexdigest(),"contractSchemaSha256":contract_schema_sha256(),"assets":manifest["assets"]}}
 
