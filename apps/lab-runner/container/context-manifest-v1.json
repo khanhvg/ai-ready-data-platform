@@ -96,7 +96,7 @@
       "path": "app/src/lab_runner/operation_adapters.py",
       "mode": "0644",
       "size": 9798,
-      "sha256": "990968355bc726d9b817c34ac66afb5dbf8b3b19e9ff32e388b09bda03bee83e"
+      "sha256": "30093ed1aef1081e30f57b14dee2566cf3db29288e4311493d3697cf15d59aec"
     },
     {
       "path": "app/src/lab_runner/registry.py",
