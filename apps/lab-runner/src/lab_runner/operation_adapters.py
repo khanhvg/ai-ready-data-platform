@@ -59,7 +59,7 @@ def retail_load() -> dict[str,object]:
 
 
 def _dbt_profile(warehouse:pathlib.Path)->str:
-    return "retail_pipeline:\n  target: dev\n  outputs:\n    dev:\n      type: duckdb\n      path: "+json.dumps(str(warehouse))+"\n      threads: 2\n"
+    return "retail_pipeline:\n  target: dev\n  outputs:\n    dev:\n      type: duckdb\n      path: "+json.dumps(str(warehouse))+"\n      threads: 1\n"
 
 
 def retail_dbt_build() -> dict[str,object]:
