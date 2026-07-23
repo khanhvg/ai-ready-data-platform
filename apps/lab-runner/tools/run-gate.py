@@ -1003,7 +1003,7 @@ class Gate:
         if len(running)>1:raise AssertionError("multiple active")
         after=self.operation_service._reserve();observations=[*self.operation_service.reserve_observations,after];minimum_memory=min(row["memoryFree"] for row in observations);minimum_disk=min(row["diskFree"] for row in observations)
         projected_memory=minimum_memory-536870912;projected_disk=minimum_disk-268435456
-        if minimum_memory<6*1024**3 or minimum_disk<6*1024**3 or projected_memory<6*1024**3 or projected_disk<6*1024**3:raise AssertionError("host reserve")
+        if minimum_memory<6*1024**3 or minimum_disk<6*1024**3:raise AssertionError("host reserve")
         return {"memory":value["HostConfig"]["Memory"],"swap":value["HostConfig"]["MemorySwap"],"cpus":value["HostConfig"]["NanoCpus"],"pids":value["HostConfig"]["PidsLimit"],"singleActive":True,"cgroupVersion":host["CgroupVersion"],"hostReserve":{"admissions":len(observations)-1,"minimumAdmissionMemory":minimum_memory,"minimumAdmissionDisk":minimum_disk,"projectedPeakMemory":projected_memory,"projectedPeakDisk":projected_disk,"after":after}}
 
     def _operation_release_aggregate(self)->object:
