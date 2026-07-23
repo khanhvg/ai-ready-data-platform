@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "container-build-lock-v1",
+  "platform": "linux/arm64",
+  "baseManifestDigest": "sha256:55842c72c6b3584d06ec84c731fc516b30b8a53ad262ebd085e47ab568b3bfc1",
+  "contextManifestSha256": "7958361562dbc100a01e42f7e4251e8e0b534140aa1b50a8b0de091ed87c1390",
+  "contextTarSha256": "2055ecaadb11324a5a8ff24d50689cda13e0e70be03aeeeed03de1e67521b93b",
+  "wheelhouseManifestSha256": "6381419faa9d95f38f774eb0b6e61e65449b7bd829ebc514b6c73900301b2be3",
+  "requirementsLockSha256": "f41c727b39f99106f95b7937b2811e8d27db89d1d5106e9f1d9effd4403143d2",
+  "dockerClientVersion": "29.4.0",
+  "dockerServerVersion": "29.4.0",
+  "dockerApiVersion": "1.54",
+  "buildNetwork": "none",
+  "runtimePull": "never",
+  "sourceDateEpoch": 0,
+  "imageDigest": "sha256:70a702dd86a2abd02db506f7bfb188f84571cf080a4869019605466e3850cfd6",
+  "reproducibleBuilds": 2,
+  "reproducibleDigest": "sha256:70a702dd86a2abd02db506f7bfb188f84571cf080a4869019605466e3850cfd6",
+  "imageManifestDigest": "sha256:70a702dd86a2abd02db506f7bfb188f84571cf080a4869019605466e3850cfd6",
+  "imageConfigDigest": "sha256:9b32b1f38da82a3c42a7701db97b07414ae9f46cb2d85a2d1d4ae0820b4af358",
+  "seccompSha256": "68495bb7a346ed0bbfb2926d90df1983b6088af30e67d7e8a7872b4d062e0822",
+  "seccompBaseline": {
+    "source": "moby/profiles seccomp/v0.2.1",
+    "sha256": "536529b665dd0972c37bfb569f5d4ac8a53592e7b00752bc39ff063ca9864c74"
+  },
+  "sbomSha256": "30117e481fa7319b7174453d3f3afd22e0f6f617578b8a0112c031fb241b7b1f",
+  "vulnerabilityScanSha256": "a8fd399d6e1a94cb5e0fc607a6b788c475104d1faad131dab160f5b335723623",
+  "openVexSha256": "db8f75aa6566328eeb0ff35c5353a8f4fac2ad6c1ca84570951cec0e1b40058d",
+  "provenanceSha256": "28d32b1458239d92d2b5ae1552d53cda7040985f6374b1aed57a48af785f6c9a",
+  "licenseMetadataSha256": "3b07f116a270f93323dc12a4a746689129b97000159fe0d739d7d39a2f910dc0",
+  "staticSecuritySha256": "10a1a6177c3c7d6318df472dbcebb6e10993e81486f89e833cd386623d90d138"
+}

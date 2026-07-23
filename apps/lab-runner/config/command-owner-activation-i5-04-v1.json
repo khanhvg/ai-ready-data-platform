@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "command-owner-activation-v1",
+  "baseRegistryPath": "learning/contracts/command-owner-registry-v1.json",
+  "baseRegistrySha256": "a94ac86bda0b70643edef9f144a59d8753d91f963b83d22cd510adbc31970e80",
+  "owner": "I5-04",
+  "fragment": {
+    "path": "mk/issue-5/i5-04.mk",
+    "sha256": "6c4b05937489e355b718dcf40574fc3c83c5834c8d46383cdf70817af2487887"
+  },
+  "commands": [
+    {
+      "commandId": "runner-test",
+      "availability": "implemented",
+      "evidenceVersion": "fitness-result-v2"
+    },
+    {
+      "commandId": "runner-security-test",
+      "availability": "implemented",
+      "evidenceVersion": "fitness-result-v2"
+    },
+    {
+      "commandId": "runner-race-test",
+      "availability": "implemented",
+      "evidenceVersion": "fitness-result-v2"
+    }
+  ]
+}
