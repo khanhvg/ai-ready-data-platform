@@ -43,6 +43,36 @@ test('@desktop PTP-RED-A-016 keyboard, focus, live status, reduced motion, narro
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
+test('released routes support keyboard navigation, deep links, reload, and browser history', async ({
+  page
+}) => {
+  await page.goto('/');
+  const moduleLink = page.locator('a[href="/module"]');
+  await moduleLink.focus();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/module$/);
+  await expect(page.locator('#lesson-content')).toBeFocused();
+
+  await page.locator('a[href="/lessons/promotion-trust"]').click();
+  await expect(page).toHaveURL(/\/lessons\/promotion-trust$/);
+  await page.locator('a[href="/lessons/promotion-trust/steps/frame"]').click();
+  await expect(page.getByRole('heading', { name: 'Bước 1: frame' }).first()).toBeVisible();
+  await page.locator('a[href="/lessons/promotion-trust/steps/reflect"]').click();
+  await expect(page.getByRole('heading', { name: 'Bước 10: reflect' }).first()).toBeVisible();
+
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Bước 10: reflect' }).first()).toBeVisible();
+  await page.goBack();
+  await expect(page.getByRole('heading', { name: 'Bước 1: frame' }).first()).toBeVisible();
+  await page.goForward();
+  await expect(page.getByRole('heading', { name: 'Bước 10: reflect' }).first()).toBeVisible();
+
+  const deepLink = await page.goto('/lessons/promotion-trust/steps/verify');
+  expect(deepLink?.status()).toBe(200);
+  await expect(page.getByRole('heading', { name: 'Bước 9: verify' }).first()).toBeVisible();
+  expect((await page.request.get('/not-a-released-route')).status()).toBe(404);
+});
+
 test('@narrow no-JavaScript output exposes the same released facts and navigation', async ({
   browser
 }) => {
@@ -57,6 +87,13 @@ test('@narrow no-JavaScript output exposes the same released facts and navigatio
     await expect(page.locator('[data-semantic-ready="false"]')).toBeVisible();
     await expect(page.getByText('insufficient-evidence/no-common-grain'), 'PTP_RED_ROUTE_DERIVATION_ABSENT').toBeVisible();
     await expect(page.getByRole('link')).toHaveCount(13);
+    const deepLink = await page.goto(
+      'http://127.0.0.1:4175/lessons/promotion-trust/steps/trace'
+    );
+    expect(deepLink?.status()).toBe(200);
+    await expect(page.getByRole('heading', { name: 'Bước 5: trace' }).first()).toBeVisible();
+    await page.reload();
+    await expect(page.getByRole('heading', { name: 'Bước 5: trace' }).first()).toBeVisible();
   } finally {
     await context.close();
   }
