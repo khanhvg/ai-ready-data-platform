@@ -4,6 +4,20 @@ import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const MAX_INPUT_BYTES = 2 * 1024 * 1024;
+export const STAGE_A_VIEW_IDS = Object.freeze([
+  "C4-L2-AWS",
+  "DEP-AWS",
+  "DYN-OFFICE",
+  "DYN-PUBLISH",
+  "DYN-RESTORE",
+]);
+
+export function visibleSemanticLines(source) {
+  return source
+    .split(/\r?\n/u)
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith("relation ") || line.startsWith("deployment ") || line.startsWith("boundary "));
+}
 
 export async function readBoundedText(inputPath) {
   if (!isAbsolute(inputPath)) throw new Error("input path must be absolute");

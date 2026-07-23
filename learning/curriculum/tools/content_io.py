@@ -157,8 +157,16 @@ def read_bounded(path: Path, limits: RepositoryLimits = RepositoryLimits()) -> b
 
 
 def parse_json(path: Path, limits: RepositoryLimits = RepositoryLimits()) -> object:
+    def reject_duplicates(pairs: list[tuple[str, object]]) -> dict[str, object]:
+        result: dict[str, object] = {}
+        for key, value in pairs:
+            if key in result:
+                raise RepositoryInputError("I11_BOUND_DUPLICATE_KEY")
+            result[key] = value
+        return result
+
     try:
-        return json.loads(read_bounded(path, limits))
+        return json.loads(read_bounded(path, limits), object_pairs_hook=reject_duplicates)
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise RepositoryInputError(f"invalid JSON input: {path.name}") from exc
 

@@ -1,0 +1,5 @@
+DYN-RESTORE — Khôi phục object, catalog, analytics, governance và evidence
+1. DYN-RESTORE source — Nguồn quyết định
+2. xác minh — repository
+3. DYN-RESTORE target — Đích có bằng chứng
+Biên: private-subnet

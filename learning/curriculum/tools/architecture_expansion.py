@@ -37,6 +37,9 @@ def _toolchain_verification(
     """Verify fixed local tool inputs and the admitted interpreter identity."""
 
     root_path = Path(root).resolve()
+    semantic = check_repository(root_path, limits)
+    if not semantic.ok:
+        raise RuntimeError(",".join(semantic.issues))
     runtime, interpreter, interpreter_digest = validate_runtime()
     locked_inputs = (
         root_path / "requirements/architecture/package-lock.json",
@@ -64,6 +67,9 @@ def _repository_handoff(
     """Read real Git porcelain and index an explicitly supplied evidence root."""
 
     root_path = Path(root).resolve()
+    semantic = check_repository(root_path, limits)
+    if not semantic.ok:
+        raise RuntimeError(",".join(semantic.issues))
     runtime, _, digest = validate_runtime()
     environment = controller_environment(runtime, digest)
     receipt = _run_owned_process(

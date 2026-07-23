@@ -1,4 +1,4 @@
-"""Generic bounded traceability repository entry point."""
+"""Reciprocal module, flow, bridge, relation, and topology verification."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ def _verify_repository(
     root: Path | str = Path.cwd(),
     limits: RepositoryLimits = RepositoryLimits(),
 ) -> RepositoryReport:
-    """Verify that traceability inputs are bounded and parseable."""
+    """Verify the semantic repository through the shared closed trace contract."""
 
     return check_repository(Path(root), limits)
 

@@ -1,0 +1,5 @@
+view DYN-RESTORE {
+  title "Khôi phục object, catalog, analytics, governance và evidence"
+  include author verify publish restore adapters_instance retail_instance
+  deployment private-subnet
+}

@@ -1,0 +1,5 @@
+DYN-PUBLISH — Stage, verify, commit, retry resume và ingest catalog
+1. DYN-PUBLISH source — Nguồn quyết định
+2. xác minh — repository
+3. DYN-PUBLISH target — Đích có bằng chứng
+Biên: private-subnet

@@ -1,0 +1,5 @@
+view DYN-OFFICE {
+  title "Mở văn phòng, readiness, drain checkpoint và đóng"
+  include author verify publish restore adapters_instance retail_instance
+  deployment private-subnet
+}

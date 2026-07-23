@@ -1,0 +1,8 @@
+schemaVersion: i5-06-architecture-view-manifest-v1
+locale: vi-VN
+views:
+  - C4-L2-AWS
+  - DEP-AWS
+  - DYN-OFFICE
+  - DYN-PUBLISH
+  - DYN-RESTORE

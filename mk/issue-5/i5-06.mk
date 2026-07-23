@@ -6,7 +6,7 @@ I506_RUNTIME_INTERPRETER_SHA256 := $(if $(value LEARNING_RUNTIME_INTERPRETER_SHA
 
 i506_shell_quote = '$(subst ','"'"',$(value $(1)))'
 
-.PHONY: curriculum-check traceability-check
+.PHONY: curriculum-check traceability-check i5-06-static-green
 
 define require-i506-runtime
 	@test -n $(call i506_shell_quote,I506_RUNTIME_CANDIDATE) || (echo "LEARNING_RUNTIME_CANDIDATE is required" >&2; exit 2)
@@ -20,3 +20,5 @@ curriculum-check:
 traceability-check:
 	$(require-i506-runtime)
 	@$(call i506_shell_quote,I506_RUNTIME_CANDIDATE)/venv/bin/python -m learning.curriculum.tools.check_traceability
+
+i5-06-static-green: curriculum-check traceability-check

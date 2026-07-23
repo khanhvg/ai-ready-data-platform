@@ -1,0 +1,5 @@
+view DYN-PUBLISH {
+  title "Stage, verify, commit, retry resume và ingest catalog"
+  include author verify publish restore adapters_instance retail_instance
+  deployment private-subnet
+}

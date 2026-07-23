@@ -1,0 +1,5 @@
+DYN-OFFICE — Mở văn phòng, readiness, drain checkpoint và đóng
+1. DYN-OFFICE source — Nguồn quyết định
+2. xác minh — repository
+3. DYN-OFFICE target — Đích có bằng chứng
+Biên: private-subnet
