@@ -72,9 +72,9 @@ viết GREEN trước rồi dựng lại RED, hoặc chỉ lưu expected code m�
 
 | Stable ID | Oracle |
 |---|---|
-| `DL-DEP-008` | Exact released #8 SHA/artifacts exist, ancestry holds and Stage A amendment paths/commands match release |
+| `DL-DEP-008` | #8 release `5644f01b4c0443a81f3af0bcce80f44c847cd986` exists in ancestry and Stage A has exactly 10 paths/12 commands |
 | `DL-DEP-009` | Exact released #9 SHA/runner artifacts exist, ancestry holds and Stage B bindings match release |
-| `DL-DEP-010` | Exact passing merged #10 SHA/renderer/API/E2E artifacts exist and ancestry holds |
+| `DL-DEP-010` | Exact merged runner-backed #10 Stage B SHA/renderer/API/real E2E artifacts exist and ancestry holds; static Stage A alone fails this gate |
 | `DL-LEASE-001` | Serialized lease names exact owner, paths, input SHA and active/non-overlap window |
 | `DL-SEC-001` | Traversal/absolute/encoded path/ref rejected before file/process/service mutation |
 | `DL-SEC-002` | Symlink/hardlink/swap, FIFO/socket/device/other non-regular file and foreign source/destination rejected before read/write; protected tree unchanged |
@@ -91,8 +91,9 @@ viết GREEN trước rồi dựng lại RED, hoặc chỉ lưu expected code m�
 | `DL-DOC-001` | Docs/release impact is explicitly `none` or names exact owner/path/review gate; changed-path scan finds no implicit protected-root mutation |
 | `DL-PUB-001` | Only fresh Stage C real journey + live valid evidence can set completion |
 | `DL-PUB-002` | Reload/back-forward/reset/replay/accessibility paths preserve legal state/evidence authority |
-| `DL-REV-001` | Fresh independent implementation/security review binds exact 40-hex head and has zero unresolved Critical/High |
-| `DL-HUM-001` | Human approval record names exact independently reviewed 40-hex head |
+| `DL-REV-001` | Focused Standard-lane review binds delivery head and has zero unresolved Critical/Important |
+| `DL-TEST-001` | Fresh focused, dependency blast-radius and clean-checkout tests pass after review fixes on the delivery head |
+| `DL-MERGE-001` | PR/CI passes and post-merge smoke preserves the stage’s bounded claim and blocker fields |
 | `DL-SCOPE-001` | Changed-command/path scan finds no AWS/Terraform apply/resource or destructive repo action |
 
 ## Evidence bundle requirements
@@ -126,7 +127,7 @@ or learner raw SQL. Local hashes prove integrity only, not publisher authenticit
 | Runner/pipeline | Released #9 local runtime | Required for Stage B; no browser claim |
 | Iceberg/OpenMetadata real service | Verified local object store/catalog/service | Required before service-backed labs publish; unavailable may only be `not-run-optional` |
 | Portal real journey | Passing merged #10 renderer/API/browser path | Required for Stage C completion claim |
-| Human | Exact reviewed head | Required before merge |
+| Standard delivery | Focused review → fresh tests → PR/CI → merge/post-merge smoke | Required for each released stage; no duplicate per-stage audit lane |
 
 ## Final regression
 
@@ -135,5 +136,5 @@ make data-labs-e2e lake-fault-test metadata-reconcile-test data-contracts-check
 ```
 
 Append, do not guess, exact blast-radius commands from released #6/#8/#9/#10 amendment. Execute
-serially on 16GB. Required failure, protected drift, unverified optional-service claim or stale
-human approval blocks merge.
+serially on 16GB. Required failure, protected drift, unverified optional-service claim, unresolved
+Critical/Important finding, failed CI or failed post-merge smoke blocks handoff.

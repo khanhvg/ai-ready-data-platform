@@ -4,7 +4,7 @@ title: "Stage C Portal Publication and Real Journey"
 status: pending
 priority: P1
 dependencies: [1, 2, 3]
-externalDependencies: [issue-10-passing-merged-real-journey]
+externalDependencies: [issue-10-merged-runner-backed-stage-b]
 effort: "unresolved until exact Stage C amendment"
 ---
 
@@ -19,7 +19,9 @@ effort: "unresolved until exact Stage C amendment"
 
 ## Overview
 
-Sau passing merged Issue #10 real journey/renderer, publish Stage A/B labs through exact released
+Issue #10 static Stage A is merged at `041d4ca866e927a331e159fdf8216838b481a595`, nhưng Stage C
+vẫn blocked. Chỉ sau passing merged runner-backed Issue #10 Stage B mới publish Stage A/B labs
+through exact released
 content/API/renderer seams and run real learner journeys. Đây là stage duy nhất có thể claim
 complete learner experience; content/static/runner-only evidence không đủ.
 
@@ -72,8 +74,9 @@ solution visibility, reflection text or file presence.
 
 ## Implementation steps
 
-1. Amend exact passing merged #10 SHA, renderer/API/content extension points, accessibility/E2E
-   commands and blast radius; verify #8/#9 ancestry; independent revalidation + readiness.
+1. Amend exact passing merged runner-backed #10 Stage B SHA, renderer/API/content extension points,
+   accessibility/E2E commands and blast radius; verify #8/#9 ancestry; run one Standard-lane
+   combined dependency/readiness pass.
 2. Add publication REDs: contract-valid lab absent from released registry/renderer, privileged
    browser bypass attempt, and optional-service unavailable state incorrectly marked complete.
 3. Register lab content through the exact released extension path; no shared contract/API change
@@ -84,6 +87,8 @@ solution visibility, reflection text or file presence.
    crash, unavailable, tamper and replay states.
 7. Run released #10 accessibility/static/browser suite plus exact #6/#8/#9/#10 blast radius.
 8. Retain Stage C evidence and mark only fully verified journeys complete.
+9. Use one implementer/reviewer/tester/PR context with zero Critical/Important findings, fresh real
+   browser+runner tests, PR/CI, merge and post-merge journey smoke.
 
 ## Tests before
 
@@ -128,4 +133,4 @@ are mandatory.
 
 ## Next steps
 
-Phase 5 consolidates exact evidence, rollback, final verification and human exact-head handoff.
+Phase 5 consolidates exact evidence, rollback, focused review/test evidence and PR handoff.

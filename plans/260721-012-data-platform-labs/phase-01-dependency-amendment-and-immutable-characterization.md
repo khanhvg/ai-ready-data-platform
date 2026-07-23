@@ -1,11 +1,11 @@
 ---
 phase: 1
 title: "Dependency Amendment and Immutable Characterization"
-status: pending
+status: completed
 priority: P1
 dependencies: []
-externalDependencies: [issue-8-released-contracts, issue-9-released-runner, issue-10-passing-merged-real-journey]
-effort: "gate-only; re-run before each stage"
+externalDependencies: []
+effort: "Stage A gate complete; reopen only for B/C dependency handoff"
 ---
 
 # Phase 1: Dependency Amendment and Immutable Characterization
@@ -20,8 +20,9 @@ effort: "gate-only; re-run before each stage"
 
 ## Overview
 
-Gate không triển khai. Chốt current truth từ exact input, sau đó yêu cầu một amendment mới cho
-từng Stage A/B/C khi dependency thật được release. Plan/label/open branch không thay thế release.
+Gate không triển khai. Standard-lane amendment này đã pin released Issue #8 và exact Stage A
+path/command set. Future bounded amendment chỉ resolve Stage B hoặc C khi dependency tương ứng
+release; plan/label/open branch không thay thế release.
 
 ## Requirements
 
@@ -32,17 +33,20 @@ từng Stage A/B/C khi dependency thật được release. Plan/label/open branc
   authority riêng là `24be3b34c6b0fcdbd07c5800dcab349054e34713`.
 - Record current truth read-only: warnings, marts, lineage, publish/catalog gaps, curated set và
   fixture/contract hashes.
-- Stage amendment phải điền exact 40-hex dependency SHA, exact released paths/commands, tree/blob
-  hashes, compatibility, blast radius và lease.
+- Stage A pins Issue #8 merge `5644f01b4c0443a81f3af0bcce80f44c847cd986`; Issue #10 static
+  Stage A merge `041d4ca866e927a331e159fdf8216838b481a595` is reference-only.
+- Stage B/C amendment phải điền exact 40-hex dependency SHA, exact released paths/commands,
+  tree/blob hashes, compatibility, blast radius và lease khi áp dụng.
 - Stage amendment phải khai báo pristine-checkout setup/test behavior, observability mapping và
   docs/release impact (`none` hoặc exact owner/path/gate) từ authority đã release.
-- #8, #9, #10 resolution fields hiện tại giữ rỗng.
+- #9 runner và #10 runner-backed Stage B resolution fields giữ rỗng.
 
 ### Non-functional
 
 - Không chạy generator/dbt/publisher/catalog hoặc optional service trong planner phase.
 - Không sửa historical plans để “resolve” dependency metadata stale.
-- Không tự validate/audit plan này; independent identity bắt buộc.
+- Không lặp deep validation/red-team/readiness ceremony; Lane S dùng combined amendment này rồi
+  focused review, fresh tests, PR/CI và post-merge smoke.
 
 ## Architecture
 
@@ -76,11 +80,12 @@ tục blocked; không tạo adapter hay “equivalent” path trong lúc cook.
 1. At each future amendment, fetch live integration/dependency refs read-only and verify exact
    ancestry/release state.
 2. Compare protected Git objects and semantic Issue #6 reader projections.
-3. Fill only the amendment’s dependency stage row; keep later-stage rows empty.
+3. Fill only the amendment’s dependency stage row; Stage A is resolved and later-stage rows stay
+   empty.
 4. Record exact serialized lease for any shared contract/publisher/Airflow/OpenMetadata path.
 5. Map released schema/registry/API/renderer fields to stable requirements without renaming
    behavior IDs.
-6. Run independent plan revalidation and fresh readiness audit for that amended stage.
+6. Run one Standard-lane combined dependency/readiness amendment for the newly unblocked stage.
 7. Reproduce the amended gate from a pristine detached checkout with no hidden generated/runtime
    evidence; fail if released setup/test commands or required cache assumptions are incomplete.
 8. Produce an exact implementation-input SHA; only then may the stage enter cook.
@@ -97,12 +102,13 @@ checks after each amendment.
 
 ## Success criteria
 
-- [ ] Current planner output retains empty #8/#9/#10 resolution and implementation fields.
-- [ ] Immutable baseline facts, including exact six-view semantics, match Issue #6 without
-      mutation.
-- [ ] Every stage owns a separate exact-SHA amendment/revalidation/readiness chain.
-- [ ] Every amended stage defines pristine-checkout, observability and docs/release-impact gates.
-- [ ] No guessed schema, registry, API, renderer, command or implementation path appears.
+- [x] Stage A records exact #8 SHA, 10 paths and 12 commands; #9 and #10 Stage B fields remain
+      empty.
+- [x] Stage A-base protected objects/hashes match Issue #6; the sole expected inventory delta is
+      exact released #8 `learning/contracts/`, unchanged between #8 release and integration head.
+- [x] Every blocked future stage owns an exact dependency handoff and combined Lane S amendment.
+- [x] Every amended stage defines pristine-checkout, observability and docs/release-impact gates.
+- [x] No guessed schema, registry, API, renderer, command or implementation path appears.
 
 ## Risk assessment
 
@@ -111,7 +117,7 @@ checks after each amendment.
 | “Ready to cook/audit” label mistaken as release | Consume unstable contract | Require issue release handoff + exact ancestor SHA + artifact hashes |
 | Historical plan `pending` status mistaken as live dependency | Wrong cross-plan edits | GitHub release/merge evidence is authority; historical plan stays read-only |
 | Dependency release drifts protected semantics | Golden regression | Semantic reader + tree/hash checks; separately admitted lease or STOP |
-| Planner validates itself | Phase separation lost | New independent identity and exact input/output record |
+| Ceremony replaces evidence | Slow delivery without risk reduction | One Lane S context; retain functional S3/reset/evidence/cloud gates |
 
 ## Security considerations
 
@@ -120,5 +126,6 @@ workspace cleanup, product mutation or broad branch operation.
 
 ## Next steps
 
-When exact Issue #8 contracts are released, amend Stage A only and run independent revalidation
-plus readiness before Phase 2 cook.
+Cook Phase 2 only with `COOK_SCOPE=stage-a-only`. Reopen this gate for Stage B only after exact
+merged Issue #9 runner release plus bounded lease; Stage C waits for merged runner-backed Issue
+#10 Stage B.

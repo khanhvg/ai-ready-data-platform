@@ -1,7 +1,7 @@
 ---
 title: "I5-07 — Data-platform guided labs without golden semantic drift"
-description: "Kế hoạch TDD theo ba stage cho guided labs data-platform, khóa chặt Issue #6 và chỉ tích hợp khi #8, #9, #10 có release SHA chính xác."
-status: pending
+description: "Kế hoạch Standard-lane theo ba stage; Stage A contract-bound candidate đã đủ dependency, Stage B/C vẫn fail-closed."
+status: in-progress
 priority: P1
 issue: 12
 branch: "plan/issue-12-data-labs"
@@ -12,14 +12,42 @@ created: "2026-07-22"
 createdBy: "ck:plan"
 source: skill
 planningMode: "deep-tdd-planner-only"
+deliveryLane: "standard-lean"
+cookScope: "stage-a-only"
 plannerInputSha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
 initialValidationInputSha: "24ff21db72e0d08d34b62c3280e76ab6329665eb"
 goldenAuthoritySha: "24be3b34c6b0fcdbd07c5800dcab349054e34713"
-dependencyIssue8ReleaseSha: ""
+dependencyIssue8ReleaseSha: "5644f01b4c0443a81f3af0bcce80f44c847cd986"
 dependencyIssue9ReleaseSha: ""
-dependencyIssue10MergeSha: ""
-currentImplementationPaths: []
-currentImplementationCommands: []
+dependencyIssue10StageAMergeSha: "041d4ca866e927a331e159fdf8216838b481a595"
+dependencyIssue10StageBMergeSha: ""
+stageAImplementationBaseSha: "041d4ca866e927a331e159fdf8216838b481a595"
+stageAPathCount: 10
+stageACommandCount: 12
+currentImplementationPaths:
+  - "learning/labs/data-platform/deterministic-ingest/lab-v1.json"
+  - "learning/labs/data-platform/deterministic-ingest/content.vi.md"
+  - "learning/labs/data-platform/model-quality/lab-v1.json"
+  - "learning/labs/data-platform/model-quality/content.vi.md"
+  - "learning/labs/data-platform/weighted-metrics/lab-v1.json"
+  - "learning/labs/data-platform/weighted-metrics/content.vi.md"
+  - "learning/labs/data-platform/verify_stage_a.py"
+  - "learning/labs/data-platform/tests/test_stage_a.py"
+  - "learning/labs/data-platform/command-owner-activation.stage-a.json"
+  - "mk/issue-5/i5-07.mk"
+currentImplementationCommands:
+  - "python3 -m unittest discover -s learning/labs/data-platform/tests -p 'test_*.py'"
+  - "python3 learning/labs/data-platform/verify_stage_a.py check"
+  - "python3 learning/labs/data-platform/verify_stage_a.py self-test"
+  - "make -f mk/issue-5/i5-07.mk lake-contracts-check"
+  - "make lake-contracts-check"
+  - "make learning-contracts-check api-contracts-check evidence-contracts-check"
+  - "make lesson-check LESSON=promotion-trust"
+  - "make evidence-verify EVIDENCE=\"$EVIDENCE_LOCATOR\""
+  - "make data-contracts-check migration-contracts-check"
+  - "make help"
+  - "git diff --check"
+  - "fresh detached-worktree Stage A focused smoke (exact block in Phase 2)"
 ---
 
 # I5-07 — Data-platform guided labs without golden semantic drift
@@ -30,33 +58,43 @@ Lập kế hoạch Vietnamese-first từ foundation đến mid cho các lab data
 lỗi có kiểm soát, xác minh, evidence và reset; output cuối không được là docs dump. Kế hoạch bảo
 vệ tuyệt đối semantic golden của Issue #6 tại authority SHA
 `24be3b34c6b0fcdbd07c5800dcab349054e34713`. Initial validation bắt đầu từ plan-only child
-`24ff21db72e0d08d34b62c3280e76ab6329665eb`; không coi label/plan/branch mở của #8, #9 hoặc #10
-là release có thể tiêu thụ.
+`24ff21db72e0d08d34b62c3280e76ab6329665eb`; nó không coi label/plan/branch là release. Amendment
+hiện tại chỉ nâng authority bằng exact live merge handoffs ghi bên dưới.
 
-Đây là artifact **planner-only**. Không lab, verifier, pipeline seam, registry, API, renderer,
-Make target hay portal integration nào được triển khai hoặc xác nhận runnable trong phase này.
+Amendment Standard lean này chỉ cấp `COOK_SCOPE=stage-a-only` cho content/verifier candidate.
+Không product code được triển khai trong audit. Runner-backed Stage B và portal-executable Stage C
+vẫn bị chặn; không lab nào được xác nhận runnable hoặc complete.
 
 ## Phases
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 1 | [Dependency Amendment and Immutable Characterization](./phase-01-dependency-amendment-and-immutable-characterization.md) | Pending |
+| 1 | [Dependency Amendment and Immutable Characterization](./phase-01-dependency-amendment-and-immutable-characterization.md) | Completed for Stage A; reopen for B/C |
 | 2 | [Stage A Contract-Bound Foundation Labs](./phase-02-stage-a-contract-bound-foundation-labs.md) | Pending |
 | 3 | [Stage B Local Runner and Data Fault Exercises](./phase-03-stage-b-local-runner-and-data-fault-exercises.md) | Pending |
 | 4 | [Stage C Portal Publication and Real Journey](./phase-04-stage-c-portal-publication-and-real-journey.md) | Pending |
-| 5 | [Release Evidence Recovery and Human Handoff](./phase-05-release-evidence-recovery-and-human-handoff.md) | Pending |
+| 5 | [Release Evidence, Recovery, and PR Handoff](./phase-05-release-evidence-recovery-and-human-handoff.md) | Pending |
 
 ## Stage gates
 
 | Stage | Dependency bắt buộc | Phạm vi sớm nhất | Claim tối đa |
 |---|---|---|---|
-| A | Exact released Issue #8 learning contracts | Nội dung lab + ứng viên verifier không mutate; chỉ đọc fixture/reader Issue #6 | Contract-bound candidate; không runnable |
+| A | Issue #8 release `5644f01b4c0443a81f3af0bcce80f44c847cd986` | 10 exact paths trong register | Contract-bound candidate; không runnable |
 | B | Exact released Issue #9 runner + lease data-contract/pipeline riêng, hẹp, được ghi nhận | Local runner/pipeline exercises, fault/recovery seams | Local exercise evidence; không browser/portal completion |
-| C | Passing merged Issue #10 real journey/renderer | Publication, renderer/API integration và real-journey E2E | Stage duy nhất được claim complete learner experience |
+| C | Exact merged runner-backed Issue #10 Stage B | Publication, renderer/API integration và real-journey E2E | Stage duy nhất được claim complete learner experience |
 
-Mỗi stage cần amendment mới ghi exact SHA, dependency paths/commands, compatibility evidence,
-independent revalidation và readiness trước cook. Resolution fields hiện tại phải tiếp tục rỗng
-cho đến amendment đó; xem [dependency and authority register](./dependency-and-authority-register.md).
+Stage A dependency amendment này đã ghi exact SHA/path/command và sẵn sàng cook. Stage B chỉ được
+amend khi Issue #9 có exact merged runner release **và** bounded lease; Stage C chỉ được amend khi
+runner-backed Issue #10 Stage B đã merge. Không lặp per-stage red-team/security/human ceremony
+trong critical path; xem [dependency and authority register](./dependency-and-authority-register.md).
+
+## Standard lean delivery path
+
+Một delivery context duy nhất giữ vai trò implementer → focused reviewer → fresh tester → PR/CI →
+merge/post-merge smoke. Reviewer phải còn `0 Critical / 0 Important`; fresh tester chạy 12 command
+entries của Stage A trên exact head, gồm focused tests, released #6/#8 blast radius và detached
+clean-checkout smoke. S3 negatives, golden immutability, reset/evidence và cloud prohibition vẫn là
+functional acceptance, không phải một audit lane riêng. Audit hiện tại không tạo PR hoặc merge.
 
 ## Phạm vi học tập
 
@@ -78,15 +116,15 @@ verify, immutable evidence, reset, gated solution và reflection. Reflection/hin
 
 ## Ranh giới authority
 
-- Được ghi sau gate phù hợp: `learning/labs/data-platform/**`, data-lab verifiers theo path do
-  released contracts quy định, lease data-contract/pipeline đã serialize, và
-  `mk/issue-5/i5-07.mk`.
+- Stage A được ghi đúng 10 paths trong register: Issue #12-owned
+  `learning/labs/data-platform/**` và `mk/issue-5/i5-07.mk`.
 - Chỉ đọc: contracts/data/views/fixtures/readers Issue #6 và toàn bộ golden semantics; released
   completion/evidence authority của #8, private runner authority của #9 và renderer/API authority
   của #10. Không copy schema, tạo parallel registry, duplicate truth hoặc invented adapter.
 - Bảo vệ: root `Makefile`, `release-manifest.json`, `docs/code-standards.md`, shared contracts,
   architecture views, portal, runner và pipeline ngoài lease chính xác.
-- Không AWS/Terraform apply/destroy, cloud resource, destructive migration, PR hoặc merge.
+- Không AWS/Terraform apply/destroy, cloud resource hoặc destructive migration. PR/merge chỉ thuộc
+  Standard delivery context sau cook/review/fresh tests và không được thực hiện bởi audit này.
 
 ## TDD và release contract
 
@@ -98,7 +136,7 @@ verify, immutable evidence, reset, gated solution và reflection. Reflection/hin
   [test and evidence strategy](./test-and-evidence-strategy.md).
 - Additive migration, reader cũ, atomic rollback và cleanup chỉ run-owned bytes là bắt buộc; xem
   [data architecture and recovery](./data-architecture-and-recovery.md).
-- Mỗi stage chỉ được handoff sau khi exact tested head chạy từ pristine detached checkout không có
+- Mỗi delivery stage chỉ được handoff sau khi exact tested head chạy từ pristine detached checkout không có
   generated/runtime artifact ẩn; observability phải bind run/operation/fault/resource/result vào
   evidence đã redact; docs/release impact phải ghi `none` hoặc exact owner/path/gate, không tự sửa
   protected `release-manifest.json` hay `docs/code-standards.md`.
@@ -118,13 +156,14 @@ không được dùng để claim lab service-backed đã pass.
 ## Acceptance
 
 - [ ] Trace requirements/risk/threat/data architecture/test/evidence/recovery không có lỗ hổng.
-- [ ] Ba dependency SHA, current implementation paths và current implementation commands vẫn rỗng
-      trong planner output.
-- [ ] Stage A/B/C có STOP, independent revalidation và readiness gate riêng.
+- [x] Issue #8 release, Issue #10 static Stage A merge, 10 Stage A paths và 12 Stage A commands đã
+      resolve; Issue #9 và Issue #10 runner-backed Stage B fields vẫn rỗng.
+- [x] Stage A có exact cook scope; Stage B/C có exact dependency STOP riêng.
 - [ ] Stable test IDs bao phủ ingest/model/quality, orchestration, metrics, 11-asset atomicity,
       Iceberg, OpenMetadata, evidence, exact six-view oracle và protected semantics.
 - [ ] Pristine-checkout, observability và docs/release-impact gates có stable IDs và evidence.
-- [ ] Human exact-head pre-merge approval bắt buộc; approval của SHA khác không chuyển tiếp.
+- [ ] Standard focused review có `Critical=0`, `Important=0`; fresh tests, PR/CI và post-merge
+      smoke pass trên đúng delivery head.
 
 ## Companion artifacts
 
@@ -197,5 +236,35 @@ outputs remain unresolved gates rather than questions to guess.
 - Bounded plan fixes: added explicit pristine-checkout, observability and docs/release-impact
   trace/gates without resolving any dependency-derived field.
 - Report: [Fresh readiness audit](./audit/readiness-audit-report.md).
-- Next legal phase: wait for exact dependency releases/lease, then amend only the eligible stage
-  and run fresh independent revalidation plus readiness audit.
+- Historical next phase at that audit output was to wait for releases and repeat the old
+  revalidation/readiness chain. The Lane S amendment below supersedes that active workflow.
+
+### Standard-lane dependency amendment — 2026-07-23
+
+- Audit input: `b697aa1f0791ed659dfc5ae748700ce8eae0cbd0`.
+- Live integration head: `041d4ca866e927a331e159fdf8216838b481a595`.
+- Issue #8 released by PR #28 at `5644f01b4c0443a81f3af0bcce80f44c847cd986`.
+- Issue #10 static portal Stage A merged by PR #31 at
+  `041d4ca866e927a331e159fdf8216838b481a595`; its post-merge browser smoke passed, but this does
+  not satisfy the runner-backed Stage C dependency.
+- Stage A implementation must branch from that exact integration head (or a fresh later descendant
+  after rechecking dependency ancestry), not cook product files on this stale plan-only branch.
+- Issue #9 remains open/unreleased; its SHA field is intentionally empty.
+- Stage A disposition: `ready`, `COOK_SCOPE=stage-a-only`, 10 exact paths, 12 exact commands.
+- Stage B disposition: `blocked-on-issue9` plus bounded lease.
+- Stage C disposition: `blocked-on-issue10-stage-b`.
+- Active workflow is Standard lean. Historical deep validation/readiness records above remain
+  immutable provenance, not repeated per-stage ceremony.
+
+### Standard-lane validation and consistency sweep
+
+- Strict plan validation: pass, 5 phases, 0 errors, 0 warnings.
+- Plan status: `in-progress`, Phase 1 complete, Stage A pending/ready, Stage B/C pending/blocked.
+- Frontmatter contract: Issue #8/#10 Stage A SHAs exact; Issue #9/#10 Stage B fields empty;
+  Stage A paths `10`, command entries `12`.
+- Scope: 11 modified files, all Markdown under this plan directory; product paths unchanged.
+- Local links: 47 checked across 14 plan Markdown artifacts, 0 broken.
+- Files reread: `plan.md` and all five phase files; changed companion register, requirements,
+  test strategy, risk model and protected baseline reconciled.
+- Active-plan findings: `Critical=0`, `Important=0`; unresolved contradictions: 0.
+- No new deep/high-assurance, red-team, security-only or human-approval audit was started.

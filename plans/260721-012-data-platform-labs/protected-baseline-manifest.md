@@ -2,17 +2,19 @@
 
 ## Mục đích
 
-Chốt read-only Git objects tại planner input. Git object IDs dùng để phát hiện byte/tree drift;
-semantic assertions vẫn lấy từ Issue #6 readers/contracts, không chỉ từ hash.
+Chốt read-only Git objects tại Stage A implementation base
+`041d4ca866e927a331e159fdf8216838b481a595`. Git object IDs dùng để phát hiện byte/tree drift;
+semantic assertions vẫn lấy từ Issue #6 readers/contracts, không chỉ từ hash. So với planner input,
+chỉ `learning/contracts/` đổi bởi released Issue #8; các protected objects còn lại giữ nguyên.
 
 ## Input object inventory
 
-| Protected target | Git object at `24be3b34c6b0fcdbd07c5800dcab349054e34713` | Disposition |
+| Protected target | Git object at `041d4ca866e927a331e159fdf8216838b481a595` | Disposition |
 |---|---|---|
 | `Makefile` | `e1a4332a9645ccbd37bec4be1f70372241e16b7b` | Deny write |
 | `release-manifest.json` | `b27d231c5ee6d48fd7932b06807ef6a9a2220e21` | Deny write |
 | `docs/code-standards.md` | `ABSENT` | Preserve absence |
-| `learning/contracts/` | `07371ff254c0d531dc470ff77a09f647199c053b` | Deny write until exact contract lease |
+| `learning/contracts/` | `042d88ccf9cafe2c7f746e725f1cd34a158f14f2` | Exact Issue #8 release tree; Issue #12 read-only |
 | `contracts/data/` | `ed56fef97ce114250b37a68e092bc1b26d708921` | Issue #6 read-only until exact serialized lease |
 | `tests/fixtures/learning/promotion-trust/` | `7b2389765373f09971784f6b3f0b6569dc16d08f` | Read-only immutable fixtures |
 | `architecture/` | `cd020fce1d525dd6fe414d5db28748911b7cf300` | Deny write |
@@ -22,6 +24,12 @@ semantic assertions vẫn lấy từ Issue #6 readers/contracts, không chỉ t�
 | `lake/publish_iceberg.py` | `f929090963f94e0847231558271d176f3c8b714c` | Write only under later admitted seam |
 | `governance/openmetadata/` | `47583e22c4702f0de0608482c60649e99cc7e6d4` | Write only under later admitted seam |
 | `orchestration/airflow/` | `1cff31770c4d98b7591b1d077064194b7b902675` | Runner/pipeline protected until Stage B lease |
+
+The `learning/contracts/` object is identical at Issue #8 release
+`5644f01b4c0443a81f3af0bcce80f44c847cd986` and integration head
+`041d4ca866e927a331e159fdf8216838b481a595`. Diffing the original planner input to the Stage A base
+shows only the expected Issue #8 additions inside this protected inventory; no other object above
+drifted.
 
 ## Critical file SHA-256
 
@@ -58,7 +66,7 @@ semantic assertions vẫn lấy từ Issue #6 readers/contracts, không chỉ t�
 
 ## Recheck rule
 
-Before each stage and immediately before exact-head approval:
+Before each stage and immediately before focused review/fresh tests and PR handoff:
 
 1. Resolve every protected target from the amended input SHA.
 2. Compare Git objects and critical SHA-256 values.

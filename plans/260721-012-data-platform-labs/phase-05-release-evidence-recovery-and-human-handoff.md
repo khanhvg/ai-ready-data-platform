@@ -1,6 +1,6 @@
 ---
 phase: 5
-title: "Release Evidence Recovery and Human Handoff"
+title: "Release Evidence, Recovery, and PR Handoff"
 status: pending
 priority: P1
 dependencies: [2, 3, 4]
@@ -8,7 +8,7 @@ externalDependencies: [issue-8-released-contracts, issue-9-released-runner-and-d
 effort: "unresolved until all stage amendments pass"
 ---
 
-# Phase 5: Release Evidence Recovery and Human Handoff
+# Phase 5: Release Evidence, Recovery, and PR Handoff
 
 ## Context links
 
@@ -21,9 +21,9 @@ effort: "unresolved until all stage amendments pass"
 
 ## Overview
 
-Consolidate deterministic evidence, rollback/cleanup proof, dependency blast radius and exact-head
-human gate. Phase này không nới dependency authority và không biến optional unavailable evidence
-thành pass.
+Consolidate deterministic evidence, rollback/cleanup proof, dependency blast radius and Standard
+review/test/PR handoff. Phase này không nới dependency authority và không biến optional unavailable
+evidence thành pass.
 
 ## Requirements
 
@@ -48,7 +48,8 @@ thành pass.
 - Serial 16GB profile. Core no Docker/cloud requirement; heavy optional profiles one at a time.
 - Required missing dependency/tool/test fails. Optional absence may be `not-run-optional` only and
   cannot support a service-backed pass/completion claim.
-- Human approval must name exact independently reviewed head; any later change invalidates it.
+- Focused review and fresh tests bind the delivery head; any later change reruns affected review
+  and tests before merge.
 
 ## Architecture
 
@@ -67,8 +68,8 @@ state.
 
 ## Implementation steps
 
-1. Confirm Stage A/B/C amendments, independent validations and readiness outputs are exact
-   ancestors; confirm active leases and no concurrent writer.
+1. Confirm the relevant Standard-lane dependency amendment is an exact ancestor; confirm active
+   leases and no concurrent writer.
 2. Run two serial deterministic core journeys in disjoint private run roots; compare semantic
    evidence and protected trees.
 3. Run real service-backed fault/recovery suites in the admitted local topology; record explicit
@@ -81,10 +82,11 @@ state.
    action, and clean run-owned cleanup.
 8. Run the exact required gates from a pristine detached checkout, verify observability closure,
    and complete the docs/release-impact disposition (`DL-CLEAN-001`, `DL-OBS-001`, `DL-DOC-001`).
-9. Obtain fresh independent implementation/security review (`DL-REV-001`) bound to the exact
-   reviewed 40-hex head with zero unresolved Critical/High.
-10. Obtain human approval naming exact reviewed head; recheck remote head/mergeability/tests
-   immediately before merge in the later authorized phase.
+9. Run focused code review (`DL-REV-001`) in the same delivery context; require zero unresolved
+   Critical/Important findings.
+10. Run fresh focused and blast-radius tests (`DL-TEST-001`) on the reviewed head, open/update the
+   PR, require CI, merge only through the authorized workflow, then run post-merge smoke
+   (`DL-MERGE-001`).
 
 ## Final verify contract
 
@@ -123,7 +125,8 @@ contracts and exact leases; preserve N-1 readers/adapters until compatibility pr
 - [ ] Evidence hash/index detects tamper/replay and contains no secrets/PII/private paths.
 - [ ] Pristine-checkout reproduction, redacted observability closure and explicit docs/release
       impact disposition pass.
-- [ ] Human exact-head pre-merge approval is recorded after independent review.
+- [ ] Focused review has zero Critical/Important findings; fresh tests, PR/CI and post-merge smoke
+      are recorded.
 
 ## Risk assessment
 
@@ -134,7 +137,7 @@ contracts and exact leases; preserve N-1 readers/adapters until compatibility pr
 | Rollback deletes foreign state | Data loss | Exact run ownership; refusal on mismatch |
 | Local artifacts make the gate pass only in the author workspace | Non-reproducible release | Pristine detached checkout with exact released setup/test authority |
 | Missing telemetry or implicit docs/release ownership hides failure | Unreviewable handoff or protected-path drift | Redacted observability projection plus explicit `none`/exact owner disposition |
-| Approval applied to changed head | Unreviewed merge | Exact 40-hex approval + immediate head equality check |
+| Head changes after review/test | Stale evidence | Rerun affected review/tests before merge |
 | Final command omits dependency regressions | Blast-radius escape | Append released exact commands from all four dependencies |
 
 ## Security considerations
@@ -145,5 +148,6 @@ repository operation, PR or merge is implied by this plan.
 
 ## Next steps
 
-After implementation review and exact-head human approval, use the separately authorized GitHub
-merge workflow. Planner output itself ends at independent plan validation, not cook.
+Use the Standard delivery context for focused review, fresh tests, PR/CI, authorized merge and
+post-merge smoke. This amendment authorizes only Stage A cook, not the audit itself to open or
+merge a product PR.

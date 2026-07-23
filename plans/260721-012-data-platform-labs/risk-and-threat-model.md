@@ -53,7 +53,8 @@ privileged execution boundary.
 4. Optional services may be absent only with explicit `not-run-optional`; a real-service pass is
    still needed before that service-backed lab is published as verified.
 5. Credential/private-path/PII and protected-path scans pass on exact reviewed head.
-6. Zero unresolved Critical/High findings and exact-head human approval before merge.
+6. Standard focused review has zero unresolved Critical/Important findings; fresh tests, PR/CI and
+   post-merge smoke pass without a separate red-team/security/human ceremony lane.
 
 ## Explicit exclusions
 

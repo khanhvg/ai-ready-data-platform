@@ -4,7 +4,7 @@ title: "Stage B Local Runner and Data Fault Exercises"
 status: pending
 priority: P1
 dependencies: [1, 2]
-externalDependencies: [issue-9-released-runner, serialized-data-contract-and-pipeline-lease]
+externalDependencies: [issue-9-merged-runner-release, bounded-serialized-data-contract-and-pipeline-lease]
 effort: "unresolved until exact Stage B amendment"
 ---
 
@@ -20,7 +20,8 @@ effort: "unresolved until exact Stage B amendment"
 
 ## Overview
 
-Sau exact released Issue #9 runner và exact serialized lease, nối lab candidates vào local runner
+Blocked until exact merged/released Issue #9 runner và exact bounded serialized lease. Sau handoff
+đó, nối lab candidates vào local runner
 và xây các exercises thật cho orchestration, atomic 11-asset release, Iceberg và OpenMetadata.
 Stage B không sửa portal/renderer và không claim browser/complete learner experience.
 
@@ -80,8 +81,9 @@ evidence index.
 
 ## Implementation steps
 
-1. Amend exact #9 release SHA, registry/workspace/evidence paths/commands and blast radius; attach
-   exact serialized shared-contract/data/pipeline lease; independent revalidation + readiness.
+1. Amend exact merged #9 release SHA, registry/workspace/evidence paths/commands and blast radius;
+   attach exact bounded lease with owner, paths, input SHA, start/expiry and non-overlap; run one
+   Standard-lane combined dependency/readiness pass.
 2. Characterize real runner/Airflow/service behavior before change and record version/topology.
 3. Add `DL-ORCH-*` behavior-specific REDs using real run-scoped operations and failure boundaries;
    then implement minimum released extension-point bindings.
@@ -92,7 +94,8 @@ evidence index.
 6. Add exact OpenMetadata collision/reconcile/rollback RED/GREEN in a run-owned namespace; foreign
    sentinels must survive.
 7. Bind verifier/evidence/reset without portal. Add Make fragment only for released command IDs.
-8. Run stage suite, final four-command contract subset available at this stage, exact #6/#8/#9
+8. Use one implementer/reviewer/tester/PR context with zero Critical/Important findings and fresh
+   tests; run stage suite, final four-command contract subset available at this stage, exact #6/#8/#9
    blast radius, protected hashes, cleanup and rollback rehearsal.
 
 ## Tests before
@@ -141,5 +144,5 @@ resource/process limits. Cleanup refusal is safer than deleting unknown state.
 
 ## Next steps
 
-Stage C remains blocked until Issue #10 real journey/renderer is passing, merged and amended by
-exact SHA.
+Stage C remains blocked until the runner-backed Issue #10 Stage B journey/renderer is passing,
+merged and amended by exact SHA. The merged static Stage A SHA does not satisfy this gate.

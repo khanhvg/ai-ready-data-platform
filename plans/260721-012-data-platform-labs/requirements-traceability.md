@@ -20,9 +20,9 @@
 
 | ID | Requirement | Stage/phase | Stable verification IDs | Evidence | Recovery / STOP |
 |---|---|---|---|---|---|
-| REQ-DEP-01 | Không cook trước exact released #8 contracts | A / P1-P2 | `DL-DEP-008` | SHA, tree hashes, released path/command matrix | Để resolution rỗng; STOP |
+| REQ-DEP-01 | Stage A chỉ cook từ exact #8 release `5644f01b4c0443a81f3af0bcce80f44c847cd986` | A / P1-P2 | `DL-DEP-008` | SHA/tree, 10 consumed paths, 12 command entries | STOP on mismatch |
 | REQ-DEP-02 | Không chạy runner/pipeline trước exact released #9 + exact serialized lease | B / P1-P3 | `DL-DEP-009`, `DL-LEASE-001` | Runner release + lease owner/path/expiry | Không mutate; STOP |
-| REQ-DEP-03 | Không portal/publication trước passing merged #10 | C / P1-P4 | `DL-DEP-010` | Merge ancestry + released renderer/API/blast radius | Không claim completion; STOP |
+| REQ-DEP-03 | Không portal-executable publication trước merged runner-backed #10 Stage B; static Stage A merge không đủ | C / P1-P4 | `DL-DEP-010` | Stage B merge ancestry + released renderer/API/real E2E | Không claim completion; STOP |
 | REQ-LAB-01 | Vietnamese-first foundation→mid; prerequisite/starter/task/failure/hints/verify/evidence/reset/solution/reflection | A-C / P2-P4 | `DL-LAB-001` | Contract-valid content projection | Unpublish invalid lab version |
 | REQ-LAB-02 | Hint, solution, reflection, time/scroll không thể set completion | C / P4 | `DL-LAB-002`, `DL-EVD-003` | Real-journey state transitions | Restore prior content; no completion |
 | REQ-DATA-01 | Ingest `small`/42 giữ exact source/model/test/grain truth | A / P2 | `DL-ING-001`, `DL-MOD-001`, `DL-DQ-001` | Issue #6 reader output + lab evidence | Reset workspace; STOP on drift |
@@ -61,8 +61,9 @@
 | NFR-CLEAN-01 | Exact tested head phải reproduce từ pristine detached checkout không có generated/runtime evidence ẩn | P1/P5 | `DL-CLEAN-001` | Clean status, absent pre-existing artifacts, exact released setup/test commands and final hashes | STOP; bổ sung dependency amendment thay vì dùng local-state fallback |
 | NFR-OBS-01 | Run/operation/fault/resource/remediation/result có redacted observable correlation và bind evidence index | P3-P5 | `DL-OBS-001` | Ordered state/resource projection + artifact hashes; credential/private-path scan | Không claim diagnosable/pass khi projection thiếu hoặc leak |
 | NFR-DOC-01 | Docs/release impact phải là `none` hoặc exact owner/path/review gate; protected root files không implicit write | P1/P5 | `DL-DOC-001` | Impact matrix + changed-path/owner/lease evidence | STOP unowned docs/release change; handoff owner separately |
-| NFR-REV-01 | Fresh independent implementation/security review tại exact head, zero unresolved Critical/High | P5 | `DL-REV-001` | Exact-head review artifact and findings | Head drift/finding ⇒ review invalid; STOP |
-| NFR-HUM-01 | Human approval gắn exact reviewed head trước merge | P5 | `DL-HUM-001` | GitHub exact-head approval record | Head changed ⇒ approval invalid |
+| NFR-REV-01 | Focused Standard-lane review, zero unresolved Critical/Important | P2-P5 | `DL-REV-001` | Review findings bound to delivery head | Finding/head drift ⇒ fix and rerun affected gate |
+| NFR-TEST-01 | Fresh focused tests + exact dependency blast radius run after review fixes | P2-P5 | `DL-TEST-001` | Commands/results/tested head | Failure or stale head ⇒ no PR merge |
+| NFR-MERGE-01 | PR/CI passes and post-merge smoke proves the released stage disposition | P2-P5 | `DL-MERGE-001` | PR, CI and post-merge smoke record | Block/rollback stage handoff |
 | NFR-NOCLOUD-01 | Không AWS/Terraform apply/resources/destructive repo action | All | `DL-SCOPE-001` | Command/diff/evidence scan | Immediate STOP |
 
 ## Failure-to-pattern admission map
