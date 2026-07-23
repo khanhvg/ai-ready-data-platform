@@ -107,14 +107,14 @@
     {
       "path": "app/src/lab_runner/release.py",
       "mode": "0644",
-      "size": 11039,
-      "sha256": "ff58b281413bc25607bc4e51c8d3b41200cb2d400c6948d59abd422cb340aabd"
+      "size": 15388,
+      "sha256": "3f5d54f4a81c89671dfd8298cf1ddbd85c80e0ce01851e7739df8fb84f5cf45e"
     },
     {
       "path": "app/src/lab_runner/service.py",
       "mode": "0644",
-      "size": 6414,
-      "sha256": "dc3631c4759abd2f7f037cfcb1c01770cf50a2bcdf7680bf354d72e1f1907e42"
+      "size": 6855,
+      "sha256": "3e7ca742cf5455db1b8d1d00f68a05d8f13b04154fe0ce4c5457501c9083f753"
     },
     {
       "path": "app/src/lab_runner/state.py",
