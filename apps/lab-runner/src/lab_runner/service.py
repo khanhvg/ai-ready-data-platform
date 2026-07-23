@@ -54,7 +54,7 @@ class RunnerService:
                 if request["operationId"]=="retail.export":
                     validation_root=self.root/"release-validation";validation_root.mkdir(mode=0o700,exist_ok=True);os.chmod(validation_root,0o700)
                     with tempfile.TemporaryDirectory(prefix=f"{admission.run_id}-",dir=validation_root) as temporary:
-                        extracted=pathlib.Path(temporary);extract_tar(outcome.output_archive,extracted);release_assets=validate_release(extracted)
+                        extracted=pathlib.Path(temporary)/"workspace";extract_tar(outcome.output_archive,extracted);release_assets=validate_release(extracted)
                 self.workspace.stage(outcome.output_archive,revision)
                 result={"schemaVersion":"runner-operation-result-v1","runId":admission.run_id,"operationId":request["operationId"],"workspaceRevision":revision,"status":"pass","result":outcome.protocol["result"],"containerIdSha256":__import__("hashlib").sha256(outcome.container_id.encode()).hexdigest()}
                 if release_assets is not None:result["releaseAssets"]=release_assets

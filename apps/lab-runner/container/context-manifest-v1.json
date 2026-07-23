@@ -113,8 +113,8 @@
     {
       "path": "app/src/lab_runner/service.py",
       "mode": "0644",
-      "size": 5090,
-      "sha256": "2ab18390d5416e6ad12fa3d36f9e23eb762d35b1e10e109daf71031248fcad51"
+      "size": 5102,
+      "sha256": "267a548d806a91aa2502be543e53f27d831ef68ef60272d017c4a118b1aaaa74"
     },
     {
       "path": "app/src/lab_runner/state.py",
