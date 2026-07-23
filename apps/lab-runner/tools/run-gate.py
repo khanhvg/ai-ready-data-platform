@@ -705,7 +705,7 @@ class Gate:
             build_lock=json.loads((APP/"config/container-build-lock-v1.json").read_text());release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
             path=ROOT/".artifacts/build/issue-9/vulnerability-grype-current.json"
             if not path.is_file():raise AssertionError("vulnerability evidence missing")
-            value=json.loads(path.read_text());findings=sorted({row["vulnerability"]["id"] for row in value["matches"] if row["vulnerability"]["severity"] in ("Medium","High","Critical")})
+            value=json.loads(path.read_text());findings=sorted({row["vulnerability"]["id"] for row in value["matches"] if row["vulnerability"]["severity"] in ("Medium","High","Critical")});critical_high=sorted({row["vulnerability"]["id"] for row in value["matches"] if row["vulnerability"]["severity"] in ("High","Critical")});medium=sorted({row["vulnerability"]["id"] for row in value["matches"] if row["vulnerability"]["severity"]=="Medium"})
             vex_path=ROOT/".artifacts/build/issue-9/openvex-current.json";vex=json.loads(vex_path.read_text())
             statements={row["vulnerability"]["name"]:row for row in vex["statements"]}
             product=f"pkg:oci/ai-ready-lab-runner@{self.image}"
@@ -716,7 +716,8 @@ class Gate:
             if observed!=expected or release["sbom"]["sha256"]!=observed["sbomSha256"] or release["vulnerability"]["scanSha256"]!=observed["vulnerabilityScanSha256"] or release["vulnerability"]["openVexSha256"]!=observed["openVexSha256"]:raise AssertionError("supply evidence lock mismatch")
             sbom=json.loads(sbom_path.read_text());packages=sbom.get("packages",[])
             if sbom.get("spdxVersion")!="SPDX-2.3" or len(packages)!=release["sbom"]["packages"]:raise AssertionError("SBOM closure")
-            return {"scannerCriticalHigh":len(findings),"vexNotAffected":len(findings),"unresolved":0,"packages":len(packages),**observed}
+            if len(critical_high)!=release["vulnerability"]["scannerCriticalHigh"] or len(medium)!=release["vulnerability"]["scannerMedium"] or len(findings)!=release["vulnerability"]["openVexNotAffected"]:raise AssertionError("vulnerability count closure")
+            return {"scannerCriticalHigh":len(critical_high),"scannerMedium":len(medium),"vexNotAffected":len(findings),"unresolvedCriticalHighMedium":0,"packages":len(packages),**observed}
 
         def provenance() -> object:
             context=ROOT/".artifacts/build/issue-9/runner-context.tar";provenance_path=ROOT/".artifacts/build/issue-9/provenance-current.json"
