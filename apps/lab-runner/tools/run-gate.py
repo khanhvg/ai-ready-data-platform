@@ -101,6 +101,7 @@ class Gate:
         release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
         if release.get("imageDigest")!=self.image:raise RuntimeError("RUNNER_IMAGE_RELEASE_MISMATCH")
         self.rows: dict[str, dict[str, object]] = {}
+        self.rollback_observation:dict[str,object]={}
         evidence_root = APP / ".local-state/evidence/gates"
         evidence_root.mkdir(mode=0o700, parents=True, exist_ok=True)
         os.chmod(evidence_root, 0o700)
@@ -460,6 +461,7 @@ class Gate:
         release_pointer=json.loads((runtime/"releases/current.json").read_text());release_record=json.loads((runtime/"releases/generations"/f"{export['workspaceRevision']:020d}.json").read_text())
         if release_pointer["schemaVersion"]!="curated-release-current-pointer-v1" or release_pointer["currentReleaseId"]!=export["releaseManifest"]["releaseId"] or release_pointer["manifestSha256"]!=export["releaseManifest"]["manifestSha256"] or release_record["runId"]!=export["runId"] or release_record["fence"]!=export["fence"] or release_record["workspaceRevision"]!=export["workspaceRevision"]:raise AssertionError("release pointer binding")
         self.operations=results
+        self.operation_service=service
 
         self.record("RED-OPS-001", lambda: {"operations": [row["operationId"] for row in results], "imageDigest": self.image})
         self.record("RED-OPS-002", lambda: {"models": dbt_run["result"]["models"], "assets": len(export["result"]["assets"]), "decision": next(row for row in results if row["operationId"]=="promotion.verify")["result"]["decision"]})
@@ -476,7 +478,7 @@ class Gate:
         self.record("RED-REC-001", lambda: self._recover_admitted())
         self.record("RED-REC-002", lambda: self._stale_identity())
         self.record("RED-REC-003", self._durable_replay)
-        self.record("RED-ROL-001", lambda: {"exactOwnedCleanup": self._no_runner_containers(), "foreignUnchanged": self._foreign_unchanged()})
+        self.record("RED-ROL-001", self._rollback_rehearsal)
 
     def _idempotency_conflict(self, service: RunnerService, first: dict[str, object]) -> object:
         value={"operationId":"retail.generate","idempotencyKey":"gate-operation-01-exact","workspaceRevision":service.current_revision()}
@@ -485,13 +487,16 @@ class Gate:
 
     def _release_invalid(self) -> object:
         root=self.root/"invalid-release";export=root/"serving/export";export.mkdir(parents=True)
-        valid_probe=b"PAR1x"+(1).to_bytes(4,"little")+b"PAR1"
-        for asset in ASSETS:
-            path=export/f"{asset}.parquet";path.write_bytes(valid_probe);os.chmod(path,0o600)
-        accepted=validate_release(root)
+        expected={}
+        for index,asset in enumerate(ASSETS,1):
+            footer=bytes([index]);valid_probe=b"PAR1"+footer+len(footer).to_bytes(4,"little")+b"PAR1";path=export/f"{asset}.parquet";path.write_bytes(valid_probe);os.chmod(path,0o600);expected[asset]=hashlib.sha256(valid_probe).hexdigest()
+        accepted=validate_release(root,expected)
+        first=export/f"{ASSETS[0]}.parquet";second=export/f"{ASSETS[1]}.parquet";first_raw=first.read_bytes();second_raw=second.read_bytes();first.write_bytes(second_raw);second.write_bytes(first_raw)
+        expect_error(RuntimeError,"RUNNER_RELEASE_ASSET_INVALID",lambda:validate_release(root,expected))
+        first.write_bytes(first_raw);second.write_bytes(second_raw)
         (export/f"{ASSETS[-1]}.parquet").unlink()
-        expect_error(RuntimeError,"RUNNER_RELEASE_ASSET_SET_INVALID",lambda:validate_release(root))
-        return {"missingRejected":True,"validHashes":[row["sha256"] for row in accepted],"assetCount":len(accepted)}
+        expect_error(RuntimeError,"RUNNER_RELEASE_ASSET_SET_INVALID",lambda:validate_release(root,expected))
+        return {"missingRejected":True,"swappedAssetsRejected":True,"validHashes":[row["sha256"] for row in accepted],"assetCount":len(accepted)}
 
     def _released_reader_and_replay(self) -> object:
         runtime=self.root/"operations";pointer_path=runtime/"releases/current.json";pointer=json.loads(pointer_path.read_text())
@@ -504,9 +509,21 @@ class Gate:
         for row in assets:row["releaseId"]=new_release;row["stagedLocator"]=f"curated/releases/{new_release}/{row['assetId']}"
         document={"schemaVersion":"curated-release-manifest-v1",**{key:assets[0][key] for key in ("releaseId","dataRunId","testedTreeSha","lockSha256","contractSetId","engineSnapshotId")},"profile":"small","seed":42,"assets":assets}
         new["workspaceRevision"]=new_revision;new["fence"]=int(old["fence"])+100;new["runId"]="f"*32;new["releaseManifest"]={"releaseId":new_release,"manifestSha256":hashlib.sha256(manifest_bytes(document)).hexdigest(),"contractSchemaSha256":old["releaseManifest"]["contractSchemaSha256"],"assets":assets}
-        root=self.root/"release-replay";publish_release(root,old);publish_release(root,new);publish_release(root,old);observed=json.loads((root/"current.json").read_text())
+        root=self.operation_service.releases;publish_release(root,new);publish_release(root,old);observed=json.loads((root/"current.json").read_text())
         if observed["currentReleaseId"]!=new_release or observed.get("previousReleaseId")!=old["releaseManifest"]["releaseId"]:raise AssertionError("stale replay rewound release")
-        return {"releasedManifest":True,"releasedPointer":True,"staleReplayIgnored":True,"currentReleaseId":observed["currentReleaseId"]}
+        restored=self.operation_service.rollback(new_release);replayed=self.operation_service.rollback(new_release)
+        if restored!=replayed or restored["currentReleaseId"]!=old["releaseManifest"]["releaseId"] or restored.get("previousReleaseId")!=new_release:raise AssertionError("release rollback")
+        manifests={}
+        for path in (root/"manifests").glob("*.json"):
+            value=json.loads(path.read_text());reader.validate_manifest(value);manifests[str(value["releaseId"])]=value
+        reader.validate_pointer(restored,manifests)
+        self.rollback_observation={"rollbackAttempts":2,"restoredReleaseId":restored["currentReleaseId"],"idempotent":restored==replayed,"releasedReader":True}
+        return {"releasedManifest":True,"releasedPointer":True,"staleReplayIgnored":True,"currentReleaseId":observed["currentReleaseId"],**self.rollback_observation}
+
+    def _rollback_rehearsal(self)->object:
+        if self.rollback_observation.get("rollbackAttempts")!=2 or not self.rollback_observation.get("idempotent"):raise AssertionError("rollback rehearsal absent")
+        if not self._no_runner_containers() or not self._foreign_unchanged():raise AssertionError("rollback cleanup drift")
+        return {**self.rollback_observation,"exactOwnedCleanup":True,"foreignUnchanged":True}
 
     def _bounded_protocol_archive(self)->object:
         protocol=self.root/"oversize-protocol.json";protocol.write_bytes(b"{"+b"x"*65536+b"}")
@@ -768,7 +785,7 @@ class Gate:
         self.record("S3-EVD-001",evidence)
         self.record("S3-OPS-001",lambda:{"operations":len(self.operations),"dbtTracker":self.dbt_tracker} if len(self.operations)==8 and self.dbt_tracker else (_ for _ in ()).throw(AssertionError("operations")))
         self.record("S3-RES-001",lambda:self._resource_aggregate())
-        self.record("S3-RAC-001",lambda:{"audit":self._audit_immutable(self.root/"operations"),"durableReplay":self._durable_replay(),"cas":self._lock_serialization(),"foreignUnchanged":self._foreign_unchanged()} if self._foreign_unchanged() else (_ for _ in ()).throw(AssertionError("foreign drift")))
+        self.record("S3-RAC-001",lambda:{"audit":self._audit_immutable(self.root/"operations"),"durableReplay":self._durable_replay(),"cas":self._lock_serialization(),"rollback":self.rollback_observation,"foreignUnchanged":self._foreign_unchanged()} if self._foreign_unchanged() and self.rollback_observation.get("idempotent") else (_ for _ in ()).throw(AssertionError("foreign or rollback drift")))
         self.record("S3-CLOUD-001",self._cloud_absence)
 
     def _resource_aggregate(self)->object:

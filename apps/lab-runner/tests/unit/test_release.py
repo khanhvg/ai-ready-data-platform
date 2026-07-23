@@ -10,7 +10,7 @@ import unittest
 
 import jsonschema
 
-from lab_runner.release import ASSETS, contract_schema_sha256, publish, validate_manifest
+from lab_runner.release import ASSETS, contract_schema_sha256, publish, rollback, validate_manifest
 
 APP = pathlib.Path(__file__).resolve()
 while APP.name != "lab-runner":
@@ -74,9 +74,19 @@ class RedPublicPathTest(unittest.TestCase):
                     os.chmod(path, 0o600)
             (release / "manifest.json").write_bytes(json.dumps(document, sort_keys=True, separators=(",", ":")).encode())
             os.chmod(release / "manifest.json", 0o600)
-            self.assertEqual(document, validate_manifest(workspace))
+            expected_raw={asset_id:hashlib.sha256(probe).hexdigest() for asset_id in ASSETS}
+            self.assertEqual(document, validate_manifest(workspace,expected_raw))
             validator = jsonschema.Draft202012Validator(schema)
             validator.validate(document)
+
+    def test_host_raw_admission_rejects_swapped_assets(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root=pathlib.Path(temporary);export=root/"serving/export";export.mkdir(parents=True)
+            expected={}
+            for index,asset_id in enumerate(ASSETS,1):
+                footer=bytes([index]);raw=b"PAR1"+footer+len(footer).to_bytes(4,"little")+b"PAR1";path=export/f"{asset_id}.parquet";path.write_bytes(raw);os.chmod(path,0o600);expected[asset_id]=hashlib.sha256(raw).hexdigest()
+            first=(export/f"{ASSETS[0]}.parquet").read_bytes();second=(export/f"{ASSETS[1]}.parquet").read_bytes();(export/f"{ASSETS[0]}.parquet").write_bytes(second);(export/f"{ASSETS[1]}.parquet").write_bytes(first)
+            with self.assertRaisesRegex(RuntimeError,"RUNNER_RELEASE_ASSET_INVALID"):validate_manifest(root,expected)
 
     def test_stale_replay_cannot_rewind_current_pointer(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -107,6 +117,13 @@ class RedPublicPathTest(unittest.TestCase):
                 os.fsync = original_fsync
             generations = root / "generations"
             self.assertIn((generations.stat().st_ino, stat.S_IFDIR), synced)
+
+    def test_explicit_rollback_restores_previous_pointer_idempotently(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root=pathlib.Path(temporary);publish(root,self._publish_result(1));publish(root,self._publish_result(2));rollback(root,"2"*64);first=json.loads((root/"current.json").read_text());rollback(root,"2"*64);second=json.loads((root/"current.json").read_text())
+            self.assertEqual(first,second)
+            self.assertEqual("1"*64,first["currentReleaseId"])
+            self.assertEqual("2"*64,first["previousReleaseId"])
 
     def test_named_behavior_is_not_yet_implemented(self) -> None:
         for case_id in ["RED-REL-001","RED-REL-002"]:
