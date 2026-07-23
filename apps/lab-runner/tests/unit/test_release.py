@@ -76,6 +76,9 @@ class RedPublicPathTest(unittest.TestCase):
             os.chmod(release / "manifest.json", 0o600)
             expected_raw={asset_id:hashlib.sha256(probe).hexdigest() for asset_id in ASSETS}
             self.assertEqual(document, validate_manifest(workspace,expected_raw))
+            duplicate = workspace / "curated/releases" / ("b" * 64)
+            duplicate.mkdir()
+            self.assertEqual(document, validate_manifest(workspace,expected_raw,release_id))
             validator = jsonschema.Draft202012Validator(schema)
             validator.validate(document)
 
@@ -130,7 +133,7 @@ class RedPublicPathTest(unittest.TestCase):
             root=pathlib.Path(temporary);publish(root,self._publish_result(1));publish(root,self._publish_result(2));path=root/"manifests"/("1"*64+".json");document=json.loads(path.read_text());document["assets"][0]["dataRunId"]="mixed-generation";path.write_bytes(json.dumps(document,sort_keys=True,separators=(",",":")).encode());os.chmod(path,0o600)
             with self.assertRaisesRegex(RuntimeError,"RUNNER_ROLLBACK_INVALID"):rollback(root,"2"*64)
 
-    def test_named_behavior_is_not_yet_implemented(self) -> None:
+    def test_named_behavior_passes_public_gate(self) -> None:
         for case_id in ["RED-REL-001","RED-REL-002"]:
             with self.subTest(case_id=case_id):
                 result = gate.evaluate_case(ROWS[case_id])

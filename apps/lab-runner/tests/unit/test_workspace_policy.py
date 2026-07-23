@@ -39,7 +39,7 @@ class RedPublicPathTest(unittest.TestCase):
             self.assertEqual(archives[0].read_bytes(), selected.read_bytes())
             self.assertNotEqual(archives[1].read_bytes(), selected.read_bytes())
 
-    def test_named_behavior_is_not_yet_implemented(self) -> None:
+    def test_named_behavior_passes_public_gate(self) -> None:
         for case_id in ["RED-FS-001","RED-FS-005"]:
             with self.subTest(case_id=case_id):
                 result = gate.evaluate_case(ROWS[case_id])

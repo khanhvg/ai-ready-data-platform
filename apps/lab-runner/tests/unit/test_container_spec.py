@@ -22,7 +22,7 @@ class RedPublicPathTest(unittest.TestCase):
             for index in range(4097):(root/f"f-{index}").touch()
             with self.assertRaisesRegex(RuntimeError,"RUNNER_RESOURCE_LIMIT"):_workspace_file_count(root)
 
-    def test_named_behavior_is_not_yet_implemented(self) -> None:
+    def test_named_behavior_passes_public_gate(self) -> None:
         for case_id in ["RED-CMD-002","RED-IMG-001","RED-NET-002"]:
             with self.subTest(case_id=case_id):
                 result = gate.evaluate_case(ROWS[case_id])

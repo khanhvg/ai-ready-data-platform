@@ -62,7 +62,7 @@ class RedPublicPathTest(unittest.TestCase):
             self.assertFalse(store.fail_if_safe(admitted.run_id,1))
             self.assertEqual(admitted.run_id,store.incomplete()[0][0])
 
-    def test_named_behavior_is_not_yet_implemented(self) -> None:
+    def test_named_behavior_passes_public_gate(self) -> None:
         for case_id in ["RED-CRS-001"]:
             with self.subTest(case_id=case_id):
                 result = gate.evaluate_case(ROWS[case_id])

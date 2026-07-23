@@ -43,7 +43,7 @@ class RedPublicPathTest(unittest.TestCase):
             write(root,run_id,value);(root/run_id/"result.json").write_text("{}\n")
             with self.assertRaisesRegex(RuntimeError,"RUNNER_EVIDENCE_RECOVERY_INVALID"):reconcile(root,run_id,value)
 
-    def test_named_behavior_is_not_yet_implemented(self) -> None:
+    def test_named_behavior_passes_public_gate(self) -> None:
         for case_id in ["S3-EVD-001"]:
             with self.subTest(case_id=case_id):
                 result = gate.evaluate_case(ROWS[case_id])

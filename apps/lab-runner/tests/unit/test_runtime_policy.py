@@ -14,7 +14,24 @@ ROWS = {row["id"]: row for row in __import__("json").loads((APP / "tests/red-man
 
 
 class RedPublicPathTest(unittest.TestCase):
-    def test_named_behavior_is_not_yet_implemented(self) -> None:
+    def test_seccomp_and_worker_memory_match_the_plan(self) -> None:
+        import json
+        profile=json.loads((APP/"container/seccomp-runner-v1.json").read_text())
+        allowed={name for row in profile["syscalls"] if row.get("action")=="SCMP_ACT_ALLOW" for name in row.get("names",[])}
+        self.assertTrue({"ptrace","process_vm_readv","process_vm_writev"}.isdisjoint(allowed))
+        supervisor=(APP/"src/lab_runner/container_supervisor.py").read_text()
+        self.assertIn("resource.RLIMIT_AS",supervisor)
+
+    def test_release_record_binds_build_and_gate_aggregates(self) -> None:
+        import hashlib,json
+        release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
+        build=APP/"config/container-build-lock-v1.json"
+        self.assertEqual(hashlib.sha256(build.read_bytes()).hexdigest(),release["buildLockSha256"])
+        self.assertEqual(8,len(release["operationResults"]))
+        self.assertEqual({"redRows":52,"s3Rows":14,"passed":66,"failed":0},release["gateAggregate"])
+        self.assertEqual(2,release["rollbackAggregate"]["attempts"])
+
+    def test_named_behavior_passes_public_gate(self) -> None:
         for case_id in ["RED-ENV-001","RED-ENV-002","RED-RES-001"]:
             with self.subTest(case_id=case_id):
                 result = gate.evaluate_case(ROWS[case_id])
