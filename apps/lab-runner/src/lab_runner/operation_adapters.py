@@ -88,7 +88,7 @@ def retail_export() -> dict[str,object]:
         connection.execute("SET threads=1")
         for mart in ASSETS:
             target=export_dir/f"{mart}.parquet";temporary=export_dir/f".{mart}.parquet.tmp"
-            connection.execute(f"COPY (SELECT * FROM main_marts.{mart} ORDER BY ALL) TO '{temporary}' (FORMAT parquet)")
+            connection.table(f"main_marts.{mart}").order("ALL").write_parquet(str(temporary))
             os.chmod(temporary,0o600)
             with temporary.open("rb") as stream:os.fsync(stream.fileno())
             os.replace(temporary,target)
