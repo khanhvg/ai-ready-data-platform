@@ -144,7 +144,7 @@ def _main(operation:str,fixture:tuple[str,tuple[str,...]]|None=None,execute_seco
         for name in ("stderr","stdout"):
             if previews[name]:os.write(2,bytes(previews[name]))
     cgroup=_cgroup()
-    if fixture is not None and fixture==("resource_probe.py",("memory",)) and rc==-signal.SIGKILL and int(cgroup["memoryEvents"].get("oom_kill",0))>=1:failure="RUNNER_RESOURCE_LIMIT"
+    if fixture==("resource_probe.py",("memory",)) and int(cgroup["memoryEvents"].get("oom_kill",0))>=1:failure="RUNNER_RESOURCE_LIMIT"
     reap_end=time.monotonic()+2
     while time.monotonic()<reap_end:
         observed,saw=_descendants();peak=max(peak,observed);tracker=tracker or saw

@@ -57,6 +57,62 @@ def sha256(path: pathlib.Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def wheelhouse_lock_complete(expected:dict[str,str],lock:str)->bool:
+    locked=set(re.findall(r"--hash=sha256:([0-9a-f]{64})(?![0-9a-f])",lock))
+    return bool(expected) and all(
+        isinstance(name,str)
+        and name.endswith(".whl")
+        and isinstance(digest,str)
+        and re.fullmatch(r"[0-9a-f]{64}",digest) is not None
+        and digest in locked
+        for name,digest in expected.items()
+    )
+
+
+def _regular_file_baseline(path:pathlib.Path,max_bytes:int=1024**3)->dict[str,object]:
+    fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)
+    try:
+        observed=os.fstat(fd)
+        if not stat.S_ISREG(observed.st_mode) or observed.st_nlink!=1 or observed.st_size>max_bytes:
+            raise RuntimeError("RUNNER_IGNORED_BASELINE_INVALID")
+        digest=hashlib.sha256()
+        remaining=observed.st_size
+        while remaining:
+            chunk=os.read(fd,min(1024*1024,remaining))
+            if not chunk:raise RuntimeError("RUNNER_IGNORED_BASELINE_INVALID")
+            digest.update(chunk);remaining-=len(chunk)
+        current=os.stat(path,follow_symlinks=False)
+        if not stat.S_ISREG(current.st_mode) or current.st_nlink!=1 or (current.st_dev,current.st_ino)!=(observed.st_dev,observed.st_ino):
+            raise RuntimeError("RUNNER_IGNORED_BASELINE_INVALID")
+        return {"size":observed.st_size,"sha256":digest.hexdigest()}
+    finally:
+        os.close(fd)
+
+
+def append_only_file_matches(path:pathlib.Path,baseline:dict[str,object])->bool:
+    size=baseline.get("size");expected=baseline.get("sha256")
+    if type(size) is not int or size<0 or not isinstance(expected,str) or re.fullmatch(r"[0-9a-f]{64}",expected) is None:
+        return False
+    try:
+        fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)
+        try:
+            observed=os.fstat(fd)
+            if not stat.S_ISREG(observed.st_mode) or observed.st_nlink!=1 or observed.st_size<size:
+                return False
+            digest=hashlib.sha256()
+            remaining=size
+            while remaining:
+                chunk=os.read(fd,min(1024*1024,remaining))
+                if not chunk:return False
+                digest.update(chunk);remaining-=len(chunk)
+            current=os.stat(path,follow_symlinks=False)
+            return stat.S_ISREG(current.st_mode) and current.st_nlink==1 and current.st_size>=size and (current.st_dev,current.st_ino)==(observed.st_dev,observed.st_ino) and digest.hexdigest()==expected
+        finally:
+            os.close(fd)
+    except OSError:
+        return False
+
+
 def source_digest() -> str:
     digest = hashlib.sha256()
     paths = subprocess.run(
@@ -136,7 +192,7 @@ class Gate:
             if path.exists() and json.loads(path.read_text())!=value:raise RuntimeError("RUNNER_EVIDENCE_OWNER_INVALID")
             path.write_bytes(_canonical_json(value));os.chmod(path,0o600)
         baseline=(ROOT/".hermes/prompts/issue-9-container-runner-v2-cook.md",ROOT/".hermes/logs/claudekit/issue-9-container-runner-v2-cook.log")
-        self.ignored_baseline={path.relative_to(ROOT).as_posix():sha256(path) for path in baseline}
+        self.ignored_baseline={path.relative_to(ROOT).as_posix():_regular_file_baseline(path) for path in baseline}
         evidence_root = APP / ".local-state/evidence/gates"
         evidence_root.mkdir(mode=0o700, parents=True, exist_ok=True)
         os.chmod(evidence_root, 0o700)
@@ -316,7 +372,7 @@ class Gate:
         def img3() -> object:
             manifest=json.loads((APP/"requirements/wheelhouse-manifest-v1.json").read_text());wheelhouse=ROOT/".artifacts/build/issue-9/wheelhouse";observed={path.name:sha256(path) for path in wheelhouse.iterdir() if path.is_file()}
             expected={row["file"]:row["sha256"] for row in manifest["wheels"]};lock=(APP/"requirements/runner-py312-linux-arm64.lock").read_text();dockerfile=(APP/"container/runner.Dockerfile").read_text();release=json.loads((APP/"config/runner-image-release-v1.json").read_text())
-            if observed!=expected or any(not name.endswith(".whl") for name in observed) or lock.count("--hash=sha256:")!=len(expected) or "--no-index" not in dockerfile or "--require-hashes" not in dockerfile or release.get("buildLockSha256")!=sha256(APP/"config/container-build-lock-v1.json"):raise AssertionError("supply admission")
+            if observed!=expected or not wheelhouse_lock_complete(expected,lock) or "--no-index" not in dockerfile or "--require-hashes" not in dockerfile or release.get("buildLockSha256")!=sha256(APP/"config/container-build-lock-v1.json"):raise AssertionError("supply admission")
             return {"hashCompleteWheels":len(expected),"sdists":0,"onlineInstall":False,"releaseRecordBound":True}
 
         for case_id, call in (
@@ -757,7 +813,8 @@ class Gate:
                     parts=pathlib.PurePosixPath(name).parts;run_root=ROOT/pathlib.Path(*parts[:4]);return (run_root/".data-contracts-owner.json").is_file() or (run_root/"result.json").is_file()
                 return name.startswith("apps/lab-runner/.pytest_cache/") or ("/__pycache__/" in name and name.endswith(".pyc"))
             baseline={".hermes/logs/claudekit/issue-9-container-runner-v2-cook.log",".hermes/prompts/issue-9-container-runner-v2-cook.md"};unclassified={name for name in ignored if not runtime_path(name)}
-            if unclassified!=baseline or any(sha256(ROOT/name)!=digest for name,digest in self.ignored_baseline.items()):raise AssertionError("ignored baseline drift")
+            prompt=".hermes/prompts/issue-9-container-runner-v2-cook.md";session_log=".hermes/logs/claudekit/issue-9-container-runner-v2-cook.log"
+            if unclassified!=baseline or _regular_file_baseline(ROOT/prompt)!=self.ignored_baseline[prompt] or not append_only_file_matches(ROOT/session_log,self.ignored_baseline[session_log]):raise AssertionError("ignored baseline drift")
             for name in baseline:
                 observed=(ROOT/name).stat(follow_symlinks=False)
                 if not stat.S_ISREG(observed.st_mode) or observed.st_nlink!=1:raise AssertionError("ignored baseline type")
