@@ -1,0 +1,59 @@
+framework_version: 0.1.0-prototype
+recommendations:
+  - id: R-OWNERSHIP
+    impact: Unowned decisions delay remediation and leave critical data and AI use without accountable risk acceptance.
+    action: Assign named product and control owners with documented decision rights, measures, and review cadence.
+    architecture_reference: ARCH-OPERATING-MODEL
+    technology_options: [Workflow and decision register, Product ownership registry]
+    demo_reference: DEMO-PLACEHOLDER-OWNERSHIP
+  - id: R-QUALITY
+    impact: Uncontrolled defects can reach trusted products and make analytics or AI outcomes unreliable.
+    action: Define critical rules, owners, SLAs, alerts, quarantine, accepted boundaries, and measurable remediation.
+    architecture_reference: ARCH-QUALITY-GATE
+    technology_options: [Contract validation, Quality rule engine, Quarantine store]
+    demo_reference: DEMO-PLACEHOLDER-QUALITY
+  - id: R-PRIVACY
+    impact: Sensitive data may be processed without a defensible purpose, classification, or protection boundary.
+    action: Classify critical fields, record approved purposes, and enforce masking, retention, and access reviews.
+    architecture_reference: ARCH-PRIVACY-CONTROLS
+    technology_options: [Classification registry, Policy enforcement, Masked product]
+    demo_reference: DEMO-PLACEHOLDER-PRIVACY
+  - id: R-SECURITY
+    impact: Broad or unreviewed access increases exposure and weakens auditability.
+    action: Apply least privilege, versioned policies, separation of duties, tested revocation, and access-event monitoring.
+    architecture_reference: ARCH-POLICY-ACCESS
+    technology_options: [Identity roles, Policy engine, Audit event store]
+    demo_reference: DEMO-PLACEHOLDER-SECURITY
+  - id: R-GOVERNANCE
+    impact: Inconsistent policy decisions and exceptions prevent a defensible production-readiness claim.
+    action: Establish accountable governance decisions, exception expiry, policy evidence, and effectiveness measures.
+    architecture_reference: ARCH-GOVERNANCE-CONTROL
+    technology_options: [Policy registry, Approval workflow, Evidence register]
+    demo_reference: DEMO-PLACEHOLDER-GOVERNANCE
+  - id: R-LINEAGE
+    impact: Teams cannot prove critical source-to-product impact or trace an AI dataset to its origins.
+    action: Capture automated critical lineage, validate coverage, and use it in change and incident workflows.
+    architecture_reference: ARCH-METADATA-LINEAGE
+    technology_options: [Metadata catalog, Lineage collector, Impact analysis]
+    demo_reference: DEMO-PLACEHOLDER-LINEAGE
+  - id: R-REPRODUCIBILITY
+    impact: Results cannot be reliably recreated, compared, audited, or rolled back.
+    action: Version code, inputs, contracts, environment, and product manifests and test deterministic rebuilds.
+    architecture_reference: ARCH-VERSIONED-PRODUCT
+    technology_options: [Version control, Immutable artifact manifest, Reproducible orchestration]
+    demo_reference: DEMO-PLACEHOLDER-REPRODUCIBILITY
+  - id: R-AI-OPERATING
+    impact: AI datasets may age, drift, or use sensitive data without accountable operational response.
+    action: Assign AI-data owners and define freshness, drift, approved-use, incident, and lifecycle controls.
+    architecture_reference: ARCH-AI-DATA-OPERATIONS
+    technology_options: [Data-product registry, Freshness monitoring, Drift monitoring]
+    demo_reference: DEMO-PLACEHOLDER-AI-OPERATIONS
+architectures:
+  - {id: ARCH-OPERATING-MODEL, title: Accountable data product operating model, status: placeholder}
+  - {id: ARCH-QUALITY-GATE, title: Quality gate with quarantine and accepted boundary, status: placeholder}
+  - {id: ARCH-PRIVACY-CONTROLS, title: Classified and privacy-controlled data path, status: placeholder}
+  - {id: ARCH-POLICY-ACCESS, title: Policy-driven access boundary, status: placeholder}
+  - {id: ARCH-GOVERNANCE-CONTROL, title: Governance decision and evidence control plane, status: placeholder}
+  - {id: ARCH-METADATA-LINEAGE, title: Metadata and source-to-product lineage, status: placeholder}
+  - {id: ARCH-VERSIONED-PRODUCT, title: Versioned reproducible data product, status: placeholder}
+  - {id: ARCH-AI-DATA-OPERATIONS, title: AI-data operating and monitoring model, status: placeholder}

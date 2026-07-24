@@ -1,0 +1,60 @@
+framework_version: 0.1.0-prototype
+priority_order:
+  - Critical blocker
+  - High-priority foundation
+  - Near-term improvement
+  - Strategic enhancement
+priority_decision_table:
+  triggered_gate: Critical blocker
+  ungated_level_0_or_1: High-priority foundation
+  cross_domain_blocker: High-priority foundation
+  domain_level_2: Near-term improvement
+  domain_level_3_target_4: Strategic enhancement
+  domain_level_4: null
+rules:
+  - id: F-OWNERSHIP
+    title: Establish accountable data and AI operating ownership
+    condition: {operand: fact.ownership_control_level, operator: le, threshold: 1}
+    gate_id: G-OWNERSHIP
+    recommendation_id: R-OWNERSHIP
+  - id: F-QUALITY
+    title: Enforce measurable quality and quarantine controls
+    condition: {operand: domain.QUA, operator: le, threshold: 1}
+    gate_id: G-QUALITY
+    recommendation_id: R-QUALITY
+  - id: F-PRIVACY
+    title: Establish critical-data privacy controls
+    condition: {operand: fact.privacy_control_level, operator: le, threshold: 1}
+    gate_id: G-PRIVACY
+    recommendation_id: R-PRIVACY
+  - id: F-SECURITY
+    title: Enforce least-privilege and policy-based access
+    condition: {operand: domain.SEC, operator: le, threshold: 1}
+    gate_id: G-SECURITY
+    recommendation_id: R-SECURITY
+  - id: F-GOVERNANCE
+    title: Establish governed decisions and policy evidence
+    condition: {operand: domain.GOV, operator: le, threshold: 1}
+    gate_id: G-GOVERNANCE
+    recommendation_id: R-GOVERNANCE
+  - id: F-LINEAGE
+    title: Capture critical source-to-product lineage
+    condition: {operand: fact.critical_lineage, operator: eq, threshold: false}
+    gate_id: G-LINEAGE
+    recommendation_id: R-LINEAGE
+  - id: F-REPRODUCIBILITY
+    title: Version and reproduce governed data products
+    condition: {operand: fact.reproducible_versioned, operator: eq, threshold: false}
+    gate_id: G-REPRODUCIBILITY
+    recommendation_id: R-REPRODUCIBILITY
+  - id: F-AI-OPERATING
+    title: Define AI-data operating ownership and monitoring
+    condition:
+      any:
+        - {operand: domain.AID, operator: le, threshold: 1}
+        - all:
+            - {operand: domain.AID, operator: le, threshold: 2}
+            - {operand: domain.LIN, operator: le, threshold: 1}
+    priority_operand: domain.AID
+    priority_mode: cross_domain_blocker
+    recommendation_id: R-AI-OPERATING

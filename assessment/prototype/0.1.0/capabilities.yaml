@@ -1,0 +1,82 @@
+framework_version: 0.1.0-prototype
+domains:
+  - id: STR
+    name: Strategy, ownership, and operating model
+    anchors:
+      0: No data-platform mandate, accountable owner, or operating responsibilities are identified.
+      1: Individuals sponsor isolated work and ownership is assigned only after an incident or escalation.
+      2: Priority initiatives have named owners and repeatable forums, but funding and decision rights vary by team.
+      3: Enterprise outcomes, accountable product owners, funding, decision rights, and review measures are documented and routinely used.
+      4: Outcome measures, ownership, funding, and operating boundaries are continuously reviewed and improved across the portfolio.
+  - id: ING
+    name: Data sources, ingestion, and integration
+    anchors:
+      0: Critical sources and ingestion paths are not inventoried or controlled.
+      1: Critical data is copied manually or by owner-dependent scripts without repeatable recovery.
+      2: Priority sources use repeatable ingestion patterns with basic validation and documented recovery for some failures.
+      3: Source contracts, automated validation, replay, recovery, and ownership are enforced for critical ingestion paths.
+      4: Ingestion reliability, contract changes, latency, and cost are measured and systematically optimized across sources.
+  - id: STO
+    name: Storage, lifecycle, and data organization
+    anchors:
+      0: Storage locations, data boundaries, and retention obligations are unknown.
+      1: Teams create unmanaged storage locations with inconsistent naming, retention, and deletion practices.
+      2: Standard zones and retention practices exist for priority data, but enforcement and lifecycle coverage are incomplete.
+      3: Governed storage zones, lifecycle controls, ownership, recovery, and data organization standards cover critical data.
+      4: Placement, lifecycle, performance, recovery, and cost are continuously measured and optimized by workload.
+  - id: TRN
+    name: Transformation and orchestration
+    anchors:
+      0: Critical transformations cannot be identified or reproduced.
+      1: Transformations are manual or person-dependent and run without versioned orchestration or reliable recovery.
+      2: Priority transformations are versioned and scheduled with repeatable runs, but controls differ across teams.
+      3: Critical transformations use tested code, dependency-aware orchestration, controlled releases, and documented recovery.
+      4: Transformation performance, change safety, reuse, and recovery are continuously measured and improved.
+  - id: QUA
+    name: Data quality and reliability
+    anchors:
+      0: No quality checks or reliability expectations exist for critical data.
+      1: Quality is checked manually after consumers report problems, without an owned quarantine path.
+      2: Important pipelines run repeatable validations, but rule reuse, ownership, SLAs, alerts, or quarantine are incomplete.
+      3: Critical products have reusable rules, owners, SLAs, alerts, quarantine, and measured remediation.
+      4: Contracts, quality trends, prevention, and business-impact measures drive continuous reliability improvement.
+  - id: LIN
+    name: Metadata, catalog, glossary, and lineage
+    anchors:
+      0: Critical datasets have no discoverable metadata, shared definitions, or lineage.
+      1: Metadata and lineage are maintained manually by individuals and are routinely incomplete or stale.
+      2: Priority assets have repeatable metadata capture and partial lineage, but business definitions and coverage vary.
+      3: Critical assets have owned definitions, automated metadata, end-to-end lineage, stewardship, and freshness controls.
+      4: Metadata quality, semantic reuse, lineage impact analysis, and stewardship outcomes are continuously optimized.
+  - id: GOV
+    name: Governance, privacy, and compliance
+    anchors:
+      0: Governance obligations, sensitive data, and accountable decision makers are not identified.
+      1: Governance and privacy decisions are reactive, manual, and dependent on individual interpretation.
+      2: Policies, classification, retention, and review processes cover priority use cases but are inconsistently enforced.
+      3: Critical data has accountable governance, classification, privacy controls, retention, approvals, and measurable compliance.
+      4: Policy outcomes, exceptions, privacy risk, and control effectiveness are continuously monitored and improved.
+  - id: SEC
+    name: Security, access control, and policy-as-code
+    anchors:
+      0: Access to critical data is uncontrolled or cannot be explained.
+      1: Access is granted manually with broad permissions, limited review, and no consistent policy enforcement.
+      2: Identity-based roles and periodic reviews protect priority data, but policy automation and least privilege are incomplete.
+      3: Critical data uses least privilege, policy-based enforcement, separation of duties, audit, and tested revocation.
+      4: Access risk, policy drift, exceptions, and control effectiveness are continuously detected and optimized.
+  - id: OPS
+    name: Observability, operations, and cost management
+    anchors:
+      0: Platform health, data freshness, incidents, and cost are not observable.
+      1: Operators inspect logs manually after failures and costs have no accountable allocation.
+      2: Priority services have dashboards, alerts, runbooks, and basic cost visibility, but coverage and ownership vary.
+      3: Critical services have SLOs, actionable telemetry, owned incident response, capacity controls, and cost accountability.
+      4: Reliability, capacity, performance, incident learning, and unit economics drive continuous operational improvement.
+  - id: AID
+    name: Data products, analytics, and AI readiness
+    anchors:
+      0: Trusted data products and governed AI-data use cases are not identified.
+      1: Analytics or AI datasets are assembled manually without durable ownership, contracts, or reproducibility.
+      2: Priority products have repeatable publication and some ownership, but contracts, monitoring, versioning, or AI controls are incomplete.
+      3: Governed data products have owners, contracts, versioned reproducibility, service measures, and approved AI-use controls.
+      4: Product adoption, value, drift, reuse, lifecycle, and AI outcomes are continuously measured and optimized.

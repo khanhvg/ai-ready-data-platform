@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ report.title }}</title>
+  <style>{{ css }}</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>{{ report.title }}</h1>
+    <p class="meta">Framework {{ report.framework_version }} · synthetic prototype · {{ report.rater_id }}</p>
+  </header>
+  {% for section in report.sections %}
+  <section id="{{ section.id }}"{% if section.id == "blockers" %} class="critical"{% elif section.id == "gates" %} class="gate"{% endif %}>
+    <h2>{{ section.title }}</h2>
+    {% if section.id == "capability-heatmap" %}
+    <table><thead><tr><th>Capability</th><th>Maturity</th><th>Anchor</th></tr></thead><tbody>
+    {% for item in section.content %}<tr><td>{{ item.domain_id }} — {{ item.name }}</td><td>{{ item.score }}</td><td>{{ item.anchor }}</td></tr>{% endfor %}
+    </tbody></table>
+    {% elif section.id == "gates" %}
+    {% for item in section.content %}<article><h3>{{ item.rule_id }} · {% if item.triggered %}triggered{% else %}not triggered{% endif %}</h3><p><strong>Operand:</strong> {{ item.operand_id }} ({{ item.operand_source }}) = {{ item.operand_value }}</p><p><strong>Readiness trace:</strong> pre-gate {{ item.pre_gate_state }}; applied cap {{ item.applied_cap }}; rule result {{ item.rule_result }}; final {{ item.final_state }}</p><p>{{ item.explanation }}</p></article>{% endfor %}
+    {% elif section.id in ["findings", "blockers"] %}
+    {% for item in section.content %}<article><h3>{{ item.title }}</h3><p><strong>Gap:</strong> {{ item.gap }}</p><p><strong>Priority:</strong> {{ item.priority }}</p><p>{{ item.impact }}</p><p><strong>Recommendation:</strong> {{ item.recommendation }}</p><p><strong>Evidence action:</strong> {{ item.evidence_validation_action }}</p><p><strong>Architecture:</strong> {{ item.architecture_reference }}</p><p><strong>Demo reference:</strong> {{ item.demo_reference }}</p></article>{% else %}<p>None.</p>{% endfor %}
+    {% else %}
+    <pre>{{ section.content | tojson(indent=2) }}</pre>
+    {% endif %}
+  </section>
+  {% endfor %}
+</main>
+</body>
+</html>

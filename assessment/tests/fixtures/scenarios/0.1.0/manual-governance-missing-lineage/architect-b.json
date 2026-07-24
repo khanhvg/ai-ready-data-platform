@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.1.0-prototype",
+  "scenario_id": "manual-governance-missing-lineage",
+  "rater_id": "architect-b",
+  "organization_name": "Cedarbridge Services",
+  "duration_minutes": 48,
+  "ratings": [2,2,1,3,3,2,2,1,2,2,1,1,2,1,1,1,0,0,2,2,1,2,1,1,2,2,1,2,2,1],
+  "evidence_statuses": ["Conflicting evidence","Conflicting evidence","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced"],
+  "notes": ["B01 outcomes cover priorities","B02 forums are repeatable","B03 ownership is reactive","B04 source inventory is governed","B05 contracts are controlled","B06 recovery has gaps","B07 zones cover priorities","B08 lifecycle is informal","B09 recovery is repeatable","B10 transformations repeat","B11 orchestration is partial","B12 rollback is manual","B13 checks cover important paths","B14 quarantine is manual","B15 remediation is reactive","B16 metadata is manual","B17 glossary is absent","B18 critical lineage is missing","B19 councils are repeatable","B20 classification covers priorities","B21 evidence has gaps","B22 access uses roles","B23 policy automation is weak","B24 detection has gaps","B25 dashboards cover priorities","B26 response is repeatable","B27 cost visibility has gaps","B28 products are repeatable","B29 dataset versioning is partial","B30 AI ownership is weak"],
+  "diagnostic_facts": {"privacy_control_level": 2, "ownership_control_level": 2, "critical_lineage": false, "reproducible_versioned": true},
+  "actionability_review": {"recommendations_actionable": true, "gate_outcome_reasonable": true, "report_usable": true}
+}

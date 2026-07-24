@@ -1,0 +1,18 @@
+{
+  "architect-a": {
+    "domain_scores": [2,1,1,2,1,1,1,1,1,2],
+    "pre_gate_readiness": 1,
+    "final_readiness": 1,
+    "triggered_gates": ["G-QUALITY","G-SECURITY","G-PRIVACY","G-GOVERNANCE","G-OWNERSHIP","G-LINEAGE","G-REPRODUCIBILITY"],
+    "finding_ids": ["F-OWNERSHIP","F-QUALITY","F-PRIVACY","F-SECURITY","F-GOVERNANCE","F-LINEAGE","F-REPRODUCIBILITY","F-AI-OPERATING"],
+    "confidence_distribution": {"Self-reported": 10, "Partially evidenced": 10, "Evidenced": 10, "Conflicting evidence": 0, "Not assessed": 0}
+  },
+  "architect-b": {
+    "domain_scores": [1,0,1,1,2,1,1,0,0,1],
+    "pre_gate_readiness": 0,
+    "final_readiness": 0,
+    "triggered_gates": ["G-SECURITY","G-PRIVACY","G-GOVERNANCE","G-OWNERSHIP","G-LINEAGE","G-REPRODUCIBILITY"],
+    "finding_ids": ["F-OWNERSHIP","F-PRIVACY","F-SECURITY","F-GOVERNANCE","F-LINEAGE","F-REPRODUCIBILITY","F-AI-OPERATING"],
+    "confidence_distribution": {"Self-reported": 15, "Partially evidenced": 10, "Evidenced": 0, "Conflicting evidence": 5, "Not assessed": 0}
+  }
+}

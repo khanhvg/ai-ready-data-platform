@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.1.0-prototype",
+  "scenario_id": "enterprise-lake-weak-quality",
+  "rater_id": "architect-b",
+  "organization_name": "Bluehaven Retail Group",
+  "duration_minutes": 42,
+  "ratings": [3,2,2,3,2,2,3,3,2,3,3,2,1,0,0,3,2,2,3,2,2,3,2,2,2,1,1,2,1,2],
+  "evidence_statuses": ["Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported"],
+  "notes": ["B01 outcomes are governed","B02 decisions vary by division","B03 ownership is repeatable","B04 sources are inventoried","B05 contract coverage varies","B06 recovery coverage varies","B07 zones are governed","B08 lifecycle is governed","B09 cost control is partial","B10 transformations are versioned","B11 orchestration is controlled","B12 rollback coverage varies","B13 quality is reactive","B14 quarantine is absent","B15 incidents lack prevention","B16 metadata is automated","B17 term adoption varies","B18 lineage has gaps","B19 governance is accountable","B20 privacy controls vary","B21 evidence collection varies","B22 least privilege is enforced","B23 policy automation varies","B24 detection has gaps","B25 observability covers priorities","B26 incident learning is weak","B27 cost ownership is weak","B28 products have owners","B29 versioning is incomplete","B30 AI controls are partial"],
+  "diagnostic_facts": {"privacy_control_level": 3, "ownership_control_level": 3, "critical_lineage": true, "reproducible_versioned": true},
+  "actionability_review": {"recommendations_actionable": true, "gate_outcome_reasonable": true, "report_usable": true}
+}

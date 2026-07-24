@@ -116,3 +116,13 @@ transform/dbt/logs/
 transform/dbt/dbt_packages/
 transform/dbt/.user.yml
 openmetadata-docker/
+
+# AI-ready assessment prototype (Issue #38 Phase 1)
+/.assessment-venv/
+/assessment/.generated/
+/assessment/.pytest_cache/
+/assessment/.mypy_cache/
+/assessment/.ruff_cache/
+/assessment/build/
+/assessment/dist/
+/assessment/*.egg-info/

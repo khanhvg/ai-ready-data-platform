@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.1.0-prototype",
+  "scenario_id": "strong-engineering-no-ai-operating-model",
+  "rater_id": "architect-b",
+  "organization_name": "Juniper Engineering Cooperative",
+  "duration_minutes": 39,
+  "ratings": [3,1,3,3,2,2,3,2,3,4,3,2,4,3,2,3,2,3,3,2,3,3,2,2,2,1,null,3,1,0],
+  "evidence_statuses": ["Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Not assessed","Self-reported","Self-reported","Self-reported"],
+  "notes": ["B01 outcomes are governed","B02 decision rights are reactive","B03 ownership is governed","B04 sources are controlled","B05 contracts cover priorities","B06 recovery has gaps","B07 zones are governed","B08 lifecycle covers priorities","B09 recovery is governed","B10 tests are optimized","B11 orchestration is governed","B12 releases cover priorities","B13 contracts improve quality","B14 quarantine is governed","B15 incidents cover priorities","B16 metadata is governed","B17 term adoption varies","B18 lineage is governed","B19 governance is accountable","B20 privacy coverage varies","B21 evidence is measured","B22 least privilege is enforced","B23 policy automation varies","B24 detection has gaps","B25 health is repeatable","B26 incident learning is weak","B27 cost question was not assessed","B28 products are governed","B29 AI datasets are manual","B30 AI operating controls are absent"],
+  "diagnostic_facts": {"privacy_control_level": 3, "ownership_control_level": 3, "critical_lineage": true, "reproducible_versioned": false},
+  "actionability_review": {"recommendations_actionable": true, "gate_outcome_reasonable": true, "report_usable": true}
+}

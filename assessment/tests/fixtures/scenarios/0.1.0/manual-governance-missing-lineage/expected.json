@@ -1,0 +1,18 @@
+{
+  "architect-a": {
+    "domain_scores": [2,3,2,2,2,1,2,2,2,2],
+    "pre_gate_readiness": 2,
+    "final_readiness": 2,
+    "triggered_gates": ["G-LINEAGE"],
+    "finding_ids": ["F-LINEAGE","F-AI-OPERATING"],
+    "confidence_distribution": {"Self-reported": 10, "Partially evidenced": 10, "Evidenced": 10, "Conflicting evidence": 0, "Not assessed": 0}
+  },
+  "architect-b": {
+    "domain_scores": [2,3,2,1,1,0,2,1,2,2],
+    "pre_gate_readiness": 1,
+    "final_readiness": 1,
+    "triggered_gates": ["G-QUALITY","G-SECURITY","G-LINEAGE"],
+    "finding_ids": ["F-QUALITY","F-SECURITY","F-LINEAGE","F-AI-OPERATING"],
+    "confidence_distribution": {"Self-reported": 13, "Partially evidenced": 15, "Evidenced": 0, "Conflicting evidence": 2, "Not assessed": 0}
+  }
+}

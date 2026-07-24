@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.1.0-prototype",
+  "scenario_id": "manual-governance-missing-lineage",
+  "rater_id": "architect-a",
+  "organization_name": "Cedarbridge Services",
+  "duration_minutes": 48,
+  "ratings": [2,2,2,3,3,3,2,2,2,2,2,1,2,2,1,1,1,0,2,2,2,2,2,1,2,2,1,2,2,2],
+  "evidence_statuses": ["Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced"],
+  "notes": ["A01 outcomes repeat across priorities","A02 forums are repeatable","A03 ownership has gaps","A04 source inventory is governed","A05 contracts are controlled","A06 recovery is tested","A07 zones cover priorities","A08 lifecycle covers priorities","A09 recovery has gaps","A10 transformations repeat","A11 orchestration repeats","A12 rollback is manual","A13 checks cover important paths","A14 quarantine is partial","A15 remediation is reactive","A16 metadata is manual","A17 glossary is manual","A18 critical lineage is missing","A19 councils are repeatable","A20 classification covers priorities","A21 evidence is repeatable","A22 access uses roles","A23 policies are reviewed","A24 detection has gaps","A25 dashboards cover priorities","A26 response is repeatable","A27 cost visibility has gaps","A28 products are repeatable","A29 dataset versioning is partial","A30 AI controls are partial"],
+  "diagnostic_facts": {"privacy_control_level": 2, "ownership_control_level": 2, "critical_lineage": false, "reproducible_versioned": true},
+  "actionability_review": {"recommendations_actionable": true, "gate_outcome_reasonable": true, "report_usable": true}
+}
