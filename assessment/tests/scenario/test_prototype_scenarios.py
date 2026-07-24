@@ -3,6 +3,9 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -377,6 +380,22 @@ def test_prototype_migration_fixture_freeze() -> None:
     aggregate = hashlib.sha256(json.dumps(records, separators=(",", ":")).encode()).hexdigest()
     assert len(records) == manifest["frozen_files"] == 18
     assert aggregate == manifest["aggregate_sha256"]
+
+
+def test_offline_wrapper_scrubs_inherited_pythonpath() -> None:
+    wrapper = prototype.ASSESSMENT_ROOT / "tools" / "run-offline.sh"
+    environment = os.environ.copy()
+    environment["PYTHONPATH"] = "/tmp/hermes-contaminated-pythonpath"
+    subprocess.run(  # noqa: S603 - wrapper and interpreter are fixed trusted paths.
+        [
+            str(wrapper),
+            sys.executable,
+            "-c",
+            "import os, sys; sys.exit('PYTHONPATH' in os.environ)",
+        ],
+        check=True,
+        env=environment,
+    )
 
 
 def test_missing_fixture_root_fails_with_actionable_error(

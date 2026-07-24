@@ -6,4 +6,4 @@ if ! command -v sandbox-exec >/dev/null 2>&1; then
   exit 2
 fi
 
-exec sandbox-exec -p '(version 1) (allow default) (deny network*)' "$@"
+exec env -u PYTHONPATH sandbox-exec -p '(version 1) (allow default) (deny network*)' "$@"

@@ -1,6 +1,6 @@
 # Phase 1 implementation evidence
 
-Status: implementation and focused reviews complete; exact-head publication verification pending
+Status: implementation, focused reviews, and independent post-cook verification complete
 
 ## Provenance and boundary
 
@@ -71,10 +71,14 @@ which uses the macOS sandbox to deny outbound network access.
 | `make assessment-scenarios` | 8 raters complete; 29–30 answers; 35–48 minutes |
 | `make assessment-calibration` | 117/119, 98.3%; 1 Not-assessed slot separate |
 | `make assessment-report` | 36 artifacts; two-run byte stability true |
-| `make assessment-test` | 32 passed |
+| `make assessment-test` | 33 passed, including inherited-`PYTHONPATH` isolation regression |
 | `make assessment-lint` | Ruff clean |
 | `make assessment-typecheck` | strict mypy clean, 2 source files |
 | `make assessment-build` | wheel and sdist built; all 8 required packaged assets verified |
+
+### Independent post-cook completion gate
+
+A fresh clean-install rerun after the cook worker exited exposed one environment-isolation defect: `assessment-build` inherited Hermes' `PYTHONPATH`, so Python resolved `setuptools 79.0.1` from the host agent environment instead of the hash-locked `setuptools 80.9.0` inside `.assessment-venv`. The shared offline wrapper now removes inherited `PYTHONPATH` before invoking `sandbox-exec`. A real subprocess regression starts the wrapper with a deliberately contaminated path and proves the child cannot observe it. The regression was verified RED before the fix and GREEN afterward. The full Phase 1 suite, build, Docker Compose configuration, and 12 actual Python entrypoint compile checks then passed again.
 
 Generated local-only artifacts are under
 `assessment/.generated/prototype/<scenario>/`, with a canonical
