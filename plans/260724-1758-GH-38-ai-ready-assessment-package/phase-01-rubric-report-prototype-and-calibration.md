@@ -13,8 +13,8 @@
 - Date: 2026-07-24
 - Description: First and only initial vertical slice—prove the rubric, gates, findings, report shape, timing, and two-rater consistency with synthetic architect-led customer scenarios.
 - Priority: P2
-- Implementation status: Pending
-- Review status: Requires focused Phase 1 review before Phase 2; this is not the independent combined plan audit.
+- Implementation status: Complete
+- Review status: Focused Phase 1 specification and code-quality reviews passed; this is not completion of Phases 2–8.
 
 ## Key Insights
 
@@ -72,13 +72,13 @@ Two comparable ratings differ by two in the fourth persona (`STR` and `AID`), in
 
 ## Todo list
 
-- [ ] Bootstrap the isolated, hash-locked Python 3.12 prototype environment.
-- [ ] Write 50 capability anchors and 30 questions/150 scoring anchors across all 10 domains.
-- [ ] Encode all gate and finding prototype content.
-- [ ] Add eight rater fixtures and four expected-output fixtures.
-- [ ] Prove completion, timing, coverage, calibration, gate, and actionability metrics.
-- [ ] Generate deterministic 12-section JSON/HTML for every scenario.
-- [ ] Review ambiguous anchors and freeze `0.1.0-prototype` migration inputs.
+- [x] Bootstrap the isolated, hash-locked Python 3.12 prototype environment.
+- [x] Write 50 capability anchors and 30 questions/150 scoring anchors across all 10 domains.
+- [x] Encode all gate and finding prototype content.
+- [x] Add eight rater fixtures and four expected-output fixtures.
+- [x] Prove completion, timing, coverage, calibration, gate, and actionability metrics.
+- [x] Generate deterministic 12-section JSON/HTML for every scenario.
+- [x] Review ambiguous anchors and freeze `0.1.0-prototype` migration inputs.
 
 ## Success Criteria
 
