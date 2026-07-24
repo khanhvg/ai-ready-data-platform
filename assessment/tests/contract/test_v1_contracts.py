@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import copy
+import os
 from collections.abc import Callable
+from importlib import resources
 from pathlib import Path
 from typing import Any
 
 import pytest
 
+from assessment.cli import main as assessment_main
 from assessment.content.loader import load_markdown, load_yaml
 from assessment.content.schemas import load_schema, validate_document
 from assessment.content.semantics import validate_framework_semantics
@@ -24,6 +27,10 @@ from assessment.domain.models import (
 ROOT = Path(__file__).resolve().parents[3]
 SCHEMA_NAMES = ("framework", "engagement", "answer", "report", "recipe")
 DEMO_SCHEMA_NAMES = ("demo-stage-manifest", "ai-ready-dataset-manifest")
+PUBLIC_SCHEMA_FILENAMES = {
+    *(f"{name}-v1.schema.json" for name in SCHEMA_NAMES),
+    *(f"{name}-v1.schema.json" for name in DEMO_SCHEMA_NAMES),
+}
 
 
 @pytest.fixture()
@@ -184,6 +191,45 @@ def test_all_seven_public_schemas_are_valid_and_versioned() -> None:
         schema = load_schema(ROOT / "demo" / "contracts" / f"{name}-v1.schema.json")
         assert schema["$id"].endswith(f"/{name}/1.0.0")
         assert schema["additionalProperties"] is False
+
+
+def test_all_seven_public_schemas_are_packaged_as_authoritative_resources() -> None:
+    packaged_root = resources.files("assessment").joinpath("public_schemas")
+    try:
+        packaged_names = {
+            resource.name
+            for resource in packaged_root.iterdir()
+            if resource.name.endswith(".schema.json")
+        }
+    except FileNotFoundError:
+        packaged_names = set()
+    assert packaged_names == PUBLIC_SCHEMA_FILENAMES
+
+    repository_schemas = {
+        **{
+            f"{name}-v1.schema.json": ROOT
+            / "assessment"
+            / "contracts"
+            / f"{name}-v1.schema.json"
+            for name in SCHEMA_NAMES
+        },
+        **{
+            f"{name}-v1.schema.json": ROOT
+            / "demo"
+            / "contracts"
+            / f"{name}-v1.schema.json"
+            for name in DEMO_SCHEMA_NAMES
+        },
+    }
+    for filename, repository_path in repository_schemas.items():
+        assert packaged_root.joinpath(filename).read_bytes() == repository_path.read_bytes()
+
+
+def test_schema_cli_rejects_an_explicit_root_without_public_authority(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert assessment_main(["schema", "--repo-root", str(tmp_path)]) == 2
+    assert "no public JSON Schema authority" in capsys.readouterr().err
 
 
 def test_schema_and_typed_models_accept_and_reject_the_same_documents(
@@ -390,3 +436,44 @@ def test_safe_bounded_yaml_and_markdown_loading(tmp_path: Path) -> None:
     oversized.write_bytes(b"a" * (1_048_576 + 1))
     with pytest.raises(ContentValidationError):
         load_yaml(oversized)
+
+
+def test_authored_loader_rejects_growth_after_open(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    authored = tmp_path / "growing.yaml"
+    authored.write_text("name: safe\n", encoding="utf-8")
+    original_path_open = Path.open
+    original_os_open = os.open
+    grew = False
+
+    def grow_after_open() -> None:
+        nonlocal grew
+        if grew:
+            return
+        grew = True
+        with original_path_open(authored, "ab") as writer:
+            writer.write(b"value: " + b"x" * 4_096 + b"\n")
+
+    def racing_path_open(self: Path, *args: Any, **kwargs: Any) -> Any:
+        handle = original_path_open(self, *args, **kwargs)
+        mode = args[0] if args else kwargs.get("mode", "r")
+        if self == authored and "r" in mode:
+            grow_after_open()
+        return handle
+
+    def racing_os_open(path: Any, flags: int, *args: Any, **kwargs: Any) -> int:
+        descriptor = original_os_open(path, flags, *args, **kwargs)
+        if (
+            isinstance(path, str | os.PathLike)
+            and Path(path) == authored
+            and flags & os.O_ACCMODE == os.O_RDONLY
+        ):
+            grow_after_open()
+        return descriptor
+
+    monkeypatch.setattr(Path, "open", racing_path_open)
+    monkeypatch.setattr(os, "open", racing_os_open)
+    with pytest.raises(ContentValidationError, match="64 byte limit"):
+        load_yaml(authored, maximum_bytes=64)
+    assert grew

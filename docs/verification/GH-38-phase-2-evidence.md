@@ -1,7 +1,9 @@
 # GitHub Issue #38 Phase 2 verification evidence
 
-Status: implementation complete; final exact-head publication evidence is
-recorded in PR and Issue #38 after the immutable pushed head is known.
+Status: bounded corrective implementation complete after an independent
+exact-head verifier rejected the prior PR head. Replacement-head publication
+evidence is recorded in PR #40 and Issue #38 after the immutable pushed head is
+known; a completely fresh independent verifier is still required.
 
 ## Scope
 
@@ -15,6 +17,38 @@ It does not claim Phase 3+ engine/web/catalog/golden/demo-manifest-instance work
 S3/cloud/deployment, customer data, or any learning/lab capability.
 
 ## Verification contract
+
+### Corrective verification after the independent failure
+
+The independent verifier rejected prior head
+`b625d82a3929cca5c2629df390761184a206fba1` with three Important findings:
+canonical JSON could grow beyond the archive limit after the exporter checked
+source bytes, authored YAML/Markdown used a separate stat plus unbounded read,
+and distribution artifacts contained no public schemas while an empty
+repository root returned success.
+
+Focused regressions were added first and all four focused assertions failed
+against that starting behavior: canonical expansion and authored growth each
+reported `DID NOT RAISE`, the packaged resource inventory was empty, and the
+empty-root command emitted `{"schema_version":"1.0.0","schemas":0}` with exit
+`0`. The corrective implementation:
+
+- enforces per-file and total limits on every canonical payload actually stored
+  by export, including checksums and manifest, and proves a successful
+  limit-bounded exporter/importer roundtrip;
+- opens authored content once with no-follow where supported, verifies the
+  descriptor is regular, and reads at most the configured limit plus one byte
+  before strict UTF-8/YAML/Markdown processing;
+- packages exact byte mirrors of all seven public schemas, defaults schema
+  validation to installed resources, makes an empty/incomplete explicit root
+  fail, and requires exactly seven schemas in both wheel and sdist.
+
+The pre-commit corrective matrix recorded 18 contract tests, 25 archive tests
+plus the one documented object-store skip, 96 full-suite tests plus that skip,
+Ruff clean, mypy clean over 22 source files, and build inventory of 32 required
+files with exactly seven schemas in both artifacts. Specification-first and
+code-quality review each finished with `0 Critical / 0 Important`; exact-head
+commands are repeated after commit before publication.
 
 The pre-publication verification run from the clean hash-locked Python 3.12.3
 bootstrap recorded exit `0` for:

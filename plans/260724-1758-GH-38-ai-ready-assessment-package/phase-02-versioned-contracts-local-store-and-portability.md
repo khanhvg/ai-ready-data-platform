@@ -13,8 +13,11 @@
 - Date: 2026-07-24
 - Description: Establish final versioned content/data contracts, authoritative engagement folders, atomic local storage, migration, and safe deterministic import/export.
 - Priority: P2
-- Implementation status: Complete; implementation commit `0dcbe3f6264b84bd6c96f6b9a3a60ab3b5a37b9b` was exact-head verified and published in PR #40.
-- Review status: Passed; specification and code-quality reviews each report 0 Critical, 0 Important, and 0 Minor findings.
+- Implementation status: Corrected after the independent verifier rejected prior PR head
+  `b625d82a3929cca5c2629df390761184a206fba1`; replacement-head evidence is published in PR #40
+  and Issue #38 after final identity checks.
+- Review status: Bounded corrective specification and code-quality reviews each report
+  0 Critical and 0 Important findings; a completely fresh independent verifier remains required.
 
 ## Key Insights
 
@@ -22,6 +25,7 @@
 - Import safety is a security boundary: validation must precede extraction/mutation.
 - Version numbers are carried in every top-level contract and pinned by the engagement.
 - Human-authored YAML/Markdown is accepted only through schema, safe-parser, and semantic-reference validation.
+- Distribution artifacts carry exact mirrors of all seven public schemas and fail closed when no complete authority is discoverable.
 
 ## Requirements
 
@@ -83,6 +87,9 @@ Migration is a pure document transform with source/target validation and a regis
 - Same engagement produces byte-identical ZIPs on the pinned runtime and the same canonical manifest digest after a different-path roundtrip.
 - Traversal, archive/pre-existing symlinks, duplicate/Unicode/case/destination collisions, zip bombs/oversized archives, encrypted/unsupported ZIP features, corrupt hashes, secrets, opaque evidence, and POSIX/macOS/Windows absolute paths are rejected before destination mutation.
 - No SQLite/S3/cloud implementation or customer data exists.
+- Exported canonical payloads cannot exceed limits that the same implementation enforces on import.
+- Authored content reads remain bounded even if a regular file grows after it is opened.
+- Wheel and sdist each contain exactly seven usable public schemas; an empty explicit repository root fails.
 
 ## Risk Assessment
 

@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-ready.local/contracts/report/1.0.0",
+  "title": "AI-ready assessment report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "engagement_id",
+    "framework_version",
+    "sections"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "engagement_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "framework_version": {"const": "1.0.0"},
+    "sections": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "prefixItems": [
+        {"$ref": "#/$defs/executive-summary"},
+        {"$ref": "#/$defs/readiness"},
+        {"$ref": "#/$defs/capability-heatmap"},
+        {"$ref": "#/$defs/gates"},
+        {"$ref": "#/$defs/confidence"},
+        {"$ref": "#/$defs/blockers"},
+        {"$ref": "#/$defs/findings"},
+        {"$ref": "#/$defs/target-state"},
+        {"$ref": "#/$defs/reference-diagrams"},
+        {"$ref": "#/$defs/roadmap"},
+        {"$ref": "#/$defs/technology-options"},
+        {"$ref": "#/$defs/evidence-appendix"}
+      ],
+      "items": false
+    }
+  },
+  "$defs": {
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "content"],
+      "properties": {
+        "id": {"type": "string"},
+        "content": {"type": "object"}
+      }
+    },
+    "executive-summary": {"$ref": "#/$defs/section", "properties": {"id": {"const": "executive-summary"}}},
+    "readiness": {"$ref": "#/$defs/section", "properties": {"id": {"const": "readiness"}}},
+    "capability-heatmap": {"$ref": "#/$defs/section", "properties": {"id": {"const": "capability-heatmap"}}},
+    "gates": {"$ref": "#/$defs/section", "properties": {"id": {"const": "gates"}}},
+    "confidence": {"$ref": "#/$defs/section", "properties": {"id": {"const": "confidence"}}},
+    "blockers": {"$ref": "#/$defs/section", "properties": {"id": {"const": "blockers"}}},
+    "findings": {"$ref": "#/$defs/section", "properties": {"id": {"const": "findings"}}},
+    "target-state": {"$ref": "#/$defs/section", "properties": {"id": {"const": "target-state"}}},
+    "reference-diagrams": {"$ref": "#/$defs/section", "properties": {"id": {"const": "reference-diagrams"}}},
+    "roadmap": {"$ref": "#/$defs/section", "properties": {"id": {"const": "roadmap"}}},
+    "technology-options": {"$ref": "#/$defs/section", "properties": {"id": {"const": "technology-options"}}},
+    "evidence-appendix": {"$ref": "#/$defs/section", "properties": {"id": {"const": "evidence-appendix"}}}
+  }
+}

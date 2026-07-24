@@ -1047,6 +1047,18 @@ def build_check(dist: Path) -> dict[str, Any]:
     sdists = sorted(dist.glob("*.tar.gz"))
     if len(wheels) != 1 or len(sdists) != 1:
         raise ValidationError("build: expected exactly one wheel and one sdist")
+    public_schema_files = {
+        "ai-ready-dataset-manifest-v1.schema.json",
+        "answer-v1.schema.json",
+        "demo-stage-manifest-v1.schema.json",
+        "engagement-v1.schema.json",
+        "framework-v1.schema.json",
+        "recipe-v1.schema.json",
+        "report-v1.schema.json",
+    }
+    wheel_schema_files = {
+        f"assessment/public_schemas/{name}" for name in public_schema_files
+    }
     wheel_expected = {
         *(f"prototype/0.1.0/{name}" for name in CONTENT_FILES),
         "prototype/report-template.html.j2",
@@ -1061,6 +1073,8 @@ def build_check(dist: Path) -> dict[str, Any]:
         "assessment/domain/errors.py",
         "assessment/domain/models.py",
         "assessment/domain/versions.py",
+        "assessment/public_schemas/__init__.py",
+        *wheel_schema_files,
         "assessment/storage/archive.py",
         "assessment/storage/hygiene.py",
         "assessment/storage/limits.py",
@@ -1072,6 +1086,8 @@ def build_check(dist: Path) -> dict[str, Any]:
         wheel_names = set(archive.namelist())
     if not wheel_expected.issubset(wheel_names):
         raise ValidationError("build: wheel is missing required package content")
+    if {name for name in wheel_names if name.endswith(".schema.json")} != wheel_schema_files:
+        raise ValidationError("build: wheel must contain exactly seven public JSON Schemas")
     sdist_expected = {
         f"src/{name}" if name.startswith("assessment/") else name for name in wheel_expected
     }
@@ -1079,6 +1095,11 @@ def build_check(dist: Path) -> dict[str, Any]:
         sdist_names = {"/".join(name.split("/")[1:]) for name in archive.getnames()}
     if not sdist_expected.issubset(sdist_names):
         raise ValidationError("build: sdist is missing required package content")
+    sdist_schema_files = {
+        f"src/assessment/public_schemas/{name}" for name in public_schema_files
+    }
+    if {name for name in sdist_names if name.endswith(".schema.json")} != sdist_schema_files:
+        raise ValidationError("build: sdist must contain exactly seven public JSON Schemas")
     return {
         "wheel": wheels[0].name,
         "sdist": sdists[0].name,

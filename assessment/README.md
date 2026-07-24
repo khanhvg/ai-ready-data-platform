@@ -27,6 +27,12 @@ Generated reports are written to the ignored
 artifacts for Architect A plus explicitly labeled `architect-a/` and `architect-b/` artifacts
 for calibration inspection. Source fixtures and the migration freeze manifest remain tracked.
 
+The installed package carries all seven public v1 JSON Schemas under
+`assessment.public_schemas`. `assessment schema` validates that installed authority, while
+`assessment schema --repo-root <checkout>` validates the repository authority. Either form
+fails when the complete seven-schema authority is unavailable; wheel and sdist build checks
+also require exactly those seven schema files.
+
 ## Portable engagement authority
 
 `LocalEngagementStore` owns one explicit root. Engagement IDs and document keys are validated
@@ -44,9 +50,11 @@ their source. It writes a deterministic receipt and fails unknown versions befor
 destination.
 
 Exports use sorted NFC names, canonical content, normalized modes/timestamps, `ZIP_STORED`, and
-a canonical SHA-256 manifest. V1 admits inspectable UTF-8 text/JSON/CSV and metadata-free
-PNG/JPEG evidence. Import validates all names, ZIP features, limits, hashes, versions, content
-hygiene, and destination state before writing a sibling stage and atomically promoting it.
+a canonical SHA-256 manifest. Per-file and total expanded-byte limits apply to the canonical
+bytes actually stored, including generated checksums and the manifest. V1 admits inspectable
+UTF-8 text/JSON/CSV and metadata-free PNG/JPEG evidence. Import validates all names, ZIP
+features, limits, hashes, versions, content hygiene, and destination state before writing a
+sibling stage and atomically promoting it.
 
 ```bash
 .assessment-venv/bin/python -m assessment export ENGAGEMENT_ROOT engagement.zip

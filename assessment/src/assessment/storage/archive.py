@@ -174,14 +174,20 @@ def _collect_export_entries(root: Path) -> dict[str, bytes]:
         content = path.read_bytes()
         if len(content) > MAX_FILE_BYTES:
             raise ArchiveValidationError(f"{key}: file exceeds v1 limit")
-        entries[key] = _canonical_entry(key, content)
+        canonical = _canonical_entry(key, content)
+        if len(canonical) > MAX_FILE_BYTES:
+            raise ArchiveValidationError(f"{key}: canonical file exceeds v1 limit")
+        entries[key] = canonical
         folded.add(collision_key)
     checksums = {
         "schema_version": "1.0.0",
         "algorithm": "sha256",
         "files": {key: sha256_bytes(content) for key, content in sorted(entries.items())},
     }
-    entries[CHECKSUMS_NAME] = canonical_json(checksums)
+    checksum_bytes = canonical_json(checksums)
+    if len(checksum_bytes) > MAX_FILE_BYTES:
+        raise ArchiveValidationError(f"{CHECKSUMS_NAME}: canonical file exceeds v1 limit")
+    entries[CHECKSUMS_NAME] = checksum_bytes
     _validate_portable_documents(entries)
     return dict(sorted(entries.items()))
 
@@ -253,11 +259,13 @@ def export_engagement(root: Path, archive_path: Path) -> dict[str, Any]:
     entries = _collect_export_entries(root)
     if len(entries) > MAX_ARCHIVE_ENTRIES:
         raise ArchiveValidationError("archive entry-count limit exceeded")
-    total = sum(len(content) for content in entries.values())
-    if total > MAX_TOTAL_BYTES:
-        raise ArchiveValidationError("archive expanded-size limit exceeded")
     manifest = _build_manifest(engagement, entries)
-    payloads = {**entries, MANIFEST_NAME: canonical_json(manifest)}
+    manifest_bytes = canonical_json(manifest)
+    if len(manifest_bytes) > MAX_FILE_BYTES:
+        raise ArchiveValidationError(f"{MANIFEST_NAME}: canonical file exceeds v1 limit")
+    payloads = {**entries, MANIFEST_NAME: manifest_bytes}
+    if sum(len(content) for content in payloads.values()) > MAX_TOTAL_BYTES:
+        raise ArchiveValidationError("archive expanded-size limit exceeded")
     archive_path.parent.mkdir(parents=True, exist_ok=True)
     temporary = archive_path.with_name(f".{archive_path.name}.tmp-{uuid.uuid4().hex}")
     try:

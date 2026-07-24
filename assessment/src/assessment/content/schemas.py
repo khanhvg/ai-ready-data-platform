@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping
+from importlib.resources.abc import Traversable
 from pathlib import Path
 from typing import Any
 
@@ -13,7 +14,7 @@ from jsonschema.exceptions import SchemaError
 from assessment.domain.errors import ContentValidationError
 
 
-def load_schema(path: Path) -> dict[str, Any]:
+def load_schema(path: Path | Traversable) -> dict[str, Any]:
     try:
         schema = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+import stat
 from pathlib import Path
 from typing import Any
 
@@ -15,11 +17,21 @@ MAX_AUTHORED_BYTES = 1_048_576
 
 
 def _read_bounded_utf8(path: Path, *, maximum_bytes: int = MAX_AUTHORED_BYTES) -> str:
+    flags = os.O_RDONLY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
     try:
-        size = path.stat().st_size
-        if size > maximum_bytes:
+        descriptor = os.open(path, flags)
+        try:
+            if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+                raise ContentValidationError(f"{path}: content must be a regular file")
+            with os.fdopen(descriptor, "rb", closefd=False) as handle:
+                content = handle.read(maximum_bytes + 1)
+        finally:
+            os.close(descriptor)
+        if len(content) > maximum_bytes:
             raise ContentValidationError(f"{path}: exceeds {maximum_bytes} byte limit")
-        return path.read_bytes().decode("utf-8", errors="strict")
+        return content.decode("utf-8", errors="strict")
     except UnicodeDecodeError as error:
         raise ContentValidationError(f"{path}: content must be UTF-8") from error
     except OSError as error:

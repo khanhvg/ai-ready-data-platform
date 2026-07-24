@@ -127,6 +127,48 @@ def test_export_is_byte_stable_and_distinct_path_roundtrip_preserves_digest(
     assert third.read_bytes() == first.read_bytes()
 
 
+def test_export_rejects_content_that_exceeds_limit_after_canonicalization(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = create_engagement(tmp_path / "source")
+    evidence = source / "evidence/files/canonical-expansion.json"
+    document = {f"k{index:03d}": "v" for index in range(70)}
+    compact = json.dumps(document, separators=(",", ":"), sort_keys=True).encode()
+    canonical = (json.dumps(document, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode()
+    assert len(compact) < 1_024 < len(canonical)
+    evidence.write_bytes(compact)
+    monkeypatch.setattr("assessment.storage.archive.MAX_FILE_BYTES", 1_024)
+
+    archive = tmp_path / "canonical-expansion.zip"
+    with pytest.raises(ArchiveValidationError, match="canonical file exceeds"):
+        export_engagement(source, archive)
+    assert not archive.exists()
+
+    evidence.unlink()
+    manifest = export_engagement(source, archive)
+    destination = tmp_path / "roundtrip-destination"
+    imported = import_engagement(archive, destination)
+    assert imported["digest"] == manifest["digest"]
+    with zipfile.ZipFile(archive) as handle:
+        sizes = {info.filename: info.file_size for info in handle.infolist()}
+    assert max(sizes.values()) <= 1_024
+
+    archive.unlink()
+    without_manifest = sum(
+        size for filename, size in sizes.items() if filename != "manifest.json"
+    )
+    monkeypatch.setattr("assessment.storage.archive.MAX_TOTAL_BYTES", without_manifest)
+    with pytest.raises(ArchiveValidationError, match="expanded-size limit"):
+        export_engagement(source, archive)
+    assert not archive.exists()
+
+    monkeypatch.setattr("assessment.storage.archive.MAX_TOTAL_BYTES", 128 * 1_024 * 1_024)
+    monkeypatch.setattr("assessment.storage.archive.MAX_FILE_BYTES", 500)
+    with pytest.raises(ArchiveValidationError, match="manifest.json: canonical file exceeds"):
+        export_engagement(source, archive)
+    assert not archive.exists()
+
+
 @pytest.mark.parametrize(
     ("entry_name", "content"),
     [

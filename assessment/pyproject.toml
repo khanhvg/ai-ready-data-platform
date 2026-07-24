@@ -27,12 +27,14 @@ packages = [
   "assessment",
   "assessment.content",
   "assessment.domain",
+  "assessment.public_schemas",
   "assessment.storage",
 ]
 package-dir = {assessment = "src/assessment"}
 
 [tool.setuptools.package-data]
 prototype = ["0.1.0/*.yaml", "*.j2", "*.css"]
+"assessment.public_schemas" = ["*.schema.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
