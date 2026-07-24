@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-ready-assessment-prototype"
-version = "0.2.0"
-description = "Offline AI-ready assessment contracts, prototype, and portable local storage"
+version = "0.3.0"
+description = "Offline deterministic AI-ready assessment engine, reports, and portable storage"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
@@ -27,7 +27,10 @@ packages = [
   "assessment",
   "assessment.content",
   "assessment.domain",
+  "assessment.engine",
+  "assessment.framework_assets",
   "assessment.public_schemas",
+  "assessment.reporting",
   "assessment.storage",
 ]
 package-dir = {assessment = "src/assessment"}
@@ -35,6 +38,11 @@ package-dir = {assessment = "src/assessment"}
 [tool.setuptools.package-data]
 prototype = ["0.1.0/*.yaml", "*.j2", "*.css"]
 "assessment.public_schemas" = ["*.schema.json"]
+assessment = [
+  "framework_assets/1.0.0/*.yaml",
+  "framework_assets/1.0.0/*.j2",
+  "framework_assets/1.0.0/*.css",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

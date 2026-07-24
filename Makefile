@@ -27,7 +27,7 @@ ASSESSMENT_OFFLINE := assessment/tools/run-offline.sh
 	assessment-install assessment-schema assessment-contract assessment-scenarios assessment-calibration \
 	assessment-report assessment-test assessment-store assessment-migration assessment-import-export \
 	assessment-portability assessment-security-scan assessment-lint assessment-typecheck assessment-build \
-	assessment-clean
+	assessment-engine assessment-clean
 
 venv: $(VENV)/bin/python3
 
@@ -141,12 +141,25 @@ assessment-contract:
 
 assessment-scenarios:
 	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_CLI) scenarios --fixture-root $(ASSESSMENT_FIXTURES)
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m pytest -q \
+		assessment/tests/scenario/test_v1_scenario_goldens.py
 
 assessment-calibration:
 	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_CLI) calibration --fixture-root $(ASSESSMENT_FIXTURES)
 
 assessment-report:
 	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_CLI) report --verify-stability --fixture-root $(ASSESSMENT_FIXTURES)
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m pytest -q \
+		assessment/tests/contract/test_report_contract.py
+
+assessment-engine:
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m pytest -q \
+		assessment/tests/unit/test_maturity.py \
+		assessment/tests/unit/test_confidence.py \
+		assessment/tests/unit/test_gates.py \
+		assessment/tests/unit/test_findings.py \
+		assessment/tests/unit/test_priority.py \
+		assessment/tests/unit/test_recommendations.py
 
 assessment-test:
 	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m pytest -q assessment/tests

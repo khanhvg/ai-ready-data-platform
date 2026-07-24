@@ -435,6 +435,28 @@ class LocalEngagementStore:
         finally:
             os.close(engagement_descriptor)
 
+    def read_documents_and_snapshot(
+        self,
+        engagement_id: str,
+        keys: tuple[str, ...],
+    ) -> tuple[dict[str, dict[str, Any] | None], dict[str, str]]:
+        """Read a coherent source state while excluding cooperating writers."""
+        documents: dict[str, dict[str, Any] | None] = {}
+        with self.lock(engagement_id) as engagement_descriptor:
+            for key in keys:
+                try:
+                    document = json.loads(
+                        _read_relative_at(engagement_descriptor, key)
+                    )
+                except FileNotFoundError:
+                    documents[key] = None
+                    continue
+                if not isinstance(document, dict):
+                    raise ValueError(f"{key}: expected a JSON object")
+                documents[key] = document
+            snapshot = self._snapshot_at(engagement_descriptor)
+        return documents, snapshot
+
     def write_document(self, engagement_id: str, key: str, document: Mapping[str, Any]) -> None:
         validate_relative_posix_path(key)
         if key == "engagement.json":

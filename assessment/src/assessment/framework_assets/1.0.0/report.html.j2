@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI-ready assessment — {{ report.engagement_id }}</title>
+  <style>{{ css }}</style>
+</head>
+<body>
+<main id="report-main">
+  <header>
+    <p class="eyebrow">AI-ready data platform assessment</p>
+    <h1>{{ sections["executive-summary"].organization }}</h1>
+    <p>{{ sections["executive-summary"].statement }}</p>
+    <p class="meta">Framework {{ report.framework_version }} · Engagement {{ report.engagement_id }}</p>
+  </header>
+
+  {% for section in report.sections %}
+  <section id="{{ section.id }}">
+    <h2>{{ section.id | replace("-", " ") | title }}</h2>
+    {% if section.id == "readiness" %}
+      <dl>
+        <dt>Pre-gate readiness</dt><dd>{% if section.content.pre_gate_level is not none %}{{ section.content.pre_gate_level }} — {{ section.content.pre_gate_label }}{% else %}Not assessed{% endif %}</dd>
+        <dt>Final readiness</dt><dd>{% if section.content.final_level is not none %}{{ section.content.final_level }} — {{ section.content.final_label }}{% else %}Not assessed{% endif %}</dd>
+        <dt>Presentation score</dt><dd>{{ section.content.presentation_score if section.content.presentation_score is not none else "Not assessed" }}</dd>
+        <dt>Selected cap</dt><dd>{{ section.content.selected_cap if section.content.selected_cap is not none else "None" }}</dd>
+      </dl>
+    {% elif section.id == "capability-heatmap" %}
+      <table>
+        <caption>Capability maturity and coverage</caption>
+        <thead><tr><th scope="col">Capability</th><th scope="col">Maturity</th><th scope="col">Coverage</th><th scope="col">Anchor</th></tr></thead>
+        <tbody>{% for item in section.content["items"] %}
+          <tr><th scope="row">{{ item.capability_id }} — {{ item.name }}</th><td>{{ item.score if item.score is not none else "Not assessed" }} — {{ item.label }}</td><td>{{ item.answered_count }}/{{ item.question_count }}</td><td>{{ item.anchor if item.anchor is not none else "Coverage threshold not met" }}</td></tr>
+        {% endfor %}</tbody>
+      </table>
+    {% elif section.id == "gates" %}
+      {% for item in section.content["items"] %}
+      <article>
+        <h3>{{ item.rule_id }} — {{ "Triggered" if item.triggered else ("Not triggered" if item.evaluated else "Not evaluated") }}</h3>
+        <p><strong>Operand:</strong> {{ item.operand_id }} = {{ item.operand_value }}</p>
+        <p><strong>Provenance:</strong> {{ item.operand_provenance | join(", ") }}</p>
+        <p><strong>Trace:</strong> pre-gate {{ item.pre_gate_level }}; cap {{ item.applied_cap }}; rule result {{ item.rule_result }}; final {{ item.final_level }}</p>
+        <p>{{ item.explanation }}</p>
+      </article>
+      {% endfor %}
+    {% elif section.id == "confidence" %}
+      <p>Conservative summary: {{ section.content.least_assured_assessed_status if section.content.least_assured_assessed_status is not none else "Not assessed" }}</p>
+      <p><strong>Overall distribution:</strong>
+      {% for status, count in section.content.overall_distribution | dictsort %}{{ status }}: {{ count }}{% if not loop.last %}; {% endif %}{% endfor %}</p>
+      <table><caption>Confidence distribution by capability</caption><thead><tr><th scope="col">Capability</th><th scope="col">Distribution</th><th scope="col">Least assured</th><th scope="col">Next action</th></tr></thead><tbody>
+      {% for item in section.content["items"] %}<tr><th scope="row">{{ item.capability_id }}</th><td>{% for status, count in item.distribution | dictsort %}{{ status }}: {{ count }}{% if not loop.last %}; {% endif %}{% endfor %}</td><td>{{ item.least_assured_assessed_status if item.least_assured_assessed_status is not none else "Not assessed" }}</td><td>{{ item.next_action }}</td></tr>{% endfor %}
+      </tbody></table>
+    {% elif section.id in ["blockers", "findings"] %}
+      {% for item in section.content["items"] %}
+      <article>
+        <h3>{{ item.title }}</h3>
+        <p><strong>Gap:</strong> {{ item.gap }}</p>
+        <p><strong>Impact:</strong> {{ item.impact }}</p>
+        <p><strong>Priority:</strong> {{ item.priority }}</p>
+        <p><strong>Recommendation:</strong> {{ item.recommendation }}</p>
+        <p><strong>Architecture:</strong> {{ item.architecture_reference }}</p>
+        <p><strong>Evidence action:</strong> {{ item.evidence_validation_action }}</p>
+        <p><strong>Source operands:</strong> {{ item.source_operand_ids | join(", ") }}</p>
+        <p><strong>Demo illustration:</strong> {{ item.demo_reference }}</p>
+        <p><strong>Architect review:</strong> {{ item.architect_review.state }}{% if item.architect_review.edit_note %} — {{ item.architect_review.edit_note }}{% endif %}</p>
+      </article>
+      {% else %}<p>None.</p>{% endfor %}
+    {% elif section.id == "reference-diagrams" %}
+      <div class="diagram" role="img" aria-label="Finding-to-architecture reference diagram">
+        <svg viewBox="0 0 600 120" aria-hidden="true" focusable="false">
+          <rect x="10" y="20" width="170" height="60" rx="8"></rect>
+          <text x="95" y="55" text-anchor="middle">Assessment findings</text>
+          <line x1="180" y1="50" x2="410" y2="50"></line>
+          <polygon points="410,50 395,42 395,58"></polygon>
+          <rect x="410" y="20" width="180" height="60" rx="8"></rect>
+          <text x="500" y="55" text-anchor="middle">Target architectures</text>
+        </svg>
+      </div>
+      <table><caption>Diagram data table</caption><thead><tr><th scope="col">Finding</th><th scope="col">Architecture</th></tr></thead><tbody>
+      {% for item in section.content["items"] %}<tr><td>{{ item.title }}</td><td>{{ item.architecture_id }}</td></tr>{% else %}<tr><td colspan="2">No architecture references.</td></tr>{% endfor %}
+      </tbody></table>
+    {% elif section.id == "roadmap" %}
+      <ol>{% for item in section.content["items"] %}<li><strong>{{ item.priority }}</strong> — {{ item.action }} ({{ item.review_state }})</li>{% else %}<li>No generated roadmap actions.</li>{% endfor %}</ol>
+    {% elif section.id == "technology-options" %}
+      <ul>{% for item in section.content["items"] %}<li>{{ item.finding_id }}: {{ item.vendor_neutral_options | join(", ") }}</li>{% else %}<li>No technology options required.</li>{% endfor %}</ul>
+    {% elif section.id == "evidence-appendix" %}
+      <p><strong>Source-state digest:</strong> <code>{{ section.content.source_state_digest }}</code></p>
+      <p><strong>Provenance classes:</strong> {{ section.content.provenance_classes | join(", ") }}</p>
+      <p><strong>Demo evidence used for scoring:</strong> {{ section.content.demo_evidence_used_for_scoring }}</p>
+      <table><caption>Answers and evidence references</caption><thead><tr><th scope="col">Question</th><th scope="col">Rating</th><th scope="col">Evidence status</th><th scope="col">Note</th><th scope="col">Evidence references</th></tr></thead><tbody>
+      {% for answer in section.content.answers %}<tr><th scope="row">{{ answer.question_id }}</th><td>{{ answer.rating if answer.rating is not none else "Not assessed" }}</td><td>{{ answer.evidence_status }}</td><td>{{ answer.note if answer.note else "None" }}</td><td>{{ answer.evidence_refs | join(", ") if answer.evidence_refs else "None" }}</td></tr>{% endfor %}
+      </tbody></table>
+      <table><caption>Diagnostic facts</caption><thead><tr><th scope="col">Fact</th><th scope="col">Value</th></tr></thead><tbody>
+      {% for fact_id, value in section.content.diagnostic_facts | dictsort %}<tr><th scope="row">{{ fact_id }}</th><td>{{ value }}</td></tr>{% endfor %}
+      </tbody></table>
+    {% elif section.id == "executive-summary" %}
+      <p>{{ section.content.statement }}</p>
+    {% elif section.id == "target-state" %}
+      <p>{{ section.content.principle }}</p><p>Target maturity level: {{ section.content.target_level if section.content.target_level is not none else "Not assessed" }}</p>
+    {% else %}
+      <p>Section content is available in the canonical report JSON.</p>
+    {% endif %}
+  </section>
+  {% endfor %}
+</main>
+</body>
+</html>
