@@ -1,9 +1,11 @@
 # GitHub Issue #38 Phase 2 verification evidence
 
-Status: bounded corrective implementation complete after an independent
-exact-head verifier rejected the prior PR head. Replacement-head publication
-evidence is recorded in PR #40 and Issue #38 after the immutable pushed head is
-known; a completely fresh independent verifier is still required.
+Status: the second bounded corrective implementation, worker review, and
+pre-publication verification are complete after the replacement-head verifier
+rejected PR head `4bf7646338bbe291f2f38a13fa9e57150ba6d906`.
+The immutable replacement-head identity and publication state are recorded in
+Issue #38 after push; a completely fresh independent verifier is still
+required.
 
 ## Scope
 
@@ -112,3 +114,66 @@ must use canonical paths such as `/private/var/...` instead of `/var/...`.
 Atomic no-replace directory promotion currently requires macOS `renameatx_np`
 or Linux `renameat2`; unsupported POSIX platforms fail closed. The
 object-store/S3 boundary remains documentation-only.
+
+### Export path-replacement consistency correction
+
+The replacement-head verifier found one additional Important finding at
+`4bf7646338bbe291f2f38a13fa9e57150ba6d906`: export checked each source pathname
+with `is_symlink()`/`is_file()` and later read it through `Path.read_bytes()`.
+A deterministic synthetic swap replaced `evidence/files/proof.txt` with a
+symlink in that interval and printed:
+
+```text
+EXPORT_SYMLINK_SWAP_FOLLOWED True True True Sanitized external proof.
+```
+
+A local reproduction on the unchanged input head repeated that exact result.
+The focused regression was then added before production changes and failed for
+both `engagement.json` and an evidence entry with `DID NOT RAISE` (exit 1).
+
+The bounded correction binds export traversal to a no-follow root descriptor,
+opens child directories and files relative to their already-bound parent
+descriptors, verifies scanned/opened filesystem identity and regular type,
+reads at most the versioned file limit plus one byte, and rejects mutation
+during a read. `engagement.json` is validated from the same descriptor-bound
+bytes collected for the archive instead of a separate pathname read.
+
+The focused replacement selection passed all four parameterized cases:
+`engagement.json` and `evidence/files/proof.txt`, each replaced by a regular
+file and a symlink between scan and descriptor open. The combined focused
+selection, including the four earlier corrective regressions, passed all eight
+pytest cases.
+
+The fresh pre-publication worker matrix completed with:
+
+- schema authority 7; contract 18 passed; local store 10 passed; migration 10
+  passed;
+- import/export 29 passed plus the documented object-store skip; portability 1
+  passed; security 28 passed plus the same skip;
+- scenarios 48 assertions across 8 raters; calibration 117/119 within one level
+  (98.3%); reports 36 byte-stable artifacts;
+- full assessment suite 100 passed plus the documented skip; Ruff clean; strict
+  mypy clean over 22 source files;
+- wheel and sdist build inventory 32 required files; independent inventories
+  of 42 wheel entries and 57 sdist entries, with exactly seven schemas in each;
+  both artifacts validated all seven schemas from isolated installs and an
+  explicit empty root failed with exit 2;
+- `exact-head-proof` two-export/distinct-root import/re-export byte identity,
+  ZIP SHA-256
+  `0bc0a8641fe97d08556e0326689fdeabb3e4988d537b4ddf7f3b60fe9c2bf629`,
+  and manifest digest
+  `ee7eb92a3708e329e03ee0d465760d15255b503d27620f401c7b8c65b2331c1e`;
+- `docker compose config --quiet`, compilation of the 10 tracked non-test
+  Python entrypoints, diff checks, ignored-artifact assertions, nonignored
+  untracked-file check, and bounded scope/privacy scans.
+
+The pending-diff review passed specification compliance first and code quality
+second with `0 Critical / 0 Important` findings. The correction preserves the
+public API and contains no credential, customer data, local absolute home path,
+cloud action, upload, deployment, SQLite authority, object-store
+implementation, Phase 3+ code, destructive engagement behavior, or skill
+change. Cloud actions performed: zero.
+
+This is producing-worker evidence, not independent verification. PR #40 must
+remain unmerged until a completely fresh verifier passes the exact immutable
+replacement head with zero Critical and Important findings.

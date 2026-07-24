@@ -13,11 +13,16 @@
 - Date: 2026-07-24
 - Description: Establish final versioned content/data contracts, authoritative engagement folders, atomic local storage, migration, and safe deterministic import/export.
 - Priority: P2
-- Implementation status: Corrected after the independent verifier rejected prior PR head
-  `b625d82a3929cca5c2629df390761184a206fba1`; replacement-head evidence is published in PR #40
-  and Issue #38 after final identity checks.
-- Review status: Bounded corrective specification and code-quality reviews each report
-  0 Critical and 0 Important findings; a completely fresh independent verifier remains required.
+- Implementation status: Second bounded correction complete and verified for publication after
+  the replacement-head verifier rejected PR head
+  `4bf7646338bbe291f2f38a13fa9e57150ba6d906` for an export path-replacement
+  consistency defect. Export traversal and reads are descriptor-relative, no-follow, bounded,
+  and identity-checked; `engagement.json` is validated from the collected archive bytes.
+- Review status: Bounded specification-first and code-quality reviews each report 0 Critical
+  and 0 Important findings. The focused replacement matrix, the four prior corrective
+  regressions, full Phase 2/Phase 1 gates, distribution inventories, and deterministic
+  portability proof pass. This producing-worker result is not independent verification; a
+  completely fresh exact-head verifier remains required after publication.
 
 ## Key Insights
 

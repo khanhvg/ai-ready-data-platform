@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import stat
 import zipfile
 from collections.abc import Callable
@@ -166,6 +167,77 @@ def test_export_rejects_content_that_exceeds_limit_after_canonicalization(
     monkeypatch.setattr("assessment.storage.archive.MAX_FILE_BYTES", 500)
     with pytest.raises(ArchiveValidationError, match="manifest.json: canonical file exceeds"):
         export_engagement(source, archive)
+    assert not archive.exists()
+
+
+@pytest.mark.parametrize(
+    ("target_key", "restore_after_legacy_read", "replacement_kind"),
+    (
+        ("engagement.json", True, "regular"),
+        ("engagement.json", True, "symlink"),
+        ("evidence/files/proof.txt", False, "regular"),
+        ("evidence/files/proof.txt", False, "symlink"),
+    ),
+)
+def test_export_rejects_path_replacement_between_scan_and_descriptor_open(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    target_key: str,
+    restore_after_legacy_read: bool,
+    replacement_kind: str,
+) -> None:
+    source = create_engagement(tmp_path / "source")
+    target = source.joinpath(*target_key.split("/"))
+    if target_key.startswith("evidence/"):
+        target.write_bytes(b"Original proof.\n")
+        external_content = b"Sanitized external proof.\n"
+    else:
+        external_content = target.read_bytes()
+    external = tmp_path / "external.txt"
+    external.write_bytes(external_content)
+    held = target.with_name(f"{target.name}.held")
+    original_read_bytes = Path.read_bytes
+    original_os_open = os.open
+    state = {"swapped": False}
+
+    def swap_to_symlink() -> bool:
+        if state["swapped"]:
+            return False
+        state["swapped"] = True
+        target.rename(held)
+        if replacement_kind == "symlink":
+            target.symlink_to(external)
+        else:
+            target.write_bytes(external_content)
+        return True
+
+    def swap_then_legacy_read(path: Path) -> bytes:
+        if path != target:
+            return original_read_bytes(path)
+        swapped = swap_to_symlink()
+        content = original_read_bytes(path)
+        if swapped and restore_after_legacy_read:
+            target.unlink()
+            held.rename(target)
+        return content
+
+    def swap_then_descriptor_open(
+        path: str | bytes | os.PathLike[str] | os.PathLike[bytes],
+        flags: int,
+        mode: int = 0o777,
+        *,
+        dir_fd: int | None = None,
+    ) -> int:
+        if dir_fd is not None and os.fsdecode(path) == target.name:
+            swap_to_symlink()
+        return original_os_open(path, flags, mode, dir_fd=dir_fd)
+
+    monkeypatch.setattr(Path, "read_bytes", swap_then_legacy_read)
+    monkeypatch.setattr(os, "open", swap_then_descriptor_open)
+    archive = tmp_path / "replacement.zip"
+    with pytest.raises(ArchiveValidationError, match="changed|symlink"):
+        export_engagement(source, archive)
+    assert state["swapped"]
     assert not archive.exists()
 
 
@@ -515,6 +587,11 @@ def test_image_evidence_is_metadata_free_and_source_symlinks_are_rejected(
         canonical = handle.read("evidence/files/proof.png")
     with Image.open(BytesIO(canonical)) as image:
         assert image.info == {}
+
+    linked_source = tmp_path / "linked-source"
+    linked_source.symlink_to(source, target_is_directory=True)
+    with pytest.raises(ArchiveValidationError, match="real engagement directory"):
+        export_engagement(linked_source, tmp_path / "linked-source-export.zip")
 
     linked = source / "evidence/files/linked.txt"
     linked.symlink_to(source / "evidence/files/notes.txt")

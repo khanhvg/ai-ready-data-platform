@@ -41,6 +41,7 @@ from assessment.storage.limits import (
     STREAM_CHUNK_BYTES,
 )
 from assessment.storage.local import (
+    _open_absolute_directory,
     canonical_json,
     fsync_directory,
     promote_directory_no_replace,
@@ -140,29 +141,123 @@ def _excluded_key(key: str) -> bool:
     )
 
 
-def _validate_export_source(root: Path) -> Engagement:
-    if root.is_symlink() or not root.is_dir():
-        raise ArchiveValidationError("export source must be a real engagement directory")
-    engagement_path = root / "engagement.json"
-    if not engagement_path.is_file() or engagement_path.is_symlink():
+def _validate_export_source(entries: Mapping[str, bytes]) -> Engagement:
+    engagement_bytes = entries.get("engagement.json")
+    if engagement_bytes is None:
         raise ArchiveValidationError("engagement.json is missing or is a symlink")
     try:
-        return Engagement.model_validate_json(engagement_path.read_bytes())
+        return Engagement.model_validate_json(engagement_bytes)
     except ValueError as error:
         raise ArchiveValidationError("engagement.json violates the v1 contract") from error
 
 
-def _collect_export_entries(root: Path) -> dict[str, bytes]:
-    entries: dict[str, bytes] = {}
-    folded: set[str] = set()
-    for path in sorted(root.rglob("*")):
-        if path.is_symlink():
-            raise ArchiveValidationError(
-                f"{path.relative_to(root).as_posix()}: archive source symlinks are forbidden"
+def _same_entry(first: os.stat_result, second: os.stat_result) -> bool:
+    return (
+        first.st_dev == second.st_dev
+        and first.st_ino == second.st_ino
+        and stat.S_IFMT(first.st_mode) == stat.S_IFMT(second.st_mode)
+    )
+
+
+def _open_scanned_directory(
+    parent_descriptor: int,
+    entry: os.DirEntry[str],
+    expected: os.stat_result,
+    *,
+    key: str,
+) -> int:
+    flags = os.O_RDONLY
+    if hasattr(os, "O_DIRECTORY"):
+        flags |= os.O_DIRECTORY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    try:
+        descriptor = os.open(entry.name, flags, dir_fd=parent_descriptor)
+    except OSError as error:
+        raise ArchiveValidationError(
+            f"{key}: archive source directory changed or became a symlink"
+        ) from error
+    actual = os.fstat(descriptor)
+    if not stat.S_ISDIR(actual.st_mode) or not _same_entry(expected, actual):
+        os.close(descriptor)
+        raise ArchiveValidationError(f"{key}: archive source directory changed")
+    return descriptor
+
+
+def _read_scanned_file(
+    parent_descriptor: int,
+    entry: os.DirEntry[str],
+    expected: os.stat_result,
+    *,
+    key: str,
+) -> bytes:
+    flags = os.O_RDONLY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    try:
+        descriptor = os.open(entry.name, flags, dir_fd=parent_descriptor)
+    except OSError as error:
+        raise ArchiveValidationError(
+            f"{key}: archive source file changed or became a symlink"
+        ) from error
+    try:
+        opened = os.fstat(descriptor)
+        if not stat.S_ISREG(opened.st_mode) or not _same_entry(expected, opened):
+            raise ArchiveValidationError(f"{key}: archive source file changed")
+        with os.fdopen(descriptor, "rb", closefd=False) as handle:
+            content = handle.read(MAX_FILE_BYTES + 1)
+        if len(content) > MAX_FILE_BYTES:
+            raise ArchiveValidationError(f"{key}: file exceeds v1 limit")
+        after_read = os.fstat(descriptor)
+        if (
+            not _same_entry(opened, after_read)
+            or opened.st_size != after_read.st_size
+            or opened.st_mtime_ns != after_read.st_mtime_ns
+            or opened.st_ctime_ns != after_read.st_ctime_ns
+        ):
+            raise ArchiveValidationError(f"{key}: archive source file changed while reading")
+        return content
+    finally:
+        os.close(descriptor)
+
+
+def _collect_export_directory(
+    directory_descriptor: int,
+    entries: dict[str, bytes],
+    folded: set[str],
+    *,
+    prefix: str = "",
+) -> None:
+    with os.scandir(directory_descriptor) as scanned:
+        children = sorted(scanned, key=lambda item: item.name)
+    for entry in children:
+        raw_key = f"{prefix}/{entry.name}" if prefix else entry.name
+        try:
+            expected = entry.stat(follow_symlinks=False)
+        except OSError as error:
+            raise ArchiveValidationError(f"{raw_key}: archive source entry changed") from error
+        if stat.S_ISLNK(expected.st_mode):
+            raise ArchiveValidationError(f"{raw_key}: archive source symlinks are forbidden")
+        if stat.S_ISDIR(expected.st_mode):
+            child_descriptor = _open_scanned_directory(
+                directory_descriptor,
+                entry,
+                expected,
+                key=raw_key,
             )
-        if not path.is_file():
+            try:
+                _collect_export_directory(
+                    child_descriptor,
+                    entries,
+                    folded,
+                    prefix=raw_key,
+                )
+            finally:
+                os.close(child_descriptor)
             continue
-        key = unicodedata.normalize("NFC", path.relative_to(root).as_posix())
+        if not stat.S_ISREG(expected.st_mode):
+            continue
+        key = unicodedata.normalize("NFC", raw_key)
         if _excluded_key(key):
             continue
         validate_relative_posix_path(key)
@@ -171,14 +266,30 @@ def _collect_export_entries(root: Path) -> dict[str, bytes]:
         collision_key = key.casefold()
         if key in entries or collision_key in folded:
             raise ArchiveValidationError(f"{key}: duplicate Unicode/case-fold key")
-        content = path.read_bytes()
-        if len(content) > MAX_FILE_BYTES:
-            raise ArchiveValidationError(f"{key}: file exceeds v1 limit")
+        content = _read_scanned_file(
+            directory_descriptor,
+            entry,
+            expected,
+            key=key,
+        )
         canonical = _canonical_entry(key, content)
         if len(canonical) > MAX_FILE_BYTES:
             raise ArchiveValidationError(f"{key}: canonical file exceeds v1 limit")
         entries[key] = canonical
         folded.add(collision_key)
+
+
+def _collect_export_entries(root: Path) -> dict[str, bytes]:
+    entries: dict[str, bytes] = {}
+    folded: set[str] = set()
+    try:
+        root_descriptor = _open_absolute_directory(root)
+    except (OSError, ValueError) as error:
+        raise ArchiveValidationError("export source must be a real engagement directory") from error
+    try:
+        _collect_export_directory(root_descriptor, entries, folded)
+    finally:
+        os.close(root_descriptor)
     checksums = {
         "schema_version": "1.0.0",
         "algorithm": "sha256",
@@ -255,8 +366,8 @@ def _zip_info(key: str) -> zipfile.ZipInfo:
 
 def export_engagement(root: Path, archive_path: Path) -> dict[str, Any]:
     """Export canonical state as a byte-stable ZIP_STORED archive."""
-    engagement = _validate_export_source(root)
     entries = _collect_export_entries(root)
+    engagement = _validate_export_source(entries)
     if len(entries) > MAX_ARCHIVE_ENTRIES:
         raise ArchiveValidationError("archive entry-count limit exceeded")
     manifest = _build_manifest(engagement, entries)
