@@ -4,7 +4,7 @@ description: "Build a portable, architect-led assessment workflow with determini
 status: in-progress
 priority: P2
 effort: 36d
-branch: feature/issue-38-phase-2-contracts-portability
+branch: feature/issue-38-phase-3-deterministic-engine-report
 tags: [assessment, architecture, evidence, local-first, data-platform]
 created: 2026-07-24
 ---
@@ -29,7 +29,7 @@ Deliver a Python 3.12 local-first package for Solution/Enterprise Architects to 
 |---|---|---:|---|---:|
 | 1 | [Rubric/report prototype and synthetic calibration](./phase-01-rubric-report-prototype-and-calibration.md) | 4d | Completed | 100% |
 | 2 | [Versioned schemas, local store, migration, import/export](./phase-02-versioned-contracts-local-store-and-portability.md) | 5d | Completed | 100% |
-| 3 | [Deterministic assessment engine and report generation](./phase-03-deterministic-engine-and-report-generation.md) | 5d | Pending | 0% |
+| 3 | [Deterministic assessment engine and report generation](./phase-03-deterministic-engine-and-report-generation.md) | 5d | Completed | 100% |
 | 4 | [Loopback server-rendered assessment workflow](./phase-04-loopback-web-assessment-workflow.md) | 4d | Pending | 0% |
 | 5 | [Capability, architecture, mapping, and Demo Guide catalog](./phase-05-capability-architecture-and-demo-catalog.md) | 4d | Pending | 0% |
 | 6 | [Golden retail pipeline evidence gaps and manifests](./phase-06-golden-retail-evidence-and-manifests.md) | 5d | Pending | 0% |

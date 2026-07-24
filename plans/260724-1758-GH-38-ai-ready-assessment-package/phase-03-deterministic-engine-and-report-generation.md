@@ -12,8 +12,9 @@
 - Date: 2026-07-24
 - Description: Build deterministic maturity, confidence, readiness-gate, finding/recommendation, and canonical report services over final v1 contracts.
 - Priority: P2
-- Implementation status: Pending
-- Review status: Pending Phase 2 contract/store review.
+- Implementation status: Completed
+- Review status: Initial edge-case scout findings corrected; fresh exact-head review remains
+  pending publication.
 
 ## Key Insights
 
@@ -44,15 +45,16 @@ assessment result + catalog/demo references + reviews -> report.json -> report.h
 
 Maturity uses the versioned aggregation, capability anchors, readiness labels, exact decimal presentation formula, and coverage rules fixed in calibration. Confidence summarizes status counts and chooses the most conservative status by configured precedence. The pinned assessment profile selects the exact seven-rule gate bundle; gates evaluate without short-circuiting so every triggered/non-triggered rule has an operand-level trace and the most restrictive cap wins. Findings are sorted deterministically by priority, capability order, and finding ID. Canonical JSON uses stable key/list order, one-decimal presentation-score strings, and an explicit source-state digest; generated wall-clock time is excluded or injected from engagement metadata.
 
-## Related code files
+## Implemented code files
 
-- Create: `assessment/src/assessment/engine/{maturity.py,confidence.py,gates.py,findings.py,recommendations.py,priority.py}`
-- Create: `assessment/src/assessment/reporting/{models.py,generator.py,renderer.py}`
-- Create: `assessment/content/frameworks/1.0.0/report-templates/{report.html.j2,report.css}`
-- Create: `assessment/tests/unit/test_{maturity,confidence,gates,findings,recommendations,priority}.py`
-- Create: `assessment/tests/contract/test_report_contract.py`
-- Create: `assessment/tests/scenario/test_v1_scenario_goldens.py`
-- Modify: migrated v1 framework content and scenario expected outputs
+- `assessment/src/assessment/engine/`: maturity, confidence, gate, finding, priority,
+  recommendation, input, and evaluator services.
+- `assessment/src/assessment/reporting/`: canonical report models, generation, and rendering.
+- `assessment/src/assessment/framework_assets/1.0.0/`: pinned bundle, HTML template, and CSS.
+- `assessment/src/assessment/frameworks.py`: packaged framework loading and integrity checks.
+- `assessment/tests/unit/test_{maturity,confidence,gates,findings,recommendations,priority}.py`.
+- `assessment/tests/contract/test_report_contract.py`.
+- `assessment/tests/scenario/test_v1_scenario_goldens.py` and migrated v1 scenario expectations.
 
 ## Implementation Steps
 
@@ -67,14 +69,14 @@ Maturity uses the versioned aggregation, capability anchors, readiness labels, e
 
 ## Todo list
 
-- [ ] Implement and boundary-test maturity and coverage.
-- [ ] Implement separate confidence summaries.
-- [ ] Emit complete gate traces for triggered and untriggered rules.
-- [ ] Generate linked findings/recommendations with review states.
-- [ ] Produce canonical 12-section report JSON.
-- [ ] Render accessible self-contained HTML.
-- [ ] Prove scenario goldens and deterministic bytes.
-- [ ] Prove demo evidence cannot influence scoring.
+- [x] Implement and boundary-test maturity and coverage.
+- [x] Implement separate confidence summaries.
+- [x] Emit complete gate traces for triggered and untriggered rules.
+- [x] Generate linked findings/recommendations with review states.
+- [x] Produce canonical 12-section report JSON.
+- [x] Render accessible self-contained HTML.
+- [x] Prove scenario goldens and deterministic bytes.
+- [x] Prove demo evidence cannot influence scoring.
 
 ## Success Criteria
 
@@ -100,4 +102,5 @@ Escape all customer-authored fields, sanitize Markdown, ban template auto-safe b
 
 ## Next steps
 
-Review engine and report contracts as the second implementation slice (P2–P3). Then Phase 4 may expose only these stable services through the loopback web workflow.
+Publish and independently verify an immutable Phase 3 head. Phase 4 may then expose only these
+stable services through the loopback web workflow; Phases 4–8 remain pending.
