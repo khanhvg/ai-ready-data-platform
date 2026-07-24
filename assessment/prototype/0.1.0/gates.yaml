@@ -1,0 +1,17 @@
+framework_version: 0.1.0-prototype
+bundle_id: quick-readiness-gates
+bundle_version: 1
+profile_id: quick-v1
+diagnostic_facts:
+  - {id: privacy_control_level, domain_id: GOV, type: integer, minimum: 0, maximum: 4}
+  - {id: ownership_control_level, domain_id: STR, type: integer, minimum: 0, maximum: 4}
+  - {id: critical_lineage, domain_id: LIN, type: boolean}
+  - {id: reproducible_versioned, domain_id: AID, type: boolean}
+rules:
+  - {id: G-QUALITY, version: 1, operand_id: domain.QUA, source: domain_score, operator: le, threshold: 1, cap: 1, explanation: Critical data quality is not sufficiently controlled for higher readiness.}
+  - {id: G-SECURITY, version: 1, operand_id: domain.SEC, source: domain_score, operator: le, threshold: 1, cap: 1, explanation: Critical security controls are not sufficiently established for higher readiness.}
+  - {id: G-PRIVACY, version: 1, operand_id: fact.privacy_control_level, source: diagnostic_fact, operator: le, threshold: 1, cap: 1, explanation: Critical privacy controls are absent or reactive and cap readiness at foundation blocked.}
+  - {id: G-GOVERNANCE, version: 1, operand_id: domain.GOV, source: domain_score, operator: le, threshold: 1, cap: 2, explanation: Governance weakness prevents a production-ready conclusion.}
+  - {id: G-OWNERSHIP, version: 1, operand_id: fact.ownership_control_level, source: diagnostic_fact, operator: le, threshold: 1, cap: 2, explanation: Critical ownership is absent or reactive and prevents a production-ready conclusion.}
+  - {id: G-LINEAGE, version: 1, operand_id: fact.critical_lineage, source: diagnostic_fact, operator: eq, threshold: false, cap: 2, explanation: Missing critical-dataset lineage prevents a production-ready conclusion.}
+  - {id: G-REPRODUCIBILITY, version: 1, operand_id: fact.reproducible_versioned, source: diagnostic_fact, operator: eq, threshold: false, cap: 2, explanation: Missing reproducibility and versioning limits readiness to experiment-ready.}

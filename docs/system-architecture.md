@@ -48,6 +48,25 @@ step, never co-running with Airflow -- see the Airflow section below and
 `governance/openmetadata/README.md`.
 ```
 
+## Independent assessment prototype
+
+The Issue #38 Phase 1 assessment is a separate offline path, not another stage in the retail
+pipeline:
+
+```text
+versioned rubric + synthetic architect fixtures
+        |
+        v
+assessment/prototype/run.py
+        |
+        +--> deterministic scoring, confidence, seven gate traces, findings
+        +--> ignored standalone report.json + report.html artifacts
+```
+
+It runs in `.assessment-venv`, starts no services, and never uses the demo repository or its
+artifacts as customer maturity evidence. Engagement persistence, web workflow, knowledge
+catalog, diagrams, and golden-demo integration remain later Issue #38 phases.
+
 ## The logical/physical distinction
 
 Two independent views of the same 11 curated marts exist by design, and OpenMetadata does not

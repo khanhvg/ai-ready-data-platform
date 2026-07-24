@@ -16,8 +16,16 @@ RUNNING_GOVERNANCE := docker ps --filter name=retail-openmetadata --format '{{.N
 # catalog-ingest polls both explicitly instead of racing the ingestion calls
 # against a container that's still starting.
 CATALOG_INGEST_HEALTH_RETRIES := 30
+ASSESSMENT_VENV := .assessment-venv
+ASSESSMENT_PY := $(ASSESSMENT_VENV)/bin/python
+ASSESSMENT_PIP := $(ASSESSMENT_VENV)/bin/pip
+ASSESSMENT_CLI := $(ASSESSMENT_VENV)/bin/assessment-prototype
+ASSESSMENT_FIXTURES := assessment/tests/fixtures/scenarios/0.1.0
+ASSESSMENT_OFFLINE := assessment/tools/run-offline.sh
 
-.PHONY: venv up down seed load health dbt dbt-docs airflow bi catalog lake-up lake-publish catalog-ingest clean
+.PHONY: venv up down seed load health dbt dbt-docs airflow bi catalog lake-up lake-publish catalog-ingest clean \
+	assessment-install assessment-schema assessment-contract assessment-scenarios assessment-calibration \
+	assessment-report assessment-test assessment-lint assessment-typecheck assessment-build assessment-clean
 
 venv: $(VENV)/bin/python3
 
@@ -113,6 +121,44 @@ catalog-ingest: venv
 	$(PYENV) $(PY) governance/openmetadata/verify_catalog.py
 	@echo "Tearing down lake (governance stays up for browsing -- 'make down' to stop it too)."
 	docker compose --profile lake down
+
+assessment-install:
+	python3.12 -m venv --clear $(ASSESSMENT_VENV)
+	$(PYENV) $(ASSESSMENT_PIP) install --quiet --upgrade "pip==25.1.1"
+	$(PYENV) $(ASSESSMENT_PIP) install --quiet --require-hashes -r assessment/requirements.lock
+	$(PYENV) $(ASSESSMENT_PIP) install --quiet --require-hashes -r assessment/requirements-dev.lock
+	$(PYENV) $(ASSESSMENT_PIP) install --quiet --no-deps assessment/
+
+assessment-schema:
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_CLI) schema
+
+assessment-contract:
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_CLI) contract --fixture-root $(ASSESSMENT_FIXTURES)
+
+assessment-scenarios:
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_CLI) scenarios --fixture-root $(ASSESSMENT_FIXTURES)
+
+assessment-calibration:
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_CLI) calibration --fixture-root $(ASSESSMENT_FIXTURES)
+
+assessment-report:
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_CLI) report --verify-stability --fixture-root $(ASSESSMENT_FIXTURES)
+
+assessment-test:
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m pytest -q assessment/tests
+
+assessment-lint:
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_VENV)/bin/ruff check assessment
+
+assessment-typecheck:
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_VENV)/bin/mypy assessment/prototype
+
+assessment-build:
+	cd assessment && $(CURDIR)/$(ASSESSMENT_OFFLINE) $(CURDIR)/$(ASSESSMENT_PY) -m build --no-isolation
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_CLI) build-check assessment/dist
+
+assessment-clean:
+	python3 -c "import pathlib, shutil; [shutil.rmtree(pathlib.Path(p), ignore_errors=True) for p in ['assessment/.generated','assessment/.pytest_cache','assessment/.mypy_cache','assessment/.ruff_cache','assessment/build','assessment/dist','assessment/ai_ready_assessment_prototype.egg-info']]"
 
 clean:
 	python3 -c "import pathlib, shutil; [shutil.rmtree(p, ignore_errors=True) for p in [pathlib.Path('$(VENV)'), pathlib.Path('transform/dbt/target'), pathlib.Path('transform/dbt/logs'), pathlib.Path('transform/dbt/dbt_packages'), pathlib.Path('serving/rill/.rill'), pathlib.Path('serving/rill/tmp')]]; [p.unlink(missing_ok=True) for pattern in ['data/raw/*.csv','serving/export/*.parquet','warehouse/*.duckdb','warehouse/*.duckdb.wal'] for p in pathlib.Path('.').glob(pattern)]; pathlib.Path('data/raw/manifest.json').unlink(missing_ok=True); pathlib.Path('transform/dbt/.user.yml').unlink(missing_ok=True)"

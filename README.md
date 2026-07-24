@@ -36,6 +36,22 @@ make bi
 The core profile uses local Python tools and DuckDB only; it starts no containers.
 Generated data and warehouses are intentionally gitignored.
 
+## AI-ready assessment prototype
+
+Issue #38 Phase 1 adds a separate, local-only Python 3.12 prototype under `assessment/`. It
+validates the 10-domain rubric and 30 anchored questions, recomputes four two-rater scenarios,
+checks the 117/119 calibration result, and generates standalone JSON/HTML reports:
+
+```bash
+make assessment-install
+make assessment-schema assessment-contract assessment-scenarios assessment-calibration
+make assessment-report assessment-test assessment-lint assessment-typecheck assessment-build
+```
+
+The assessment uses `.assessment-venv`, starts no containers, and does not read from or score
+the retail demo. Generated reports are ignored under `assessment/.generated/`; see
+`assessment/README.md` for the exact Phase 1 boundary.
+
 ## Scale profiles
 
 | Profile | Purpose | Approximate order volume | Total rows (18 tables) |

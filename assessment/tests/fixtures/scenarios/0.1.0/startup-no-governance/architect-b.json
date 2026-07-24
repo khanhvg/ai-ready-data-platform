@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.1.0-prototype",
+  "scenario_id": "startup-no-governance",
+  "rater_id": "architect-b",
+  "organization_name": "Northstar Workshop",
+  "duration_minutes": 35,
+  "ratings": [2,1,1,1,0,0,1,1,0,2,1,1,2,2,1,1,1,0,1,1,1,1,0,0,1,0,0,2,1,1],
+  "evidence_statuses": ["Conflicting evidence","Conflicting evidence","Conflicting evidence","Conflicting evidence","Conflicting evidence","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced"],
+  "notes": ["B01 outcome forum is inconsistent","B02 decision rights are unclear","B03 owner coverage is reactive","B04 source list is incomplete","B05 contracts are absent","B06 recovery is unknown","B07 zones are emerging","B08 retention is informal","B09 durability is unknown","B10 code is versioned","B11 orchestration is partial","B12 release context is incomplete","B13 checks cover some paths","B14 failures are manually separated","B15 remediation is reactive","B16 metadata is partial","B17 terms conflict","B18 lineage is unavailable","B19 governance is informal","B20 privacy review is manual","B21 audit evidence is reactive","B22 broad access remains","B23 policy tests are absent","B24 access detection is absent","B25 health is inspected manually","B26 response depends on individuals","B27 costs are unknown","B28 products have local owners","B29 versioning is incomplete","B30 AI ownership is informal"],
+  "diagnostic_facts": {"privacy_control_level": 1, "ownership_control_level": 1, "critical_lineage": false, "reproducible_versioned": false},
+  "actionability_review": {"recommendations_actionable": true, "gate_outcome_reasonable": true, "report_usable": true}
+}

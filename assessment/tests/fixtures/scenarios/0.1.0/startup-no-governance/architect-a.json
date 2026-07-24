@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.1.0-prototype",
+  "scenario_id": "startup-no-governance",
+  "rater_id": "architect-a",
+  "organization_name": "Northstar Workshop",
+  "duration_minutes": 35,
+  "ratings": [2,2,1,1,1,0,1,1,1,2,2,1,2,1,1,1,0,1,1,1,1,1,1,0,1,1,0,2,2,1],
+  "evidence_statuses": ["Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced"],
+  "notes": ["A01 outcome forum exists","A02 decisions remain informal","A03 owner coverage is partial","A04 source list is maintained","A05 contracts are absent","A06 recovery is manual","A07 zones are emerging","A08 retention is informal","A09 recovery is untested","A10 code is versioned","A11 schedules repeat","A12 rollback is manual","A13 checks cover some paths","A14 quarantine is manual","A15 incidents are reactive","A16 metadata is partial","A17 glossary is absent","A18 lineage is reconstructed","A19 governance is informal","A20 privacy review is manual","A21 evidence is assembled ad hoc","A22 broad access remains","A23 policies are manual","A24 audit detection is absent","A25 dashboards are basic","A26 incidents depend on owners","A27 costs are unknown","A28 products have local owners","A29 datasets publish repeatably","A30 AI ownership is informal"],
+  "diagnostic_facts": {"privacy_control_level": 1, "ownership_control_level": 1, "critical_lineage": false, "reproducible_versioned": false},
+  "actionability_review": {"recommendations_actionable": true, "gate_outcome_reasonable": true, "report_usable": true}
+}

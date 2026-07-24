@@ -1,0 +1,40 @@
+framework_version: 0.1.0-prototype
+profile_id: quick-v1
+coverage:
+  minimum_answered_per_domain: 2
+  minimum_answered_total: 27
+aggregation:
+  domain: median_low
+  pre_gate: floor_mean_domain_scores
+  presentation: sum_domain_scores_times_2_5
+levels:
+  0: Not ready
+  1: Foundation blocked
+  2: Experiment-ready only
+  3: Production-ready
+  4: Optimized production-ready
+confidence:
+  statuses:
+    - Self-reported
+    - Partially evidenced
+    - Evidenced
+    - Conflicting evidence
+    - Not assessed
+  least_assured_precedence:
+    - Conflicting evidence
+    - Self-reported
+    - Partially evidenced
+    - Evidenced
+report_sections:
+  - {id: executive-summary, title: Executive summary}
+  - {id: readiness, title: Readiness}
+  - {id: capability-heatmap, title: Capability heatmap}
+  - {id: gates, title: Gates}
+  - {id: confidence, title: Confidence}
+  - {id: blockers, title: Blockers}
+  - {id: findings, title: Findings}
+  - {id: target-state, title: Target state}
+  - {id: reference-diagrams, title: Reference diagrams}
+  - {id: roadmap, title: Roadmap}
+  - {id: technology-options, title: Technology options}
+  - {id: evidence-appendix, title: Evidence appendix}

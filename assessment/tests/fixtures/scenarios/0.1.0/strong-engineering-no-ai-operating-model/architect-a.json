@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.1.0-prototype",
+  "scenario_id": "strong-engineering-no-ai-operating-model",
+  "rater_id": "architect-a",
+  "organization_name": "Juniper Engineering Cooperative",
+  "duration_minutes": 39,
+  "ratings": [3,3,3,3,3,2,3,3,3,4,3,3,4,3,3,3,3,3,3,3,3,3,3,2,2,2,null,1,1,0],
+  "evidence_statuses": ["Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Partially evidenced","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Self-reported","Not assessed","Self-reported","Self-reported","Self-reported"],
+  "notes": ["A01 outcomes are governed","A02 decision rights are governed","A03 ownership is governed","A04 sources are controlled","A05 contracts are controlled","A06 recovery has gaps","A07 zones are governed","A08 lifecycle is governed","A09 recovery is governed","A10 tests are optimized","A11 orchestration is governed","A12 releases are governed","A13 contracts improve quality","A14 quarantine is governed","A15 incidents are governed","A16 metadata is governed","A17 terms are governed","A18 lineage is governed","A19 governance is accountable","A20 privacy is enforced","A21 evidence is measured","A22 least privilege is enforced","A23 policies are enforced","A24 detection has gaps","A25 health is repeatable","A26 incidents are repeatable","A27 cost question was not assessed","A28 products are informal","A29 AI datasets are manual","A30 AI operating controls are absent"],
+  "diagnostic_facts": {"privacy_control_level": 3, "ownership_control_level": 3, "critical_lineage": true, "reproducible_versioned": false},
+  "actionability_review": {"recommendations_actionable": true, "gate_outcome_reasonable": true, "report_usable": true}
+}

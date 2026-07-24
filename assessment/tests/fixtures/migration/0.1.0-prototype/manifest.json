@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.1.0-prototype",
+  "frozen_files": 18,
+  "aggregate_sha256": "302011ab87f8e38294eef7ae0e3a7514edf05bc9e24b3a0eee5c1b1afb5f113b",
+  "records": [
+    {"path": "prototype/0.1.0/capabilities.yaml", "sha256": "ecdd662b64512b384dd3c2881169ce064d8fa0efd8aad1ed31701e8290829c03"},
+    {"path": "prototype/0.1.0/finding-rules.yaml", "sha256": "6be27e5a2a5141c68fde1261df0efae01c808f10bb307c6dce44d133d97b41c5"},
+    {"path": "prototype/0.1.0/gates.yaml", "sha256": "5ffa2cecb6884a8d33c8bc30aa9cb640709d0c51d03623727fda4e38a9dc893b"},
+    {"path": "prototype/0.1.0/quick-questions.yaml", "sha256": "35ed44c742828d833f86fba7c8aa2ffb80e4c05b372c1e4720da007b4eff1fb2"},
+    {"path": "prototype/0.1.0/readiness-levels.yaml", "sha256": "7121a07a2f58c762ed4faa56f039fe31e7bd517e6b3afc9068531a0fc95afd4e"},
+    {"path": "prototype/0.1.0/recommendations.yaml", "sha256": "4edf81f0b84cd57eb0eeae30a5b3cb87adb5cc29d37d345e1db35282da9940e6"},
+    {"path": "tests/fixtures/scenarios/0.1.0/enterprise-lake-weak-quality/architect-a.json", "sha256": "c00da657797e68b7ca75d642c398ab06a1a5b0bef3ee87a2693a2f79cbc3e10e"},
+    {"path": "tests/fixtures/scenarios/0.1.0/enterprise-lake-weak-quality/architect-b.json", "sha256": "997857f3859b901298be3a3395f94fb420b0a424c765cef0c1a86f3ab4723533"},
+    {"path": "tests/fixtures/scenarios/0.1.0/enterprise-lake-weak-quality/expected.json", "sha256": "d0c3645e498f729e4c1d265c1b38e858ed71b2b9b60b0e1dd3282124525eeaec"},
+    {"path": "tests/fixtures/scenarios/0.1.0/manual-governance-missing-lineage/architect-a.json", "sha256": "39eb4520896ba1d4d37377342b48ef78006919922bffc93204f4bda7fa0d1519"},
+    {"path": "tests/fixtures/scenarios/0.1.0/manual-governance-missing-lineage/architect-b.json", "sha256": "b757220ecd3644d7e96ec01b6e2ef874f631601ad28d41ebbd2cc7ff8a98262f"},
+    {"path": "tests/fixtures/scenarios/0.1.0/manual-governance-missing-lineage/expected.json", "sha256": "7e9c9407f198320c5bd5e554d43bee7d196d7a3b67c6288aec5280ca0de5b591"},
+    {"path": "tests/fixtures/scenarios/0.1.0/startup-no-governance/architect-a.json", "sha256": "63a0c7c893e84f0445a509e00b631b765421139e0ab561d795d3cf740e0aaf87"},
+    {"path": "tests/fixtures/scenarios/0.1.0/startup-no-governance/architect-b.json", "sha256": "05cdbbdb04459ef18a77aeda4fba17e1ee3e02099fd3824d6043d7ecc2b41cb6"},
+    {"path": "tests/fixtures/scenarios/0.1.0/startup-no-governance/expected.json", "sha256": "eb392453810efe1dce18bd3c952fec5fbb0228d90b4009f07ddc803fd0b3b691"},
+    {"path": "tests/fixtures/scenarios/0.1.0/strong-engineering-no-ai-operating-model/architect-a.json", "sha256": "4bf53804dc00543e9621976bcea5bc9ae1af93a4407e494983dd91c4b1b425d0"},
+    {"path": "tests/fixtures/scenarios/0.1.0/strong-engineering-no-ai-operating-model/architect-b.json", "sha256": "a4ea34adde251483863c992ba7978398d91666ba1870a5d3a46d27491f9bcba0"},
+    {"path": "tests/fixtures/scenarios/0.1.0/strong-engineering-no-ai-operating-model/expected.json", "sha256": "b0868c03f3421b19ff2387fa4002bad3dd81b600e1b86905e0cf31b92a5d4870"}
+  ]
+}

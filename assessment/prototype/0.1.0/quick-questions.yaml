@@ -1,0 +1,122 @@
+framework_version: 0.1.0-prototype
+questions:
+  - id: Q-STR-01
+    domain_id: STR
+    text: How are data-platform outcomes, funding, and accountable ownership established?
+    anchors: {0: No outcome or owner is identified, 1: A sponsor funds isolated work informally, 2: Priority initiatives have owners and recurring funding decisions, 3: Enterprise outcomes owners funding and measures are documented, 4: Portfolio outcomes and funding are continuously optimized from measured value}
+  - id: Q-STR-02
+    domain_id: STR
+    text: How are platform and data-product decision rights operated?
+    anchors: {0: Decision rights are unknown, 1: Individuals decide reactively, 2: Repeatable forums cover priority decisions, 3: Documented decision rights and escalation paths are routinely used, 4: Decision effectiveness and boundaries are continuously improved}
+  - id: Q-STR-03
+    domain_id: STR
+    text: How are product ownership and cross-functional responsibilities reviewed?
+    anchors: {0: Responsibilities are absent, 1: Responsibilities emerge after incidents, 2: Priority products have named responsibilities with gaps, 3: Accountabilities and outcome reviews cover critical products, 4: Ownership health and product outcomes drive systematic improvement}
+  - id: Q-ING-01
+    domain_id: ING
+    text: How are critical source systems and interfaces inventoried?
+    anchors: {0: Critical sources are unknown, 1: Individuals keep informal lists, 2: Priority sources use a maintained inventory, 3: Owned source and interface records cover critical ingestion, 4: Inventory accuracy and change impact are continuously measured}
+  - id: Q-ING-02
+    domain_id: ING
+    text: How are ingestion contracts, validation, and schema changes controlled?
+    anchors: {0: No controls exist, 1: Breakage is handled manually, 2: Some important sources use repeatable validation, 3: Critical sources enforce contracts and controlled change, 4: Contract health and producer behavior are continuously optimized}
+  - id: Q-ING-03
+    domain_id: ING
+    text: How are ingestion replay, recovery, and latency objectives proven?
+    anchors: {0: Recovery is unknown, 1: Owners rerun scripts manually, 2: Priority paths have documented repeatable recovery, 3: Critical paths test replay recovery and latency objectives, 4: Recovery performance and latency are continuously improved}
+  - id: Q-STO-01
+    domain_id: STO
+    text: How are storage zones and data organization standards applied?
+    anchors: {0: Locations and boundaries are unknown, 1: Teams create inconsistent locations, 2: Priority data follows common zones with exceptions, 3: Governed zones and organization standards cover critical data, 4: Placement and organization are continuously optimized by workload}
+  - id: Q-STO-02
+    domain_id: STO
+    text: How are retention, deletion, and legal lifecycle obligations enforced?
+    anchors: {0: Obligations are unknown, 1: Cleanup is manual and reactive, 2: Priority data has documented lifecycle procedures, 3: Critical data has enforced retention deletion and approvals, 4: Lifecycle evidence and exceptions are continuously measured}
+  - id: Q-STO-03
+    domain_id: STO
+    text: How are durability, recovery, performance, and storage cost managed?
+    anchors: {0: These properties are unknown, 1: Problems are handled after failure, 2: Priority workloads have repeatable backup and basic cost visibility, 3: Critical workloads have tested recovery performance objectives and cost ownership, 4: Durability performance and cost are continuously optimized}
+  - id: Q-TRN-01
+    domain_id: TRN
+    text: How are transformation logic and dependencies versioned and tested?
+    anchors: {0: Logic cannot be identified, 1: Manual logic depends on individuals, 2: Priority logic is versioned with some tests, 3: Critical logic and dependencies are versioned reviewed and tested, 4: Test effectiveness reuse and change safety are continuously improved}
+  - id: Q-TRN-02
+    domain_id: TRN
+    text: How are schedules, dependencies, retries, and backfills orchestrated?
+    anchors: {0: Runs are not controlled, 1: Operators trigger and recover manually, 2: Priority workflows are scheduled with repeatable recovery, 3: Critical workflows use dependency-aware orchestration retries and governed backfills, 4: Orchestration reliability and efficiency are continuously optimized}
+  - id: Q-TRN-03
+    domain_id: TRN
+    text: How is a transformation release reproduced and rolled back?
+    anchors: {0: Reproduction is impossible, 1: Owners reconstruct releases manually, 2: Priority releases retain code and run context, 3: Critical releases are immutable reproducible and rollback-tested, 4: Release recovery and reproducibility are continuously verified}
+  - id: Q-QUA-01
+    domain_id: QUA
+    text: How are critical quality expectations defined and tested?
+    anchors: {0: No expectations exist, 1: Users report defects after use, 2: Important pipelines run repeatable checks, 3: Critical products enforce owned reusable rules and SLAs, 4: Contracts and business impact continuously improve prevention}
+  - id: Q-QUA-02
+    domain_id: QUA
+    text: How are failed records quarantined and prevented from reaching trusted outputs?
+    anchors: {0: Failures are not detected, 1: Operators inspect and remove records manually, 2: Some pipelines separate failures with inconsistent enforcement, 3: Critical pipelines enforce quarantine accepted boundaries and remediation ownership, 4: Quarantine trends and prevention are continuously optimized}
+  - id: Q-QUA-03
+    domain_id: QUA
+    text: How are quality incidents measured, alerted, and remediated?
+    anchors: {0: Incidents are not tracked, 1: Consumers escalate informally, 2: Priority data has alerts and repeatable response, 3: Critical data has actionable alerts ownership SLA and measured remediation, 4: Incident learning and business impact drive continuous improvement}
+  - id: Q-LIN-01
+    domain_id: LIN
+    text: How are critical assets discovered and their metadata kept current?
+    anchors: {0: Assets are not discoverable, 1: Individuals maintain manual documentation, 2: Priority metadata is captured repeatably with gaps, 3: Critical metadata is automated owned and freshness-controlled, 4: Metadata quality and reuse are continuously optimized}
+  - id: Q-LIN-02
+    domain_id: LIN
+    text: How are shared business terms owned and connected to data products?
+    anchors: {0: Shared terms do not exist, 1: Teams use conflicting informal definitions, 2: Priority terms have stewards with incomplete adoption, 3: Critical terms are governed linked and routinely reviewed, 4: Semantic adoption and business outcomes are continuously improved}
+  - id: Q-LIN-03
+    domain_id: LIN
+    text: How is source-to-product lineage captured and used for critical datasets?
+    anchors: {0: Lineage is unavailable, 1: Owners reconstruct lineage manually, 2: Priority lineage is captured partially, 3: Critical lineage is automated end-to-end and used for impact analysis, 4: Lineage completeness accuracy and operational use are continuously optimized}
+  - id: Q-GOV-01
+    domain_id: GOV
+    text: How are governance decisions, exceptions, and accountable owners operated?
+    anchors: {0: Governance is absent, 1: Decisions are reactive and person-dependent, 2: Priority domains use repeatable councils and exception records, 3: Critical data has accountable decisions approvals measures and review, 4: Governance outcomes and exceptions are continuously optimized}
+  - id: Q-GOV-02
+    domain_id: GOV
+    text: How are sensitive data and privacy obligations classified and controlled?
+    anchors: {0: Sensitive data is unknown, 1: Classification and privacy review are manual and incomplete, 2: Priority data has classification and documented controls, 3: Critical data has enforced classification privacy controls and evidence, 4: Privacy risk control effectiveness and exceptions are continuously improved}
+  - id: Q-GOV-03
+    domain_id: GOV
+    text: How are compliance evidence, retention, and policy effectiveness measured?
+    anchors: {0: Evidence is unavailable, 1: Evidence is assembled only for audits, 2: Priority obligations have repeatable evidence collection, 3: Critical obligations have owned automated evidence and measured controls, 4: Control effectiveness and regulatory change are continuously optimized}
+  - id: Q-SEC-01
+    domain_id: SEC
+    text: How is least-privilege access to critical data enforced?
+    anchors: {0: Access is uncontrolled, 1: Broad access is granted manually, 2: Priority data uses roles with periodic review, 3: Critical data enforces least privilege separation and tested revocation, 4: Access risk and privilege drift are continuously reduced}
+  - id: Q-SEC-02
+    domain_id: SEC
+    text: How are access policies versioned, tested, and audited?
+    anchors: {0: Policies are absent, 1: Rules are changed manually without tests, 2: Priority policies are documented and reviewed, 3: Critical policies are versioned tested enforced and auditable, 4: Policy effectiveness drift and exceptions are continuously optimized}
+  - id: Q-SEC-03
+    domain_id: SEC
+    text: How are sensitive-data access events and control failures detected?
+    anchors: {0: Events are not visible, 1: Logs are inspected only after incidents, 2: Priority systems provide repeatable audit and alerts, 3: Critical access has actionable detection ownership and response tests, 4: Detection coverage and response effectiveness are continuously improved}
+  - id: Q-OPS-01
+    domain_id: OPS
+    text: How are platform health, data freshness, and service objectives observed?
+    anchors: {0: Health and freshness are unknown, 1: Operators inspect logs after failures, 2: Priority services have dashboards alerts and informal objectives, 3: Critical services have owned SLOs actionable telemetry and review, 4: Objectives and telemetry continuously improve user outcomes}
+  - id: Q-OPS-02
+    domain_id: OPS
+    text: How are incidents, recovery, and operational learning managed?
+    anchors: {0: Incidents are not managed, 1: Recovery depends on individuals, 2: Priority services have runbooks and repeatable response, 3: Critical services test recovery own incidents and track actions, 4: Incident learning and resilience are continuously optimized}
+  - id: Q-OPS-03
+    domain_id: OPS
+    text: How are capacity and platform costs allocated and optimized?
+    anchors: {0: Capacity and cost are unknown, 1: Costs are reviewed after overruns, 2: Priority services have budgets and basic allocation, 3: Critical services have capacity controls cost ownership and unit measures, 4: Unit economics and capacity are continuously optimized}
+  - id: Q-AID-01
+    domain_id: AID
+    text: How are data products owned, contracted, and measured?
+    anchors: {0: Data products are not identified, 1: Outputs are assembled without durable ownership, 2: Priority products have owners and partial contracts, 3: Critical products have contracts service measures and governed lifecycle, 4: Adoption value reuse and lifecycle are continuously optimized}
+  - id: Q-AID-02
+    domain_id: AID
+    text: How are analytics and AI datasets approved, versioned, and reproduced?
+    anchors: {0: Datasets are not controlled, 1: Teams assemble datasets manually, 2: Priority datasets are published repeatably with versioning gaps, 3: Critical datasets are approved versioned reproducible and traceable, 4: Reuse drift value and reproducibility are continuously optimized}
+  - id: Q-AID-03
+    domain_id: AID
+    text: How are AI-data freshness, drift, sensitive use, and operating ownership controlled?
+    anchors: {0: AI-data controls are absent, 1: Controls depend on individual practitioners, 2: Priority use cases have partial monitoring policy and ownership, 3: Critical use cases have owned monitoring approved sensitive use and response controls, 4: AI-data risk outcomes and control effectiveness are continuously optimized}
