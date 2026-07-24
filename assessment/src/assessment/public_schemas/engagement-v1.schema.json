@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-ready.local/contracts/engagement/1.0.0",
+  "title": "AI-ready assessment engagement v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "engagement_id",
+    "framework_version",
+    "catalog_version",
+    "demo_content_version",
+    "assessment_profile_id",
+    "gate_bundle_version"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "engagement_id": {"$ref": "#/$defs/id"},
+    "framework_version": {"const": "1.0.0"},
+    "catalog_version": {"const": "1.0.0"},
+    "demo_content_version": {"const": "1.0.0"},
+    "assessment_profile_id": {"const": "quick-v1"},
+    "gate_bundle_version": {"const": 1}
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    }
+  }
+}

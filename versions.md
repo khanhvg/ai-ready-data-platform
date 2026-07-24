@@ -18,26 +18,33 @@ throwaway venv. This replaces the plan's *candidate* matrix with the actually-te
 | Lakekeeper (Iceberg REST catalog) | `v0.13.1` (`quay.io/lakekeeper/catalog`) | `lake` profile only — required for DuckDB Iceberg **writes** (raw S3 path insufficient); pinned instead of `latest-main` |
 | OpenMetadata | `1.6.5` (`docker.getcollate.io/openmetadata/server`) | `governance` profile only. `openmetadata-ingestion[iceberg,dbt]==1.6.5.0` ingests **both** the physical Iceberg tables (via its Iceberg RestCatalog connector, pyiceberg 0.5.1) and the logical dbt artifacts (`governance/openmetadata/`) — see the Phase 6 spike below. No native DuckDB connector, so the dbt-sourced `retail_duckdb` service is bootstrapped from dbt's own `catalog.json`, not a live crawl. |
 
-## Issue #38 Phase 1 assessment prototype
+## Issue #38 Phase 1–2 assessment package
 
 The assessment uses its own `.assessment-venv` and hash-locked dependency files. Verified on
 macOS arm64 with Python 3.12.3:
 
 | Component | Version |
 |---|---:|
-| Prototype package/schema | `0.1.0` / `0.1.0-prototype` |
+| Package | `0.2.0` |
+| Prototype framework/schema | `0.1.0-prototype` |
+| Public contracts/archive format | `1.0.0` |
 | pip | 25.1.1 |
 | pip-tools lock compiler | 7.5.0 |
 | Jinja2 | 3.1.6 |
 | PyYAML | 6.0.2 |
+| Pydantic | 2.11.7 |
+| JSON Schema | jsonschema 4.24.0 |
+| Evidence image canonicalization | Pillow 11.3.0 |
 | pytest | 8.4.1 |
 | Ruff | 0.12.4 |
 | mypy | 1.16.1 |
 | build | 1.2.2.post1 |
 | setuptools / wheel | 80.9.0 / 0.45.1 |
 
-Only dependency acquisition may use the package index; Phase 1 validation, scenario,
-calibration, report, test, lint, typecheck, and build commands are process-local.
+Only dependency acquisition and deliberate lock compilation may use the package index. Schema,
+contract, scenario, calibration, report, local-store, migration, import/export, portability,
+security, test, lint, typecheck, and build commands are process-local and use the shared
+network-denying wrapper.
 
 ## Phase 6 compatibility spike: OpenMetadata 1.6.5 Iceberg connector vs Lakekeeper v0.13.1
 

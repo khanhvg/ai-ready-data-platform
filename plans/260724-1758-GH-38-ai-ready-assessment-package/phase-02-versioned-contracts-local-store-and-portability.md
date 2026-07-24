@@ -13,8 +13,16 @@
 - Date: 2026-07-24
 - Description: Establish final versioned content/data contracts, authoritative engagement folders, atomic local storage, migration, and safe deterministic import/export.
 - Priority: P2
-- Implementation status: Pending
-- Review status: Pending; requires Phase 1 focused review pass.
+- Implementation status: Second bounded correction complete and verified for publication after
+  the replacement-head verifier rejected PR head
+  `4bf7646338bbe291f2f38a13fa9e57150ba6d906` for an export path-replacement
+  consistency defect. Export traversal and reads are descriptor-relative, no-follow, bounded,
+  and identity-checked; `engagement.json` is validated from the collected archive bytes.
+- Review status: Bounded specification-first and code-quality reviews each report 0 Critical
+  and 0 Important findings. The focused replacement matrix, the four prior corrective
+  regressions, full Phase 2/Phase 1 gates, distribution inventories, and deterministic
+  portability proof pass. This producing-worker result is not independent verification; a
+  completely fresh exact-head verifier remains required after publication.
 
 ## Key Insights
 
@@ -22,6 +30,7 @@
 - Import safety is a security boundary: validation must precede extraction/mutation.
 - Version numbers are carried in every top-level contract and pinned by the engagement.
 - Human-authored YAML/Markdown is accepted only through schema, safe-parser, and semantic-reference validation.
+- Distribution artifacts carry exact mirrors of all seven public schemas and fail closed when no complete authority is discoverable.
 
 ## Requirements
 
@@ -65,14 +74,14 @@ Migration is a pure document transform with source/target validation and a regis
 
 ## Todo list
 
-- [ ] Lock isolated Python 3.12 runtime and dev dependencies.
-- [ ] Complete JSON Schemas, typed models, and semantic validation.
-- [ ] Implement atomic local store and recovery tests.
-- [ ] Prove v0.1 prototype migration and unknown-newer rejection.
-- [ ] Produce deterministic checksummed ZIPs.
-- [ ] Reject the full hostile archive/hygiene corpus before extraction.
-- [ ] Prove different-path roundtrip without data loss.
-- [ ] Document future object store boundary only.
+- [x] Lock isolated Python 3.12 runtime and dev dependencies.
+- [x] Complete JSON Schemas, typed models, and semantic validation.
+- [x] Implement atomic local store and recovery tests.
+- [x] Prove v0.1 prototype migration and unknown-newer rejection.
+- [x] Produce deterministic checksummed ZIPs.
+- [x] Reject the full hostile archive/hygiene corpus before extraction.
+- [x] Prove different-path roundtrip without data loss.
+- [x] Document future object store boundary only.
 
 ## Success Criteria
 
@@ -83,6 +92,9 @@ Migration is a pure document transform with source/target validation and a regis
 - Same engagement produces byte-identical ZIPs on the pinned runtime and the same canonical manifest digest after a different-path roundtrip.
 - Traversal, archive/pre-existing symlinks, duplicate/Unicode/case/destination collisions, zip bombs/oversized archives, encrypted/unsupported ZIP features, corrupt hashes, secrets, opaque evidence, and POSIX/macOS/Windows absolute paths are rejected before destination mutation.
 - No SQLite/S3/cloud implementation or customer data exists.
+- Exported canonical payloads cannot exceed limits that the same implementation enforces on import.
+- Authored content reads remain bounded even if a regular file grows after it is opened.
+- Wheel and sdist each contain exactly seven usable public schemas; an empty explicit repository root fails.
 
 ## Risk Assessment
 

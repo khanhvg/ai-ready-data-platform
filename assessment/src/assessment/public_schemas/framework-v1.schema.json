@@ -1,0 +1,231 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-ready.local/contracts/framework/1.0.0",
+  "title": "AI-ready assessment framework v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "framework_version",
+    "domains",
+    "questions",
+    "readiness",
+    "gate_bundle",
+    "diagnostic_facts",
+    "architectures",
+    "recommendations",
+    "finding_rules",
+    "technology_mappings",
+    "demo_stage_ids",
+    "report_sections"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "framework_version": {"const": "1.0.0"},
+    "domains": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "items": {"$ref": "#/$defs/domain"}
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 30,
+      "maxItems": 30,
+      "items": {"$ref": "#/$defs/question"}
+    },
+    "readiness": {"$ref": "#/$defs/readiness"},
+    "gate_bundle": {"$ref": "#/$defs/gate_bundle"},
+    "diagnostic_facts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/diagnostic_fact"}
+    },
+    "architectures": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/architecture"}
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/recommendation"}
+    },
+    "finding_rules": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/finding_rule"}
+    },
+    "technology_mappings": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/technology_mapping"}
+    },
+    "demo_stage_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/id"}
+    },
+    "report_sections": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/id"}
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "anchors": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["0", "1", "2", "3", "4"],
+      "properties": {
+        "0": {"type": "string", "minLength": 12},
+        "1": {"type": "string", "minLength": 12},
+        "2": {"type": "string", "minLength": 12},
+        "3": {"type": "string", "minLength": 12},
+        "4": {"type": "string", "minLength": 12}
+      }
+    },
+    "domain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "anchors"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "name": {"type": "string", "minLength": 1},
+        "anchors": {"$ref": "#/$defs/anchors"}
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "domain_id", "text", "anchors"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "domain_id": {"$ref": "#/$defs/id"},
+        "text": {"type": "string", "minLength": 1},
+        "anchors": {"$ref": "#/$defs/anchors"}
+      }
+    },
+    "readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_id",
+        "domain_aggregation",
+        "minimum_answered_per_domain",
+        "minimum_answered_total",
+        "labels"
+      ],
+      "properties": {
+        "profile_id": {"const": "quick-v1"},
+        "domain_aggregation": {"const": "median_low"},
+        "minimum_answered_per_domain": {"const": 2},
+        "minimum_answered_total": {"const": 27},
+        "labels": {"$ref": "#/$defs/labels"}
+      }
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["0", "1", "2", "3", "4"],
+      "properties": {
+        "0": {"type": "string", "minLength": 1},
+        "1": {"type": "string", "minLength": 1},
+        "2": {"type": "string", "minLength": 1},
+        "3": {"type": "string", "minLength": 1},
+        "4": {"type": "string", "minLength": 1}
+      }
+    },
+    "gate_bundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "rules"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "version": {"const": 1},
+        "rules": {
+          "type": "array",
+          "minItems": 7,
+          "maxItems": 7,
+          "items": {"$ref": "#/$defs/gate_rule"}
+        }
+      }
+    },
+    "gate_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "operand_id", "source", "operator", "threshold", "cap"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "operand_id": {"type": "string", "minLength": 1},
+        "source": {"enum": ["domain_score", "diagnostic_fact"]},
+        "operator": {"enum": ["le", "eq"]},
+        "threshold": {"type": ["integer", "boolean"]},
+        "cap": {"type": "integer", "minimum": 0, "maximum": 4}
+      }
+    },
+    "diagnostic_fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "domain_id", "type"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "domain_id": {"$ref": "#/$defs/id"},
+        "type": {"enum": ["integer", "boolean"]}
+      }
+    },
+    "architecture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "title": {"type": "string", "minLength": 1}
+      }
+    },
+    "recommendation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "architecture_id", "demo_stage_ids"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "architecture_id": {"$ref": "#/$defs/id"},
+        "demo_stage_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/id"}
+        }
+      }
+    },
+    "finding_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "recommendation_id"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "recommendation_id": {"$ref": "#/$defs/id"},
+        "gate_id": {
+          "anyOf": [
+            {"$ref": "#/$defs/id"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "technology_mapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "architecture_id", "recommendation_ids"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "architecture_id": {"$ref": "#/$defs/id"},
+        "recommendation_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/id"}
+        }
+      }
+    }
+  }
+}

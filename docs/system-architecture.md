@@ -48,7 +48,7 @@ step, never co-running with Airflow -- see the Airflow section below and
 `governance/openmetadata/README.md`.
 ```
 
-## Independent assessment prototype
+## Independent assessment package
 
 The Issue #38 Phase 1 assessment is a separate offline path, not another stage in the retail
 pipeline:
@@ -64,8 +64,21 @@ assessment/prototype/run.py
 ```
 
 It runs in `.assessment-venv`, starts no services, and never uses the demo repository or its
-artifacts as customer maturity evidence. Engagement persistence, web workflow, knowledge
-catalog, diagrams, and golden-demo integration remain later Issue #38 phases.
+artifacts as customer maturity evidence.
+
+Phase 2 adds public v1 JSON Schemas and typed consumers plus an authoritative engagement-folder
+boundary under a user-selected root. `LocalEngagementStore` uses relative POSIX keys, canonical
+JSON, checksums, one writer lock per engagement, and atomic same-directory replacement. A pure
+registry migrates frozen prototype fixtures to v1 without editing their source.
+
+Portable export/import is separate from the retail pipeline: deterministic `ZIP_STORED` archives
+contain normalized files and a canonical digest manifest. Import fully preflights archive names,
+features, limits, checksums, versions, secrets, credentialed URIs, and machine paths, then writes
+only to a sibling staging directory before atomic destination promotion. No assessment command
+starts Docker, DuckDB, dbt, Rill, Airflow, Lakekeeper, OpenMetadata, AWS, or Terraform.
+
+Web workflow, knowledge catalog, diagrams, golden-demo integration, cloud/object-store
+implementation, and deployment remain later Issue #38 phases or explicitly deferred.
 
 ## The logical/physical distinction
 
