@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-ready.local/contracts/recipe/1.0.0",
+  "title": "AI-ready assessment recipe v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "recipe_id",
+    "framework_version",
+    "title",
+    "capability_ids",
+    "question_ids"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "recipe_id": {"$ref": "#/$defs/id"},
+    "framework_version": {"const": "1.0.0"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 256},
+    "capability_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/id"}
+    },
+    "question_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/id"}
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    }
+  }
+}

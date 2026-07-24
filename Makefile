@@ -25,7 +25,9 @@ ASSESSMENT_OFFLINE := assessment/tools/run-offline.sh
 
 .PHONY: venv up down seed load health dbt dbt-docs airflow bi catalog lake-up lake-publish catalog-ingest clean \
 	assessment-install assessment-schema assessment-contract assessment-scenarios assessment-calibration \
-	assessment-report assessment-test assessment-lint assessment-typecheck assessment-build assessment-clean
+	assessment-report assessment-test assessment-store assessment-migration assessment-import-export \
+	assessment-portability assessment-security-scan assessment-lint assessment-typecheck assessment-build \
+	assessment-clean
 
 venv: $(VENV)/bin/python3
 
@@ -131,9 +133,11 @@ assessment-install:
 
 assessment-schema:
 	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_CLI) schema
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m assessment schema --repo-root .
 
 assessment-contract:
 	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_CLI) contract --fixture-root $(ASSESSMENT_FIXTURES)
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m pytest -q assessment/tests/contract
 
 assessment-scenarios:
 	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_CLI) scenarios --fixture-root $(ASSESSMENT_FIXTURES)
@@ -147,11 +151,47 @@ assessment-report:
 assessment-test:
 	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m pytest -q assessment/tests
 
+assessment-store:
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m pytest -q \
+		assessment/tests/unit/test_local_store_and_migration.py::test_local_store_uses_relative_posix_keys_canonical_json_and_checksums \
+		assessment/tests/unit/test_local_store_and_migration.py::test_atomic_replace_failure_preserves_previous_valid_document \
+		assessment/tests/unit/test_local_store_and_migration.py::test_lock_refuses_competing_writer_and_recovery_removes_stale_temps \
+		assessment/tests/unit/test_local_store_and_migration.py::test_parent_directory_fsync_is_used_or_reports_platform_non_support \
+		assessment/tests/unit/test_local_store_and_migration.py::test_store_rejects_planted_parent_and_lock_symlinks_without_external_write \
+		assessment/tests/unit/test_local_store_and_migration.py::test_store_descriptor_binding_blocks_parent_swap_race \
+		assessment/tests/unit/test_local_store_and_migration.py::test_store_root_binding_rejects_intermediate_ancestor_symlink_swap \
+		assessment/tests/unit/test_local_store_and_migration.py::test_create_crash_before_promotion_leaves_no_visible_engagement \
+		assessment/tests/unit/test_local_store_and_migration.py::test_create_failure_cleanup_cannot_delete_through_swapped_root_ancestor \
+		assessment/tests/unit/test_local_store_and_migration.py::test_recovery_descriptor_binding_preserves_external_temporary_file
+
+assessment-migration:
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m pytest -q \
+		assessment/tests/unit/test_local_store_and_migration.py::test_migration_is_pure_idempotent_and_preserves_frozen_source \
+		assessment/tests/unit/test_local_store_and_migration.py::test_migration_idempotence_rejects_corrupted_existing_target \
+		assessment/tests/unit/test_local_store_and_migration.py::test_migration_idempotence_rejects_root_symlink_and_unexpected_directory \
+		assessment/tests/unit/test_local_store_and_migration.py::test_migration_promotion_preserves_concurrent_destination \
+		assessment/tests/unit/test_local_store_and_migration.py::test_no_replace_promotion_rejects_intermediate_ancestor_swap \
+		assessment/tests/unit/test_local_store_and_migration.py::test_unknown_newer_migration_fails_before_destination_mutation \
+		assessment/tests/unit/test_local_store_and_migration.py::test_invalid_known_old_source_fails_before_destination_mutation
+
+assessment-import-export:
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m pytest -q \
+		assessment/tests/integration/test_archive_portability.py
+
+assessment-portability:
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m pytest -q \
+		assessment/tests/integration/test_archive_portability.py -k roundtrip
+
+assessment-security-scan:
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m pytest -q \
+		assessment/tests/integration/test_archive_portability.py -k 'not roundtrip'
+
 assessment-lint:
 	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_VENV)/bin/ruff check assessment
 
 assessment-typecheck:
-	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_VENV)/bin/mypy assessment/prototype
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_VENV)/bin/mypy \
+		assessment/prototype assessment/src/assessment
 
 assessment-build:
 	cd assessment && $(CURDIR)/$(ASSESSMENT_OFFLINE) $(CURDIR)/$(ASSESSMENT_PY) -m build --no-isolation

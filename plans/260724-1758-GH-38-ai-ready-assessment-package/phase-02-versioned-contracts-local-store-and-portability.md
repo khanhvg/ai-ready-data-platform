@@ -13,8 +13,8 @@
 - Date: 2026-07-24
 - Description: Establish final versioned content/data contracts, authoritative engagement folders, atomic local storage, migration, and safe deterministic import/export.
 - Priority: P2
-- Implementation status: Pending
-- Review status: Pending; requires Phase 1 focused review pass.
+- Implementation status: Complete; final exact-head verification and publication are pending.
+- Review status: Passed; specification and code-quality reviews each report 0 Critical, 0 Important, and 0 Minor findings.
 
 ## Key Insights
 
@@ -65,14 +65,14 @@ Migration is a pure document transform with source/target validation and a regis
 
 ## Todo list
 
-- [ ] Lock isolated Python 3.12 runtime and dev dependencies.
-- [ ] Complete JSON Schemas, typed models, and semantic validation.
-- [ ] Implement atomic local store and recovery tests.
-- [ ] Prove v0.1 prototype migration and unknown-newer rejection.
-- [ ] Produce deterministic checksummed ZIPs.
-- [ ] Reject the full hostile archive/hygiene corpus before extraction.
-- [ ] Prove different-path roundtrip without data loss.
-- [ ] Document future object store boundary only.
+- [x] Lock isolated Python 3.12 runtime and dev dependencies.
+- [x] Complete JSON Schemas, typed models, and semantic validation.
+- [x] Implement atomic local store and recovery tests.
+- [x] Prove v0.1 prototype migration and unknown-newer rejection.
+- [x] Produce deterministic checksummed ZIPs.
+- [x] Reject the full hostile archive/hygiene corpus before extraction.
+- [x] Prove different-path roundtrip without data loss.
+- [x] Document future object store boundary only.
 
 ## Success Criteria
 

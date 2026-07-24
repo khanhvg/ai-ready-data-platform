@@ -215,9 +215,7 @@ def validate_framework(framework: Framework) -> None:
     )
     if tuple(question["id"] for question in questions) != expected_question_ids:
         raise ValidationError("questions: confirmed IDs or domain order changed")
-    expected_question_domains = tuple(
-        domain_id for domain_id in DOMAIN_ORDER for _ in range(3)
-    )
+    expected_question_domains = tuple(domain_id for domain_id in DOMAIN_ORDER for _ in range(3))
     if tuple(question.get("domain_id") for question in questions) != expected_question_domains:
         raise ValidationError("questions: question-to-domain bindings changed")
     counts: Counter[str] = Counter()
@@ -481,9 +479,7 @@ def validate_fixture(fixture: Mapping[str, Any], framework: Framework) -> None:
         if not isinstance(note, str) or not note.strip():
             raise ValidationError(f"fixture: missing architect note at {index}")
     facts = fixture["diagnostic_facts"]
-    fact_schemas = {
-        fact["id"]: fact for fact in framework.gates["diagnostic_facts"]
-    }
+    fact_schemas = {fact["id"]: fact for fact in framework.gates["diagnostic_facts"]}
     if not isinstance(facts, dict) or set(facts) != set(fact_schemas):
         raise ValidationError("fixture: malformed diagnostic facts")
     for fact_id, schema in fact_schemas.items():
@@ -700,8 +696,7 @@ def evaluate_fixture(
                 "id": rule["id"],
                 "title": rule["title"],
                 "gap": (
-                    f"Observed condition for {rule['id']} does not meet the target "
-                    "control state."
+                    f"Observed condition for {rule['id']} does not meet the target control state."
                 ),
                 "impact": recommendation["impact"],
                 "priority": priority_for(
@@ -1052,23 +1047,42 @@ def build_check(dist: Path) -> dict[str, Any]:
     sdists = sorted(dist.glob("*.tar.gz"))
     if len(wheels) != 1 or len(sdists) != 1:
         raise ValidationError("build: expected exactly one wheel and one sdist")
-    expected = {
+    wheel_expected = {
         *(f"prototype/0.1.0/{name}" for name in CONTENT_FILES),
         "prototype/report-template.html.j2",
         "prototype/report.css",
+        "assessment/__init__.py",
+        "assessment/__main__.py",
+        "assessment/cli.py",
+        "assessment/content/loader.py",
+        "assessment/content/markdown.py",
+        "assessment/content/schemas.py",
+        "assessment/content/semantics.py",
+        "assessment/domain/errors.py",
+        "assessment/domain/models.py",
+        "assessment/domain/versions.py",
+        "assessment/storage/archive.py",
+        "assessment/storage/hygiene.py",
+        "assessment/storage/limits.py",
+        "assessment/storage/local.py",
+        "assessment/storage/migrations.py",
+        "assessment/storage/protocol.py",
     }
     with zipfile.ZipFile(wheels[0]) as archive:
         wheel_names = set(archive.namelist())
-    if not expected.issubset(wheel_names):
-        raise ValidationError("build: wheel is missing prototype content")
+    if not wheel_expected.issubset(wheel_names):
+        raise ValidationError("build: wheel is missing required package content")
+    sdist_expected = {
+        f"src/{name}" if name.startswith("assessment/") else name for name in wheel_expected
+    }
     with tarfile.open(sdists[0], "r:gz") as archive:
         sdist_names = {"/".join(name.split("/")[1:]) for name in archive.getnames()}
-    if not expected.issubset(sdist_names):
-        raise ValidationError("build: sdist is missing prototype content")
+    if not sdist_expected.issubset(sdist_names):
+        raise ValidationError("build: sdist is missing required package content")
     return {
         "wheel": wheels[0].name,
         "sdist": sdists[0].name,
-        "content_files_checked": len(expected),
+        "packaged_files_checked": len(wheel_expected),
     }
 
 

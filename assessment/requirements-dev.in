@@ -5,4 +5,5 @@ pytest==8.4.1
 ruff==0.12.4
 setuptools==80.9.0
 types-PyYAML==6.0.12.20260724
+types-jsonschema==4.24.0.20250708
 wheel==0.45.1

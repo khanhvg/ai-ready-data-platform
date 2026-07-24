@@ -4,24 +4,32 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-ready-assessment-prototype"
-version = "0.1.0"
-description = "Offline Phase 1 rubric, calibration, and report prototype"
+version = "0.2.0"
+description = "Offline AI-ready assessment contracts, prototype, and portable local storage"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
   "Jinja2==3.1.6",
+  "jsonschema==4.24.0",
+  "Pillow==11.3.0",
+  "pydantic==2.11.7",
   "PyYAML==6.0.2",
 ]
 
 [project.scripts]
 assessment-prototype = "prototype.run:main"
+assessment = "assessment.cli:main"
 
 [tool.setuptools]
 include-package-data = true
-
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["prototype*"]
+packages = [
+  "prototype",
+  "assessment",
+  "assessment.content",
+  "assessment.domain",
+  "assessment.storage",
+]
+package-dir = {assessment = "src/assessment"}
 
 [tool.setuptools.package-data]
 prototype = ["0.1.0/*.yaml", "*.j2", "*.css"]

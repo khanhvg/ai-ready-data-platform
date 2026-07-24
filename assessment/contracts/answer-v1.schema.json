@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-ready.local/contracts/answer/1.0.0",
+  "title": "AI-ready assessment answers and evidence v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "engagement_id",
+    "framework_version",
+    "answers",
+    "diagnostic_facts"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "engagement_id": {"$ref": "#/$defs/id"},
+    "framework_version": {"const": "1.0.0"},
+    "answers": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {"$ref": "#/$defs/answer"}
+    },
+    "diagnostic_facts": {
+      "type": "object",
+      "maxProperties": 32,
+      "additionalProperties": {
+        "type": ["integer", "boolean", "string", "null"]
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "relative_path": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}(?:/[A-Za-z0-9][A-Za-z0-9._-]{0,127})*$"
+    },
+    "answer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "question_id",
+        "rating",
+        "evidence_status",
+        "note",
+        "evidence_refs"
+      ],
+      "properties": {
+        "question_id": {"$ref": "#/$defs/id"},
+        "rating": {"type": ["integer", "null"], "minimum": 0, "maximum": 4},
+        "evidence_status": {
+          "enum": [
+            "Self-reported",
+            "Partially evidenced",
+            "Evidenced",
+            "Conflicting evidence",
+            "Not assessed"
+          ]
+        },
+        "note": {"type": "string", "maxLength": 4096},
+        "evidence_refs": {
+          "type": "array",
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/relative_path"}
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"evidence_status": {"const": "Not assessed"}},
+            "required": ["evidence_status"]
+          },
+          "then": {"properties": {"rating": {"type": "null"}}},
+          "else": {"properties": {"rating": {"type": "integer", "minimum": 0, "maximum": 4}}}
+        }
+      ]
+    }
+  }
+}
