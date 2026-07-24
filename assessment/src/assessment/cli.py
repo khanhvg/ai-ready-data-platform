@@ -1,18 +1,33 @@
-"""Small offline CLI for Phase 2 contracts and portability operations."""
+"""Offline CLI for contracts, portability, deterministic evaluation, and reports."""
 
 from __future__ import annotations
 
 import argparse
+import dataclasses
+import hashlib
 import json
+import os
+import stat
 import sys
 from importlib import resources
 from importlib.resources.abc import Traversable
 from pathlib import Path
-from typing import Any
+from typing import Any, Never
 
 from assessment.content.schemas import load_schema
-from assessment.domain.errors import ContentValidationError
+from assessment.domain.errors import AssessmentError, ContentValidationError
+from assessment.engine.evaluator import evaluate_assessment
+from assessment.frameworks import load_framework
+from assessment.reporting.generator import generate_report, source_state_digest
+from assessment.reporting.renderer import render_report
 from assessment.storage.archive import export_engagement, import_engagement
+from assessment.storage.local import (
+    LocalEngagementStore,
+    _ensure_absolute_directory,
+    _fsync_directory_descriptor,
+    atomic_write_at,
+    canonical_json,
+)
 from assessment.storage.migrations import migrate_prototype_fixture
 
 PUBLIC_SCHEMA_FILENAMES = (
@@ -24,6 +39,11 @@ PUBLIC_SCHEMA_FILENAMES = (
     "recipe-v1.schema.json",
     "report-v1.schema.json",
 )
+
+
+class MachineReadableArgumentParser(argparse.ArgumentParser):
+    def error(self, message: str) -> Never:
+        raise ContentValidationError(f"invalid_arguments: {message}")
 
 
 def _require_complete_schema_authority(
@@ -87,7 +107,7 @@ def _emit(value: Any) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="python -m assessment")
+    parser = MachineReadableArgumentParser(prog="python -m assessment")
     commands = parser.add_subparsers(dest="command", required=True)
 
     schema = commands.add_parser("schema", help="validate all v1 public JSON Schemas")
@@ -104,17 +124,185 @@ def build_parser() -> argparse.ArgumentParser:
     import_parser = commands.add_parser("import", help="safely import an engagement archive")
     import_parser.add_argument("archive", type=Path)
     import_parser.add_argument("destination", type=Path)
+
+    for command_name, help_text in (
+        ("evaluate", "evaluate one explicit engagement into deterministic JSON"),
+        ("report", "generate canonical JSON and standalone HTML"),
+    ):
+        command = commands.add_parser(command_name, help=help_text)
+        command.add_argument("--engagement-root", type=Path, required=True)
+        command.add_argument("--output-root", type=Path, required=True)
     return parser
 
 
-def main(argv: list[str] | None = None) -> int:
-    arguments = build_parser().parse_args(argv)
+def _machine_error(code: str, error: Exception) -> int:
+    print(
+        json.dumps(
+            {"error": {"code": code, "message": str(error)}},
+            ensure_ascii=False,
+            sort_keys=True,
+        ),
+        file=sys.stderr,
+    )
+    return 2
+
+
+def _read_source(
+    engagement_root: Path,
+) -> tuple[
+    dict[str, Any],
+    dict[str, Any],
+    dict[str, dict[str, str]],
+    dict[str, str],
+]:
+    if engagement_root.is_symlink() or not engagement_root.is_dir():
+        raise ValueError("engagement root must be a real local directory")
+    store = LocalEngagementStore(engagement_root.parent)
+    documents, source_snapshot = store.read_documents_and_snapshot(
+        engagement_root.name,
+        (
+            "engagement.json",
+            "assessment/quick.json",
+            "findings/review.json",
+        ),
+    )
+    engagement = documents["engagement.json"]
+    answers = documents["assessment/quick.json"]
+    if engagement is None or answers is None:
+        raise ValueError("engagement and assessment answer documents are required")
+    reviews: dict[str, dict[str, str]] = {}
+    raw_reviews = documents["findings/review.json"]
+    if raw_reviews is not None:
+        records = raw_reviews.get("reviews", raw_reviews)
+        if not isinstance(records, dict) or not all(
+            isinstance(key, str) and isinstance(value, dict)
+            for key, value in records.items()
+        ):
+            raise ValueError("findings/review.json: reviews must be an object")
+        reviews = records
+    return engagement, answers, reviews, source_snapshot
+
+
+def _safe_output_root(engagement_root: Path, output_root: Path) -> int:
+    engagement = engagement_root.resolve(strict=True)
+    output = output_root.absolute()
+    resolved_output = output.resolve(strict=False)
+    if resolved_output == engagement or engagement in resolved_output.parents:
+        raise ValueError("output root must not alias engagement source state")
+    current = Path(output.anchor)
+    for part in output.parts[1:]:
+        current /= part
+        if current.exists() and current.is_symlink():
+            raise ValueError(f"output root contains a symlink component: {current.name}")
+    try:
+        return _ensure_absolute_directory(output)
+    except (OSError, ValueError) as error:
+        raise ValueError("output root must be a real local directory") from error
+
+
+def _write_evaluation(
+    engagement: dict[str, Any],
+    answers: dict[str, Any],
+    reviews: dict[str, dict[str, str]],
+    source_snapshot: dict[str, str],
+    output_descriptor: int,
+) -> dict[str, Any]:
+    framework = load_framework(str(engagement["framework_version"]))
+    result = evaluate_assessment(
+        answers,
+        framework,
+        reviews=reviews,
+        expected_engagement_id=str(engagement["engagement_id"]),
+    )
+    source_digest = source_state_digest(
+        engagement,
+        answers,
+        reviews,
+        source_snapshot,
+    )
+    document = {
+        "schema_version": "1.0.0",
+        "framework_version": framework.version,
+        "source_state_digest": source_digest,
+        "result": dataclasses.asdict(result),
+    }
+    evaluation_bytes = canonical_json(document)
+    atomic_write_at(output_descriptor, "assessment-result.json", evaluation_bytes)
+    return {
+        "artifact": "assessment-result.json",
+        "sha256": hashlib.sha256(evaluation_bytes).hexdigest(),
+        "source_state_digest": source_digest,
+    }
+
+
+def _read_bound_artifact(
+    output_descriptor: int,
+    name: str,
+) -> bytes | None:
+    flags = os.O_RDONLY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    try:
+        descriptor = os.open(name, flags, dir_fd=output_descriptor)
+    except FileNotFoundError:
+        return None
+    try:
+        if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+            raise ContentValidationError(
+                f"output artifact must be a regular file: {name}"
+            )
+        with os.fdopen(descriptor, "rb", closefd=False) as handle:
+            return handle.read()
+    finally:
+        os.close(descriptor)
+
+
+def _publish_report(
+    output_descriptor: int,
+    json_bytes: bytes,
+    html_bytes: bytes,
+    source_digest: str,
+) -> dict[str, str]:
+    digests = {
+        "report.json": hashlib.sha256(json_bytes).hexdigest(),
+        "report.html": hashlib.sha256(html_bytes).hexdigest(),
+    }
+    manifest_bytes = canonical_json(
+        {
+            "schema_version": "1.0.0",
+            "source_state_digest": source_digest,
+            "artifacts": digests,
+        }
+    )
+    payloads = {
+        "report.json": json_bytes,
+        "report.html": html_bytes,
+        "report-manifest.json": manifest_bytes,
+    }
+    previous = {
+        name: _read_bound_artifact(output_descriptor, name)
+        for name in payloads
+    }
+    try:
+        for name, content in payloads.items():
+            atomic_write_at(output_descriptor, name, content)
+    except Exception:
+        for name, previous_content in previous.items():
+            if previous_content is None:
+                try:
+                    os.unlink(name, dir_fd=output_descriptor)
+                except FileNotFoundError:
+                    pass
+            else:
+                atomic_write_at(output_descriptor, name, previous_content)
+        _fsync_directory_descriptor(output_descriptor)
+        raise
+    return digests
+
+
+def _run(arguments: argparse.Namespace) -> int:
     if arguments.command == "schema":
-        try:
-            paths = _schema_paths(arguments.repo_root)
-        except ContentValidationError as error:
-            print(str(error), file=sys.stderr)
-            return 2
+        paths = _schema_paths(arguments.repo_root)
         for path in paths:
             load_schema(path)
         _emit({"schema_version": "1.0.0", "schemas": len(paths)})
@@ -128,4 +316,63 @@ def main(argv: list[str] | None = None) -> int:
     if arguments.command == "import":
         _emit(import_engagement(arguments.archive, arguments.destination))
         return 0
+    if arguments.command in {"evaluate", "report"}:
+        engagement_root = arguments.engagement_root.absolute()
+        engagement, answers, reviews, source_snapshot = _read_source(engagement_root)
+        try:
+            output_descriptor = _safe_output_root(
+                engagement_root,
+                arguments.output_root,
+            )
+        except ValueError as error:
+            raise ContentValidationError(f"unsafe_output_root: {error}") from error
+        try:
+            if arguments.command == "evaluate":
+                _emit(
+                    _write_evaluation(
+                        engagement,
+                        answers,
+                        reviews,
+                        source_snapshot,
+                        output_descriptor,
+                    )
+                )
+                return 0
+            generated = generate_report(
+                engagement,
+                answers,
+                reviews=reviews,
+                source_snapshot=source_snapshot,
+            )
+            report_document = json.loads(generated.json_bytes)
+            html_bytes = render_report(report_document)
+            artifact_digests = _publish_report(
+                output_descriptor,
+                generated.json_bytes,
+                html_bytes,
+                generated.source_state_digest,
+            )
+            _emit(
+                {
+                    "artifacts": artifact_digests,
+                    "commit_manifest": "report-manifest.json",
+                    "source_state_digest": generated.source_state_digest,
+                }
+            )
+            return 0
+        finally:
+            os.close(output_descriptor)
     raise AssertionError("unreachable command")
+
+
+def main(argv: list[str] | None = None) -> int:
+    try:
+        arguments = build_parser().parse_args(argv)
+        return _run(arguments)
+    except (AssessmentError, OSError, ValueError, KeyError, json.JSONDecodeError) as error:
+        code = (
+            "unsafe_output_root"
+            if str(error).startswith("unsafe_output_root:")
+            else "assessment_error"
+        )
+        return _machine_error(code, error)

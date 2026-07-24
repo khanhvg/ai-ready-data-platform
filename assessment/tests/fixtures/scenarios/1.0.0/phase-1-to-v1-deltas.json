@@ -1,0 +1,27 @@
+{
+  "intended_deltas": [
+    {
+      "surface": "finding_order",
+      "reason": "V1 orders findings by priority, capability order, and finding ID instead of authored rule order."
+    },
+    {
+      "surface": "source_state_digest",
+      "reason": "V1 reports bind canonical engagement, answer, and architect-review source state."
+    },
+    {
+      "surface": "architect_review",
+      "reason": "V1 carries accept, defer, or edit-note records separately from generated finding truth."
+    },
+    {
+      "surface": "report_provenance",
+      "reason": "V1 report content explicitly labels customer answer, customer evidence, architect judgment, and demo illustration provenance."
+    }
+  ],
+  "unchanged_truth": [
+    "domain_scores",
+    "pre_gate_readiness",
+    "final_readiness",
+    "triggered_gates",
+    "finding_membership"
+  ]
+}

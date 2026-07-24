@@ -1,0 +1,18 @@
+{
+  "enterprise-lake-weak-quality": {
+    "architect-a": {"domain_scores": [3, 3, 3, 3, 1, 3, 3, 3, 2, 2], "pre_gate_readiness": 2, "final_readiness": 1, "triggered_gates": ["G-QUALITY"], "finding_ids": ["F-QUALITY"], "presentation_score": "65.0"},
+    "architect-b": {"domain_scores": [2, 2, 3, 3, 0, 2, 2, 2, 1, 2], "pre_gate_readiness": 1, "final_readiness": 1, "triggered_gates": ["G-QUALITY"], "finding_ids": ["F-QUALITY"], "presentation_score": "47.5"}
+  },
+  "manual-governance-missing-lineage": {
+    "architect-a": {"domain_scores": [2, 3, 2, 2, 2, 1, 2, 2, 2, 2], "pre_gate_readiness": 2, "final_readiness": 2, "triggered_gates": ["G-LINEAGE"], "finding_ids": ["F-LINEAGE", "F-AI-OPERATING"], "presentation_score": "50.0"},
+    "architect-b": {"domain_scores": [2, 3, 2, 1, 1, 0, 2, 1, 2, 2], "pre_gate_readiness": 1, "final_readiness": 1, "triggered_gates": ["G-QUALITY", "G-SECURITY", "G-LINEAGE"], "finding_ids": ["F-QUALITY", "F-LINEAGE", "F-SECURITY", "F-AI-OPERATING"], "presentation_score": "40.0"}
+  },
+  "startup-no-governance": {
+    "architect-a": {"domain_scores": [2, 1, 1, 2, 1, 1, 1, 1, 1, 2], "pre_gate_readiness": 1, "final_readiness": 1, "triggered_gates": ["G-QUALITY", "G-SECURITY", "G-PRIVACY", "G-GOVERNANCE", "G-OWNERSHIP", "G-LINEAGE", "G-REPRODUCIBILITY"], "finding_ids": ["F-OWNERSHIP", "F-QUALITY", "F-LINEAGE", "F-GOVERNANCE", "F-PRIVACY", "F-SECURITY", "F-REPRODUCIBILITY", "F-AI-OPERATING"], "presentation_score": "32.5"},
+    "architect-b": {"domain_scores": [1, 0, 1, 1, 2, 1, 1, 0, 0, 1], "pre_gate_readiness": 0, "final_readiness": 0, "triggered_gates": ["G-SECURITY", "G-PRIVACY", "G-GOVERNANCE", "G-OWNERSHIP", "G-LINEAGE", "G-REPRODUCIBILITY"], "finding_ids": ["F-OWNERSHIP", "F-LINEAGE", "F-GOVERNANCE", "F-PRIVACY", "F-SECURITY", "F-REPRODUCIBILITY", "F-AI-OPERATING"], "presentation_score": "20.0"}
+  },
+  "strong-engineering-no-ai-operating-model": {
+    "architect-a": {"domain_scores": [3, 3, 3, 3, 3, 3, 3, 3, 2, 1], "pre_gate_readiness": 2, "final_readiness": 2, "triggered_gates": ["G-REPRODUCIBILITY"], "finding_ids": ["F-REPRODUCIBILITY", "F-AI-OPERATING"], "presentation_score": "67.5"},
+    "architect-b": {"domain_scores": [3, 2, 3, 3, 3, 3, 3, 2, 1, 1], "pre_gate_readiness": 2, "final_readiness": 2, "triggered_gates": ["G-REPRODUCIBILITY"], "finding_ids": ["F-REPRODUCIBILITY", "F-AI-OPERATING"], "presentation_score": "60.0"}
+  }
+}

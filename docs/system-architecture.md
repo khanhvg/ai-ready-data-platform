@@ -50,26 +50,42 @@ step, never co-running with Airflow -- see the Airflow section below and
 
 ## Independent assessment package
 
-The Issue #38 Phase 1 assessment is a separate offline path, not another stage in the retail
-pipeline:
+The Issue #38 assessment is a separate offline path, not another stage in the retail pipeline:
 
 ```text
-versioned rubric + synthetic architect fixtures
+explicit engagement root + pinned v1 framework assets
         |
         v
-assessment/prototype/run.py
+deterministic engine
         |
-        +--> deterministic scoring, confidence, seven gate traces, findings
-        +--> ignored standalone report.json + report.html artifacts
+        +--> maturity + coverage
+        +--> confidence summary
+        +--> all seven readiness-gate traces
+        +--> findings + recommendations + separate architect review state
+        |
+        v
+canonical source-state digest + 12-section report.json
+        |
+        v
+standalone report.html (embedded CSS, no script or remote resources)
 ```
 
-It runs in `.assessment-venv`, starts no services, and never uses the demo repository or its
-artifacts as customer maturity evidence.
+The `evaluate` and `report` CLI commands require both an explicit engagement root and an
+explicit output root. They run in `.assessment-venv`, start no services, and never use the demo
+repository or its artifacts as customer maturity evidence. Demo references are presentation-only
+illustrations and cannot affect maturity, confidence, priority, gates, or readiness.
 
 Phase 2 adds public v1 JSON Schemas and typed consumers plus an authoritative engagement-folder
 boundary under a user-selected root. `LocalEngagementStore` uses relative POSIX keys, canonical
 JSON, checksums, one writer lock per engagement, and atomic same-directory replacement. A pure
 registry migrates frozen prototype fixtures to v1 without editing their source.
+
+Phase 3 adds package-versioned framework assets and pure maturity, confidence, gate, finding,
+recommendation, and reporting services. The engine evaluates every rule in the pinned seven-gate
+bundle without short-circuiting, retains operand provenance for triggered and untriggered rules,
+and selects the most restrictive cap deterministically. Canonical JSON and HTML bytes derive
+from the pinned framework plus a coherent engagement snapshot; generated output files are
+excluded from the source-state digest.
 
 Portable export/import is separate from the retail pipeline: deterministic `ZIP_STORED` archives
 contain normalized files and a canonical digest manifest. Import fully preflights archive names,
@@ -78,7 +94,7 @@ only to a sibling staging directory before atomic destination promotion. No asse
 starts Docker, DuckDB, dbt, Rill, Airflow, Lakekeeper, OpenMetadata, AWS, or Terraform.
 
 Web workflow, knowledge catalog, diagrams, golden-demo integration, cloud/object-store
-implementation, and deployment remain later Issue #38 phases or explicitly deferred.
+implementation, and deployment remain Phase 4–8 work or explicitly deferred.
 
 ## The logical/physical distinction
 

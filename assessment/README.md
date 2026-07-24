@@ -1,9 +1,10 @@
-# AI-ready assessment Phases 1–2
+# AI-ready assessment Phases 1–3
 
 This isolated Python 3.12 package proves the Issue #38 rubric, scoring/gates, synthetic
-calibration, canonical report shape, v1 public contracts, authoritative local engagement
-folders, prototype migration, and safe deterministic portability. It is deliberately offline
-after dependency installation and does not import, scan, or control the retail data platform.
+calibration, v1 public contracts, authoritative local engagement folders, prototype migration,
+safe deterministic portability, and the final deterministic engine and canonical report
+generation. It is deliberately offline after dependency installation and does not import,
+scan, or control the retail data platform.
 
 From the repository root:
 
@@ -14,6 +15,7 @@ make assessment-scenarios assessment-calibration
 make assessment-report assessment-test
 make assessment-store assessment-migration assessment-import-export
 make assessment-portability assessment-security-scan
+make assessment-engine
 make assessment-lint assessment-typecheck assessment-build
 ```
 
@@ -22,10 +24,38 @@ the separate `.assessment-venv` from hash-locked files. The other targets use
 `assessment/tools/run-offline.sh` to deny outbound network access with the audited macOS
 runtime's `sandbox-exec`; they use local files and start no services or containers.
 
-Generated reports are written to the ignored
+Prototype scenario reports are written to the ignored
 `assessment/.generated/prototype/<scenario>/` tree. Each scenario has top-level canonical
 artifacts for Architect A plus explicitly labeled `architect-a/` and `architect-b/` artifacts
 for calibration inspection. Source fixtures and the migration freeze manifest remain tracked.
+
+## Deterministic engine and reports
+
+Package `0.3.0` adds pure maturity and coverage aggregation, independent confidence summaries,
+complete operand-level traces for the pinned seven-gate bundle, deterministic findings and
+recommendations, a canonical source-state digest, and exactly 12 ordered report sections.
+Architect review state remains separate from generated engine truth, and demo illustration
+references cannot change maturity, confidence, priority, gates, or readiness.
+
+The final CLI never infers a workspace. Both commands require an existing engagement folder and
+an explicit output directory:
+
+```bash
+.assessment-venv/bin/python -m assessment evaluate \
+  --engagement-root /absolute/path/to/engagement \
+  --output-root /absolute/path/to/evaluation-output
+
+.assessment-venv/bin/python -m assessment report \
+  --engagement-root /absolute/path/to/engagement \
+  --output-root /absolute/path/to/report-output
+```
+
+`evaluate` writes canonical `assessment-result.json`. `report` writes canonical `report.json`,
+byte-stable standalone `report.html`, and a last-written `report-manifest.json` that binds the
+two required report artifacts by digest. Publication failure restores the prior coherent set.
+HTML has embedded CSS, no script or remote resources, and no manual-edit step. Output roots may
+not alias the engagement source state; failures are machine-readable on stderr and return
+nonzero.
 
 The installed package carries all seven public v1 JSON Schemas under
 `assessment.public_schemas`. `assessment schema` validates that installed authority, while
@@ -65,4 +95,4 @@ sibling stage and atomically promoting it.
 The future object-store boundary is documentation-only in
 `assessment/docs/object-engagement-store.md`. There is no SDK, S3 upload, credential, bucket,
 Terraform, SQLite authority, cloud resource, FastAPI/browser workflow, catalog/diagram, golden
-pipeline, customer data, or deployment behavior in Phase 2.
+pipeline, customer data, or deployment behavior in Phases 1–3. Phases 4–8 remain pending.

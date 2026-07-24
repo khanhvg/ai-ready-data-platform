@@ -38,23 +38,27 @@ Generated data and warehouses are intentionally gitignored.
 
 ## AI-ready assessment package
 
-Issue #38 Phases 1–2 add a separate, local-only Python 3.12 package under `assessment/`. It
+Issue #38 Phases 1–3 add a separate, local-only Python 3.12 package under `assessment/`. It
 validates the 10-domain rubric and 30 anchored questions, recomputes four two-rater scenarios,
-checks the 117/119 calibration result, generates standalone JSON/HTML reports, and defines the
-v1 portable engagement contracts and local folder authority:
+checks the 117/119 calibration result, defines the v1 portable engagement contracts and local
+folder authority, and evaluates those folders with a deterministic maturity, confidence,
+seven-gate, finding, recommendation, and report engine:
 
 ```bash
 make assessment-install
 make assessment-schema assessment-contract assessment-scenarios assessment-calibration
 make assessment-store assessment-migration assessment-import-export
 make assessment-portability assessment-security-scan
-make assessment-report assessment-test assessment-lint assessment-typecheck assessment-build
+make assessment-engine assessment-report assessment-test
+make assessment-lint assessment-typecheck assessment-build
 ```
 
 The assessment uses `.assessment-venv`, starts no containers, and does not read from or score
-the retail demo. Generated reports are ignored under `assessment/.generated/`; see
-`assessment/README.md` for the exact implemented boundary. Engagement roots are selected
-explicitly by the user and are never broadly ignored or removed by assessment cleanup.
+the retail demo. Prototype generated reports are ignored under `assessment/.generated/`; see
+`assessment/README.md` for the final explicit-root CLI and exact implemented boundary.
+Engagement and output roots are selected explicitly by the user and are never broadly ignored
+or removed by assessment cleanup. Phase 3 verification is recorded in
+`docs/verification/GH-38-phase-3-evidence.md`.
 
 ## Scale profiles
 
