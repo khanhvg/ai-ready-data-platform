@@ -27,13 +27,13 @@
 - Every critical finding follows: gap → business/AI impact → priority → recommendation → logical architecture → technology options → optional demo artifact → accountable action/roadmap.
 - Mapping provenance identifies generated assessment fact, architect judgment, catalog reference, and demo illustration.
 - Initial deep dives contain 15–30 anchored questions per selected domain, reuse evidence statuses, and preserve quick/deep results separately.
-- Deep-dive outputs may refine findings/recommendations with explicit provenance; readiness changes only through the same versioned engine/gates and transparent recalculation.
+- Deep-dive outputs may refine findings/recommendations with explicit provenance; they never silently overwrite the quick snapshot. Readiness changes only through an explicit architect-reviewed promotion that creates a new assessment result revision using the same versioned engine/gates and preserves the prior quick result.
 - Add one sample future recipe conforming to extension schema without changing engine or core engagement schema.
 - Web/report display missing/unavailable demo evidence honestly and remain fully useful without it.
 
 ## Architecture
 
-`MappingResolver` consumes validated result/catalog/demo registries and produces a typed `FindingActionChain`. It cannot write assessment inputs or call the engine. Demo links are optional leaf references. `DeepDiveService` uses the existing answer, maturity, confidence, gate, finding, store, and report contracts with a `scope=deep-dive` discriminator and capability ID.
+`MappingResolver` consumes validated result/catalog/demo registries and produces a typed `FindingActionChain`. It cannot write assessment inputs or call the engine. Demo links are optional leaf references. `DeepDiveService` uses the existing answer, maturity, confidence, gate, finding, store, and report contracts with a `scope=deep-dive` discriminator and capability ID. Quick results are immutable revisions. A deep dive first produces a separate advisory result; an architect may explicitly promote selected deep-dive answers/evidence through a reviewed merge record containing source/target digests, capability IDs, rationale, timestamp from engagement metadata, and conflict choices. Promotion creates a new result revision and fresh full gate trace; reports name the active revision and retain a before/after appendix. No automatic “latest wins” behavior exists.
 
 Initial deep dives:
 
@@ -65,7 +65,7 @@ The extension fixture `assessment/tests/fixtures/recipes/manufacturing-maintenan
 1. Define the typed mapping-chain contract, provenance enums, optional demo leaf, accountable action fields, deterministic resolution/sort rules, and semantic validation.
 2. Populate every Phase 1/v1 critical finding family with complete chain links and validate 100% coverage; include vendor-neutral options before optional local/AWS mappings.
 3. Author and calibrate the three initial deep dives above (64 total questions) with anchors 0–4, evidence guidance, expected duration, and linked recommendations.
-4. Implement deep-dive persistence/evaluation using existing services; preserve quick answers/results, label recalculation provenance, and show before/after gate explanations when new architect-entered evidence changes state.
+4. Implement deep-dive persistence/evaluation using existing services; preserve immutable quick answers/results, require an explicit reviewed promotion record before recalculation, reject unresolved conflicts, and show before/after result digests and full gate explanations when architect-entered evidence changes state.
 5. Wire chain and deep-dive results into review/report/web, including unavailable-demo behavior and action/roadmap ownership.
 6. Add the inert future recipe fixture through the public content extension loader only; do not add a pipeline, routes, engine branch, core field, vendor rule, or production content claim.
 7. Capture pre/post hashes for `assessment/src/assessment/engine/` and core schema files; prove adding/removing the recipe fixture changes neither hash nor existing scenario/report results.
@@ -86,7 +86,7 @@ The extension fixture `assessment/tests/fixtures/recipes/manufacturing-maintenan
 
 - Every critical finding has a complete, resolved, provenance-labeled gap-to-action chain.
 - All three deep dives contain 15–30 fully anchored questions and use the same confidence/evidence statuses.
-- Quick assessment history is unchanged; any readiness recalculation names deep-dive inputs and emits a fresh full gate trace.
+- Quick assessment history is immutable; any readiness recalculation requires a reviewed promotion record, names deep-dive inputs/conflict choices, creates a new active revision, and emits a fresh full gate trace while retaining the prior reportable result.
 - Demo artifacts are optional leaves and never feed score/gate/priority; assessment/report remain usable with no demo outputs.
 - Adding/removing the recipe fixture leaves engine source, core schemas, existing scenario outputs, and report JSON hashes unchanged.
 - `make assessment-contract assessment-test assessment-scenarios assessment-report assessment-e2e` passes without heavy services.

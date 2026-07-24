@@ -37,11 +37,11 @@
 
 Verification has three independent lanes:
 
-1. **Offline assessment lane:** fresh `.assessment-venv`, contracts/unit/scenarios/report/archive/security/build/e2e; no Docker or network.
+1. **Assessment lane:** fresh `.assessment-venv`, pinned Chromium, and the build-only locked Mermaid toolchain are bootstrapped from declared locks (network may be used only for these three acquisitions unless verified caches are supplied); contracts/unit/scenarios/report/archive/security/build/diagram-parity/e2e/runtime-smoke then run with outbound network blocked and no Docker.
 2. **Core compatibility lane:** existing `.venv` and `make seed SCALE=small SEED=42 && make load && make health && make dbt && make bi`; no containers.
 3. **Optional golden live lane:** Airflow, lake, and governance staged as documented; only existing guarded lake+governance window.
 
-`make assessment-clean-checkout` creates a temporary git worktree at the implementation commit, never the repository root/home, runs offline assessment and core compatibility commands, captures versions/results, then removes the explicit temporary worktree on success/failure. It does not use `git reset --hard`, AWS, Terraform, GitHub mutation, or hidden local state.
+`make assessment-clean-checkout` creates a temporary git worktree at the implementation commit, never the repository root/home, bootstraps the locked assessment dependencies, browser, and build-only diagram toolchain with an explicit online-or-verified-cache mode, then blocks outbound network while running the assessment and core compatibility commands. It captures versions/results and removes the explicit temporary worktree on success/failure. It does not use `git reset --hard`, AWS, Terraform, GitHub mutation, or undeclared hidden local state.
 
 Durable evidence: `docs/verification/GH-38-assessment-package-evidence.md` records commit, platform, commands, exit summaries, scenario/calibration metrics, portability digests, standalone report render, archive/security findings, resource staging, core regression, known limitations, and cleanup. It never records tokens, customer content, absolute home paths, or claims beyond executed proof.
 
@@ -58,19 +58,22 @@ Durable evidence: `docs/verification/GH-38-assessment-package-evidence.md` recor
 
 ## Implementation Steps
 
-1. Complete the Make target help/contract and prove each target invokes only the intended isolated environment. Exact offline gate:
+1. Complete the Make target help/contract and prove each target invokes only the intended isolated environment. Exact assessment gate:
    ```bash
    make assessment-install
+   make assessment-browser-install
+   make assessment-diagram-install
    make assessment-schema assessment-contract
    make assessment-test
    make assessment-scenarios assessment-calibration
    make assessment-import-export assessment-report
-   make assessment-lint assessment-typecheck assessment-build
-   make assessment-e2e
+   make assessment-lint assessment-typecheck assessment-build assessment-diagrams
+   make assessment-e2e assessment-runtime-smoke
    ```
+   The first three bootstrap commands may fetch only hash/version-pinned artifacts. All subsequent commands run with network denied; a no-network bootstrap is claimed only with supplied verified caches.
 2. Run portability: create a complete synthetic engagement through the UI, generate report, export, copy ZIP and unpacked folder to two distinct temporary absolute roots, import/reopen, regenerate, compare canonical source/report digests, and verify deterministic ZIP bytes via `make assessment-portability`.
-3. Run hostile archive/export hygiene corpus via `make assessment-security-scan`: traversal, symlink, absolute/drive/UNC, Unicode/case duplicate, excessive count/depth/file/total size, unknown-newer version, corrupt checksum, PEM/token/key markers, credentialed URI, `/Users/`, `/home/`, `file://`, `C:\`, `C:/`, and `\\server\share`.
-4. Run no-demo and demo-mutation tests, standalone HTML with browser network blocked, CSRF/headers/loopback/upload tests, wheel/sdist install/content checks, and prove assessment tests never invoke Docker/`make airflow`/`lake`/`catalog`.
+3. Run hostile archive/export hygiene corpus via `make assessment-security-scan`: traversal, archive/pre-existing/destination symlink, absolute/drive/UNC, Unicode/case/destination duplicate, excessive count/depth/file/expanded-total/compression ratio, encrypted/unsupported ZIP features, unknown-newer version, corrupt checksum, opaque evidence, PEM/token/key/entropy markers, credentialed URI, `/Users/`, `/home/`, `file://`, `C:\`, `C:/`, and `\\server\share`.
+4. Run no-demo and demo-mutation tests, `make assessment-runtime-smoke` standalone HTML/JSON artifact journey with browser network blocked, CSRF/headers/loopback/upload tests, single-worker browser bounds, wheel/sdist install/content checks, and prove assessment tests never invoke Docker/`make airflow`/`lake`/`catalog`.
 5. Run existing core regression exactly:
    ```bash
    make seed SCALE=small SEED=42
@@ -80,8 +83,8 @@ Durable evidence: `docs/verification/GH-38-assessment-package-evidence.md` recor
    make bi
    ```
    Compare 18 raw tables, 51 dbt models, canonical 11 marts, Rill exports, and existing command behavior with baseline contracts.
-6. Run optional golden verification in resource-safe stages: `make airflow && make down`; `make lake-up && make lake-publish && make down`; then `make catalog-ingest` only after Airflow stops, followed by `make down`. Preserve the sole guarded lake+governance co-run and record corrected memory limits.
-7. Run `make assessment-clean-checkout` from a fresh temporary worktree at the implementation commit. Rebuild both venvs from declared inputs, execute offline assessment lane, then core compatibility lane, with no reliance on ignored artifacts.
+6. Run golden verification in resource-safe stages: `make demo-contract demo-verify`; `make demo-airflow-verify` (which must trigger/poll the default DAG and tear down); `make lake-up && make lake-publish && make down`; then `make catalog-ingest` only after Airflow stops, followed by `make down`. Preserve the sole guarded lake+governance co-run and record corrected memory limits. If credentials/local service availability prevent the OpenMetadata rerun, record that stage as unexecuted and do not close the all-stage metric from process exit; previously tracked GH-3 evidence may be linked as historical proof only.
+7. Run `make assessment-clean-checkout` from a fresh temporary worktree at the implementation commit. Rebuild both venvs from declared inputs, provision the pinned browser and build-only Mermaid toolchain in explicit online-or-cache mode, then execute network-blocked assessment and core compatibility lanes with no reliance on undeclared ignored artifacts.
 8. Verify compatibility and migration matrix: v0.1 prototype imports/migrates to v1, v1 roundtrips, unknown newer rejects non-mutatingly, old existing Make commands remain, public data assets do not drift unintentionally, and report/content schema versions are pinned.
 9. Verify cleanup/rollback: place an engagement sentinel, run `make assessment-clean`, confirm only generated report/cache/tmp/browser/build artifacts are removed and source/evidence/sentinel remain; run existing `make down`; run `make clean` only after copying/preserving engagement root and verify it does not target engagements.
 10. Update the smallest owning documentation surfaces: quick start/user workflow, framework/gates/confidence, portable folder/import safety, architecture/core separation, Demo Guide/staging, seven audience diagrams, tested dependencies/resources, limitations, cleanup/rollback.
@@ -90,10 +93,10 @@ Durable evidence: `docs/verification/GH-38-assessment-package-evidence.md` recor
 
 ## Todo list
 
-- [ ] Run every offline assessment gate.
+- [ ] Run every post-bootstrap network-blocked assessment gate.
 - [ ] Prove copied-folder/ZIP portability and deterministic reports/archives.
 - [ ] Pass hostile archive, secret, URI, and cross-platform path scans.
-- [ ] Pass browser/security/package isolation tests.
+- [ ] Pass browser/runtime-artifact/security/package isolation tests.
 - [ ] Pass exact existing core data-platform regression.
 - [ ] Run optional heavy proof only in staged resource-safe order.
 - [ ] Pass fresh temporary-worktree verification.
@@ -105,12 +108,12 @@ Durable evidence: `docs/verification/GH-38-assessment-package-evidence.md` recor
 
 ## Success Criteria
 
-- All commands in Steps 1–7 pass from declared dependencies; offline assessment tests make no network or heavy-service calls.
+- All commands in Steps 1–7 pass from declared dependencies; only the three explicit bootstrap targets may fetch pinned artifacts, and subsequent assessment tests make no network or heavy-service calls.
 - Portability roundtrip preserves all source state and regenerates identical canonical report data; ZIP/report determinism passes.
 - Zero secrets, credentialed URIs, or absolute POSIX/macOS/Windows paths occur in exported engagement content.
 - Malicious/unsupported archives reject before destination mutation.
 - Existing 18-table/51-model/11-mart core path and public Make commands regress green.
-- Heavy proof respects one-profile sequencing and sole guarded lake+governance exception; documented Compose limits match source.
+- Airflow proof triggers/polls a real DAG run; heavy proof respects one-profile sequencing and the sole guarded lake+governance exception; documented Compose limits match source.
 - Cleanup removes generated assessment artifacts while preserving engagements/evidence; rollback is documented and tested.
 - Built package includes schemas/content/templates/static assets and works in a clean worktree.
 - All 12 issue criteria and 17 success metrics have executed evidence or an explicit blocking failure; no unsupported audit/release claim is made.

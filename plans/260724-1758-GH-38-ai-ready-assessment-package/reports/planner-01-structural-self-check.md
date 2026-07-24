@@ -2,9 +2,9 @@
 
 Date: 2026-07-24
 Scope: plan artifacts only at baseline `58a9b7f45f5b2d473a39bc2f9eb9258fe92d0b2a`
-Result: **PASS after planner correction, with two declared implementation blockers/conditions**
+Historical result at immutable audit input `3d4f9aa40b34ed0db82e5a0309174a80b4616bdb`: **planner asserted PASS after planner correction, with two declared implementation blockers/conditions**
 
-This is the producing planner's self-check. It is not an independent plan-readiness audit, does not authorize implementation, and does not assert `ready to cook`.
+This is the producing planner's self-check preserved as input provenance. It is not an independent plan-readiness audit, does not authorize implementation, and does not assert `ready to cook`. Its structural assertions were independently challenged; the corrected plan and [combined audit report](./combined-plan-readiness-audit.md) supersede any conflicting count, command, or readiness claim below.
 
 ## Artifact and format checks
 

@@ -25,7 +25,7 @@
 ## Requirements
 
 - Deterministic outputs for missing/partial answers, coverage thresholds, ties, and conflicting evidence.
-- Capability results with score 0–4, presentation score, coverage, confidence distribution/status, and source question IDs.
+- Capability results with score 0–4, capability anchor/label, presentation score, coverage, confidence distribution/status, and source question IDs.
 - Full explainable rule traces for all gates.
 - Findings/recommendations with stable content references and architect accept/defer/edit-note review; edits do not rewrite engine truth.
 - Exactly 12 ordered report sections and standalone accessible HTML.
@@ -42,7 +42,7 @@ capability gaps -> findings -> recommendations
 assessment result + catalog/demo references + reviews -> report.json -> report.html
 ```
 
-Maturity uses the versioned aggregation and coverage rules fixed in calibration. Confidence summarizes status counts and chooses the most conservative status by configured precedence. Gates evaluate ordered rules without short-circuiting so every triggered/non-triggered rule has a trace; the most restrictive cap wins. Findings are sorted deterministically by priority, capability order, and finding ID. Canonical JSON uses stable key/list order, decimal/string formatting, and an explicit source-state digest; generated wall-clock time is excluded or injected from engagement metadata.
+Maturity uses the versioned aggregation, capability anchors, readiness labels, exact decimal presentation formula, and coverage rules fixed in calibration. Confidence summarizes status counts and chooses the most conservative status by configured precedence. The pinned assessment profile selects the exact seven-rule gate bundle; gates evaluate without short-circuiting so every triggered/non-triggered rule has an operand-level trace and the most restrictive cap wins. Findings are sorted deterministically by priority, capability order, and finding ID. Canonical JSON uses stable key/list order, one-decimal presentation-score strings, and an explicit source-state digest; generated wall-clock time is excluded or injected from engagement metadata.
 
 ## Related code files
 
@@ -58,7 +58,7 @@ Maturity uses the versioned aggregation and coverage rules fixed in calibration.
 
 1. Implement maturity results with configured coverage, not-assessed handling, deterministic median/rounding, capability ordering, and labeled 0–100 presentation score.
 2. Implement independent confidence distributions and conservative summary; preserve conflicting evidence and produce evidence-next-action language without changing maturity.
-3. Implement every versioned gate and evaluation trace. Prove quality ≤1/security-privacy ≤1 cap 1, governance-ownership ≤1 cap 2, critical-lineage absence forbids production-ready, and reproducibility absence limits experiment-ready.
+3. Implement all seven versioned gate rules and evaluation traces. Prove quality, security, and privacy independently cap 1; governance and ownership independently cap 2; critical-lineage absence caps 2/forbids production-ready; reproducibility absence caps 2/limits experiment-ready; combined triggers select the minimum cap while retaining every explanation.
 4. Implement finding, priority, recommendation, and review-state services; validate complete links and deterministic ordering, and prove demo-reference mutation leaves engine results unchanged.
 5. Build canonical report model with the 12 required ordered sections and evidence provenance (`customer answer`, `customer evidence`, `architect judgment`, `demo illustration`).
 6. Resolve the report template/CSS from the engagement-pinned framework version, then render standalone semantic HTML with embedded CSS/SVG, escaped content, print styles, table alternatives for diagrams, no remote resources, and no manual-edit step.
@@ -81,7 +81,7 @@ Maturity uses the versioned aggregation and coverage rules fixed in calibration.
 - All unit/contract/scenario tests pass via `make assessment-test assessment-scenarios assessment-report`.
 - The four Phase 1 capability/gate/finding expectations remain satisfied after migration.
 - Every result shows coverage and confidence independently; no score is emitted below required coverage.
-- All applicable gates are visible and explained; strongest cap is deterministic.
+- All seven triggered/non-triggered gate traces are visible with operand provenance; the strongest cap and readiness label are deterministic.
 - Every critical finding has gap, impact, priority, recommendation, architecture; unresolved reference is a contract error.
 - Both report files contain all 12 sections; standalone HTML renders headlessly with network disabled and is byte-stable.
 - Changing demo artifact availability/checksums cannot change maturity/readiness/findings priority.

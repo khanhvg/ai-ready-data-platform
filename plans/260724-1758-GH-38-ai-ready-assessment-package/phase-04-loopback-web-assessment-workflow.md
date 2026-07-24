@@ -43,10 +43,10 @@ Route families: `/engagements`, `/quick`, `/review`, `/deep-dives`, `/report`, `
 - Create: `assessment/src/assessment/web/templates/{base,index,engagement-create,quick,review,deep-dive-select,deep-dive,report,import,catalog,demo,error}.html`
 - Create: `assessment/src/assessment/web/static/{app.css,app.js}`
 - Create: `assessment/tests/integration/test_web_routes.py`
-- Create: `assessment/tests/e2e/test_assessment_journey.py`
+- Create: `assessment/tests/e2e/test_assessment_journey.py`, `assessment/scripts/runtime-smoke.py`
 - Create: `assessment/tests/e2e/test_demo_read_only.py`
 - Modify: `assessment/src/assessment/__main__.py`, `assessment/src/assessment/cli.py`
-- Modify: `Makefile` for `assessment-web` and `assessment-e2e`
+- Modify: `Makefile` for `assessment-browser-install`, `assessment-web`, `assessment-e2e`, and `assessment-runtime-smoke`
 
 ## Implementation Steps
 
@@ -56,8 +56,9 @@ Route families: `/engagements`, `/quick`, `/review`, `/deep-dives`, `/report`, `
 4. Implement deep-dive selection/planning with explicit selected/not-selected state and honest “content pending/not installed” handling; do not execute a deep dive before Phase 7.
 5. Implement report generation/view and deterministic archive download; implement bounded archive upload, preflight result, import destination, and reopened engagement redirect.
 6. Implement read-only catalog and demo-stage pages that display validated files/artifacts or honest unavailable status; forbid command/pipeline controls.
-7. Add unit/integration accessibility checks and bounded Playwright journey: create → 30 quick answers → review → select a deep dive → report → export → new-root import → reopen/compare.
-8. Verify no-network browser execution, keyboard labels/focus/error summaries, narrow viewport, server teardown, and no heavy Docker profile.
+7. Add unit/integration accessibility checks and a single-worker bounded Playwright journey: create → 30 quick answers → review → select a deep dive → report → export → new-root import → reopen/compare.
+8. Add `make assessment-runtime-smoke` as the architect workflow acceptance: start an ephemeral loopback server, drive the complete synthetic Solution Architect journey in a real Chromium process, assert the visible readiness/gates/confidence/findings/roadmap, save the generated standalone report and canonical JSON under an explicit temporary evidence root, verify report section headings and no remote requests, record digests/step transcript, then tear down the browser/server.
+9. Verify no-network browser execution after the separately provisioned pinned browser, keyboard labels/focus/error summaries, narrow viewport, one browser worker, server teardown, and no heavy Docker profile.
 
 ## Todo list
 
@@ -68,11 +69,13 @@ Route families: `/engagements`, `/quick`, `/review`, `/deep-dives`, `/report`, `
 - [ ] Complete report/export/import/reopen journey.
 - [ ] Add read-only catalog/demo artifact display.
 - [ ] Pass bounded accessible Playwright smoke with network blocked.
+- [ ] Pass the artifact-producing Solution Architect runtime smoke.
 - [ ] Prove no pipeline-control surface or heavy service startup.
 
 ## Success Criteria
 
 - `make assessment-e2e` completes the required journey and tears down its loopback server.
+- `make assessment-runtime-smoke` produces and validates the real standalone HTML/JSON artifact plus a step transcript/digests from the same browser journey; it is not satisfied by unit tests alone.
 - Imported engagement under a different root matches answers, evidence statuses, reviews, selections, report JSON, and pinned versions.
 - The app works through plain form submissions; JS failure does not block the core path.
 - Content/rules are absent from routes/templates; changing a versioned label/anchor appears without Python/UI changes.

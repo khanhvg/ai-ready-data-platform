@@ -6,7 +6,7 @@ Scope: read-only extraction of the binding delivery contract; no implementation 
 ## Sources and authority
 
 - Primary delivery contract: [GitHub Issue #38](https://github.com/khanhvg/ai-ready-data-platform/issues/38), especially `Outcome`, `Acceptance criteria`, `Initial delivery order`, `Constraints and public contracts`, `Out of scope`, `Verification intent`, and `Rollback and recovery`.
-- Authorization/status evidence: [owner comment](https://github.com/khanhvg/ai-ready-data-platform/issues/38#issuecomment-5069080056); issue labels include `triaged`, `risk:high`, `architecture`, `data-platform`, and `evidence`.
+- Authorization/status evidence: [owner comment](https://github.com/khanhvg/ai-ready-data-platform/issues/38#issuecomment-5069080056); at immutable audit input the issue labels are `enhancement`, `ready for plan audit`, `risk:high`, `architecture`, `data-platform`, and `evidence`.
 - Confirmed product source: `/Users/khanhvg/Documents/work/data-assessment/ai-ready-data-platform-assessment-advisory.md` (2026-07-24), sections 2–6, 8–12, and 15–23.
 - Current runtime context: repository `README.md`, sections `Core stack`, `Optional profiles`, and `Startup order and resource trade-offs`.
 

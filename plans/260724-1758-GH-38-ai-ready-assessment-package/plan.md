@@ -42,6 +42,7 @@ Binding sequence: `P1 → P2 → P3 → P4 → P5 → P6 → P7 → P8`. The fir
 
 - [Architecture decisions](./architecture-decisions.md) records reversible defaults `PD-01…` and deferred alternatives.
 - [Requirements traceability](./requirements-traceability.md) maps all `AC-01…AC-12` and `SM-01…SM-17` to steps and commands. These IDs are plan-only; implementation names describe behavior.
+- [Independent combined plan-readiness audit](./reports/combined-plan-readiness-audit.md) records the immutable input, evidence-backed findings, corrections, residual execution conditions, and verdict.
 - Every phase has rollback, cleanup, security, and verification. Assessment test targets start no containers; heavy services remain staged, with only the existing guarded lake+governance window.
 - Implementation remains gated on the owner-required independent combined plan-readiness audit and corresponding GitHub authorization. This planner self-check is not that audit.
 

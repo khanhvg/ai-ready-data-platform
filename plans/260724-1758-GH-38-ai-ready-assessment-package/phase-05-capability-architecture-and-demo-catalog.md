@@ -48,7 +48,7 @@ Required audience diagrams:
 | `diagrams/metadata-and-lineage.{mmd,svg}` | Data/platform architect | Source→transform→product metadata/lineage proof |
 | `diagrams/demo-evidence-mapping.{mmd,svg}` | Demo presenter | Read-only stage artifacts mapped to catalog patterns |
 
-SVG rendering is deterministic through a pinned Mermaid CLI invoked only by the diagram build/verification target and recorded in `versions.md`; it is not part of the Python application runtime or frontend build. Shipped web/report paths use reviewed SVG and text alternatives, not a browser Mermaid runtime.
+SVG rendering is deterministic through a build-only locked `assessment/diagram-tools/package.json`/lock, tested Node major, and pinned Mermaid CLI. `make assessment-diagram-install` is the only network-permitted provisioning step; `make assessment-diagrams-update` explicitly updates normalized reviewed SVG and the source/tool/output digest manifest, while `make assessment-diagrams` renders into a temporary directory and verifies parity without modifying the worktree. It is not part of the Python application runtime or a frontend application build. Shipped web/report paths use committed reviewed SVG and text alternatives, not a browser Mermaid runtime.
 
 ## Related code files
 
@@ -57,17 +57,19 @@ SVG rendering is deterministic through a pinned Mermaid CLI invoked only by the 
 - Create: `assessment/content/catalog/1.0.0/architectures/{quality,governance-metadata-lineage,security-policy,platform-integration,operations,ai-data-products}.yaml`
 - Create: `assessment/content/catalog/1.0.0/technology-mappings/{aws-first-profile,local-demo-evidence,alternatives}.yaml`
 - Create: `assessment/content/catalog/1.0.0/diagrams/*.{mmd,svg}`
+- Create: `assessment/content/catalog/1.0.0/diagrams/render-manifest.json`, `assessment/diagram-tools/{package.json,package-lock.json,render.mjs}`
 - Create: `assessment/content/demo/1.0.0/{stages.yaml,demo-guide.yaml,evidence-links.yaml}`
 - Create: `assessment/src/assessment/catalog/{models.py,loader.py,renderer.py}`
 - Create: `assessment/tests/contract/test_catalog_semantics.py`, `assessment/tests/contract/test_diagram_assets.py`
 - Modify: report/catalog/demo templates to consume catalog services only
+- Modify: `Makefile` for `assessment-diagram-install`, `assessment-diagrams-update`, and non-mutating `assessment-diagrams`
 
 ## Implementation Steps
 
 1. Author all 10 capability entries and evidence examples using architect/customer language; distinguish self-report, customer evidence, architect judgment, and demo illustration.
 2. Author vendor-neutral logical architecture patterns and link every critical finding family to at least one appropriate pattern.
 3. Author the AWS-first profile with the single role selections in PD-21, then map the existing local sandbox as demo evidence and list deferred alternatives. Verify no technology name appears in maturity anchors/gates, no two selected products compete for one role, and no cloud action exists.
-4. Create the seven diagram source/render pairs above, including accessible title/description and adjacent textual/table alternative; pin and document the deterministic render command.
+4. Pin the build-only Node/Mermaid toolchain, then create the seven diagram source/render pairs above with accessible title/description and adjacent textual/table alternatives; use the explicit update target to normalize/record source/tool/output digests and the non-mutating target to reproduce them in a temporary directory.
 5. Author the versioned Demo Guide/stage catalog with presenter goal, prerequisites, read-only artifact locations, expected evidence, limitation, cleanup, and non-scoring disclaimer.
 6. Implement catalog loading/query/rendering and wire report/web read-only views through it; unavailable artifacts display as unavailable, not failed customer capabilities.
 7. Add semantic checks for unique/resolved IDs, audience/purpose, diagram source/render parity, technology neutrality, and complete finding links.
@@ -90,7 +92,7 @@ SVG rendering is deterministic through a pinned Mermaid CLI invoked only by the 
 - Maturity/gate modules and framework anchors contain no technology/product-presence criterion.
 - AWS mappings are content only; no credentials, SDK calls, Terraform, or provisioning command exists.
 - Report and web display catalog/demo content through validated services and honestly mark missing artifacts.
-- `make assessment-contract assessment-build assessment-e2e` passes with network disabled and no heavy services.
+- After the explicit diagram/bootstrap install, `make assessment-diagrams assessment-contract assessment-build assessment-e2e` passes with network disabled and no heavy services; the installed Python package/runtime has no Node or Mermaid dependency.
 
 ## Risk Assessment
 
