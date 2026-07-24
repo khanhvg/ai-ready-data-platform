@@ -3,7 +3,7 @@ type: journal
 date: 2026-07-24
 issue: 38
 branch: feature/issue-38-phase-2-contracts-portability
-status: implementation-complete-publication-pending
+status: publication-complete-controller-verification-pending
 authority: historical-record
 ---
 
@@ -106,10 +106,18 @@ symlink components, and atomic no-replace directory promotion requires the
 supported macOS/Linux primitives. Object-store/S3 support remains
 documentation-only.
 
-## Next
+## Publication outcome
 
-Publication is pending: fix the immutable head, commit only scoped product,
-tests, docs, and evidence, push, verify local/remote SHA equality, open the PR,
-record configured-check state, and comment on Issue #38. This worker must not
-merge; the controller owns exact-head verification, merge, and post-merge
-smoke.
+Implementation commit
+`0dcbe3f6264b84bd6c96f6b9a3a60ab3b5a37b9b` was exact-head verified and pushed.
+PR [#40](https://github.com/khanhvg/ai-ready-data-platform/pull/40) is open
+against the integration branch and remains unmerged. The Phase 2 evidence was
+also recorded in
+[Issue #38](https://github.com/khanhvg/ai-ready-data-platform/issues/38#issuecomment-5072456061).
+No repository checks are configured; this is recorded as `no checks configured`,
+not as CI green.
+
+A final documentation-only synchronization commit will become the PR head and
+will be reverified and pushed by this worker. The controller owns its separate
+independent exact-head check, merge decision, and post-merge smoke; this worker
+did not merge.

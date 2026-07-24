@@ -13,7 +13,7 @@
 - Date: 2026-07-24
 - Description: Establish final versioned content/data contracts, authoritative engagement folders, atomic local storage, migration, and safe deterministic import/export.
 - Priority: P2
-- Implementation status: Complete; final exact-head verification and publication are pending.
+- Implementation status: Complete; implementation commit `0dcbe3f6264b84bd6c96f6b9a3a60ab3b5a37b9b` was exact-head verified and published in PR #40.
 - Review status: Passed; specification and code-quality reviews each report 0 Critical, 0 Important, and 0 Minor findings.
 
 ## Key Insights
