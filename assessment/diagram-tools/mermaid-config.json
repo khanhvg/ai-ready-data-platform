@@ -1,0 +1,13 @@
+{
+  "deterministicIDSeed": "ai-ready-assessment-catalog-v1",
+  "deterministicIds": true,
+  "flowchart": {
+    "curve": "linear",
+    "htmlLabels": false
+  },
+  "fontFamily": "Arial, sans-serif",
+  "htmlLabels": false,
+  "markdownAutoWrap": false,
+  "securityLevel": "strict",
+  "theme": "neutral"
+}

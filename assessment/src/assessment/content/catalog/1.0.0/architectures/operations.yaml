@@ -1,0 +1,35 @@
+architectures:
+  - id: ARCH-AI-DATA-OPERATIONS
+    title: AI-data operating and monitoring model
+    theme: operations
+    problem: Governed products can become stale, costly, unsafe, or unused without owned service, drift, incident, and lifecycle controls.
+    forces:
+      - Platform health, data health, product use, and AI-use risk require related but distinct measures.
+      - Owners need actionable signals rather than undifferentiated monitoring data.
+      - Capacity and cost controls must protect the local and target operating environment.
+    logical_components:
+      - Service and product objective registry
+      - Platform, pipeline, data, and product operational signals
+      - Freshness, drift, adoption, and cost measures
+      - Alert, incident, and change workflow
+      - Capacity guardrails and lifecycle review
+    controls:
+      - Assign owners and response actions to critical objectives
+      - Bound capacity and retain incident and change evidence
+      - Review freshness, drift, approved use, adoption, value, and retirement
+    data_flows:
+      - Runtime and product signals feed objectives, alerts, incidents, and cost allocation.
+      - Review outcomes update product contracts, controls, capacity, and lifecycle decisions.
+    trade_offs:
+      - Broader signal collection improves diagnosis but increases cost and privacy obligations.
+      - Aggressive alerts reduce detection time but can create noise without owned action.
+    evidence_expectations:
+      - Current objectives, owners, and runbooks
+      - Alert and incident outcomes
+      - Freshness, drift, adoption, capacity, and cost trends
+      - Lifecycle review decisions
+    capability_ids: [OPS, AID, QUA, SEC]
+    finding_ids: [F-AI-OPERATING]
+    recommendation_ids: [R-AI-OPERATING]
+    diagram_ids: [executive-ai-readiness, demo-evidence-mapping]
+    vendor_products: []

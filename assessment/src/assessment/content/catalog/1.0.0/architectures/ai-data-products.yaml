@@ -1,0 +1,35 @@
+architectures:
+  - id: ARCH-VERSIONED-PRODUCT
+    title: Versioned reproducible data product
+    theme: ai-ready-data-products
+    problem: A dataset cannot support dependable analytics or approved AI use when its inputs, code, contract, environment, and output identity cannot be recreated.
+    forces:
+      - Reproducibility spans source snapshots, transformations, dependencies, contracts, and runtime configuration.
+      - Consumers need stable product identities while producers need controlled evolution.
+      - Rollback and audit require immutable records without making all data permanent.
+    logical_components:
+      - Product contract and ownership record
+      - Versioned code and transformation dependencies
+      - Immutable input and output manifests
+      - Reproducible orchestration and environment record
+      - Governed publication and consumer interface
+    controls:
+      - Bind product version to source, code, contract, environment, and output digests
+      - Test deterministic rebuild or explain approved nondeterminism
+      - Retain compatibility, rollback, and lifecycle decisions
+    data_flows:
+      - Versioned inputs and code produce a governed product and immutable manifest.
+      - Consumers resolve a product version while evidence supports rebuild, comparison, and rollback.
+    trade_offs:
+      - Strong reproducibility improves auditability but increases manifest and retention overhead.
+      - Immutable product versions require explicit deprecation and storage lifecycle.
+    evidence_expectations:
+      - Product contract, owner, and approved-use record
+      - Source, code, environment, and output manifest
+      - Rebuild comparison and rollback evidence
+      - Compatibility and lifecycle decision
+    capability_ids: [TRN, STO, LIN, GOV, AID]
+    finding_ids: [F-REPRODUCIBILITY]
+    recommendation_ids: [R-REPRODUCIBILITY]
+    diagram_ids: [metadata-and-lineage, demo-evidence-mapping]
+    vendor_products: []

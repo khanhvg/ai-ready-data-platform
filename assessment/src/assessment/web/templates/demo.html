@@ -1,15 +1,111 @@
 {% extends "base.html" %}
 {% block content %}
-<p class="eyebrow">Read-only demo evidence</p>
-<h1>Demo-stage artifacts</h1>
-<p class="status warn">Validated demo-stage manifest instances are not installed. The references below are illustrations only and are never customer maturity evidence.</p>
-{% if stage_ids %}
-<ul class="card-list">
-{% for stage_id in stage_ids %}
-  <li class="panel"><strong>{{ stage_id }}</strong><br><span class="tag">artifact unavailable · not executed here</span></li>
+<header class="catalog-hero demo-hero">
+  <div>
+    <p class="eyebrow">Presenter guide · repository evidence · read-only</p>
+    <h1>Demo Guide</h1>
+    <p class="catalog-lede">{{ demo.presenter_purpose }}</p>
+    <p>9 read-only presenter stages connect repository-relative artifacts to catalog patterns. This view does not execute commands, SQL, pipelines, containers, services, or cloud actions.</p>
+  </div>
+  <dl class="catalog-summary" aria-label="Demo Guide summary">
+    <div><dt>Stages</dt><dd>{{ demo.stages | length }}</dd></div>
+    <div><dt>Mode</dt><dd>Read-only</dd></div>
+    <div><dt>Version</dt><dd>{{ demo.version }}</dd></div>
+  </dl>
+</header>
+
+<div class="catalog-disclaimer" role="note" aria-label="Non-scoring demo disclaimer">
+  <h2>Non-scoring illustration</h2>
+  <p><strong>Demo artifacts are illustrations only.</strong> {{ demo.non_scoring_disclaimer }}</p>
+  <p>Artifact availability describes this local repository only. An unavailable artifact is not a failed customer capability.</p>
+  <ul>{% for boundary in demo.operating_boundary %}<li>{{ boundary }}</li>{% endfor %}</ul>
+</div>
+
+<nav class="demo-stage-nav" aria-label="Demo stages">
+{% for stage in demo.stages %}
+  <a href="#stage-{{ stage.id }}">{{ loop.index }}. {{ stage.title }}</a>
 {% endfor %}
-</ul>
-{% else %}
-<p class="status neutral">No demo-stage references are available.</p>
+</nav>
+
+<section class="demo-stage-list" aria-label="Presenter stages">
+{% for stage in demo.stages %}
+  <article id="stage-{{ stage.id }}" class="catalog-card demo-stage">
+    <header class="demo-stage-heading">
+      <span class="catalog-index" aria-hidden="true">{{ "%02d" | format(loop.index) }}</span>
+      <div>
+        <p class="catalog-id">{{ stage.id }} · read-only · non-scoring</p>
+        <h2>{{ stage.title }}</h2>
+        <p><strong>Presenter goal:</strong> {{ stage.presenter_goal }}</p>
+      </div>
+    </header>
+
+    <div class="demo-detail-grid">
+      <section>
+        <h3>Prerequisites</h3>
+        <ul>{% for item in stage.prerequisites %}<li>{{ item }}</li>{% endfor %}</ul>
+      </section>
+      <section>
+        <h3>Expected evidence</h3>
+        <ul>{% for item in stage.expected_evidence %}<li>{{ item }}</li>{% endfor %}</ul>
+      </section>
+    </div>
+
+    <section aria-labelledby="artifacts-{{ stage.id }}">
+      <h3 id="artifacts-{{ stage.id }}">Repository artifacts</h3>
+      <div class="table-region" role="region" aria-label="{{ stage.title }} repository artifacts" tabindex="0">
+        <table class="demo-artifact-table">
+          <thead>
+            <tr>
+              <th scope="col">Artifact</th>
+              <th scope="col">Repository-relative location</th>
+              <th scope="col">Expected evidence</th>
+              <th scope="col">Current status</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for artifact in stage.artifacts %}
+            <tr>
+              <th scope="row">{{ artifact.label }}</th>
+              <td><code>{{ artifact.path }}</code></td>
+              <td>{{ artifact.expected }}</td>
+              <td><span class="artifact-status artifact-{{ artifact.status }}">artifact {{ artifact.status }}</span></td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="demo-detail-grid">
+      <section class="demo-limitations">
+        <h3>Limitations</h3>
+        <ul>{% for item in stage.limitations %}<li>{{ item }}</li>{% endfor %}</ul>
+      </section>
+      <section>
+        <h3>Cleanup boundary</h3>
+        <ul>{% for item in stage.cleanup %}<li>{{ item }}</li>{% endfor %}</ul>
+      </section>
+    </div>
+  </article>
+{% endfor %}
+</section>
+
+{% if demo.evidence_links %}
+<section class="catalog-section" aria-labelledby="evidence-links-heading">
+  <div class="catalog-section-heading">
+    <p class="eyebrow">Finding-to-stage references</p>
+    <h2 id="evidence-links-heading">Demo evidence links</h2>
+    <p>These mappings identify useful presenter stages. They do not convert demo illustrations into assessment evidence.</p>
+  </div>
+  <dl class="demo-evidence-links">
+  {% for link in demo.evidence_links %}
+    <div class="catalog-card">
+      <dt>{{ link.id }}</dt>
+      <dd>{{ link.explanation }}</dd>
+      <dd><strong>Stages:</strong> {{ link.stage_ids | join(", ") }}</dd>
+    </div>
+  {% endfor %}
+  </dl>
+</section>
 {% endif %}
 {% endblock %}

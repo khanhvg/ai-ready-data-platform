@@ -1,0 +1,13 @@
+flowchart TD
+  accTitle: Vendor-neutral logical platform context
+  accDescr: Sources pass through integration, governed data products, and consumption while control planes provide quality, metadata, security, and operations.
+  A[Source systems] --> B[Ingestion and integration]
+  B --> C[Landing and accepted data]
+  C --> D[Transformation and orchestration]
+  D --> E[Governed data products]
+  E --> F[Analytics and approved AI use]
+  Q[Quality controls] -. governs .-> C
+  M[Metadata and lineage] -. describes .-> D
+  S[Security privacy and policy] -. protects .-> E
+  O[Operations and cost] -. observes .-> B
+  O -. observes .-> E

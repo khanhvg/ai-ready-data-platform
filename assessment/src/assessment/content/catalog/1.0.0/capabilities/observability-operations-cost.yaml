@@ -1,0 +1,12 @@
+capability:
+  id: OPS
+  name: Observability, operations, and cost management
+  customer_language: Demonstrate how teams see freshness, failures, capacity, incidents, service objectives, and costs and who responds when expectations are missed.
+  architect_language: Correlate platform and data-product operational signals with owned SLOs, bounded capacity, incident learning, change evidence, and unit-cost accountability.
+  evidence_examples:
+    - {provenance: self-report, label: Interview statement, example: "Operators describe dashboards and alerts without showing current objectives or incident outcomes.", scoring_effect: assessment-input}
+    - {provenance: customer-evidence, label: Customer artifact, example: "SLO results, alerts, runbooks, incident reviews, capacity limits, and cost allocation are current.", scoring_effect: confidence-only}
+    - {provenance: architect-judgment, label: Architect conclusion, example: "The architect judges whether operational signals drive owned action, learning, capacity, and cost decisions.", scoring_effect: advisory-only}
+    - {provenance: demo-illustration, label: Sandbox illustration, example: "Resource limits and deterministic run manifests illustrate operational evidence boundaries.", scoring_effect: none}
+  architecture_ids: [ARCH-QUALITY-GATE, ARCH-GOVERNANCE-CONTROL, ARCH-POLICY-ACCESS, ARCH-PLATFORM-INTEGRATION, ARCH-AI-DATA-OPERATIONS]
+  recommendation_ids: [R-AI-OPERATING]

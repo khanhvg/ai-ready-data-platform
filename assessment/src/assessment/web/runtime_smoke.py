@@ -66,25 +66,25 @@ def _wait_for_health(server: RunningServer) -> None:
     raise RuntimeError(f"loopback server did not become healthy: {last_error}")
 
 
-def _start_server(root: Path) -> RunningServer:
+def _start_server(root: Path, *, repository_root: Path | None = None) -> RunningServer:
     port = _free_port()
     engagement_root = root / "engagements"
     runtime_root = root / "runtime"
+    command = [
+        sys.executable,
+        "-m",
+        "assessment",
+        "web",
+        "--engagement-root",
+        str(engagement_root),
+        "--runtime-root",
+        str(runtime_root),
+    ]
+    if repository_root is not None:
+        command.extend(["--repository-root", str(repository_root)])
+    command.extend(["--host", "127.0.0.1", "--port", str(port)])
     process = subprocess.Popen(  # noqa: S603 -- fixed local package lifecycle command
-        [
-            sys.executable,
-            "-m",
-            "assessment",
-            "web",
-            "--engagement-root",
-            str(engagement_root),
-            "--runtime-root",
-            str(runtime_root),
-            "--host",
-            "127.0.0.1",
-            "--port",
-            str(port),
-        ],
+        command,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
@@ -120,6 +120,21 @@ def _stop_server(server: RunningServer) -> str:
     except (OSError, urllib.error.URLError):
         return output
     raise RuntimeError("loopback server still accepted requests after teardown")
+
+
+def _stop_servers(servers: tuple[RunningServer | None, ...]) -> list[str]:
+    logs: list[str] = []
+    errors: list[Exception] = []
+    for server in servers:
+        if server is None:
+            continue
+        try:
+            logs.append(_stop_server(server))
+        except Exception as error:
+            errors.append(error)
+    if errors:
+        raise ExceptionGroup("one or more loopback servers failed to stop", errors)
+    return logs
 
 
 def _guard_context(
@@ -579,30 +594,101 @@ def _import_reopen_compare(
     return imported_report
 
 
-def _read_only_surfaces(page: Page, base_url: str) -> None:
-    for path, expected in (
-        ("/catalog", "details not installed"),
-        ("/demo", "not installed"),
+def _read_only_surfaces(
+    page: Page,
+    base_url: str,
+    evidence_root: Path,
+    transcript: list[dict[str, Any]],
+) -> None:
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.goto(f"{base_url}/catalog")
+    catalog_text = page.locator("main").inner_text().lower()
+    if "10 capability domains" not in catalog_text:
+        raise AssertionError("/catalog did not present the validated catalog")
+    if page.locator("img.catalog-diagram").count() != 7:
+        raise AssertionError("/catalog did not present exactly seven local diagrams")
+    page.locator("img.catalog-diagram").last.scroll_into_view_if_needed()
+    page.wait_for_load_state("networkidle")
+    loaded_diagrams = page.locator("img.catalog-diagram").evaluate_all(
+        "(images) => images.filter((image) => image.complete && image.naturalWidth > 0).length"
+    )
+    if loaded_diagrams != 7:
+        raise AssertionError("/catalog did not render all seven local diagrams")
+    diagram_sources = page.locator("img.catalog-diagram").evaluate_all(
+        "(images) => images.map((image) => image.getAttribute('src'))"
+    )
+    if any(
+        not isinstance(source, str)
+        or not source.startswith("/catalog/diagrams/")
+        for source in diagram_sources
     ):
-        page.goto(f"{base_url}{path}")
-        text = page.locator("main").inner_text().lower()
-        if expected not in text:
-            raise AssertionError(f"{path} did not disclose its unavailable status")
-        if page.get_by_role("button").count():
-            raise AssertionError(f"{path} unexpectedly exposes a control action")
+        raise AssertionError("/catalog exposed a non-local diagram asset")
+    if page.get_by_role("button").count() or page.locator("form").count():
+        raise AssertionError("/catalog unexpectedly exposes a control action")
+    page.screenshot(path=evidence_root / "catalog-wide.png", full_page=True)
+
+    page.set_viewport_size({"width": 375, "height": 812})
+    page.reload()
+    if page.evaluate("document.documentElement.scrollWidth > window.innerWidth"):
+        raise AssertionError("/catalog overflows the narrow viewport")
+    page.screenshot(path=evidence_root / "catalog-narrow.png", full_page=True)
+
+    page.set_viewport_size({"width": 640, "height": 900})
+    page.goto(f"{base_url}/demo")
+    demo_text = page.locator("main").inner_text().lower()
+    for expected in (
+        "9 read-only presenter stages",
+        "artifact available",
+        "artifact unavailable",
+        "demo artifacts are illustrations only",
+    ):
+        if expected not in demo_text:
+            raise AssertionError(f"/demo did not present expected status: {expected}")
+    if page.get_by_role("button").count() or page.locator("form").count():
+        raise AssertionError("/demo unexpectedly exposes a control action")
+    page.screenshot(path=evidence_root / "demo-200-percent-equivalent.png", full_page=True)
+
+    page.set_viewport_size({"width": 375, "height": 812})
+    page.reload()
+    if page.evaluate("document.documentElement.scrollWidth > window.innerWidth"):
+        raise AssertionError("/demo overflows the narrow viewport")
+    page.screenshot(path=evidence_root / "demo-narrow.png", full_page=True)
+    page.go_back()
+    if not page.url.endswith("/catalog"):
+        raise AssertionError("catalog/demo browser back state was not preserved")
+    page.reload()
+    if "10 capability domains" not in page.locator("main").inner_text().lower():
+        raise AssertionError("catalog reload did not preserve read-only content")
+    transcript.append(
+        {
+            "step": "catalog-demo-read-only",
+            "catalog_diagrams": 7,
+            "demo_stages": 9,
+            "narrow_viewport": 375,
+            "zoom_equivalent_viewport": 640,
+            "controls": 0,
+        }
+    )
 
 
 def _digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def run_browser_journey(evidence_root: Path) -> dict[str, Any]:
+def run_browser_journey(
+    evidence_root: Path,
+    *,
+    repository_root: Path,
+) -> dict[str, Any]:
     """Run the complete journey once, retain evidence, and tear down all processes."""
     evidence_root.mkdir(parents=True, exist_ok=True)
     work_root = evidence_root / "work"
     shutil.rmtree(work_root, ignore_errors=True)
     work_root.mkdir()
-    source_server = _start_server(work_root / "source")
+    source_server = _start_server(
+        work_root / "source",
+        repository_root=repository_root,
+    )
     destination_server: RunningServer | None = None
     transcript: list[dict[str, Any]] = []
     remote_requests: list[str] = []
@@ -676,9 +762,17 @@ def run_browser_journey(evidence_root: Path) -> dict[str, Any]:
                     response.headers.get("content-security-policy") or ""
                 ):
                     raise AssertionError("live response is missing the restrictive CSP")
-                _read_only_surfaces(page, source_server.base_url)
+                _read_only_surfaces(
+                    page,
+                    source_server.base_url,
+                    evidence_root,
+                    transcript,
+                )
 
-                destination_server = _start_server(work_root / "destination")
+                destination_server = _start_server(
+                    work_root / "destination",
+                    repository_root=repository_root,
+                )
                 _import_reopen_compare(
                     page,
                     destination_server,
@@ -694,9 +788,7 @@ def run_browser_journey(evidence_root: Path) -> dict[str, Any]:
             finally:
                 browser.close()
     finally:
-        if destination_server is not None:
-            server_logs.append(_stop_server(destination_server))
-        server_logs.append(_stop_server(source_server))
+        server_logs.extend(_stop_servers((destination_server, source_server)))
 
     if remote_requests:
         raise AssertionError(f"browser attempted remote requests: {remote_requests}")

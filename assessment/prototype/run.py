@@ -1059,6 +1059,60 @@ def build_check(dist: Path) -> dict[str, Any]:
     wheel_schema_files = {
         f"assessment/public_schemas/{name}" for name in public_schema_files
     }
+    catalog_resource_files = {
+        "assessment/content/catalog/1.0.0/catalog.yaml",
+        *(
+            f"assessment/content/catalog/1.0.0/capabilities/{name}.yaml"
+            for name in (
+                "strategy-ownership-operating-model",
+                "sources-ingestion-integration",
+                "storage-lifecycle-organization",
+                "transformation-orchestration",
+                "quality-reliability",
+                "metadata-catalog-lineage",
+                "governance-privacy-compliance",
+                "security-access-policy",
+                "observability-operations-cost",
+                "data-products-analytics-ai-readiness",
+            )
+        ),
+        *(
+            f"assessment/content/catalog/1.0.0/architectures/{name}.yaml"
+            for name in (
+                "quality",
+                "governance-metadata-lineage",
+                "security-policy",
+                "platform-integration",
+                "operations",
+                "ai-data-products",
+            )
+        ),
+        *(
+            f"assessment/content/catalog/1.0.0/technology-mappings/{name}.yaml"
+            for name in (
+                "aws-first-profile",
+                "local-demo-evidence",
+                "alternatives",
+            )
+        ),
+        *(
+            f"assessment/content/catalog/1.0.0/diagrams/{name}{suffix}"
+            for name in (
+                "executive-ai-readiness",
+                "logical-platform-context",
+                "engagement-lifecycle",
+                "scoring-and-gates",
+                "security-and-access",
+                "metadata-and-lineage",
+                "demo-evidence-mapping",
+            )
+            for suffix in (".mmd", ".svg")
+        ),
+        "assessment/content/catalog/1.0.0/diagrams/render-manifest.json",
+        "assessment/content/demo/1.0.0/demo-guide.yaml",
+        "assessment/content/demo/1.0.0/evidence-links.yaml",
+        "assessment/content/demo/1.0.0/stages.yaml",
+    }
     wheel_expected = {
         *(f"prototype/0.1.0/{name}" for name in CONTENT_FILES),
         "prototype/report-template.html.j2",
@@ -1066,6 +1120,10 @@ def build_check(dist: Path) -> dict[str, Any]:
         "assessment/__init__.py",
         "assessment/__main__.py",
         "assessment/cli.py",
+        "assessment/catalog/__init__.py",
+        "assessment/catalog/loader.py",
+        "assessment/catalog/models.py",
+        "assessment/catalog/renderer.py",
         "assessment/content/loader.py",
         "assessment/content/markdown.py",
         "assessment/content/schemas.py",
@@ -1089,6 +1147,7 @@ def build_check(dist: Path) -> dict[str, Any]:
         "assessment/frameworks.py",
         "assessment/public_schemas/__init__.py",
         *wheel_schema_files,
+        *catalog_resource_files,
         "assessment/reporting/__init__.py",
         "assessment/reporting/generator.py",
         "assessment/reporting/models.py",
@@ -1127,6 +1186,11 @@ def build_check(dist: Path) -> dict[str, Any]:
         raise ValidationError("build: wheel is missing required package content")
     if {name for name in wheel_names if name.endswith(".schema.json")} != wheel_schema_files:
         raise ValidationError("build: wheel must contain exactly seven public JSON Schemas")
+    if any(
+        "diagram-tools" in name or "node_modules" in name or ".diagram-cache" in name
+        for name in wheel_names
+    ):
+        raise ValidationError("build: wheel contains build-only diagram tooling")
     sdist_expected = {
         f"src/{name}" if name.startswith("assessment/") else name for name in wheel_expected
     }
@@ -1139,6 +1203,11 @@ def build_check(dist: Path) -> dict[str, Any]:
     }
     if {name for name in sdist_names if name.endswith(".schema.json")} != sdist_schema_files:
         raise ValidationError("build: sdist must contain exactly seven public JSON Schemas")
+    if any(
+        "diagram-tools" in name or "node_modules" in name or ".diagram-cache" in name
+        for name in sdist_names
+    ):
+        raise ValidationError("build: sdist contains build-only diagram tooling")
     return {
         "wheel": wheels[0].name,
         "sdist": sdists[0].name,

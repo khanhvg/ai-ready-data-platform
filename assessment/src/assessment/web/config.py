@@ -20,6 +20,7 @@ def _is_loopback(host: str) -> bool:
 class WebConfig:
     engagement_root: Path
     runtime_root: Path
+    repository_root: Path | None = None
     host: str = "127.0.0.1"
     port: int = 8765
     allow_unsupported_non_loopback: bool = False
@@ -36,6 +37,15 @@ class WebConfig:
             raise ValueError("assessment web port must be from 1 to 65535")
         if self.max_upload_bytes <= 0 or self.max_evidence_bytes <= 0:
             raise ValueError("assessment upload limits must be positive")
+        if self.repository_root is not None:
+            if (
+                not self.repository_root.is_absolute()
+                or self.repository_root.is_symlink()
+                or not self.repository_root.is_dir()
+            ):
+                raise ValueError(
+                    "assessment repository root must be a real absolute directory"
+                )
 
     @classmethod
     def for_roots(
@@ -43,6 +53,7 @@ class WebConfig:
         engagement_root: Path,
         runtime_root: Path,
         *,
+        repository_root: Path | None = None,
         host: str = "127.0.0.1",
         port: int = 8765,
         allow_unsupported_non_loopback: bool = False,
@@ -50,6 +61,9 @@ class WebConfig:
         return cls(
             engagement_root=engagement_root.absolute(),
             runtime_root=runtime_root.absolute(),
+            repository_root=(
+                repository_root.absolute() if repository_root is not None else None
+            ),
             host=host,
             port=port,
             allow_unsupported_non_loopback=allow_unsupported_non_loopback,

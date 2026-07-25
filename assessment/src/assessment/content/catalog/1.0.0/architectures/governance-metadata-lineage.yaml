@@ -1,0 +1,100 @@
+architectures:
+  - id: ARCH-OPERATING-MODEL
+    title: Accountable data product operating model
+    theme: governance-ownership
+    problem: Critical product and control decisions stall or become inconsistent when accountability and decision rights are implicit.
+    forces:
+      - Product, platform, risk, and control owners have different responsibilities.
+      - Funding and delivery cadence must match durable product ownership.
+      - Exceptions need an accountable approver, expiry, and visible residual risk.
+    logical_components:
+      - Outcome and product portfolio
+      - Product, platform, and control ownership registry
+      - Decision-rights and escalation model
+      - Funding, review cadence, and measure register
+    controls:
+      - Name one accountable owner for each critical product and control
+      - Record decisions, rationale, review date, and exception expiry
+      - Review outcome and service measures on a defined cadence
+    data_flows:
+      - Business outcomes define prioritized product obligations.
+      - Owners accept decisions and controls while review evidence updates the portfolio.
+    trade_offs:
+      - Central consistency must not remove domain accountability.
+      - Formal records add effort but reduce incident and escalation ambiguity.
+    evidence_expectations:
+      - Current ownership and decision-rights register
+      - Review minutes and outcome measures
+      - Exception records with expiry and accountable acceptance
+    capability_ids: [STR, GOV, AID]
+    finding_ids: [F-OWNERSHIP]
+    recommendation_ids: [R-OWNERSHIP]
+    diagram_ids: [executive-ai-readiness, logical-platform-context]
+    vendor_products: []
+  - id: ARCH-GOVERNANCE-CONTROL
+    title: Governance decision and evidence control plane
+    theme: governance-ownership
+    problem: Policy intent cannot support a defensible readiness claim unless decisions, exceptions, enforcement, and evidence are connected.
+    forces:
+      - Policies span ownership, privacy, retention, quality, security, and approved use.
+      - Human decisions and technical controls evolve at different speeds.
+      - Auditors and delivery teams need the same trace without sharing privileged control.
+    logical_components:
+      - Policy and obligation registry
+      - Classification and product inventory
+      - Decision, approval, and exception workflow
+      - Control mapping and evidence register
+      - Effectiveness measures and review queue
+    controls:
+      - Link each critical obligation to an owner, control, evidence expectation, and review date
+      - Expire exceptions and retain decision rationale
+      - Measure missing, stale, and ineffective control evidence
+    data_flows:
+      - Obligations and classifications drive decisions and mapped controls.
+      - Control outcomes and exceptions return to governance review.
+    trade_offs:
+      - A shared control plane improves traceability but must not become a manual bottleneck.
+      - Evidence retention must balance auditability with privacy and lifecycle obligations.
+    evidence_expectations:
+      - Policy-to-control mapping
+      - Approval and exception history
+      - Current control evidence and effectiveness results
+    capability_ids: [STR, GOV, SEC, OPS, AID]
+    finding_ids: [F-GOVERNANCE]
+    recommendation_ids: [R-GOVERNANCE]
+    diagram_ids: [executive-ai-readiness, security-and-access]
+    vendor_products: []
+  - id: ARCH-METADATA-LINEAGE
+    title: Metadata and source-to-product lineage
+    theme: metadata-lineage
+    problem: Teams cannot discover, explain, or assess change impact for critical products without current definitions and source-to-product lineage.
+    forces:
+      - Logical transformation lineage and physical publication evidence are related but distinct.
+      - Automated capture needs business ownership and semantic review.
+      - Coverage and freshness must be measurable for critical paths.
+    logical_components:
+      - Source contracts and technical metadata collectors
+      - Transformation and orchestration lineage collectors
+      - Product, glossary, classification, and ownership registry
+      - Catalog search, lineage graph, and impact analysis
+      - Coverage, freshness, and reconciliation evidence
+    controls:
+      - Identify critical assets and required lineage depth
+      - Preserve observed logical and physical identities without fabricated edges
+      - Alert on missing, stale, or conflicting ownership, schema, and lineage evidence
+    data_flows:
+      - Source, transformation, orchestration, and publication metadata feed the catalog.
+      - Governed definitions enrich assets while impact and incident workflows consume lineage.
+    trade_offs:
+      - Automated lineage increases coverage but still requires semantic validation.
+      - Entity reconciliation improves navigation but must not invent unobserved relationships.
+    evidence_expectations:
+      - Critical source-to-product lineage export
+      - Owned definitions and classifications
+      - Coverage and freshness results
+      - Change-impact or incident use record
+    capability_ids: [ING, TRN, LIN, GOV, AID]
+    finding_ids: [F-LINEAGE]
+    recommendation_ids: [R-LINEAGE]
+    diagram_ids: [metadata-and-lineage, logical-platform-context]
+    vendor_products: []

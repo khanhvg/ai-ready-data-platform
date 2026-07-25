@@ -601,33 +601,41 @@ async def confirm_import(
 
 @router.get("/catalog")
 async def catalog(request: Request) -> HTMLResponse:
-    framework = services(request).framework
+    web = services(request)
     return templates.TemplateResponse(
         request,
         "catalog.html",
         _context(
             request,
             title="Catalog references",
-            architectures=framework.architectures,
+            catalog=web.catalog_view(),
+            demo_disclaimer=web.demo_catalog.non_scoring_disclaimer,
         ),
+    )
+
+
+@router.get("/catalog/diagrams/{name}")
+async def catalog_diagram(request: Request, name: str) -> Response:
+    try:
+        content = services(request).catalog_diagram(name)
+    except ValueError:
+        return Response(status_code=404)
+    return Response(
+        content,
+        media_type="image/svg+xml",
+        headers={"Content-Disposition": f'inline; filename="{name}"'},
     )
 
 
 @router.get("/demo")
 async def demo(request: Request) -> HTMLResponse:
-    references = sorted(
-        {
-            str(rule.get("demo_reference"))
-            for rule in services(request).framework.finding_rules
-            if rule.get("demo_reference")
-        }
-    )
+    web = services(request)
     return templates.TemplateResponse(
         request,
         "demo.html",
         _context(
             request,
             title="Demo-stage artifacts",
-            stage_ids=references,
+            demo=web.demo_view(),
         ),
     )

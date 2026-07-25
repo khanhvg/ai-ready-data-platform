@@ -1,0 +1,67 @@
+architectures:
+  - id: ARCH-PRIVACY-CONTROLS
+    title: Classified and privacy-controlled data path
+    theme: security-privacy-policy
+    problem: Sensitive fields can reach broad consumers when classification, approved purpose, minimization, masking, and retention are disconnected.
+    forces:
+      - The same source may support different approved purposes and sensitivity levels.
+      - Privacy controls must remain explainable to governance and implementable by engineering.
+      - Evidence must not expose the sensitive values it is intended to protect.
+    logical_components:
+      - Classification and approved-purpose registry
+      - Minimization, masking, and tokenization boundary
+      - Governed product publication
+      - Retention and deletion control
+      - Privacy review and evidence register
+    controls:
+      - Classify critical fields before governed publication
+      - Permit only approved purpose and minimum required representation
+      - Test masking, retention, deletion, and access-review outcomes
+    data_flows:
+      - Classified source fields and approved purposes feed privacy transformations and policy decisions.
+      - Protected products reach approved consumers while evidence reaches governance review.
+    trade_offs:
+      - Strong minimization reduces exposure but can limit legitimate analysis.
+      - Central classification improves consistency while domain owners retain context.
+    evidence_expectations:
+      - Field classification and approved-purpose record
+      - Protected output showing no raw sensitive value
+      - Retention, deletion, and access-review evidence
+    capability_ids: [STO, GOV, SEC, AID]
+    finding_ids: [F-PRIVACY]
+    recommendation_ids: [R-PRIVACY]
+    diagram_ids: [security-and-access]
+    vendor_products: []
+  - id: ARCH-POLICY-ACCESS
+    title: Policy-driven access boundary
+    theme: security-privacy-policy
+    problem: Broad manual grants cannot prove least privilege, consistent denial, revocation, or approved use.
+    forces:
+      - Identities, roles, assets, purposes, environments, and time can affect decisions.
+      - Policy source, enforcement, and audit evidence must remain traceable.
+      - Local demonstrations must not be represented as production identity enforcement.
+    logical_components:
+      - Trusted identity and role source
+      - Versioned policy decision service
+      - Data access enforcement point
+      - Governed masked product
+      - Decision and access audit evidence
+    controls:
+      - Deny unknown identity, asset, and purpose before data access
+      - Enforce least privilege and separation of duties
+      - Test safe allowance, raw denial, revocation, and exception expiry
+    data_flows:
+      - Identity, purpose, asset, and policy context produce an allow or deny decision.
+      - Allowed requests reach governed products; denied requests stop before raw access; both create evidence.
+    trade_offs:
+      - Central policy improves consistency but adds a high-availability dependency.
+      - Fine-grained context improves least privilege but increases policy complexity.
+    evidence_expectations:
+      - Versioned policy and review record
+      - Tested allow, deny, unknown, and revocation outcomes
+      - Audit events bound to policy version and asset identity
+    capability_ids: [GOV, SEC, OPS, AID]
+    finding_ids: [F-SECURITY]
+    recommendation_ids: [R-SECURITY]
+    diagram_ids: [security-and-access]
+    vendor_products: []

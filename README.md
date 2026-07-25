@@ -38,12 +38,14 @@ Generated data and warehouses are intentionally gitignored.
 
 ## AI-ready assessment package
 
-Issue #38 Phases 1–4 add a separate, local-only Python 3.12 package under `assessment/`. It
+Issue #38 Phases 1–5 add a separate, local-only Python 3.12 package under `assessment/`. It
 validates the 10-domain rubric and 30 anchored questions, recomputes four two-rater scenarios,
 checks the 117/119 calibration result, defines the v1 portable engagement contracts and local
 folder authority, and evaluates those folders with a deterministic maturity, confidence,
 seven-gate, finding, recommendation, and report engine. Phase 4 adds a loopback-only,
-server-rendered architect workflow and a bounded real-Chromium acceptance path:
+server-rendered architect workflow and a bounded real-Chromium acceptance path. Phase 5 adds
+the versioned ten-domain capability catalog, vendor-neutral architecture patterns, advisory
+technology mappings, seven reviewed diagrams, and a read-only Demo Guide:
 
 ```bash
 make assessment-install
@@ -51,7 +53,8 @@ make assessment-schema assessment-contract assessment-scenarios assessment-calib
 make assessment-store assessment-migration assessment-import-export
 make assessment-portability assessment-security-scan
 make assessment-engine assessment-report assessment-test
-make assessment-browser-install
+make assessment-browser-install assessment-diagram-install
+make assessment-diagrams
 make assessment-e2e assessment-runtime-smoke
 make assessment-lint assessment-typecheck assessment-build
 ```
@@ -62,8 +65,9 @@ rejected unless the explicitly unsupported development override is supplied. Pro
 browser evidence are ignored under `assessment/.generated/`; see `assessment/README.md` for
 the explicit-root CLI, browser bootstrap, security boundary, and exact implemented scope.
 Engagement and output roots are selected explicitly by the user and are never broadly ignored
-or removed by assessment cleanup. Phase 4 verification is recorded in
-`docs/verification/GH-38-phase-4-evidence.md`.
+or removed by assessment cleanup. Catalog and Demo Guide views are presentation-only and cannot
+influence maturity, confidence, findings, gates, or readiness. Phase 5 verification is recorded
+in `docs/verification/GH-38-phase-5-evidence.md`.
 
 ## Scale profiles
 

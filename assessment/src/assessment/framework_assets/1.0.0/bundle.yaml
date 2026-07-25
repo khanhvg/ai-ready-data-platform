@@ -11,8 +11,8 @@ content:
   readiness-levels.yaml: 7121a07a2f58c762ed4faa56f039fe31e7bd517e6b3afc9068531a0fc95afd4e
   recommendations.yaml: 4edf81f0b84cd57eb0eeae30a5b3cb87adb5cc29d37d345e1db35282da9940e6
 report_assets:
-  report.css: 0f54d844bf82f16a331a283da8afe22a2852a73039a9293f10962e4e7ba550c2
-  report.html.j2: 5cd41de710f43b9bcf4b15abfe3a773d60b20809fae309cf754a8fbb3cbd6a4e
+  report.css: 2b1476e55f2522e0888dc8aa1e6a72831b47fb00716c8e1a0d2dea158f4f331d
+  report.html.j2: b4baa208c7907dd9fc02d6c4662293db9e4df5d4023ede3ed66eae67cf193268
 phase_1_to_v1_deltas:
   - deterministic finding ordering
   - source-state digest binding

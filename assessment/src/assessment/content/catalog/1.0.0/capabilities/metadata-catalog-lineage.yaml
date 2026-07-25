@@ -1,0 +1,12 @@
+capability:
+  id: LIN
+  name: Metadata, catalog, glossary, and lineage
+  customer_language: Demonstrate that people can discover critical assets, agree on definitions, identify owners, and trace important products back to their sources.
+  architect_language: Automate technical metadata and lineage capture, connect governed definitions and ownership, and measure coverage, freshness, and impact-analysis use.
+  evidence_examples:
+    - {provenance: self-report, label: Interview statement, example: "Stakeholders describe a catalog or diagrams without showing current critical-asset coverage.", scoring_effect: assessment-input}
+    - {provenance: customer-evidence, label: Customer artifact, example: "Catalog exports and lineage records show owned definitions and source-to-product paths for critical data.", scoring_effect: confidence-only}
+    - {provenance: architect-judgment, label: Architect conclusion, example: "The architect judges semantic consistency, automation, coverage, freshness, and operational use.", scoring_effect: advisory-only}
+    - {provenance: demo-illustration, label: Sandbox illustration, example: "dbt and OpenMetadata artifacts illustrate logical lineage separately from physical publication.", scoring_effect: none}
+  architecture_ids: [ARCH-METADATA-LINEAGE, ARCH-PLATFORM-INTEGRATION, ARCH-VERSIONED-PRODUCT]
+  recommendation_ids: [R-LINEAGE]

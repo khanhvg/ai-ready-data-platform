@@ -1,0 +1,36 @@
+architectures:
+  - id: ARCH-PLATFORM-INTEGRATION
+    title: Contract-driven platform and integration boundary
+    theme: platform-integration
+    problem: Point-to-point ingestion, transformation, and publication create inconsistent recovery, lineage, lifecycle, and control behavior.
+    forces:
+      - Batch, streaming, and file sources need different transports but shared obligations.
+      - Embedded local tools and managed platforms must implement the same logical roles.
+      - Critical boundaries require explicit ownership and replay semantics.
+    logical_components:
+      - Source and consumer contracts
+      - Ingestion and integration adapters
+      - Landing, accepted, transformation, and product zones
+      - Dependency-aware orchestration
+      - Query and consumption interfaces
+      - Shared metadata, quality, security, and operations planes
+    controls:
+      - Validate contracts at each trust boundary
+      - Use idempotent writes, checkpoints, replay, and owned recovery
+      - Separate control-plane evidence from product data
+    data_flows:
+      - Sources enter bounded adapters and landing zones before accepted transformations.
+      - Governed products serve consumers while metadata and operational evidence feed control planes.
+    trade_offs:
+      - Standard patterns reduce operational variation but need extension points for source-specific needs.
+      - Decoupled zones aid recovery and auditability at the cost of additional storage and lifecycle management.
+    evidence_expectations:
+      - Source and product contracts
+      - Replay and recovery proof
+      - Boundary validation and lineage evidence
+      - Owned service and lifecycle measures
+    capability_ids: [ING, STO, TRN, QUA, LIN, OPS, AID]
+    finding_ids: []
+    recommendation_ids: []
+    diagram_ids: [logical-platform-context, engagement-lifecycle]
+    vendor_products: []

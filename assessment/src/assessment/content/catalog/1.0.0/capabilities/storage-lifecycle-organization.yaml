@@ -1,0 +1,12 @@
+capability:
+  id: STO
+  name: Storage, lifecycle, and data organization
+  customer_language: Explain where critical data belongs, how zones and products are organized, and how retention, recovery, deletion, and cost obligations are met.
+  architect_language: Separate landing, accepted, governed, and product boundaries with policy-driven lifecycle, resilience, ownership, and workload-aware placement.
+  evidence_examples:
+    - {provenance: self-report, label: Interview statement, example: "Teams describe storage zones and retention practices without showing current enforcement evidence.", scoring_effect: assessment-input}
+    - {provenance: customer-evidence, label: Customer artifact, example: "Current lifecycle policies, inventories, recovery results, and deletion evidence cover critical assets.", scoring_effect: confidence-only}
+    - {provenance: architect-judgment, label: Architect conclusion, example: "The architect judges whether organization and lifecycle controls match risk and workload needs.", scoring_effect: advisory-only}
+    - {provenance: demo-illustration, label: Sandbox illustration, example: "Logical and physical mart inventories illustrate separate governed publication boundaries.", scoring_effect: none}
+  architecture_ids: [ARCH-PRIVACY-CONTROLS, ARCH-PLATFORM-INTEGRATION, ARCH-VERSIONED-PRODUCT]
+  recommendation_ids: [R-PRIVACY]

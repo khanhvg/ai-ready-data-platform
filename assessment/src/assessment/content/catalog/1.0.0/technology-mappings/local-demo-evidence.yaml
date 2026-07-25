@@ -1,0 +1,63 @@
+technology_profile:
+  id: local-demo-evidence
+  title: Existing sandbox read-only demo evidence mapping
+  kind: local-demo-evidence
+  provider: null
+  content_only: true
+  executable: false
+  read_only: true
+  published_date: "2026-07-25"
+  limitations:
+    - The sandbox illustrates logical patterns and does not assess customer maturity or prove a production control.
+    - Artifact availability describes the configured local repository only and never triggers a pipeline or service.
+    - Quality quarantine, classified masking, policy enforcement, and AI-ready manifests remain unavailable until their later bounded phase.
+  roles:
+    - id: local-synthetic-data
+      role: Deterministic synthetic retail source evidence
+      selected_tool: Repository deterministic generator
+      alternatives: []
+      capability_ids: [ING, QUA, AID]
+      architecture_ids: [ARCH-PLATFORM-INTEGRATION, ARCH-VERSIONED-PRODUCT]
+      constraints: [Read repository artifacts only, Keep profile and seed provenance, Use no customer data]
+    - id: local-warehouse-query
+      role: Embedded landing transformation and query substrate
+      selected_tool: DuckDB
+      alternatives: []
+      capability_ids: [ING, STO, TRN, AID]
+      architecture_ids: [ARCH-PLATFORM-INTEGRATION, ARCH-VERSIONED-PRODUCT]
+      constraints: [Respect the single-writer boundary, Keep generated warehouse data ignored, Do not open from the assessment web]
+    - id: local-transformation
+      role: Versioned transformation tests documentation and lineage
+      selected_tool: dbt Core with dbt-duckdb
+      alternatives: []
+      capability_ids: [TRN, QUA, LIN, AID]
+      architecture_ids: [ARCH-QUALITY-GATE, ARCH-METADATA-LINEAGE, ARCH-VERSIONED-PRODUCT]
+      constraints: [Read tracked project contracts and retained artifacts only, Do not execute from catalog views]
+    - id: local-orchestration
+      role: Visible dependency-aware pipeline orchestration
+      selected_tool: Apache Airflow TaskFlow
+      alternatives: []
+      capability_ids: [TRN, OPS]
+      architecture_ids: [ARCH-PLATFORM-INTEGRATION, ARCH-AI-DATA-OPERATIONS]
+      constraints: [Read DAG source only, Do not start containers or trigger runs, Preserve staged resource limits]
+    - id: local-analytics
+      role: Business-facing mart exploration
+      selected_tool: Rill
+      alternatives: []
+      capability_ids: [AID, OPS]
+      architecture_ids: [ARCH-PLATFORM-INTEGRATION, ARCH-AI-DATA-OPERATIONS]
+      constraints: [Use canonical curated asset inventory, Keep browser view outside assessment control]
+    - id: local-physical-catalog
+      role: Physical table publication and catalog boundary
+      selected_tool: Lakekeeper
+      alternatives: []
+      capability_ids: [STO, LIN, AID]
+      architecture_ids: [ARCH-PLATFORM-INTEGRATION, ARCH-METADATA-LINEAGE]
+      constraints: [Treat historical proof honestly, Keep physical tables separate from logical lineage, Start no service from the assessment]
+    - id: local-metadata-lineage
+      role: Logical and physical metadata and lineage illustration
+      selected_tool: OpenMetadata
+      alternatives: []
+      capability_ids: [LIN, GOV, AID]
+      architecture_ids: [ARCH-METADATA-LINEAGE, ARCH-GOVERNANCE-CONTROL]
+      constraints: [Distinguish historical from current evidence, Never fabricate cross-service lineage, Require explicit availability status]

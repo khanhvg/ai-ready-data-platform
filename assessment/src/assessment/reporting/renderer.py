@@ -7,7 +7,9 @@ from html.parser import HTMLParser
 from typing import Any
 
 from jinja2 import Environment, StrictUndefined, select_autoescape
+from markupsafe import Markup
 
+from assessment.catalog.loader import load_catalog, read_catalog_asset
 from assessment.domain.errors import ContentValidationError
 from assessment.frameworks import load_report_asset
 
@@ -55,10 +57,20 @@ def render_report(report_document: dict[str, Any]) -> bytes:
     css = load_report_asset("report.css")
     if REMOTE_CSS.search(css):
         raise ContentValidationError("report.css: remote resource or font present")
+    catalog = load_catalog()
+    diagram_svgs = {
+        # The catalog loader verifies the manifest digest and rejects active,
+        # linked, remote, or inaccessible SVG content before it reaches Markup.
+        diagram.id: Markup(  # noqa: S704
+            read_catalog_asset(diagram.svg_path).decode("utf-8")
+        )
+        for diagram in catalog.diagrams
+    }
     html = template.render(
         report=report_document,
         sections={section["id"]: section["content"] for section in report_document["sections"]},
         css=css,
+        diagram_svgs=diagram_svgs,
     )
     parser = _SafetyParser()
     parser.feed(html)

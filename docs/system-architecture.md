@@ -70,6 +70,11 @@ canonical source-state digest + 12-section report.json
 standalone report.html (embedded CSS, no script or remote resources)
         ^
         |
+versioned advisory catalog (presentation only)
+  10 capabilities -> 9 logical patterns -> technology option sets
+  -> 7 reviewed diagrams -> 9-stage read-only Demo Guide
+        ^
+        |
 loopback FastAPI/Jinja2 workflow
   create/resume -> quick assessment -> review -> deep-dive planning
   -> deterministic report -> archive export/preflight/import/reopen
@@ -79,6 +84,19 @@ The `evaluate` and `report` CLI commands require both an explicit engagement roo
 explicit output root. They run in `.assessment-venv`, start no services, and never use the demo
 repository or its artifacts as customer maturity evidence. Demo references are presentation-only
 illustrations and cannot affect maturity, confidence, priority, gates, or readiness.
+
+Phase 5 keeps that advisory branch outside the engine. Strict package-resource loaders validate
+unique IDs, exact domain/diagram counts, safe repository-relative demo paths, and every
+capability-to-architecture-to-technology-to-demo reference. Report and loopback web projections
+load the catalog only after deterministic evaluation. AWS is the first named content-only
+mapping, the existing sandbox is a separate read-only evidence illustration, and alternatives
+remain deferred. No technology presence or demo artifact status enters a score or gate.
+
+Seven Mermaid sources and reviewed SVGs are package assets. A pinned Node 22/npm 10.9.8 build-only
+toolchain renders them twice under a network-denying sandbox, validates source and normalized SVG
+content, and compares a digest manifest without mutating tracked files. The update target is
+explicit; Node dependencies, browser binaries, screenshots, and render transcripts remain
+untracked.
 
 Phase 2 adds public v1 JSON Schemas and typed consumers plus an authoritative engagement-folder
 boundary under a user-selected root. `LocalEngagementStore` uses relative POSIX keys, canonical
@@ -102,12 +120,14 @@ revision checks held under the engagement writer lock, bounded uploads, escaped 
 attachment-only evidence, CSP, and local static assets define the web boundary. Forms complete
 through POST/Redirect/GET without JavaScript; JavaScript only enhances autosave and status.
 
-The Phase 4 runtime acceptance starts two real loopback servers under different roots and one
+The Phase 5 runtime acceptance starts two real loopback servers under different roots and one
 pinned Chromium journey inside a non-loopback-network-denying sandbox. It creates and completes
 an engagement, reviews all deterministic results, records a content-pending deep-dive selection,
 generates and downloads the report, exports/imports the archive, reopens it, and compares source
 and imported state plus report bytes. Catalog/demo views are read-only and unavailable content
-is explicit. No route can run the retail pipeline or a command.
+is explicit. It also exercises all seven local diagram assets, catalog/Demo Guide wide/narrow
+reflow, a 200%-equivalent viewport, browser back/reload state, and local-only request behavior.
+No route can run the retail pipeline or a command.
 
 Portable export/import is separate from the retail pipeline: deterministic `ZIP_STORED` archives
 contain normalized files and a canonical digest manifest. Import fully preflights archive names,
@@ -115,9 +135,8 @@ features, limits, checksums, versions, secrets, credentialed URIs, and machine p
 only to a sibling staging directory before atomic destination promotion. No assessment command
 starts Docker, DuckDB, dbt, Rill, Airflow, Lakekeeper, OpenMetadata, AWS, or Terraform.
 
-Knowledge-catalog content, architecture diagrams, AWS mappings, golden-demo integration,
-deep-dive execution content, cloud/object-store implementation, and deployment remain Phase
-5–8 work or explicitly deferred.
+Golden-demo integration, deep-dive execution content, cloud/object-store implementation, and
+deployment remain Phase 6–8 work or explicitly deferred.
 
 ## The logical/physical distinction
 

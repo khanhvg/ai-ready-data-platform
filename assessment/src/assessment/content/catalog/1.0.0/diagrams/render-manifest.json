@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0.0",
+  "node_major": 22,
+  "mermaid_cli_version": "11.16.0",
+  "packages": {
+    "@mermaid-js/mermaid-cli": "11.16.0",
+    "puppeteer": "25.3.0"
+  },
+  "browser": {
+    "provisioner": "assessment-browser-install",
+    "revision": "playwright-chromium-1228"
+  },
+  "tool_files": {
+    "mermaid-config.json": "c98a4791ce941f63fc1fcbdd16c1883fd3f90241ec3c935d6944bc62b82cd1ca",
+    "package-lock.json": "f3c1e95cf6e27b418d8aa26dee58e0735ec622b2574fca749eb52e0e9de88591",
+    "package.json": "353e6d0f5bba8dd4adf579c001354533535551ad980bc81738a08acd2438c728",
+    "render.mjs": "d147d27c64b48508dca28a5d93801de474b1eee17579c0542730f110eeca9d32",
+    "render.test.mjs": "059920aa253450b324ca71d3664a284ca0f2a501f227f130ee89221d8f261b09"
+  },
+  "diagrams": [
+    {
+      "id": "demo-evidence-mapping",
+      "source": "diagrams/demo-evidence-mapping.mmd",
+      "output": "diagrams/demo-evidence-mapping.svg",
+      "source_sha256": "c93580654050481c72f79946cb6a0ac7c061bd8c10e01604d3eaec4b45f8ac20",
+      "output_sha256": "278ae7a336563123a99dc832038b4684a33078dfef57f14d5e5e84a49dda5854"
+    },
+    {
+      "id": "engagement-lifecycle",
+      "source": "diagrams/engagement-lifecycle.mmd",
+      "output": "diagrams/engagement-lifecycle.svg",
+      "source_sha256": "9d6f200845d39aae26c9372f8b0282da2f8f4f3450ca76a3650026010036fb0f",
+      "output_sha256": "12d8b97fa17036f7bb3eee506f3b47d147383983ce80169bc306ecb7c0d5c0cd"
+    },
+    {
+      "id": "executive-ai-readiness",
+      "source": "diagrams/executive-ai-readiness.mmd",
+      "output": "diagrams/executive-ai-readiness.svg",
+      "source_sha256": "05219c2a3ecbeb1c44e90b4dfc8e8a5b32e0ce62bb8c9ee0ebde796bbda8bed2",
+      "output_sha256": "5771d30b3a9a10693fa2db21d3d195175d1c18ec3dc75b758e235585702bff93"
+    },
+    {
+      "id": "logical-platform-context",
+      "source": "diagrams/logical-platform-context.mmd",
+      "output": "diagrams/logical-platform-context.svg",
+      "source_sha256": "1d99e583d0df0c694114ba25b02c32b28745d686cfc1b0159c8c48ee34b66c5a",
+      "output_sha256": "bafcc0555af4b34c0eba212e074de28f63878f44c108274b888b43eb1fc9c780"
+    },
+    {
+      "id": "metadata-and-lineage",
+      "source": "diagrams/metadata-and-lineage.mmd",
+      "output": "diagrams/metadata-and-lineage.svg",
+      "source_sha256": "68332699dbba7eeb0af16a972e5d76a30aec19fd9df6031ea14294852646e239",
+      "output_sha256": "1e3dbf78e8ce2ea6f28aafd88957c5fe13c3c098f6704cf07ebfd54626af1a92"
+    },
+    {
+      "id": "scoring-and-gates",
+      "source": "diagrams/scoring-and-gates.mmd",
+      "output": "diagrams/scoring-and-gates.svg",
+      "source_sha256": "b05606bc0c0344f805e5ccc67dfd781539b1ae1a418ff9c94e1e8314ba00ee67",
+      "output_sha256": "1f545023bde57eaa73be328c10f9f0a92d76844785cc899aa2ed5159a7b5903b"
+    },
+    {
+      "id": "security-and-access",
+      "source": "diagrams/security-and-access.mmd",
+      "output": "diagrams/security-and-access.svg",
+      "source_sha256": "011cbfabbc703b874062000f56dce2877382eddf5e5b0ae29d6ac2f1c091aef1",
+      "output_sha256": "a34b72c7101cda56670a67c1b025ceb2454be3b8c56ef8d4e61ccf4b1bfa5004"
+    }
+  ]
+}

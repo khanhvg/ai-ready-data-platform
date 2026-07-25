@@ -527,6 +527,27 @@ def test_runtime_start_failure_terminates_spawned_server(
     assert process.poll() == -15
 
 
+def test_server_teardown_attempts_every_server_when_one_stop_fails(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from assessment.web import runtime_smoke
+
+    first = object()
+    second = object()
+    attempted: list[object] = []
+
+    def stop(server: object) -> str:
+        attempted.append(server)
+        if server is first:
+            raise RuntimeError("injected teardown failure")
+        return "clean"
+
+    monkeypatch.setattr(runtime_smoke, "_stop_server", stop)
+    with pytest.raises(ExceptionGroup, match="failed to stop"):
+        runtime_smoke._stop_servers((first, second))  # type: ignore[arg-type]
+    assert attempted == [first, second]
+
+
 def test_request_size_and_read_only_surface_boundaries(tmp_path: Path) -> None:
     with client_for(tmp_path, max_upload_bytes=1) as client:
         too_large = client.post(
@@ -541,9 +562,17 @@ def test_request_size_and_read_only_surface_boundaries(tmp_path: Path) -> None:
         assert too_large.json()["error"]["code"] == "request_too_large"
         assert too_large.headers["x-content-type-options"] == "nosniff"
 
-        for path in ("/catalog", "/demo"):
-            page = client.get(path)
-            assert page.status_code == 200
-            assert "not installed" in page.text.lower()
-            assert "<button" not in page.text
-            assert "<form" not in page.text
+        catalog = client.get("/catalog")
+        assert catalog.status_code == 200
+        assert "10 capability domains" in catalog.text
+        assert "Demo artifacts are illustrations only" in catalog.text
+        assert "<button" not in catalog.text
+        assert "<form" not in catalog.text
+
+        demo = client.get("/demo")
+        assert demo.status_code == 200
+        assert "9 read-only presenter stages" in demo.text
+        assert "artifact unavailable" in demo.text
+        assert "artifact available" not in demo.text
+        assert "<button" not in demo.text
+        assert "<form" not in demo.text

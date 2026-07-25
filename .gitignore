@@ -34,6 +34,7 @@ yarn-error.log*
 
 # package manager
 package-lock.json
+!/assessment/diagram-tools/package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
@@ -124,6 +125,8 @@ openmetadata-docker/
 /assessment/.mypy_cache/
 /assessment/.ruff_cache/
 /assessment/.browser/
+/assessment/.diagram-cache/
+/assessment/diagram-tools/node_modules/
 /assessment/.runtime/
 /assessment/test-results/
 /assessment/build/

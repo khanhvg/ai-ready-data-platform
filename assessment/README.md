@@ -1,10 +1,12 @@
-# AI-ready assessment Phases 1–4
+# AI-ready assessment Phases 1–5
 
 This isolated Python 3.12 package proves the Issue #38 rubric, scoring/gates, synthetic
 calibration, v1 public contracts, authoritative local engagement folders, prototype migration,
 safe deterministic portability, and the final deterministic engine and canonical report
 generation. Phase 4 adds a local server-rendered architect workflow without adding a pipeline
-control surface. It is deliberately offline after dependency and pinned-browser installation
+control surface. Phase 5 adds a versioned capability, architecture, technology-option, diagram,
+and Demo Guide catalog without changing assessment truth. It is deliberately offline after
+dependency and pinned-browser/diagram-tool installation
 and does not import, scan, or control the retail data platform.
 
 From the repository root:
@@ -17,7 +19,8 @@ make assessment-report assessment-test
 make assessment-store assessment-migration assessment-import-export
 make assessment-portability assessment-security-scan
 make assessment-engine
-make assessment-browser-install
+make assessment-browser-install assessment-diagram-install
+make assessment-diagrams
 make assessment-e2e assessment-runtime-smoke
 make assessment-lint assessment-typecheck assessment-build
 ```
@@ -28,6 +31,13 @@ the separate `.assessment-venv` from hash-locked files. The other targets use
 runtime's `sandbox-exec`; they use local files and start no containers. The two browser targets
 start and stop their own real loopback server and Chromium while a second sandbox profile denies
 non-loopback network access.
+
+`assessment-diagram-install` is the only target allowed to provision the exact npm dependencies
+for diagram builds. It uses the committed npm v3 lock with Node 22/npm 10.9.8 and does not place
+Node tooling in the Python package. The existing browser install target supplies the pinned
+Chromium build. `assessment-diagrams-update` is the explicit regeneration target;
+`assessment-diagrams` performs adversarial renderer tests plus two deterministic renders and
+non-mutating parity checks under the loopback-only network sandbox.
 
 ## Local architect workflow
 
@@ -55,7 +65,12 @@ autosave requests and improves disclosure/status feedback.
 
 Deep dives are selection records only. Their question banks remain honestly
 `planned-content-pending`/`not-installed` until Phase 7. Catalog and demo pages are read-only
-views of validated assets already present; unavailable assets stay visibly unavailable. There
+views of validated package assets; unavailable repository evidence stays visibly unavailable.
+The catalog contains exactly ten capability domains, nine vendor-neutral logical patterns,
+an AWS-first content-only option set, a separate read-only local sandbox mapping, deferred
+alternatives, and seven reviewed accessible SVG/source pairs. The Demo Guide contains nine
+presenter stages with prerequisites, repository-relative artifact locations, expected evidence,
+limitations, cleanup, and an explicit non-scoring disclaimer. There
 is no run, command, SQL, credential, network-fetch, pipeline, Docker, cloud, or deployment route.
 
 The app uses signed ephemeral local sessions, signed CSRF tokens, host/origin checks, optimistic
@@ -68,7 +83,9 @@ Architect journey. `make assessment-runtime-smoke` repeats that same real journe
 ignored standalone report, archive, imported-report, screenshot, transcript, result, and digest
 evidence under `assessment/.generated/runtime-smoke/`. It proves 30 answers, all seven gate
 traces, deep-dive pending state, deterministic export/import/reopen equality, no-JavaScript
-completion, no remote browser requests, and clean server/browser teardown.
+completion, catalog/Demo Guide wide and narrow reflow, seven local diagrams, honest
+available/unavailable artifact status, browser back/reload behavior, no remote browser requests,
+and clean server/browser teardown.
 
 Prototype scenario reports are written to the ignored
 `assessment/.generated/prototype/<scenario>/` tree. Each scenario has top-level canonical
@@ -140,5 +157,6 @@ sibling stage and atomically promoting it.
 
 The future object-store boundary is documentation-only in
 `assessment/docs/object-engagement-store.md`. There is no SDK, S3 upload, credential, bucket,
-Terraform, SQLite authority, cloud resource, catalog content/diagram mapping, golden pipeline,
-customer data, or deployment behavior in Phases 1–4. Phases 5–8 remain pending.
+Terraform execution, SQLite authority, cloud resource, golden pipeline, customer data, or
+deployment behavior in Phases 1–5. The AWS profile is content only and the local demo mapping is
+read only. Phases 6–8 remain pending.

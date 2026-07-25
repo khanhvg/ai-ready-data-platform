@@ -81,12 +81,213 @@ dd { margin: 0 0 .7rem; overflow-wrap: anywhere; }
 .artifact-list li { min-width: 0; }
 .artifact-digest { overflow-wrap: anywhere; word-break: break-word; }
 
+/* Versioned catalog and Demo Guide: dense, read-only reference surfaces. */
+.catalog-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(15rem, .7fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: end;
+  padding: clamp(1.4rem, 4vw, 2.8rem);
+  margin-bottom: 1rem;
+  border: 1px solid #9eb0bb;
+  border-radius: .8rem;
+  background: linear-gradient(120deg, #eef5f6 0 72%, #dce9eb 72%);
+}
+.catalog-hero h1 { max-width: 17ch; }
+.catalog-lede { max-width: 70ch; margin-bottom: 0; font-size: 1.08rem; }
+.catalog-summary { display: grid; gap: .7rem; margin: 0; }
+.catalog-summary div { padding: .75rem .9rem; border-left: 4px solid var(--accent); background: #ffffffd9; }
+.catalog-summary dt { color: var(--muted); font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; }
+.catalog-summary dd { margin: .15rem 0 0; font-weight: 750; }
+.catalog-page-nav, .demo-stage-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+  margin: 1rem 0 2.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.catalog-page-nav a, .demo-stage-nav a {
+  padding: .5rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: .35rem;
+  background: var(--surface);
+  font-weight: 680;
+}
+.catalog-section { scroll-margin-top: 1rem; }
+.catalog-section-heading { max-width: 74ch; margin-bottom: 1.2rem; }
+.catalog-section-heading h2 { margin: .2rem 0 .5rem; font-size: clamp(1.65rem, 3vw, 2.35rem); }
+.catalog-card-list {
+  display: grid;
+  gap: 1.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+.catalog-card {
+  min-width: 0;
+  padding: clamp(1rem, 3vw, 1.6rem);
+  border: 1px solid var(--line);
+  border-radius: .7rem;
+  background: var(--surface);
+  box-shadow: 0 1px 2px #1122330d;
+  scroll-margin-top: 1rem;
+}
+.catalog-card-heading, .demo-stage-heading, .technology-profile-heading {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.catalog-card-heading { justify-content: flex-start; }
+.catalog-card h3, .catalog-diagram-figure h3 { margin: .1rem 0 .7rem; font-size: 1.25rem; line-height: 1.25; }
+.catalog-index {
+  flex: 0 0 auto;
+  min-width: 2.6rem;
+  padding: .25rem .4rem;
+  border-top: 3px solid var(--accent);
+  color: var(--accent-dark);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.catalog-id {
+  margin: 0 0 .2rem;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 750;
+  letter-spacing: .055em;
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+.catalog-language-grid, .catalog-detail-grid, .demo-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.catalog-language-grid section {
+  padding: 1rem;
+  border-left: 4px solid #7894a3;
+  background: #f2f6f7;
+}
+.catalog-language-grid h4, .catalog-detail-grid h4, .demo-detail-grid h3 { margin: 0 0 .4rem; }
+.catalog-language-grid p { margin: 0; }
+.catalog-evidence-table { min-width: 48rem; }
+.catalog-evidence-table th:first-child { width: 22%; }
+.catalog-evidence-table th:last-child { width: 18%; }
+.evidence-kind {
+  display: inline-block;
+  margin-bottom: .35rem;
+  padding: .12rem .4rem;
+  border: 1px solid #9baab3;
+  border-radius: .25rem;
+  background: #edf1f3;
+  font-size: .78rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+.evidence-customer-evidence { border-color: #4b866a; background: var(--good-bg); color: var(--good); }
+.evidence-demo-illustration { border-color: #b08b44; background: var(--warn-bg); color: var(--warn); }
+.catalog-reference-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .45rem 1rem;
+  margin: 1rem 0 0;
+  padding-top: .8rem;
+  border-top: 1px solid var(--line);
+}
+.catalog-reference-list div { min-width: 0; }
+.catalog-reference-list dt { font-size: .82rem; color: var(--muted); }
+.catalog-reference-list dd { margin: .1rem 0 0; }
+.catalog-pattern-list, .technology-profile-list, .catalog-diagram-list, .demo-stage-list { display: grid; gap: 1.2rem; }
+.architecture-card header > p:last-child { max-width: 74ch; font-size: 1.05rem; }
+.catalog-detail-grid section, .demo-detail-grid section { min-width: 0; }
+.catalog-detail-grid ul, .demo-detail-grid ul, .technology-profile ul { margin: .35rem 0 0; padding-left: 1.25rem; }
+.technology-profile-heading { gap: 1rem; }
+.read-only-badge, .artifact-status {
+  display: inline-block;
+  flex: 0 0 auto;
+  padding: .3rem .55rem;
+  border: 1px solid #8296a2;
+  border-radius: 999px;
+  background: #edf3f5;
+  color: #304755;
+  font-size: .78rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+.catalog-role-table { min-width: 62rem; }
+.catalog-role-table th:first-child { width: 22%; }
+.catalog-block-label { display: block; margin-top: .45rem; color: var(--muted); font-size: .78rem; font-weight: 750; text-transform: uppercase; }
+.compact-list { margin: 0 !important; }
+.catalog-diagram-list { grid-template-columns: minmax(0, 1fr); }
+.catalog-diagram-figure {
+  min-width: 0;
+  margin: 0;
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: .7rem;
+  background: var(--surface);
+}
+.catalog-diagram-figure figcaption { min-height: 0; }
+.catalog-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: contain;
+  border: 1px solid var(--line);
+  background: white;
+}
+.diagram-text-alternative { margin-top: .8rem; padding: .8rem; border-left: 4px solid var(--accent); background: #edf4f6; }
+.diagram-text-alternative h4, .diagram-text-alternative p { margin: 0; }
+.diagram-text-alternative p { margin-top: .25rem; }
+.catalog-disclaimer {
+  margin: 2.5rem 0 0;
+  padding: 1.2rem 1.4rem;
+  border: 2px solid #a9791b;
+  border-radius: .5rem;
+  background: var(--warn-bg);
+}
+.catalog-disclaimer h2 { margin: 0 0 .4rem; font-size: 1.25rem; }
+.catalog-disclaimer p:last-child { margin-bottom: 0; }
+.demo-hero { background: linear-gradient(120deg, #f1f3f0 0 72%, #e4e9df 72%); }
+.demo-stage-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.demo-stage-nav a { overflow-wrap: anywhere; }
+.demo-stage { padding: clamp(1rem, 3vw, 1.8rem); }
+.demo-stage-heading { justify-content: flex-start; }
+.demo-stage-heading h2 { margin: .1rem 0 .5rem; }
+.demo-artifact-table { min-width: 58rem; }
+.demo-artifact-table th:first-child { width: 19%; }
+.demo-artifact-table th:last-child { width: 15%; }
+.demo-artifact-table code { overflow-wrap: anywhere; word-break: break-word; white-space: normal; }
+.artifact-available { border-color: #4b866a; background: var(--good-bg); color: var(--good); }
+.artifact-unavailable { border-color: #b08b44; background: var(--warn-bg); color: var(--warn); }
+.demo-limitations { padding: 1rem; border-left: 4px solid #a9791b; background: #fff8e7; }
+.demo-evidence-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 0; }
+.demo-evidence-links dt { margin-bottom: .4rem; }
+
 @media (max-width: 760px) {
   .site-header, .page-header, .split { display: grid; }
   .layout-two, .summary-grid, .domain-nav { grid-template-columns: 1fr; }
   .progress-copy { text-align: left; }
   main { padding-top: 1.4rem; }
   h1 { font-size: 2.2rem; }
+  .catalog-hero { grid-template-columns: 1fr; background: #eef5f6; }
+  .demo-hero { background: #f1f3f0; }
+  .catalog-language-grid, .catalog-detail-grid, .catalog-reference-list,
+  .catalog-diagram-list, .demo-detail-grid, .demo-stage-nav,
+  .demo-evidence-links { grid-template-columns: 1fr; }
+  .catalog-card-heading, .technology-profile-heading { display: grid; }
+  .catalog-diagram-figure figcaption { min-height: 0; }
+  .read-only-badge { white-space: normal; }
+}
+
+@media (max-width: 420px) {
+  .catalog-page-nav { display: grid; }
+  .catalog-card, .catalog-diagram-figure { padding: .85rem; }
+  .catalog-card-heading, .demo-stage-heading { gap: .55rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

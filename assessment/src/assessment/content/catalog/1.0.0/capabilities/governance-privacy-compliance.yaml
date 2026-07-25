@@ -1,0 +1,12 @@
+capability:
+  id: GOV
+  name: Governance, privacy, and compliance
+  customer_language: Explain how sensitive data, approved purposes, retention, decisions, exceptions, and accountable reviewers are identified and evidenced.
+  architect_language: Join policy intent to classification, decision workflows, technical controls, exception expiry, evidence retention, and measurable control effectiveness.
+  evidence_examples:
+    - {provenance: self-report, label: Interview statement, example: "Stakeholders describe governance forums and privacy reviews without a current decision trail.", scoring_effect: assessment-input}
+    - {provenance: customer-evidence, label: Customer artifact, example: "Classification, approved-purpose, retention, review, and exception records cover critical data.", scoring_effect: confidence-only}
+    - {provenance: architect-judgment, label: Architect conclusion, example: "The architect judges whether policy decisions are accountable, enforceable, evidenced, and measured.", scoring_effect: advisory-only}
+    - {provenance: demo-illustration, label: Sandbox illustration, example: "Read-only metadata and planned classification evidence illustrate a governance control pattern.", scoring_effect: none}
+  architecture_ids: [ARCH-OPERATING-MODEL, ARCH-GOVERNANCE-CONTROL, ARCH-METADATA-LINEAGE, ARCH-PRIVACY-CONTROLS, ARCH-POLICY-ACCESS, ARCH-VERSIONED-PRODUCT]
+  recommendation_ids: [R-GOVERNANCE, R-PRIVACY]

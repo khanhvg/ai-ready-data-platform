@@ -1,0 +1,12 @@
+capability:
+  id: SEC
+  name: Security, access control, and policy-as-code
+  customer_language: Show who can access critical data, why access is allowed, how least privilege is enforced, and how revocation and exceptions are tested.
+  architect_language: Bind trusted identities and approved purposes to versioned policy decisions, protected products, denial boundaries, audit events, and periodic recertification.
+  evidence_examples:
+    - {provenance: self-report, label: Interview statement, example: "Administrators describe roles and approvals without tested allow, deny, or revocation evidence.", scoring_effect: assessment-input}
+    - {provenance: customer-evidence, label: Customer artifact, example: "Current policies, reviews, denial events, revocation tests, and exception expiry are inspectable.", scoring_effect: confidence-only}
+    - {provenance: architect-judgment, label: Architect conclusion, example: "The architect judges least privilege, separation of duties, enforceability, and audit completeness.", scoring_effect: advisory-only}
+    - {provenance: demo-illustration, label: Sandbox illustration, example: "A planned local application policy proof illustrates a boundary but is not production IAM.", scoring_effect: none}
+  architecture_ids: [ARCH-GOVERNANCE-CONTROL, ARCH-PRIVACY-CONTROLS, ARCH-POLICY-ACCESS, ARCH-AI-DATA-OPERATIONS]
+  recommendation_ids: [R-SECURITY, R-PRIVACY]

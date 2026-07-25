@@ -1,0 +1,11 @@
+flowchart LR
+  accTitle: Security privacy and access control pattern
+  accDescr: Classified data and approved purposes feed policy decisions that allow masked governed products or deny raw sensitive access while recording evidence.
+  A[Classified sensitive data] --> C[Policy decision]
+  B[Identity role and approved purpose] --> C
+  C -->|allow| D[Masked governed product]
+  C -->|deny| E[Blocked raw access]
+  D --> F[Approved consumer]
+  C --> G[Decision evidence]
+  D --> H[Access evidence]
+  E --> H

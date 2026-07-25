@@ -1,0 +1,12 @@
+capability:
+  id: ING
+  name: Data sources, ingestion, and integration
+  customer_language: Understand how critical source data is identified, contracted, validated, replayed, and recovered when an ingestion path fails.
+  architect_language: Define source contracts and bounded integration patterns with idempotency, validation, lineage capture, replay, and owned recovery.
+  evidence_examples:
+    - {provenance: self-report, label: Interview statement, example: "A team describes recurring feeds and recovery steps that have not been independently inspected.", scoring_effect: assessment-input}
+    - {provenance: customer-evidence, label: Customer artifact, example: "Source contracts and recent run records show validation, ownership, retries, and recovery outcomes.", scoring_effect: confidence-only}
+    - {provenance: architect-judgment, label: Architect conclusion, example: "The architect judges whether critical integration paths share enforceable and recoverable patterns.", scoring_effect: advisory-only}
+    - {provenance: demo-illustration, label: Sandbox illustration, example: "Deterministic source manifests and raw landing code illustrate repeatable ingestion evidence.", scoring_effect: none}
+  architecture_ids: [ARCH-QUALITY-GATE, ARCH-METADATA-LINEAGE, ARCH-PLATFORM-INTEGRATION]
+  recommendation_ids: [R-LINEAGE]

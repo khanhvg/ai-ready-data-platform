@@ -134,6 +134,11 @@ def build_parser() -> argparse.ArgumentParser:
     web = commands.add_parser("web", help="run the local server-rendered assessment workflow")
     web.add_argument("--engagement-root", type=Path, required=True)
     web.add_argument("--runtime-root", type=Path, required=True)
+    web.add_argument(
+        "--repository-root",
+        type=Path,
+        help="optional read-only repository root used only for demo artifact availability",
+    )
     web.add_argument("--host", default="127.0.0.1")
     web.add_argument("--port", type=int, default=8765)
     web.add_argument(
@@ -269,6 +274,7 @@ def _run(arguments: argparse.Namespace) -> int:
         config = WebConfig.for_roots(
             arguments.engagement_root,
             arguments.runtime_root,
+            repository_root=arguments.repository_root,
             host=str(arguments.host),
             port=int(arguments.port),
             allow_unsupported_non_loopback=bool(

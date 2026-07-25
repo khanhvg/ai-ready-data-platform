@@ -24,8 +24,10 @@ ASSESSMENT_FIXTURES := assessment/tests/fixtures/scenarios/0.1.0
 ASSESSMENT_OFFLINE := assessment/tools/run-offline.sh
 ASSESSMENT_LOOPBACK_ONLY := assessment/tools/run-loopback-only.sh
 ASSESSMENT_BROWSER_PATH := $(CURDIR)/assessment/.browser
+ASSESSMENT_DIAGRAM_TOOLS := $(CURDIR)/assessment/diagram-tools
 ASSESSMENT_ENGAGEMENT_ROOT ?= $(CURDIR)/assessment/.runtime/engagements
 ASSESSMENT_RUNTIME_ROOT ?= $(CURDIR)/assessment/.runtime/web
+ASSESSMENT_REPOSITORY_ROOT ?= $(CURDIR)
 ASSESSMENT_HOST ?= 127.0.0.1
 ASSESSMENT_PORT ?= 8765
 ASSESSMENT_RUNTIME_EVIDENCE ?= $(CURDIR)/assessment/.generated/runtime-smoke
@@ -35,7 +37,8 @@ ASSESSMENT_RUNTIME_EVIDENCE ?= $(CURDIR)/assessment/.generated/runtime-smoke
 	assessment-report assessment-test assessment-store assessment-migration assessment-import-export \
 	assessment-portability assessment-security-scan assessment-lint assessment-typecheck assessment-build \
 	assessment-engine assessment-browser-install assessment-web assessment-e2e \
-	assessment-runtime-smoke assessment-clean
+	assessment-runtime-smoke assessment-diagram-install assessment-diagrams-update \
+	assessment-diagrams assessment-clean
 
 venv: $(VENV)/bin/python3
 
@@ -143,10 +146,25 @@ assessment-browser-install:
 	$(PYENV) PLAYWRIGHT_BROWSERS_PATH=$(ASSESSMENT_BROWSER_PATH) \
 		$(ASSESSMENT_PY) -m playwright install chromium --no-shell
 
+assessment-diagram-install:
+	@node -e "if (Number(process.versions.node.split('.')[0]) !== 22) process.exit(1)"
+	@test "$$(npm --version)" = "10.9.8"
+	@test -f $(ASSESSMENT_DIAGRAM_TOOLS)/package-lock.json
+	cd $(ASSESSMENT_DIAGRAM_TOOLS) && \
+		PUPPETEER_SKIP_DOWNLOAD=true npm ci --ignore-scripts --no-audit --no-fund
+
+assessment-diagrams-update:
+	$(PYENV) node $(ASSESSMENT_DIAGRAM_TOOLS)/render.mjs --update
+
+assessment-diagrams:
+	$(PYENV) $(ASSESSMENT_LOOPBACK_ONLY) node --test $(ASSESSMENT_DIAGRAM_TOOLS)/render.test.mjs
+	$(PYENV) node $(ASSESSMENT_DIAGRAM_TOOLS)/render.mjs --verify
+
 assessment-web:
 	$(PYENV) $(ASSESSMENT_PY) -m assessment web \
 		--engagement-root $(ASSESSMENT_ENGAGEMENT_ROOT) \
 		--runtime-root $(ASSESSMENT_RUNTIME_ROOT) \
+		--repository-root $(ASSESSMENT_REPOSITORY_ROOT) \
 		--host $(ASSESSMENT_HOST) --port $(ASSESSMENT_PORT)
 
 assessment-e2e:
@@ -157,7 +175,9 @@ assessment-e2e:
 assessment-runtime-smoke:
 	$(PYENV) PLAYWRIGHT_BROWSERS_PATH=$(ASSESSMENT_BROWSER_PATH) \
 		$(ASSESSMENT_LOOPBACK_ONLY) $(ASSESSMENT_PY) \
-		assessment/scripts/runtime-smoke.py --evidence-root $(ASSESSMENT_RUNTIME_EVIDENCE)
+		assessment/scripts/runtime-smoke.py \
+		--evidence-root $(ASSESSMENT_RUNTIME_EVIDENCE) \
+		--repository-root $(ASSESSMENT_REPOSITORY_ROOT)
 
 assessment-schema:
 	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_CLI) schema

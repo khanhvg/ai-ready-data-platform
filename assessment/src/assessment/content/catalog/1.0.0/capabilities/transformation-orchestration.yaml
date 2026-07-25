@@ -1,0 +1,12 @@
+capability:
+  id: TRN
+  name: Transformation and orchestration
+  customer_language: Show how critical transformations are versioned, tested, scheduled, observed, recovered, and promoted without relying on one person.
+  architect_language: Use dependency-aware orchestration and tested transformation contracts with controlled releases, reproducible inputs, and explicit recovery boundaries.
+  evidence_examples:
+    - {provenance: self-report, label: Interview statement, example: "Engineers describe scheduled jobs and manual recovery without a reviewed execution record.", scoring_effect: assessment-input}
+    - {provenance: customer-evidence, label: Customer artifact, example: "Version history, tests, run traces, and recovery records demonstrate repeatable critical transformations.", scoring_effect: confidence-only}
+    - {provenance: architect-judgment, label: Architect conclusion, example: "The architect judges release safety, dependency control, reproducibility, and operational ownership.", scoring_effect: advisory-only}
+    - {provenance: demo-illustration, label: Sandbox illustration, example: "dbt lineage and a TaskFlow DAG illustrate versioned transformation and orchestration patterns.", scoring_effect: none}
+  architecture_ids: [ARCH-QUALITY-GATE, ARCH-METADATA-LINEAGE, ARCH-PLATFORM-INTEGRATION, ARCH-VERSIONED-PRODUCT]
+  recommendation_ids: [R-REPRODUCIBILITY]
