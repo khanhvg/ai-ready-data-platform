@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block content %}
+{% if conflict %}
+<section class="error-summary" role="alert" tabindex="-1" data-error-summary>
+  <h1>Save conflict</h1>
+  <p>{{ conflict }}</p>
+  <p>Copy any unsaved text, then <a href="/engagements/{{ engagement_id }}/quick?domain={{ selected_domain }}">reload the saved version</a>.</p>
+</section>
+{% endif %}
+<header class="page-header">
+  <div>
+    <p class="eyebrow">Framework {{ framework_version }}</p>
+    <h1>Quick assessment</h1>
+  </div>
+  <div class="progress-copy">
+    <strong>{{ answered }} of {{ total }} answered</strong>
+    <span>{{ progress_percent }}%</span>
+  </div>
+</header>
+<progress value="{{ answered }}" max="{{ total }}">{{ progress_percent }}%</progress>
+<p id="autosave-status" class="status neutral" role="status" aria-live="polite">
+  {{ state.last_saved_status }} · revision {{ state.revision }}
+</p>
+<nav class="domain-nav" aria-label="Assessment domains">
+  {% for domain in domains %}
+  <a href="?domain={{ domain.id }}" {% if domain.id == selected_domain %}aria-current="page"{% endif %}>
+    {{ domain.id }} · {{ domain.name }}
+  </a>
+  {% endfor %}
+</nav>
+<section>
+  {% for question in questions %}
+  {% set answer = answers.get(question.id) %}
+  <form class="panel answer-form" method="post" action="/engagements/{{ engagement_id }}/quick" data-autosave>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="revision" value="{{ state.revision }}">
+    <input type="hidden" name="question_id" value="{{ question.id }}">
+    <input type="hidden" name="domain" value="{{ selected_domain }}">
+    <fieldset>
+      <legend><span class="question-id">{{ question.id }}</span> {{ question.text }}</legend>
+      <div class="rating-grid">
+        <label class="rating-option">
+          <input type="radio" name="rating" value="" required
+                 {% if answer and answer.rating is none %}checked{% endif %}>
+          <span><strong>Not assessed</strong> — no maturity rating; select “Not assessed” below.</span>
+        </label>
+      {% for level, anchor in question.anchors.items() %}
+        <label class="rating-option">
+          <input type="radio" name="rating" value="{{ level }}" required
+                 {% if answer and answer.rating == level %}checked{% endif %}>
+          <span><strong>{{ level }}</strong> — {{ anchor }}</span>
+        </label>
+      {% endfor %}
+      </div>
+    </fieldset>
+    <label for="status-{{ question.id }}">Evidence status</label>
+    <select id="status-{{ question.id }}" name="evidence_status" required>
+      {% for status in evidence_statuses %}
+      <option value="{{ status }}"
+        {% if (answer and answer.evidence_status == status) or (not answer and status == "Self-reported") %}selected{% endif %}>
+        {{ status }}
+      </option>
+      {% endfor %}
+    </select>
+    <label for="note-{{ question.id }}">Architect note</label>
+    <textarea id="note-{{ question.id }}" name="note" maxlength="4096" rows="3">{{ answer.note if answer else "" }}</textarea>
+    {% if answer and answer.evidence_refs %}
+    <p class="help">Evidence attachments:</p>
+    <ul>
+      {% for ref in answer.evidence_refs %}
+      <li><a href="/engagements/{{ engagement_id }}/evidence/{{ ref.removeprefix('evidence/files/') }}">{{ ref }}</a> (attachment)</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="inline-options">
+      <button type="submit">Save {{ question.id }}</button>
+      <button class="secondary" type="reset">Reset unsaved changes</button>
+    </div>
+  </form>
+  {% endfor %}
+</section>
+<section class="panel">
+  <h2>Readiness gate facts</h2>
+  <p class="help">These controls are explicit architect inputs from the pinned framework. No value is inferred from demo artifacts.</p>
+  <form method="post" action="/engagements/{{ engagement_id }}/quick/facts">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="revision" value="{{ state.revision }}">
+    {% for fact in diagnostic_facts %}
+    <fieldset>
+      <legend>{{ fact.id }} <span class="tag">{{ fact.domain_id }} · {{ fact.type }}</span></legend>
+      {% if fact.type == "integer" %}
+      <div class="inline-options">
+        {% for value in range(5) %}
+        <label><input type="radio" name="{{ fact.id }}" value="{{ value }}" required
+          {% if fact_values.get(fact.id) == value %}checked{% endif %}> {{ value }}</label>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="inline-options">
+        <label><input type="radio" name="{{ fact.id }}" value="true" required
+          {% if fact_values.get(fact.id) is sameas true %}checked{% endif %}> True</label>
+        <label><input type="radio" name="{{ fact.id }}" value="false" required
+          {% if fact_values.get(fact.id) is sameas false %}checked{% endif %}> False</label>
+      </div>
+      {% endif %}
+    </fieldset>
+    {% endfor %}
+    <button type="submit">Save gate facts</button>
+  </form>
+</section>
+<section class="panel">
+  <h2>Attach evidence</h2>
+  <p class="help">Attachments are stored only as downloadable evidence. Allowed: UTF-8 text, JSON, CSV, PNG, and JPEG.</p>
+  <form method="post" action="/engagements/{{ engagement_id }}/evidence" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="revision" value="{{ state.revision }}">
+    <label for="evidence-question">Saved answer</label>
+    <select id="evidence-question" name="question_id" required>
+      {% for question_id in answers %}
+      <option>{{ question_id }}</option>
+      {% endfor %}
+    </select>
+    <label for="evidence-file">Evidence file</label>
+    <input id="evidence-file" name="evidence_file" type="file" accept=".txt,.json,.csv,.png,.jpg,.jpeg" required>
+    <button type="submit">Attach as evidence</button>
+  </form>
+</section>
+{% endblock %}

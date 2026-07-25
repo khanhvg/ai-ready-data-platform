@@ -1,6 +1,8 @@
 -r requirements.in
 build==1.2.2.post1
+httpx2==2.9.1
 mypy==1.16.1
+playwright==1.61.0
 pytest==8.4.1
 ruff==0.12.4
 setuptools==80.9.0

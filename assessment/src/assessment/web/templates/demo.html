@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="eyebrow">Read-only demo evidence</p>
+<h1>Demo-stage artifacts</h1>
+<p class="status warn">Validated demo-stage manifest instances are not installed. The references below are illustrations only and are never customer maturity evidence.</p>
+{% if stage_ids %}
+<ul class="card-list">
+{% for stage_id in stage_ids %}
+  <li class="panel"><strong>{{ stage_id }}</strong><br><span class="tag">artifact unavailable · not executed here</span></li>
+{% endfor %}
+</ul>
+{% else %}
+<p class="status neutral">No demo-stage references are available.</p>
+{% endif %}
+{% endblock %}

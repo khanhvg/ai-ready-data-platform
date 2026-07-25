@@ -22,12 +22,20 @@ ASSESSMENT_PIP := $(ASSESSMENT_VENV)/bin/pip
 ASSESSMENT_CLI := $(ASSESSMENT_VENV)/bin/assessment-prototype
 ASSESSMENT_FIXTURES := assessment/tests/fixtures/scenarios/0.1.0
 ASSESSMENT_OFFLINE := assessment/tools/run-offline.sh
+ASSESSMENT_LOOPBACK_ONLY := assessment/tools/run-loopback-only.sh
+ASSESSMENT_BROWSER_PATH := $(CURDIR)/assessment/.browser
+ASSESSMENT_ENGAGEMENT_ROOT ?= $(CURDIR)/assessment/.runtime/engagements
+ASSESSMENT_RUNTIME_ROOT ?= $(CURDIR)/assessment/.runtime/web
+ASSESSMENT_HOST ?= 127.0.0.1
+ASSESSMENT_PORT ?= 8765
+ASSESSMENT_RUNTIME_EVIDENCE ?= $(CURDIR)/assessment/.generated/runtime-smoke
 
 .PHONY: venv up down seed load health dbt dbt-docs airflow bi catalog lake-up lake-publish catalog-ingest clean \
 	assessment-install assessment-schema assessment-contract assessment-scenarios assessment-calibration \
 	assessment-report assessment-test assessment-store assessment-migration assessment-import-export \
 	assessment-portability assessment-security-scan assessment-lint assessment-typecheck assessment-build \
-	assessment-engine assessment-clean
+	assessment-engine assessment-browser-install assessment-web assessment-e2e \
+	assessment-runtime-smoke assessment-clean
 
 venv: $(VENV)/bin/python3
 
@@ -131,6 +139,26 @@ assessment-install:
 	$(PYENV) $(ASSESSMENT_PIP) install --quiet --require-hashes -r assessment/requirements-dev.lock
 	$(PYENV) $(ASSESSMENT_PIP) install --quiet --no-deps assessment/
 
+assessment-browser-install:
+	$(PYENV) PLAYWRIGHT_BROWSERS_PATH=$(ASSESSMENT_BROWSER_PATH) \
+		$(ASSESSMENT_PY) -m playwright install chromium --no-shell
+
+assessment-web:
+	$(PYENV) $(ASSESSMENT_PY) -m assessment web \
+		--engagement-root $(ASSESSMENT_ENGAGEMENT_ROOT) \
+		--runtime-root $(ASSESSMENT_RUNTIME_ROOT) \
+		--host $(ASSESSMENT_HOST) --port $(ASSESSMENT_PORT)
+
+assessment-e2e:
+	$(PYENV) PLAYWRIGHT_BROWSERS_PATH=$(ASSESSMENT_BROWSER_PATH) \
+		$(ASSESSMENT_LOOPBACK_ONLY) $(ASSESSMENT_PY) -m pytest -q \
+		assessment/tests/e2e --maxfail=1
+
+assessment-runtime-smoke:
+	$(PYENV) PLAYWRIGHT_BROWSERS_PATH=$(ASSESSMENT_BROWSER_PATH) \
+		$(ASSESSMENT_LOOPBACK_ONLY) $(ASSESSMENT_PY) \
+		assessment/scripts/runtime-smoke.py --evidence-root $(ASSESSMENT_RUNTIME_EVIDENCE)
+
 assessment-schema:
 	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_CLI) schema
 	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m assessment schema --repo-root .
@@ -162,7 +190,8 @@ assessment-engine:
 		assessment/tests/unit/test_recommendations.py
 
 assessment-test:
-	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m pytest -q assessment/tests
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m pytest -q \
+		assessment/tests -m 'not e2e'
 
 assessment-store:
 	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m pytest -q \
@@ -211,7 +240,7 @@ assessment-build:
 	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_CLI) build-check assessment/dist
 
 assessment-clean:
-	python3 -c "import pathlib, shutil; [shutil.rmtree(pathlib.Path(p), ignore_errors=True) for p in ['assessment/.generated','assessment/.pytest_cache','assessment/.mypy_cache','assessment/.ruff_cache','assessment/build','assessment/dist','assessment/ai_ready_assessment_prototype.egg-info']]"
+	python3 -c "import pathlib, shutil; [shutil.rmtree(pathlib.Path(p), ignore_errors=True) for p in ['assessment/.generated','assessment/.runtime','assessment/test-results','assessment/.pytest_cache','assessment/.mypy_cache','assessment/.ruff_cache','assessment/build','assessment/dist','assessment/ai_ready_assessment_prototype.egg-info']]"
 
 clean:
 	python3 -c "import pathlib, shutil; [shutil.rmtree(p, ignore_errors=True) for p in [pathlib.Path('$(VENV)'), pathlib.Path('transform/dbt/target'), pathlib.Path('transform/dbt/logs'), pathlib.Path('transform/dbt/dbt_packages'), pathlib.Path('serving/rill/.rill'), pathlib.Path('serving/rill/tmp')]]; [p.unlink(missing_ok=True) for pattern in ['data/raw/*.csv','serving/export/*.parquet','warehouse/*.duckdb','warehouse/*.duckdb.wal'] for p in pathlib.Path('.').glob(pattern)]; pathlib.Path('data/raw/manifest.json').unlink(missing_ok=True); pathlib.Path('transform/dbt/.user.yml').unlink(missing_ok=True)"

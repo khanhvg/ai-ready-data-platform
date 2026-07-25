@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }} · AI-ready assessment</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='app.css') }}">
+  <script src="{{ url_for('static', path='app.js') }}" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">Local-only architect workbook</p>
+      <a class="brand" href="/engagements">AI-ready assessment</a>
+    </div>
+    <nav aria-label="Global">
+      <a href="/engagements">Engagements</a>
+      <a href="/catalog">Catalog</a>
+      <a href="/demo">Demo artifacts</a>
+      <a href="/archive/import">Import</a>
+    </nav>
+  </header>
+  {% if engagement_id is defined and engagement_id %}
+  <nav class="engagement-nav" aria-label="Engagement workflow">
+    <span><strong>{{ engagement_id }}</strong></span>
+    <a href="/engagements/{{ engagement_id }}/quick">Quick assessment</a>
+    <a href="/engagements/{{ engagement_id }}/review">Review</a>
+    <a href="/engagements/{{ engagement_id }}/deep-dives">Deep dives</a>
+    <a href="/engagements/{{ engagement_id }}/report">Report</a>
+    <a href="/engagements/{{ engagement_id }}/archive">Archive</a>
+  </nav>
+  {% endif %}
+  <main id="main" tabindex="-1">
+    {% block content %}{% endblock %}
+  </main>
+  <footer>
+    <p>Runs on the configured local interface. No cloud, telemetry, or pipeline control.</p>
+  </footer>
+</body>
+</html>

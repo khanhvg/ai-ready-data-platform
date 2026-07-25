@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="eyebrow">Bounded local import</p>
+<h1>{{ title }}</h1>
+{% if preflight %}
+<section class="panel">
+  <p class="status good">Preflight passed; no engagement folder has been created yet.</p>
+  <dl>
+    <dt>Engagement</dt><dd>{{ preflight.engagement_id }}</dd>
+    <dt>Framework</dt><dd>{{ preflight.framework_version }}</dd>
+    <dt>Entries</dt><dd>{{ preflight.entries | length }}</dd>
+    <dt>Digest</dt><dd>{{ preflight.digest }}</dd>
+  </dl>
+  <form method="post" action="/archive/import/confirm">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="import_token" value="{{ import_token }}">
+    <button type="submit">Import into configured root</button>
+  </form>
+</section>
+{% else %}
+<form class="panel" method="post" action="/archive/import" enctype="multipart/form-data">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label for="archive">Engagement ZIP archive</label>
+  <input id="archive" type="file" name="archive" accept=".zip,application/zip" required>
+  <button type="submit">Run non-mutating preflight</button>
+</form>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="eyebrow">Workshop planning only</p>
+<h1>Plan deep dives</h1>
+<section class="status warn" role="status">
+  <strong>Question bank not installed.</strong>
+  Selection records a planned workshop area only. Deep-dive execution and readiness recalculation remain unavailable until validated Phase 7 content is installed.
+</section>
+<form class="panel" method="post" action="/engagements/{{ engagement_id }}/deep-dives">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <input type="hidden" name="revision" value="{{ state.revision }}">
+  <fieldset>
+    <legend>Select capability areas</legend>
+    {% for domain in domains %}
+    <label class="check-option">
+      <input type="checkbox" name="capability_id" value="{{ domain.id }}"
+        {% if domain.id in selected %}checked{% endif %}>
+      <span><strong>{{ domain.id }}</strong> · {{ domain.name }}</span>
+    </label>
+    {% endfor %}
+  </fieldset>
+  <label for="planning-note">Workshop planning note</label>
+  <textarea id="planning-note" name="planning_note" maxlength="4096" rows="5">{{ selection.planning_note or "" }}</textarea>
+  <button type="submit">Save workshop plan</button>
+</form>
+{% endblock %}

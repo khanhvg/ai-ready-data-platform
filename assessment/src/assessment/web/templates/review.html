@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="page-header">
+  <div><p class="eyebrow">Generated truth + architect review</p><h1>Assessment review</h1></div>
+  <p class="status {% if result.maturity.coverage.complete %}good{% else %}warn{% endif %}">
+    Coverage {{ result.maturity.coverage.answered_total }}/{{ result.maturity.coverage.question_total }}
+  </p>
+</header>
+<section class="summary-grid">
+  <article class="metric"><span>Pre-gate</span><strong>{{ result.maturity.pre_gate_level }} · {{ result.maturity.pre_gate_label }}</strong></article>
+  <article class="metric"><span>Final readiness</span><strong>{{ result.gates.final_level }} · {{ result.gates.final_label }}</strong></article>
+  <article class="metric"><span>Presentation only</span><strong>{{ result.maturity.presentation_score }}/100</strong></article>
+  <article class="metric"><span>Least assured</span><strong>{{ result.confidence.least_assured_assessed_status }}</strong></article>
+</section>
+<section>
+  <h2>Capability maturity and confidence</h2>
+  <div class="table-region" tabindex="0" aria-label="Capability maturity table">
+  <table>
+    <thead><tr><th>Capability</th><th>Maturity</th><th>Coverage</th><th>Confidence</th><th>Anchor</th></tr></thead>
+    <tbody>
+    {% for item in result.maturity.capabilities %}
+      <tr>
+        <th>{{ item.capability_id }} · {{ item.name }}</th>
+        <td>{{ item.score }} · {{ item.label }}</td>
+        <td>{{ item.answered_count }}/{{ item.question_count }}</td>
+        <td>{{ result.confidence.capabilities[loop.index0].least_assured_assessed_status }}</td>
+        <td>{{ item.anchor }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+<section>
+  <h2>All readiness gate traces</h2>
+  <div class="card-list">
+  {% for trace in result.gates.traces %}
+    <article class="panel">
+      <div class="split"><h3>{{ trace.rule_id }}</h3>
+        <span class="status {% if trace.triggered %}warn{% else %}neutral{% endif %}">
+          {% if not trace.evaluated %}Not evaluated{% elif trace.triggered %}Triggered{% else %}Not triggered{% endif %}
+        </span>
+      </div>
+      <dl>
+        <dt>Operand</dt><dd>{{ trace.operand_id }} = {{ trace.operand_value }}</dd>
+        <dt>Rule</dt><dd>{{ trace.operator }} {{ trace.threshold }} · cap {{ trace.applied_cap }}</dd>
+        <dt>Provenance</dt><dd>{{ trace.operand_provenance | join(", ") }}</dd>
+      </dl>
+      <p>{{ trace.explanation }}</p>
+    </article>
+  {% endfor %}
+  </div>
+</section>
+<section>
+  <h2>Critical blockers</h2>
+  {% if result.blockers %}
+  <ul class="card-list">
+    {% for blocker in result.blockers %}
+    <li class="panel"><strong>{{ blocker.id }} · {{ blocker.title }}</strong><br>{{ blocker.impact }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="status good">No Critical blocker finding was generated for the current answers.</p>
+  {% endif %}
+</section>
+<section>
+  <h2>Blockers, findings, and recommendations</h2>
+  {% if result.findings %}
+  <div class="card-list">
+  {% for finding in result.findings %}
+    <article class="panel">
+      <p class="eyebrow">{{ finding.priority }} · {{ finding.id }}</p>
+      <h3>{{ finding.title }}</h3>
+      <p><strong>Gap:</strong> {{ finding.gap }}</p>
+      <p><strong>Impact:</strong> {{ finding.impact }}</p>
+      <p><strong>Recommendation:</strong> {{ finding.recommendation }}</p>
+      <p><strong>Architecture:</strong> {{ finding.architecture_reference }}</p>
+      <p><strong>Evidence action:</strong> {{ finding.evidence_validation_action }}</p>
+      <p class="status neutral">Demo illustration: {{ finding.demo_reference }} — not used for scoring</p>
+      <form method="post" action="/engagements/{{ engagement_id }}/review">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="revision" value="{{ state.revision }}">
+        <input type="hidden" name="finding_id" value="{{ finding.id }}">
+        <fieldset>
+          <legend>Architect review record</legend>
+          {% for value in ["accept", "defer", "edit-note"] %}
+          <label><input type="radio" name="review_state" value="{{ value }}" required
+            {% if finding.review.state == value %}checked{% endif %}> {{ value }}</label>
+          {% endfor %}
+        </fieldset>
+        <label for="review-note-{{ finding.id }}">Architect edit note</label>
+        <textarea id="review-note-{{ finding.id }}" name="edit_note" maxlength="4096">{{ finding.review.edit_note }}</textarea>
+        <button type="submit">Save review record</button>
+      </form>
+    </article>
+  {% endfor %}
+  </div>
+  {% else %}
+  <p class="status good">No gap finding was generated for the current answers.</p>
+  {% endif %}
+</section>
+{% endblock %}

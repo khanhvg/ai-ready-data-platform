@@ -23,6 +23,7 @@ from assessment.domain.models import (
     AnswerEvidenceDocument,
     Engagement,
     Report,
+    validate_identifier,
     validate_relative_posix_path,
 )
 from assessment.domain.versions import (
@@ -128,6 +129,16 @@ def _canonical_entry(key: str, content: bytes) -> bytes:
             raise ArchiveValidationError(f"{key}: canonical image exceeds per-file limit")
         return normalized
     raise ArchiveValidationError(f"{key}: unsupported portable file format")
+
+
+def canonicalize_evidence_attachment(key: str, content: bytes) -> bytes:
+    """Validate and canonicalize one admitted v1 evidence attachment."""
+    normalized = validate_relative_posix_path(key)
+    if not normalized.startswith("evidence/files/"):
+        raise ArchiveValidationError("evidence must be stored below evidence/files/")
+    if len(content) > MAX_FILE_BYTES:
+        raise ArchiveValidationError(f"{normalized}: per-file limit exceeded")
+    return _canonical_entry(normalized, content)
 
 
 def _excluded_key(key: str) -> bool:
@@ -325,6 +336,49 @@ def _validate_portable_documents(entries: Mapping[str, bytes]) -> None:
                 AnswerEvidenceDocument.model_validate(document)
             elif key == "reports/report.json":
                 Report.model_validate(document)
+            elif key == "web/state.json":
+                revision = document.get("revision")
+                status = document.get("last_saved_status")
+                if (
+                    isinstance(revision, bool)
+                    or not isinstance(revision, int)
+                    or revision < 0
+                    or not isinstance(status, str)
+                    or not status
+                    or len(status) > 256
+                ):
+                    raise ValueError("invalid web revision state")
+            elif key == "findings/review.json":
+                reviews = document.get("reviews")
+                if not isinstance(reviews, dict):
+                    raise ValueError("reviews must be an object")
+                for finding_id, record in reviews.items():
+                    validate_identifier(finding_id)
+                    if (
+                        not isinstance(record, dict)
+                        or record.get("state") not in {"accept", "defer", "edit-note"}
+                        or not isinstance(record.get("edit_note"), str)
+                        or len(record["edit_note"]) > 4096
+                    ):
+                        raise ValueError("invalid finding review record")
+            elif key == "selections/deep-dives.json":
+                if (
+                    not isinstance(document.get("engagement_id"), str)
+                    or not isinstance(document.get("framework_version"), str)
+                    or document.get("content_status") != "not-installed"
+                    or not isinstance(document.get("planning_note", ""), str)
+                    or len(document.get("planning_note", "")) > 4096
+                    or not isinstance(document.get("selections"), list)
+                ):
+                    raise ValueError("invalid deep-dive selection document")
+                for selection in document["selections"]:
+                    if (
+                        not isinstance(selection, dict)
+                        or not isinstance(selection.get("capability_id"), str)
+                        or selection.get("status") != "planned-content-pending"
+                    ):
+                        raise ValueError("invalid deep-dive selection record")
+                    validate_identifier(selection["capability_id"])
         except ValueError as error:
             raise ArchiveValidationError(f"{key}: document violates its v1 contract") from error
 
@@ -364,8 +418,8 @@ def _zip_info(key: str) -> zipfile.ZipInfo:
     return info
 
 
-def export_engagement(root: Path, archive_path: Path) -> dict[str, Any]:
-    """Export canonical state as a byte-stable ZIP_STORED archive."""
+def build_engagement_archive(root: Path) -> tuple[bytes, dict[str, Any]]:
+    """Build canonical state as a byte-stable ZIP_STORED archive in memory."""
     entries = _collect_export_entries(root)
     engagement = _validate_export_source(entries)
     if len(entries) > MAX_ARCHIVE_ENTRIES:
@@ -377,18 +431,29 @@ def export_engagement(root: Path, archive_path: Path) -> dict[str, Any]:
     payloads = {**entries, MANIFEST_NAME: manifest_bytes}
     if sum(len(content) for content in payloads.values()) > MAX_TOTAL_BYTES:
         raise ArchiveValidationError("archive expanded-size limit exceeded")
+    raw = io.BytesIO()
+    with zipfile.ZipFile(
+        raw,
+        "w",
+        compression=zipfile.ZIP_STORED,
+        allowZip64=False,
+    ) as handle:
+        for key, content in sorted(payloads.items()):
+            handle.writestr(_zip_info(key), content)
+    archive_bytes = raw.getvalue()
+    if len(archive_bytes) > MAX_ARCHIVE_BYTES:
+        raise ArchiveValidationError("archive file-size limit exceeded")
+    return archive_bytes, manifest
+
+
+def export_engagement(root: Path, archive_path: Path) -> dict[str, Any]:
+    """Export canonical state as a byte-stable ZIP_STORED archive."""
+    archive_bytes, manifest = build_engagement_archive(root)
     archive_path.parent.mkdir(parents=True, exist_ok=True)
     temporary = archive_path.with_name(f".{archive_path.name}.tmp-{uuid.uuid4().hex}")
     try:
         with temporary.open("xb") as raw:
-            with zipfile.ZipFile(
-                raw,
-                "w",
-                compression=zipfile.ZIP_STORED,
-                allowZip64=False,
-            ) as handle:
-                for key, content in sorted(payloads.items()):
-                    handle.writestr(_zip_info(key), content)
+            raw.write(archive_bytes)
             raw.flush()
             os.fsync(raw.fileno())
         os.chmod(temporary, 0o600)
@@ -658,6 +723,12 @@ def _preflight(
         if getattr(engagement, field) != manifest.get(field):
             raise ArchiveValidationError(f"manifest {field} differs from engagement")
     return manifest, entries
+
+
+def preflight_engagement_archive(archive_path: Path) -> dict[str, Any]:
+    """Validate an archive without creating or mutating an engagement folder."""
+    manifest, _ = _preflight(archive_path)
+    return manifest
 
 
 def _reject_destination_path(destination: Path) -> None:
