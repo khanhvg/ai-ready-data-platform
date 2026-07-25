@@ -127,6 +127,8 @@ def _guard_context(
     *,
     remote_requests: list[str],
     console_errors: list[str],
+    page_errors: list[str],
+    request_failures: list[dict[str, str]],
 ) -> None:
     def route_request(route: Any) -> None:
         parsed = urlparse(route.request.url)
@@ -141,7 +143,64 @@ def _guard_context(
         if message.type == "error":
             console_errors.append(message.text)
 
+    def record_page_error(error: Exception) -> None:
+        page_errors.append(str(error))
+
+    def record_request_failure(request: Any) -> None:
+        request_failures.append(
+            {
+                "method": str(request.method),
+                "url": str(request.url),
+                "resource_type": str(request.resource_type),
+                "failure": str(request.failure or "unknown failure"),
+            }
+        )
+
     context.on("console", record_console)
+    context.on("page", lambda page: page.on("pageerror", record_page_error))
+    context.on("requestfailed", record_request_failure)
+
+
+def _partition_request_failures(
+    failures: list[dict[str, str]],
+) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
+    expected: list[dict[str, str]] = []
+    unexpected: list[dict[str, str]] = []
+    for failure in failures:
+        path = urlparse(failure["url"]).path
+        is_report_download = (
+            failure["method"] == "GET"
+            and path.endswith(("/report/report.html", "/report/report.json"))
+        )
+        is_archive_download = (
+            failure["method"] == "POST" and path.endswith("/archive")
+        )
+        is_interrupted_stylesheet = (
+            failure["method"] == "GET"
+            and failure["resource_type"] == "stylesheet"
+            and path == "/static/app.css"
+        )
+        if (
+            failure["failure"] == "net::ERR_ABORTED"
+            and (
+                is_report_download
+                or is_archive_download
+                or is_interrupted_stylesheet
+            )
+        ):
+            expected.append(
+                {
+                    **failure,
+                    "reason": (
+                        "document navigation interrupted the stylesheet request"
+                        if is_interrupted_stylesheet
+                        else "attachment download intentionally aborted navigation"
+                    ),
+                }
+            )
+        else:
+            unexpected.append(failure)
+    return expected, unexpected
 
 
 def _assert_url_suffix(page: Page, suffix: str) -> None:
@@ -267,6 +326,42 @@ def _exercise_accessibility(
     )
 
 
+def _assert_report_reflow(
+    page: Page,
+    transcript: list[dict[str, Any]],
+) -> None:
+    digests = page.locator(".artifact-digest").all_inner_texts()
+    if len(digests) != 2 or any(
+        len(digest) != 64
+        or any(character not in "0123456789abcdef" for character in digest)
+        for digest in digests
+    ):
+        raise AssertionError(f"report page does not expose two full SHA-256 values: {digests}")
+    measurements: dict[str, dict[str, int]] = {}
+    page.set_viewport_size({"width": 375, "height": 812})
+    measurements["375px"] = page.evaluate(
+        "({scroll: document.documentElement.scrollWidth, "
+        "client: document.documentElement.clientWidth})"
+    )
+    page.set_viewport_size({"width": 640, "height": 900})
+    page.evaluate("document.body.style.zoom = '200%'")
+    measurements["200%-320px-equivalent"] = page.evaluate(
+        "({scroll: document.documentElement.scrollWidth, "
+        "client: document.documentElement.clientWidth})"
+    )
+    page.evaluate("document.body.style.zoom = ''")
+    page.set_viewport_size({"width": 1280, "height": 900})
+    if any(item["scroll"] > item["client"] for item in measurements.values()):
+        raise AssertionError(f"report page overflowed horizontally: {measurements}")
+    transcript.append(
+        {
+            "step": "report-reflow",
+            "measurements": measurements,
+            "full_hashes_visible": True,
+        }
+    )
+
+
 def _save_answer(
     page: Page,
     base_url: str,
@@ -274,6 +369,8 @@ def _save_answer(
     question: dict[str, Any],
     *,
     note: str,
+    rating: str = "1",
+    evidence_status: str = "Self-reported",
 ) -> None:
     page.goto(
         f"{base_url}/engagements/{engagement_id}/quick?domain={question['domain_id']}"
@@ -281,8 +378,8 @@ def _save_answer(
     form = page.locator(
         f'form:has(input[name="question_id"][value="{question["id"]}"])'
     )
-    form.locator('input[name="rating"][value="1"]').check()
-    form.get_by_label("Evidence status").select_option("Self-reported")
+    form.locator(f'input[name="rating"][value="{rating}"]').check()
+    form.get_by_label("Evidence status").select_option(evidence_status)
     form.get_by_label("Architect note").fill(note)
     form.get_by_role("button", name=f"Save {question['id']}").click()
     _assert_url_suffix(page, f"/quick?domain={question['domain_id']}")
@@ -348,6 +445,7 @@ def _review_select_report_export(
     page: Page,
     base_url: str,
     engagement_id: str,
+    framework: FrameworkBundle,
     evidence_root: Path,
     transcript: list[dict[str, Any]],
 ) -> tuple[Path, Path, Path]:
@@ -379,6 +477,32 @@ def _review_select_report_export(
     page.get_by_role("button", name="Generate report").click()
     _assert_url_suffix(page, f"/engagements/{engagement_id}/report")
     page.get_by_text("Report generated", exact=False).wait_for()
+    _assert_report_reflow(page, transcript)
+
+    _save_answer(
+        page,
+        base_url,
+        engagement_id,
+        framework.questions[0],
+        note="Changed after the initial report was generated.",
+        rating="4",
+        evidence_status="Evidenced",
+    )
+    page.goto(f"{base_url}/engagements/{engagement_id}/report")
+    page.get_by_text("Report is stale", exact=False).wait_for()
+    if page.get_by_role("link", name="Download canonical JSON").count():
+        raise AssertionError("stale report still exposes a download link")
+    stale_download = page.request.get(
+        f"{base_url}/engagements/{engagement_id}/report/report.json"
+    )
+    if stale_download.status != 409:
+        raise AssertionError(
+            f"stale report download returned {stale_download.status}, expected 409"
+        )
+    page.get_by_role("button", name="Regenerate report").click()
+    _assert_url_suffix(page, f"/engagements/{engagement_id}/report")
+    page.get_by_text("Report generated", exact=False).wait_for()
+
     with page.expect_download() as html_download:
         page.get_by_role("link", name="Download standalone HTML").click()
     html_path = evidence_root / "report.html"
@@ -397,6 +521,8 @@ def _review_select_report_export(
         {
             "step": "review-select-report-export",
             "report_sections": len(json.loads(json_path.read_bytes())["sections"]),
+            "stale_after_mutation": True,
+            "current_after_regeneration": True,
         }
     )
     return html_path, json_path, archive_path
@@ -481,6 +607,8 @@ def run_browser_journey(evidence_root: Path) -> dict[str, Any]:
     transcript: list[dict[str, Any]] = []
     remote_requests: list[str] = []
     console_errors: list[str] = []
+    page_errors: list[str] = []
+    request_failures: list[dict[str, str]] = []
     server_logs: list[str] = []
     framework = load_framework("1.0.0")
     engagement_id = "synthetic-architect-001"
@@ -495,6 +623,8 @@ def run_browser_journey(evidence_root: Path) -> dict[str, Any]:
                     js_context,
                     remote_requests=remote_requests,
                     console_errors=console_errors,
+                    page_errors=page_errors,
+                    request_failures=request_failures,
                 )
                 js_page = js_context.new_page()
                 _create_engagement(js_page, source_server.base_url, engagement_id)
@@ -521,6 +651,8 @@ def run_browser_journey(evidence_root: Path) -> dict[str, Any]:
                     plain_context,
                     remote_requests=remote_requests,
                     console_errors=console_errors,
+                    page_errors=page_errors,
+                    request_failures=request_failures,
                 )
                 page = plain_context.new_page()
                 _complete_plain_form_assessment(
@@ -535,6 +667,7 @@ def run_browser_journey(evidence_root: Path) -> dict[str, Any]:
                     page,
                     source_server.base_url,
                     engagement_id,
+                    framework,
                     evidence_root,
                     transcript,
                 )
@@ -569,6 +702,15 @@ def run_browser_journey(evidence_root: Path) -> dict[str, Any]:
         raise AssertionError(f"browser attempted remote requests: {remote_requests}")
     if console_errors:
         raise AssertionError(f"browser console errors: {console_errors}")
+    if page_errors:
+        raise AssertionError(f"browser page errors: {page_errors}")
+    expected_request_failures, unexpected_request_failures = (
+        _partition_request_failures(request_failures)
+    )
+    if unexpected_request_failures:
+        raise AssertionError(
+            f"unexpected browser request failures: {unexpected_request_failures}"
+        )
     server_logs_clean = all(
         "Traceback" not in log and "ERROR:" not in log for log in server_logs
     )
@@ -591,6 +733,9 @@ def run_browser_journey(evidence_root: Path) -> dict[str, Any]:
         "report_sections": 12,
         "remote_requests": remote_requests,
         "console_errors": console_errors,
+        "page_errors": page_errors,
+        "expected_request_failures": expected_request_failures,
+        "unexpected_request_failures": unexpected_request_failures,
         "digests": digests,
         "transcript": transcript,
         "server_logs_clean": server_logs_clean,

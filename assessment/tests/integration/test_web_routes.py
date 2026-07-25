@@ -320,6 +320,49 @@ def test_report_output_is_contained_and_manifest_verified(tmp_path: Path) -> Non
         services.existing_report("report-local")
 
 
+def test_report_becomes_stale_after_source_mutation_and_current_after_regeneration(
+    tmp_path: Path,
+) -> None:
+    services = populated_services(tmp_path)
+    initial = services.generate_report("report-local")
+    assert services.existing_report("report-local") is not None
+
+    revision = int(services.state("report-local")["revision"])
+    services.save_answer(
+        "report-local",
+        expected_revision=revision,
+        answer=AnswerForm(
+            question_id="Q-STR-01",
+            rating=4,
+            evidence_status="Evidenced",
+            note="Changed after the initial report was generated.",
+        ),
+    )
+
+    assert services.existing_report("report-local") is None
+    with TestClient(
+        create_app(config=services.config, services=services),
+        base_url="http://127.0.0.1",
+    ) as client:
+        stale_page = client.get("/engagements/report-local/report")
+        stale_download = client.get(
+            "/engagements/report-local/report/report.json",
+        )
+    assert stale_page.status_code == 200
+    assert "Report is stale" in stale_page.text
+    assert "Regeneration is required before download." in stale_page.text
+    assert "Download standalone HTML" not in stale_page.text
+    assert "Download canonical JSON" not in stale_page.text
+    assert stale_download.status_code == 409
+    assert "report is stale; regenerate before download" in stale_download.text
+
+    regenerated = services.generate_report("report-local")
+    current = services.existing_report("report-local")
+    assert current is not None
+    assert current.json_bytes == regenerated.json_bytes
+    assert current.json_bytes != initial.json_bytes
+
+
 def test_revision_write_rolls_back_all_payloads_on_failure(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

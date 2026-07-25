@@ -90,7 +90,9 @@ recommendation, and reporting services. The engine evaluates every rule in the p
 bundle without short-circuiting, retains operand provenance for triggered and untriggered rules,
 and selects the most restrictive cap deterministically. Canonical JSON and HTML bytes derive
 from the pinned framework plus a coherent engagement snapshot; generated output files are
-excluded from the source-state digest.
+excluded from the source-state digest. The web publication boundary recomputes that same
+authoritative digest before display or download, marks older publication bytes stale after any
+source-state change, and requires regeneration before serving them again.
 
 Phase 4 adds a dependency-injected FastAPI/Jinja2 orchestration layer over those services.
 Routes do not contain scoring, gate, question, or catalog rules. The server defaults to literal

@@ -14,7 +14,7 @@ from assessment.domain.errors import ConcurrentWriteError
 from assessment.domain.models import AnswerEvidenceDocument, Engagement
 from assessment.engine.evaluator import AssessmentResult, evaluate_assessment
 from assessment.frameworks import FrameworkBundle, load_framework
-from assessment.reporting.generator import generate_report
+from assessment.reporting.generator import generate_report, source_state_digest
 from assessment.reporting.publication import publish_report, read_published_report
 from assessment.reporting.renderer import render_report
 from assessment.storage.archive import (
@@ -42,6 +42,12 @@ class ReportArtifacts:
     json_bytes: bytes
     html_bytes: bytes
     digests: dict[str, str]
+
+
+@dataclass(frozen=True)
+class ReportStatus:
+    artifact: ReportArtifacts | None
+    stale: bool
 
 
 class WebServices:
@@ -407,25 +413,43 @@ class WebServices:
             digests=digests,
         )
 
-    def existing_report(self, engagement_id: str) -> ReportArtifacts | None:
+    def report_status(self, engagement_id: str) -> ReportStatus:
         validate_identifier(engagement_id)
         output = self.report_root / engagement_id
         if not output.exists():
-            return None
+            return ReportStatus(artifact=None, stale=False)
         output_descriptor = _ensure_absolute_directory(output)
         try:
             published = read_published_report(output_descriptor)
         finally:
             os.close(output_descriptor)
         if published is None:
-            return None
+            return ReportStatus(artifact=None, stale=False)
         report, manifest, json_bytes, html_bytes = published
-        return ReportArtifacts(
-            report=report,
-            json_bytes=json_bytes,
-            html_bytes=html_bytes,
-            digests=dict(manifest["artifacts"]),
+        engagement, quick, reviews, source_snapshot = self._coherent_assessment(
+            engagement_id
         )
+        current_digest = source_state_digest(
+            engagement,
+            quick,
+            reviews,
+            source_snapshot,
+        )
+        if manifest.get("source_state_digest") != current_digest:
+            return ReportStatus(artifact=None, stale=True)
+        return ReportStatus(
+            artifact=ReportArtifacts(
+                report=report,
+                json_bytes=json_bytes,
+                html_bytes=html_bytes,
+                digests=dict(manifest["artifacts"]),
+            ),
+            stale=False,
+        )
+
+    def existing_report(self, engagement_id: str) -> ReportArtifacts | None:
+        """Return only a complete report bound to the current source state."""
+        return self.report_status(engagement_id).artifact
 
     def export_archive(self, engagement_id: str) -> tuple[bytes, dict[str, Any]]:
         root = self.store.open(engagement_id)

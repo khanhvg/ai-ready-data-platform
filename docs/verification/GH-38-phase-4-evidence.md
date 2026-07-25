@@ -42,8 +42,12 @@ loopback-only sandbox and produced:
   and byte-identical imported report JSON;
 - attachment-only local evidence, read-only unavailable catalog/demo views, and security-header
   checks;
-- no remote browser requests, no browser console errors, clean server logs, and clean browser
-  and server shutdown.
+- current → source mutation → stale/no-download → regeneration → current report publication;
+- full visible report digests without horizontal overflow at 375px and 200%/320px-equivalent
+  reflow;
+- no remote browser requests, browser console or page errors, or unexpected request failures,
+  with expected attachment/navigation aborts recorded separately; and
+- clean server logs plus clean browser and server shutdown.
 
 Ignored evidence lives beneath `assessment/.generated/runtime-smoke/`: standalone HTML/JSON,
 archive, imported report JSON, two screenshots, transcript, digest manifest, and semantic result.

@@ -68,3 +68,13 @@ those facts exist.
 Catalog content, diagrams, AWS mappings, pipeline evidence, deep-dive execution,
 object storage, cloud behavior, deployment, and final release work remain out
 of scope in Phases 5–8. The web server is local tooling, not a hosted service.
+
+## Independent-verification fix
+
+The first detached Phase 4 verification found report hash overflow, stale report
+publication after source changes, ambiguous resource-package discovery, and
+missing browser failure-event coverage. The bounded repair reuses the canonical
+source-state digest at publication reads, withholds stale downloads until
+regeneration, preserves full wrapping SHA-256 values at narrow and 200% reflow,
+makes template/static package discovery explicit, and records page errors plus
+expected and unexpected request failures in the real Chromium lifecycle.

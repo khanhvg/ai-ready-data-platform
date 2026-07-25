@@ -78,6 +78,8 @@ table { width: 100%; border-collapse: collapse; background: white; }
 th, td { padding: .7rem; border: 1px solid var(--line); text-align: left; vertical-align: top; }
 dt { font-weight: 750; }
 dd { margin: 0 0 .7rem; overflow-wrap: anywhere; }
+.artifact-list li { min-width: 0; }
+.artifact-digest { overflow-wrap: anywhere; word-break: break-word; }
 
 @media (max-width: 760px) {
   .site-header, .page-header, .split { display: grid; }

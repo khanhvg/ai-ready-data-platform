@@ -16,4 +16,6 @@ def test_complete_solution_architect_journey(tmp_path: Path) -> None:
     assert result["report_sections"] == 12
     assert result["remote_requests"] == []
     assert result["console_errors"] == []
+    assert result["page_errors"] == []
+    assert result["unexpected_request_failures"] == []
     assert result["server_logs_clean"] is True

@@ -451,7 +451,7 @@ async def report_view(request: Request, engagement_id: str) -> HTMLResponse:
     try:
         web = services(request)
         web.store.open(engagement_id)
-        artifact = web.existing_report(engagement_id)
+        report_status = web.report_status(engagement_id)
     except (AssessmentError, ValueError, FileNotFoundError) as error:
         return _error(request, str(error), status_code=404)
     return templates.TemplateResponse(
@@ -461,7 +461,7 @@ async def report_view(request: Request, engagement_id: str) -> HTMLResponse:
             request,
             title="Assessment report",
             engagement_id=engagement_id,
-            artifact=artifact,
+            report_status=report_status,
         ),
     )
 
@@ -489,7 +489,15 @@ async def download_report(
 ) -> Response:
     if name not in {"report.json", "report.html"}:
         return _error(request, "report artifact is unavailable", status_code=404)
-    artifact = services(request).existing_report(engagement_id)
+    report_status = services(request).report_status(engagement_id)
+    if report_status.stale:
+        return _error(
+            request,
+            "report is stale; regenerate before download",
+            status_code=409,
+            engagement_id=engagement_id,
+        )
+    artifact = report_status.artifact
     if artifact is None:
         return _error(request, "generate the report first", status_code=404)
     content = artifact.json_bytes if name.endswith(".json") else artifact.html_bytes

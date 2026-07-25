@@ -2,13 +2,14 @@
 {% block content %}
 <p class="eyebrow">Canonical deterministic output</p>
 <h1>Assessment report</h1>
-{% if artifact %}
+{% if report_status.artifact %}
+{% set artifact = report_status.artifact %}
 <section class="panel">
   <p class="status good">Report generated</p>
   <h2>Artifacts</h2>
-  <ul>
-    <li><a href="/engagements/{{ engagement_id }}/report/report.html">Download standalone HTML</a> · SHA-256 {{ artifact.digests["report.html"] }}</li>
-    <li><a href="/engagements/{{ engagement_id }}/report/report.json">Download canonical JSON</a> · SHA-256 {{ artifact.digests["report.json"] }}</li>
+  <ul class="artifact-list">
+    <li><a href="/engagements/{{ engagement_id }}/report/report.html">Download standalone HTML</a> · SHA-256 <code class="artifact-digest">{{ artifact.digests["report.html"] }}</code></li>
+    <li><a href="/engagements/{{ engagement_id }}/report/report.json">Download canonical JSON</a> · SHA-256 <code class="artifact-digest">{{ artifact.digests["report.json"] }}</code></li>
   </ul>
   <h2>Canonical sections</h2>
   <ol>
@@ -17,11 +18,13 @@
   {% endfor %}
   </ol>
 </section>
+{% elif report_status.stale %}
+<p class="status warn"><strong>Report is stale.</strong> Source engagement state changed after generation. Regeneration is required before download.</p>
 {% else %}
 <p class="status neutral">No report has been generated for this runtime root.</p>
 {% endif %}
 <form method="post" action="/engagements/{{ engagement_id }}/report">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <button type="submit">{% if artifact %}Regenerate{% else %}Generate{% endif %} report</button>
+  <button type="submit">{% if report_status.artifact or report_status.stale %}Regenerate{% else %}Generate{% endif %} report</button>
 </form>
 {% endblock %}

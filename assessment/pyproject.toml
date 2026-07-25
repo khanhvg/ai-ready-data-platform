@@ -37,6 +37,8 @@ packages = [
   "assessment.reporting",
   "assessment.storage",
   "assessment.web",
+  "assessment.web.static",
+  "assessment.web.templates",
 ]
 package-dir = {assessment = "src/assessment"}
 
