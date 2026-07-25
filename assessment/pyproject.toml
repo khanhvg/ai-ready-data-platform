@@ -4,16 +4,20 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-ready-assessment-prototype"
-version = "0.3.0"
-description = "Offline deterministic AI-ready assessment engine, reports, and portable storage"
+version = "0.4.0"
+description = "Local-first AI-ready assessment workflow, deterministic reports, and portability"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+  "fastapi==0.140.0",
+  "itsdangerous==2.2.0",
   "Jinja2==3.1.6",
   "jsonschema==4.24.0",
   "Pillow==11.3.0",
   "pydantic==2.11.7",
+  "python-multipart==0.0.32",
   "PyYAML==6.0.2",
+  "uvicorn==0.51.0",
 ]
 
 [project.scripts]
@@ -32,6 +36,7 @@ packages = [
   "assessment.public_schemas",
   "assessment.reporting",
   "assessment.storage",
+  "assessment.web",
 ]
 package-dir = {assessment = "src/assessment"}
 
@@ -42,11 +47,17 @@ assessment = [
   "framework_assets/1.0.0/*.yaml",
   "framework_assets/1.0.0/*.j2",
   "framework_assets/1.0.0/*.css",
+  "web/templates/*.html",
+  "web/static/*.css",
+  "web/static/*.js",
 ]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--strict-config --strict-markers"
+markers = [
+  "e2e: real loopback Chromium lifecycle tests run by the dedicated target",
+]
 
 [tool.ruff]
 target-version = "py312"

@@ -303,6 +303,25 @@ def _read_relative_at(root_descriptor: int, key: str) -> bytes:
         os.close(parent_descriptor)
 
 
+def _unlink_relative_at(root_descriptor: int, key: str) -> None:
+    normalized = validate_relative_posix_path(key)
+    parts = normalized.split("/")
+    parent_descriptor = os.dup(root_descriptor)
+    try:
+        for part in parts[:-1]:
+            child_descriptor = _open_child_directory(
+                parent_descriptor,
+                part,
+                create=False,
+            )
+            os.close(parent_descriptor)
+            parent_descriptor = child_descriptor
+        os.unlink(parts[-1], dir_fd=parent_descriptor)
+        _fsync_directory_descriptor(parent_descriptor)
+    finally:
+        os.close(parent_descriptor)
+
+
 def _recover_temporary_files_at(directory_descriptor: int) -> None:
     with os.scandir(directory_descriptor) as entries:
         for entry in sorted(entries, key=lambda item: item.name):
@@ -359,8 +378,18 @@ class LocalEngagementStore:
         validate_identifier(engagement_id)
         return self.root / engagement_id
 
-    def create(self, engagement: Mapping[str, Any]) -> Path:
+    def create(
+        self,
+        engagement: Mapping[str, Any],
+        *,
+        initial_payloads: Mapping[str, bytes] | None = None,
+    ) -> Path:
         validated = Engagement.model_validate(dict(engagement))
+        payloads = dict(initial_payloads or {})
+        for key in payloads:
+            validate_relative_posix_path(key)
+            if key in {"engagement.json", "metadata/checksums.json"}:
+                raise InvalidPathError(f"initial payload is store-owned: {key}")
         engagement_root = self._engagement_root(validated.engagement_id)
         stage_name = f".{validated.engagement_id}.create-{uuid.uuid4().hex}"
         root_descriptor = _open_absolute_directory(self.root)
@@ -373,6 +402,8 @@ class LocalEngagementStore:
                     "engagement.json",
                     canonical_json(validated.model_dump()),
                 )
+                for key, content in payloads.items():
+                    atomic_write_at(stage_descriptor, key, content)
                 self._write_checksums_at(stage_descriptor)
                 _fsync_directory_descriptor(stage_descriptor)
                 try:
@@ -435,6 +466,14 @@ class LocalEngagementStore:
         finally:
             os.close(engagement_descriptor)
 
+    def read_payload(self, engagement_id: str, key: str) -> bytes:
+        """Read one payload without following any path component symlink."""
+        engagement_descriptor = self._open_engagement_descriptor(engagement_id)
+        try:
+            return _read_relative_at(engagement_descriptor, key)
+        finally:
+            os.close(engagement_descriptor)
+
     def read_documents_and_snapshot(
         self,
         engagement_id: str,
@@ -467,6 +506,48 @@ class LocalEngagementStore:
         with self.lock(engagement_id) as engagement_descriptor:
             atomic_write_at(engagement_descriptor, key, canonical_json(dict(document)))
             self._write_checksums_at(engagement_descriptor)
+
+    def write_payloads_if_revision(
+        self,
+        engagement_id: str,
+        *,
+        revision_key: str,
+        expected_revision: int,
+        payloads: Mapping[str, bytes],
+    ) -> None:
+        """Compare a revision and write related web payloads under one writer lock."""
+        validate_relative_posix_path(revision_key)
+        if not payloads:
+            raise ValueError("at least one payload is required")
+        for key in payloads:
+            validate_relative_posix_path(key)
+        with self.lock(engagement_id) as engagement_descriptor:
+            state = json.loads(_read_relative_at(engagement_descriptor, revision_key))
+            if not isinstance(state, dict) or state.get("revision") != expected_revision:
+                raise ConcurrentWriteError(
+                    f"{engagement_id}: expected revision {expected_revision} is stale"
+                )
+            previous: dict[str, bytes | None] = {}
+            for key in payloads:
+                try:
+                    previous[key] = _read_relative_at(engagement_descriptor, key)
+                except FileNotFoundError:
+                    previous[key] = None
+            try:
+                for key, content in payloads.items():
+                    atomic_write_at(engagement_descriptor, key, content)
+                self._write_checksums_at(engagement_descriptor)
+            except Exception:
+                for key, previous_content in previous.items():
+                    if previous_content is None:
+                        try:
+                            _unlink_relative_at(engagement_descriptor, key)
+                        except FileNotFoundError:
+                            pass
+                    else:
+                        atomic_write_at(engagement_descriptor, key, previous_content)
+                self._write_checksums_at(engagement_descriptor)
+                raise
 
     def add_evidence(self, engagement_id: str, key: str, content: bytes) -> None:
         normalized = validate_relative_posix_path(key)

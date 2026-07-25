@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="eyebrow">Read-only reference surface</p>
+<h1>Catalog references</h1>
+<p class="status warn">Framework references are validated. Detailed Phase 5 capability, architecture diagrams, and technology mapping content is not installed.</p>
+{% if architectures %}
+<ul class="card-list">
+{% for item in architectures %}
+  <li class="panel"><strong>{{ item.id }}</strong> · {{ item.title }}<br><span class="tag">details not installed</span></li>
+{% endfor %}
+</ul>
+{% else %}
+<p class="status neutral">No validated catalog references are available.</p>
+{% endif %}
+{% endblock %}

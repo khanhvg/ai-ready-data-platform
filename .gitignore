@@ -123,6 +123,9 @@ openmetadata-docker/
 /assessment/.pytest_cache/
 /assessment/.mypy_cache/
 /assessment/.ruff_cache/
+/assessment/.browser/
+/assessment/.runtime/
+/assessment/test-results/
 /assessment/build/
 /assessment/dist/
 /assessment/*.egg-info/

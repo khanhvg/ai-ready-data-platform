@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">Resume or begin</p>
+  <h1>Local engagements</h1>
+  <p>Each engagement is an authoritative portable folder beneath the configured root.</p>
+</section>
+<div class="layout-two">
+  <section class="panel">
+    <h2>Create engagement</h2>
+    <form method="post" action="/engagements">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <label for="engagement-id">Stable engagement ID</label>
+      <p id="engagement-id-help" class="help">Letters, numbers, dots, underscores, and hyphens; up to 128 characters.</p>
+      <input id="engagement-id" name="engagement_id" required maxlength="128"
+             pattern="[A-Za-z0-9][A-Za-z0-9._\-]{0,127}" aria-describedby="engagement-id-help">
+      <button type="submit">Create engagement</button>
+    </form>
+  </section>
+  <section class="panel">
+    <h2>Existing engagements</h2>
+    {% if engagement_ids %}
+    <ul class="card-list">
+      {% for item in engagement_ids %}
+      <li><a href="/engagements/{{ item }}/quick">{{ item }}</a></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="status neutral">No engagement folders are available.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

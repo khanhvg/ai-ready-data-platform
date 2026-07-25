@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="eyebrow">Portable deterministic ZIP</p>
+<h1>Export engagement</h1>
+<p>Export preflights the complete folder, canonicalizes admitted evidence, and downloads an attachment. It never uploads to cloud storage.</p>
+<form method="post" action="/engagements/{{ engagement_id }}/archive">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button type="submit">Download engagement archive</button>
+</form>
+{% endblock %}

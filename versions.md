@@ -18,24 +18,31 @@ throwaway venv. This replaces the plan's *candidate* matrix with the actually-te
 | Lakekeeper (Iceberg REST catalog) | `v0.13.1` (`quay.io/lakekeeper/catalog`) | `lake` profile only — required for DuckDB Iceberg **writes** (raw S3 path insufficient); pinned instead of `latest-main` |
 | OpenMetadata | `1.6.5` (`docker.getcollate.io/openmetadata/server`) | `governance` profile only. `openmetadata-ingestion[iceberg,dbt]==1.6.5.0` ingests **both** the physical Iceberg tables (via its Iceberg RestCatalog connector, pyiceberg 0.5.1) and the logical dbt artifacts (`governance/openmetadata/`) — see the Phase 6 spike below. No native DuckDB connector, so the dbt-sourced `retail_duckdb` service is bootstrapped from dbt's own `catalog.json`, not a live crawl. |
 
-## Issue #38 Phase 1–3 assessment package
+## Issue #38 Phase 1–4 assessment package
 
 The assessment uses its own `.assessment-venv` and hash-locked dependency files. Verified on
 macOS arm64 with Python 3.12.3:
 
 | Component | Version |
 |---|---:|
-| Package | `0.3.0` |
+| Package | `0.4.0` |
 | Prototype framework/schema | `0.1.0-prototype` |
 | Public contracts/archive format | `1.0.0` |
 | pip | 25.1.1 |
 | pip-tools lock compiler | 7.5.0 |
 | Jinja2 | 3.1.6 |
+| FastAPI / Starlette | 0.140.0 / 1.3.1 |
+| Uvicorn | 0.51.0 |
+| ItsDangerous | 2.2.0 |
+| python-multipart | 0.0.32 |
 | PyYAML | 6.0.2 |
 | Pydantic | 2.11.7 |
 | JSON Schema | jsonschema 4.24.0 |
 | Evidence image canonicalization | Pillow 11.3.0 |
 | pytest | 8.4.1 |
+| Playwright | 1.61.0 |
+| Chromium | Chrome for Testing 149.0.7827.55 |
+| HTTP test client | httpx2 2.9.1 |
 | Ruff | 0.12.4 |
 | mypy | 1.16.1 |
 | build | 1.2.2.post1 |
@@ -44,7 +51,9 @@ macOS arm64 with Python 3.12.3:
 Only dependency acquisition and deliberate lock compilation may use the package index. Schema,
 contract, scenario, calibration, engine, report, local-store, migration, import/export,
 portability, security, test, lint, typecheck, and build commands are process-local and use the
-shared network-denying wrapper.
+shared network-denying wrapper. Phase 4 browser installation is a separate bounded target.
+Browser acceptance uses one pinned Chromium worker and a loopback-only sandbox that denies
+external network requests.
 
 ## Phase 6 compatibility spike: OpenMetadata 1.6.5 Iceberg connector vs Lakekeeper v0.13.1
 

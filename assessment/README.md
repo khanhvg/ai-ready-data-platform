@@ -1,10 +1,11 @@
-# AI-ready assessment Phases 1–3
+# AI-ready assessment Phases 1–4
 
 This isolated Python 3.12 package proves the Issue #38 rubric, scoring/gates, synthetic
 calibration, v1 public contracts, authoritative local engagement folders, prototype migration,
 safe deterministic portability, and the final deterministic engine and canonical report
-generation. It is deliberately offline after dependency installation and does not import,
-scan, or control the retail data platform.
+generation. Phase 4 adds a local server-rendered architect workflow without adding a pipeline
+control surface. It is deliberately offline after dependency and pinned-browser installation
+and does not import, scan, or control the retail data platform.
 
 From the repository root:
 
@@ -16,13 +17,58 @@ make assessment-report assessment-test
 make assessment-store assessment-migration assessment-import-export
 make assessment-portability assessment-security-scan
 make assessment-engine
+make assessment-browser-install
+make assessment-e2e assessment-runtime-smoke
 make assessment-lint assessment-typecheck assessment-build
 ```
 
 `assessment-install` is the only Phase 1 target that acquires Python dependencies. It creates
 the separate `.assessment-venv` from hash-locked files. The other targets use
 `assessment/tools/run-offline.sh` to deny outbound network access with the audited macOS
-runtime's `sandbox-exec`; they use local files and start no services or containers.
+runtime's `sandbox-exec`; they use local files and start no containers. The two browser targets
+start and stop their own real loopback server and Chromium while a second sandbox profile denies
+non-loopback network access.
+
+## Local architect workflow
+
+Install the pinned Python environment and the repository-scoped Chromium build, then start the
+single-worker server:
+
+```bash
+make assessment-install
+make assessment-browser-install
+make assessment-web
+```
+
+Open `http://127.0.0.1:8765`. Override engagement and runtime roots with
+`ASSESSMENT_ENGAGEMENT_ROOT` and `ASSESSMENT_RUNTIME_ROOT`; override the loopback port with
+`ASSESSMENT_PORT`. A literal non-loopback host fails closed. The CLI exposes
+`--allow-unsupported-non-loopback` only as an explicit unsupported development escape hatch;
+it is not a hosted or deployment mode.
+
+The workflow supports local engagement create/list/open, all 30 quick questions, explicit
+readiness facts, evidence status and attachment-only evidence, visible autosave/revision state,
+review and architect finding dispositions, deep-dive planning, deterministic reports, and
+bounded archive preflight/import into a different configured root. Every operation also works
+through ordinary POST/Redirect/GET forms with JavaScript disabled. JavaScript only serializes
+autosave requests and improves disclosure/status feedback.
+
+Deep dives are selection records only. Their question banks remain honestly
+`planned-content-pending`/`not-installed` until Phase 7. Catalog and demo pages are read-only
+views of validated assets already present; unavailable assets stay visibly unavailable. There
+is no run, command, SQL, credential, network-fetch, pipeline, Docker, cloud, or deployment route.
+
+The app uses signed ephemeral local sessions, signed CSRF tokens, host/origin checks, optimistic
+revision checks under the engagement writer lock, strict upload and archive limits, escaped
+templates, attachment-only evidence responses, local static assets, CSP and related secure
+headers. It binds to `127.0.0.1` by default.
+
+`make assessment-e2e` runs one Playwright worker through the complete synthetic Solution
+Architect journey. `make assessment-runtime-smoke` repeats that same real journey and retains
+ignored standalone report, archive, imported-report, screenshot, transcript, result, and digest
+evidence under `assessment/.generated/runtime-smoke/`. It proves 30 answers, all seven gate
+traces, deep-dive pending state, deterministic export/import/reopen equality, no-JavaScript
+completion, no remote browser requests, and clean server/browser teardown.
 
 Prototype scenario reports are written to the ignored
 `assessment/.generated/prototype/<scenario>/` tree. Each scenario has top-level canonical
@@ -94,5 +140,5 @@ sibling stage and atomically promoting it.
 
 The future object-store boundary is documentation-only in
 `assessment/docs/object-engagement-store.md`. There is no SDK, S3 upload, credential, bucket,
-Terraform, SQLite authority, cloud resource, FastAPI/browser workflow, catalog/diagram, golden
-pipeline, customer data, or deployment behavior in Phases 1–3. Phases 4–8 remain pending.
+Terraform, SQLite authority, cloud resource, catalog content/diagram mapping, golden pipeline,
+customer data, or deployment behavior in Phases 1–4. Phases 5–8 remain pending.

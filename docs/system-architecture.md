@@ -68,6 +68,11 @@ canonical source-state digest + 12-section report.json
         |
         v
 standalone report.html (embedded CSS, no script or remote resources)
+        ^
+        |
+loopback FastAPI/Jinja2 workflow
+  create/resume -> quick assessment -> review -> deep-dive planning
+  -> deterministic report -> archive export/preflight/import/reopen
 ```
 
 The `evaluate` and `report` CLI commands require both an explicit engagement root and an
@@ -87,14 +92,30 @@ and selects the most restrictive cap deterministically. Canonical JSON and HTML 
 from the pinned framework plus a coherent engagement snapshot; generated output files are
 excluded from the source-state digest.
 
+Phase 4 adds a dependency-injected FastAPI/Jinja2 orchestration layer over those services.
+Routes do not contain scoring, gate, question, or catalog rules. The server defaults to literal
+loopback, rejects other hosts unless an explicit unsupported development override is provided,
+and runs with one worker. Signed local sessions and CSRF tokens, host/origin enforcement,
+revision checks held under the engagement writer lock, bounded uploads, escaped templates,
+attachment-only evidence, CSP, and local static assets define the web boundary. Forms complete
+through POST/Redirect/GET without JavaScript; JavaScript only enhances autosave and status.
+
+The Phase 4 runtime acceptance starts two real loopback servers under different roots and one
+pinned Chromium journey inside a non-loopback-network-denying sandbox. It creates and completes
+an engagement, reviews all deterministic results, records a content-pending deep-dive selection,
+generates and downloads the report, exports/imports the archive, reopens it, and compares source
+and imported state plus report bytes. Catalog/demo views are read-only and unavailable content
+is explicit. No route can run the retail pipeline or a command.
+
 Portable export/import is separate from the retail pipeline: deterministic `ZIP_STORED` archives
 contain normalized files and a canonical digest manifest. Import fully preflights archive names,
 features, limits, checksums, versions, secrets, credentialed URIs, and machine paths, then writes
 only to a sibling staging directory before atomic destination promotion. No assessment command
 starts Docker, DuckDB, dbt, Rill, Airflow, Lakekeeper, OpenMetadata, AWS, or Terraform.
 
-Web workflow, knowledge catalog, diagrams, golden-demo integration, cloud/object-store
-implementation, and deployment remain Phase 4–8 work or explicitly deferred.
+Knowledge-catalog content, architecture diagrams, AWS mappings, golden-demo integration,
+deep-dive execution content, cloud/object-store implementation, and deployment remain Phase
+5–8 work or explicitly deferred.
 
 ## The logical/physical distinction
 

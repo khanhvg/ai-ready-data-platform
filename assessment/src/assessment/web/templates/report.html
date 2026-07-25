@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="eyebrow">Canonical deterministic output</p>
+<h1>Assessment report</h1>
+{% if artifact %}
+<section class="panel">
+  <p class="status good">Report generated</p>
+  <h2>Artifacts</h2>
+  <ul>
+    <li><a href="/engagements/{{ engagement_id }}/report/report.html">Download standalone HTML</a> · SHA-256 {{ artifact.digests["report.html"] }}</li>
+    <li><a href="/engagements/{{ engagement_id }}/report/report.json">Download canonical JSON</a> · SHA-256 {{ artifact.digests["report.json"] }}</li>
+  </ul>
+  <h2>Canonical sections</h2>
+  <ol>
+  {% for section in artifact.report.sections %}
+    <li>{{ section.id }}</li>
+  {% endfor %}
+  </ol>
+</section>
+{% else %}
+<p class="status neutral">No report has been generated for this runtime root.</p>
+{% endif %}
+<form method="post" action="/engagements/{{ engagement_id }}/report">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button type="submit">{% if artifact %}Regenerate{% else %}Generate{% endif %} report</button>
+</form>
+{% endblock %}

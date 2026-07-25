@@ -1,5 +1,9 @@
+fastapi==0.140.0
+itsdangerous==2.2.0
 Jinja2==3.1.6
 jsonschema==4.24.0
 Pillow==11.3.0
 pydantic==2.11.7
+python-multipart==0.0.32
 PyYAML==6.0.2
+uvicorn==0.51.0

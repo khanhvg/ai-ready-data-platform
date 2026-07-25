@@ -7,7 +7,6 @@ import dataclasses
 import hashlib
 import json
 import os
-import stat
 import sys
 from importlib import resources
 from importlib.resources.abc import Traversable
@@ -19,12 +18,12 @@ from assessment.domain.errors import AssessmentError, ContentValidationError
 from assessment.engine.evaluator import evaluate_assessment
 from assessment.frameworks import load_framework
 from assessment.reporting.generator import generate_report, source_state_digest
+from assessment.reporting.publication import publish_report
 from assessment.reporting.renderer import render_report
 from assessment.storage.archive import export_engagement, import_engagement
 from assessment.storage.local import (
     LocalEngagementStore,
     _ensure_absolute_directory,
-    _fsync_directory_descriptor,
     atomic_write_at,
     canonical_json,
 )
@@ -132,6 +131,16 @@ def build_parser() -> argparse.ArgumentParser:
         command = commands.add_parser(command_name, help=help_text)
         command.add_argument("--engagement-root", type=Path, required=True)
         command.add_argument("--output-root", type=Path, required=True)
+    web = commands.add_parser("web", help="run the local server-rendered assessment workflow")
+    web.add_argument("--engagement-root", type=Path, required=True)
+    web.add_argument("--runtime-root", type=Path, required=True)
+    web.add_argument("--host", default="127.0.0.1")
+    web.add_argument("--port", type=int, default=8765)
+    web.add_argument(
+        "--allow-unsupported-non-loopback",
+        action="store_true",
+        help="unsupported development override; never use for assessment data",
+    )
     return parser
 
 
@@ -235,71 +244,6 @@ def _write_evaluation(
     }
 
 
-def _read_bound_artifact(
-    output_descriptor: int,
-    name: str,
-) -> bytes | None:
-    flags = os.O_RDONLY
-    if hasattr(os, "O_NOFOLLOW"):
-        flags |= os.O_NOFOLLOW
-    try:
-        descriptor = os.open(name, flags, dir_fd=output_descriptor)
-    except FileNotFoundError:
-        return None
-    try:
-        if not stat.S_ISREG(os.fstat(descriptor).st_mode):
-            raise ContentValidationError(
-                f"output artifact must be a regular file: {name}"
-            )
-        with os.fdopen(descriptor, "rb", closefd=False) as handle:
-            return handle.read()
-    finally:
-        os.close(descriptor)
-
-
-def _publish_report(
-    output_descriptor: int,
-    json_bytes: bytes,
-    html_bytes: bytes,
-    source_digest: str,
-) -> dict[str, str]:
-    digests = {
-        "report.json": hashlib.sha256(json_bytes).hexdigest(),
-        "report.html": hashlib.sha256(html_bytes).hexdigest(),
-    }
-    manifest_bytes = canonical_json(
-        {
-            "schema_version": "1.0.0",
-            "source_state_digest": source_digest,
-            "artifacts": digests,
-        }
-    )
-    payloads = {
-        "report.json": json_bytes,
-        "report.html": html_bytes,
-        "report-manifest.json": manifest_bytes,
-    }
-    previous = {
-        name: _read_bound_artifact(output_descriptor, name)
-        for name in payloads
-    }
-    try:
-        for name, content in payloads.items():
-            atomic_write_at(output_descriptor, name, content)
-    except Exception:
-        for name, previous_content in previous.items():
-            if previous_content is None:
-                try:
-                    os.unlink(name, dir_fd=output_descriptor)
-                except FileNotFoundError:
-                    pass
-            else:
-                atomic_write_at(output_descriptor, name, previous_content)
-        _fsync_directory_descriptor(output_descriptor)
-        raise
-    return digests
-
-
 def _run(arguments: argparse.Namespace) -> int:
     if arguments.command == "schema":
         paths = _schema_paths(arguments.repo_root)
@@ -315,6 +259,30 @@ def _run(arguments: argparse.Namespace) -> int:
         return 0
     if arguments.command == "import":
         _emit(import_engagement(arguments.archive, arguments.destination))
+        return 0
+    if arguments.command == "web":
+        import uvicorn
+
+        from assessment.web.app import create_app
+        from assessment.web.config import WebConfig
+
+        config = WebConfig.for_roots(
+            arguments.engagement_root,
+            arguments.runtime_root,
+            host=str(arguments.host),
+            port=int(arguments.port),
+            allow_unsupported_non_loopback=bool(
+                arguments.allow_unsupported_non_loopback
+            ),
+        )
+        uvicorn.run(
+            create_app(config=config),
+            host=config.host,
+            port=config.port,
+            access_log=False,
+            log_level="warning",
+            workers=1,
+        )
         return 0
     if arguments.command in {"evaluate", "report"}:
         engagement_root = arguments.engagement_root.absolute()
@@ -346,11 +314,12 @@ def _run(arguments: argparse.Namespace) -> int:
             )
             report_document = json.loads(generated.json_bytes)
             html_bytes = render_report(report_document)
-            artifact_digests = _publish_report(
+            artifact_digests = publish_report(
                 output_descriptor,
                 generated.json_bytes,
                 html_bytes,
                 generated.source_state_digest,
+                writer=atomic_write_at,
             )
             _emit(
                 {
