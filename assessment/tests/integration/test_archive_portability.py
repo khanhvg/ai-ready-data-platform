@@ -12,10 +12,20 @@ from pathlib import Path
 import pytest
 from PIL import Image, PngImagePlugin
 
+from assessment.domain.deep_dives import (
+    ConflictChoice,
+    DeepDiveAnswer,
+    DeepDiveService,
+    PromotionRequest,
+)
 from assessment.domain.errors import ArchiveValidationError, CompatibilityError
 from assessment.storage.archive import export_engagement, import_engagement
 from assessment.storage.local import LocalEngagementStore
 from assessment.storage.local import promote_directory_no_replace as real_promote
+from assessment.storage.migrations import _prototype_to_v1
+from assessment.web.config import WebConfig
+from assessment.web.dependencies import WebServices
+from prototype import run as prototype
 
 
 def engagement_document() -> dict[str, object]:
@@ -46,6 +56,67 @@ def create_engagement(root: Path) -> Path:
     )
     store.add_evidence("portable-001", "evidence/files/notes.txt", b"Sanitized local evidence.\r\n")
     return path
+
+
+def create_promoted_phase7_engagement(tmp_path: Path) -> Path:
+    engagement_root = tmp_path / "phase7-engagements"
+    runtime_root = tmp_path / "phase7-runtime"
+    engagement_root.mkdir()
+    runtime_root.mkdir()
+    services = WebServices(
+        WebConfig(
+            engagement_root=engagement_root,
+            runtime_root=runtime_root,
+            repository_root=Path(__file__).resolve().parents[3],
+            host="127.0.0.1",
+            port=8765,
+        ),
+        store=LocalEngagementStore(engagement_root),
+    )
+    services.create_engagement("phase7-portable")
+    framework = prototype.load_framework()
+    fixture = prototype.load_scenarios(framework)["startup-no-governance"][
+        "architect-a"
+    ]
+    quick = _prototype_to_v1(fixture, "phase7-portable")["assessment/quick.json"]
+    services.store.write_document(
+        "phase7-portable", "assessment/quick.json", quick
+    )
+    deep_dives = DeepDiveService(services.store, services.framework)
+    definition = deep_dives.registry.by_id("data-quality")
+    advisory = deep_dives.save_advisory(
+        "phase7-portable",
+        deep_dive_id=definition.id,
+        answers=[
+            DeepDiveAnswer(
+                question_id=question.id,
+                rating=4,
+                evidence_status="Evidenced",
+                note="Synthetic portable evidence.",
+                evidence_refs=[],
+            )
+            for question in definition.questions
+        ],
+    )
+    deep_dives.promote(
+        "phase7-portable",
+        PromotionRequest(
+            source_digest=advisory.document_digest,
+            target_digest=deep_dives.promotion_target_digest("phase7-portable"),
+            capability_ids=["QUA"],
+            rationale="Architect reviewed portable synthetic evidence.",
+            reviewed_by="solution-architect",
+            review_timestamp=deep_dives.engagement_timestamp("phase7-portable"),
+            conflict_choices=[
+                ConflictChoice(
+                    capability_id="QUA",
+                    choice="use-deep-dive",
+                    rationale="Use the reviewed deep-dive evidence.",
+                )
+            ],
+        ),
+    )
+    return services.store.open("phase7-portable")
 
 
 def rewrite_archive(
@@ -126,6 +197,32 @@ def test_export_is_byte_stable_and_distinct_path_roundtrip_preserves_digest(
     assert imported_manifest["digest"] == first_manifest["digest"]
     assert third_manifest["digest"] == first_manifest["digest"]
     assert third.read_bytes() == first.read_bytes()
+
+
+def test_import_rejects_consistently_rehashed_broken_phase7_revision_graph(
+    tmp_path: Path,
+) -> None:
+    source = create_promoted_phase7_engagement(tmp_path)
+    valid = tmp_path / "phase7-valid.zip"
+    corrupt = tmp_path / "phase7-corrupt.zip"
+    export_engagement(source, valid)
+
+    def break_active_pointer(entries: dict[str, bytes]) -> None:
+        entries["results/active.json"] = (
+            json.dumps(
+                {"active_revision": 999, "schema_version": "1.0.0"},
+                ensure_ascii=False,
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n"
+        ).encode()
+
+    rewrite_with_consistent_manifest(valid, corrupt, break_active_pointer)
+    destination = tmp_path / "phase7-imported"
+    with pytest.raises(ArchiveValidationError, match="revision graph"):
+        import_engagement(corrupt, destination)
+    assert not destination.exists()
 
 
 def test_export_rejects_content_that_exceeds_limit_after_canonicalization(

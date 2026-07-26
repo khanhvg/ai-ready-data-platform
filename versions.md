@@ -18,14 +18,14 @@ throwaway venv. This replaces the plan's *candidate* matrix with the actually-te
 | Lakekeeper (Iceberg REST catalog) | `v0.13.1` (`quay.io/lakekeeper/catalog`) | `lake` profile only — required for DuckDB Iceberg **writes** (raw S3 path insufficient); pinned instead of `latest-main` |
 | OpenMetadata | `1.6.5` (`docker.getcollate.io/openmetadata/server`) | `governance` profile only. `openmetadata-ingestion[iceberg,dbt]==1.6.5.0` ingests **both** the physical Iceberg tables (via its Iceberg RestCatalog connector, pyiceberg 0.5.1) and the logical dbt artifacts (`governance/openmetadata/`) — see the Phase 6 spike below. No native DuckDB connector, so the dbt-sourced `retail_duckdb` service is bootstrapped from dbt's own `catalog.json`, not a live crawl. |
 
-## Issue #38 Phase 1–6 assessment package
+## Issue #38 Phase 1–7 assessment package
 
 The assessment uses its own `.assessment-venv` and hash-locked dependency files. Verified on
 macOS arm64 with Python 3.12.3:
 
 | Component | Version |
 |---|---:|
-| Package | `0.5.0` |
+| Package | `0.6.0` |
 | Prototype framework/schema | `0.1.0-prototype` |
 | Public contracts/archive format | `1.0.0` |
 | pip | 25.1.1 |

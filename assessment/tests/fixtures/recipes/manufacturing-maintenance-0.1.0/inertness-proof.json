@@ -1,0 +1,17 @@
+{
+  "core_schema_tree_sha256": "2821c1fa13627eb8f671ed899dc032773317f9ed7b1efa08243e212bbf31df81",
+  "core_schema_hash_unchanged": true,
+  "engine_tree_sha256": "dbeeb85792d5a92222ae9e8b9ee1b95f932f9ff1c8d2e46b2abb169980dce3be",
+  "engine_hash_unchanged": true,
+  "fixture": "manufacturing-maintenance-0.1.0",
+  "non_production": true,
+  "report_set_sha256": "dc3487bda18a6947eeae7398261331fc9c2f27a08db8c527d6c1b4bd31d068ed",
+  "report_hashes_unchanged": true,
+  "scenario_report_sha256": {
+    "enterprise-lake-weak-quality": "68a2b319e830406b3ec122486fcd091eec667a0b9738ed1274257a16730825c5",
+    "manual-governance-missing-lineage": "3de92e8706b3c7dafa77470d4a2f6093993760e756f94503348ec02b2f2875d7",
+    "startup-no-governance": "b40b6743cee598f3c5990181f53c327d2f3ae388fb6a9e3f778f99470ef1c717",
+    "strong-engineering-no-ai-operating-model": "4aa6d397f195b8de671147a0884b3c591221652ef09bdc20f3a4053d4d95f79e"
+  },
+  "scenario_hashes_unchanged": true
+}

@@ -1,0 +1,176 @@
+schema_version: 1.0.0
+catalog_version: 1.0.0
+chains:
+  - finding_id: F-OWNERSHIP
+    gap: Critical data and AI decisions lack named accountable owners and decision rights.
+    impact: Unowned decisions delay remediation and leave critical AI use without accountable risk acceptance.
+    priority: Critical blocker
+    recommendation_id: R-OWNERSHIP
+    architecture_id: ARCH-OPERATING-MODEL
+    technology_option_ids: [alternative-infrastructure-source]
+    profile_role_refs:
+      - {profile_id: aws-first-profile, role_ids: [infrastructure-source]}
+    demo_reference_id: DEMO-PLACEHOLDER-OWNERSHIP
+    owner_role: Executive data sponsor
+    horizon: 0-30 days
+    success_measure: Every critical product and control has one named accountable owner and review cadence.
+    edges:
+      - {source: gap, target: impact, kind: causes}
+      - {source: impact, target: priority, kind: prioritized-as}
+      - {source: priority, target: recommendation, kind: addressed-by}
+      - {source: recommendation, target: architecture, kind: implemented-through}
+      - {source: architecture, target: technology-options, kind: has-options}
+      - {source: technology-options, target: demo, kind: illustrated-by}
+      - {source: demo, target: action, kind: owned-through}
+  - finding_id: F-QUALITY
+    gap: Critical datasets do not have measurable owned quality rules with quarantine and accepted boundaries.
+    impact: Uncontrolled defects can reach trusted products and make analytics or AI outcomes unreliable.
+    priority: Critical blocker
+    recommendation_id: R-QUALITY
+    architecture_id: ARCH-QUALITY-GATE
+    technology_option_ids: [alternative-quality]
+    profile_role_refs:
+      - {profile_id: aws-first-profile, role_ids: [data-quality]}
+      - {profile_id: local-demo-evidence, role_ids: [local-transformation]}
+    demo_reference_id: DEMO-PLACEHOLDER-QUALITY
+    owner_role: Data quality owner
+    horizon: 0-30 days
+    success_measure: Critical rules are measured and every failed record is excluded or explicitly accepted.
+    edges:
+      - {source: gap, target: impact, kind: causes}
+      - {source: impact, target: priority, kind: prioritized-as}
+      - {source: priority, target: recommendation, kind: addressed-by}
+      - {source: recommendation, target: architecture, kind: implemented-through}
+      - {source: architecture, target: technology-options, kind: has-options}
+      - {source: technology-options, target: demo, kind: illustrated-by}
+      - {source: demo, target: action, kind: owned-through}
+  - finding_id: F-PRIVACY
+    gap: Sensitive data use lacks complete classification approved purpose and enforceable protection boundaries.
+    impact: Sensitive data may be processed without a defensible purpose classification or protection boundary.
+    priority: Critical blocker
+    recommendation_id: R-PRIVACY
+    architecture_id: ARCH-PRIVACY-CONTROLS
+    technology_option_ids: [alternative-access-governance]
+    profile_role_refs:
+      - {profile_id: aws-first-profile, role_ids: [access-governance]}
+    demo_reference_id: DEMO-PLACEHOLDER-PRIVACY
+    owner_role: Privacy control owner
+    horizon: 0-30 days
+    success_measure: Critical sensitive fields have approved purposes retention rules and tested protected outputs.
+    edges:
+      - {source: gap, target: impact, kind: causes}
+      - {source: impact, target: priority, kind: prioritized-as}
+      - {source: priority, target: recommendation, kind: addressed-by}
+      - {source: recommendation, target: architecture, kind: implemented-through}
+      - {source: architecture, target: technology-options, kind: has-options}
+      - {source: technology-options, target: demo, kind: illustrated-by}
+      - {source: demo, target: action, kind: owned-through}
+  - finding_id: F-SECURITY
+    gap: Critical data access is broad or not governed by versioned least-privilege policy.
+    impact: Broad or unreviewed access increases exposure and weakens auditability.
+    priority: Critical blocker
+    recommendation_id: R-SECURITY
+    architecture_id: ARCH-POLICY-ACCESS
+    technology_option_ids: [alternative-access-governance]
+    profile_role_refs:
+      - {profile_id: aws-first-profile, role_ids: [access-governance]}
+    demo_reference_id: DEMO-PLACEHOLDER-SECURITY
+    owner_role: Data security owner
+    horizon: 0-30 days
+    success_measure: Allow deny revocation and audit paths pass tests for every critical governed product.
+    edges:
+      - {source: gap, target: impact, kind: causes}
+      - {source: impact, target: priority, kind: prioritized-as}
+      - {source: priority, target: recommendation, kind: addressed-by}
+      - {source: recommendation, target: architecture, kind: implemented-through}
+      - {source: architecture, target: technology-options, kind: has-options}
+      - {source: technology-options, target: demo, kind: illustrated-by}
+      - {source: demo, target: action, kind: owned-through}
+  - finding_id: F-GOVERNANCE
+    gap: Governance decisions exceptions and control evidence are inconsistent or unowned.
+    impact: Inconsistent policy decisions prevent a defensible production-readiness claim.
+    priority: High-priority foundation
+    recommendation_id: R-GOVERNANCE
+    architecture_id: ARCH-GOVERNANCE-CONTROL
+    technology_option_ids: [alternative-catalog]
+    profile_role_refs:
+      - {profile_id: aws-first-profile, role_ids: [data-catalog, metadata-lineage]}
+      - {profile_id: local-demo-evidence, role_ids: [local-metadata-lineage]}
+    demo_reference_id: DEMO-PLACEHOLDER-GOVERNANCE
+    owner_role: Data governance lead
+    horizon: 30-60 days
+    success_measure: All critical exceptions name an approver expiry and measured control effectiveness.
+    edges:
+      - {source: gap, target: impact, kind: causes}
+      - {source: impact, target: priority, kind: prioritized-as}
+      - {source: priority, target: recommendation, kind: addressed-by}
+      - {source: recommendation, target: architecture, kind: implemented-through}
+      - {source: architecture, target: technology-options, kind: has-options}
+      - {source: technology-options, target: demo, kind: illustrated-by}
+      - {source: demo, target: action, kind: owned-through}
+  - finding_id: F-LINEAGE
+    gap: Critical source-to-product lineage is incomplete or unavailable for impact analysis.
+    impact: Teams cannot prove critical product origins or assess change and incident impact.
+    priority: High-priority foundation
+    recommendation_id: R-LINEAGE
+    architecture_id: ARCH-METADATA-LINEAGE
+    technology_option_ids: [alternative-catalog, alternative-lineage]
+    profile_role_refs:
+      - {profile_id: aws-first-profile, role_ids: [data-catalog, metadata-lineage]}
+      - {profile_id: local-demo-evidence, role_ids: [local-physical-catalog, local-metadata-lineage]}
+    demo_reference_id: DEMO-PLACEHOLDER-LINEAGE
+    owner_role: Metadata and lineage owner
+    horizon: 30-60 days
+    success_measure: Critical source-to-published-product paths are observed current and reviewable.
+    edges:
+      - {source: gap, target: impact, kind: causes}
+      - {source: impact, target: priority, kind: prioritized-as}
+      - {source: priority, target: recommendation, kind: addressed-by}
+      - {source: recommendation, target: architecture, kind: implemented-through}
+      - {source: architecture, target: technology-options, kind: has-options}
+      - {source: technology-options, target: demo, kind: illustrated-by}
+      - {source: demo, target: action, kind: owned-through}
+  - finding_id: F-REPRODUCIBILITY
+    gap: Critical product code inputs contracts environments or manifests are not version-bound.
+    impact: Results cannot be reliably recreated compared audited or rolled back.
+    priority: High-priority foundation
+    recommendation_id: R-REPRODUCIBILITY
+    architecture_id: ARCH-VERSIONED-PRODUCT
+    technology_option_ids: [alternative-object-storage, alternative-transformation]
+    profile_role_refs:
+      - {profile_id: aws-first-profile, role_ids: [object-storage, transformation]}
+      - {profile_id: local-demo-evidence, role_ids: [local-synthetic-data, local-warehouse-query, local-transformation]}
+    demo_reference_id: DEMO-PLACEHOLDER-REPRODUCIBILITY
+    owner_role: Data product owner
+    horizon: 30-60 days
+    success_measure: A clean rebuild reproduces the declared product from version-bound inputs and contracts.
+    edges:
+      - {source: gap, target: impact, kind: causes}
+      - {source: impact, target: priority, kind: prioritized-as}
+      - {source: priority, target: recommendation, kind: addressed-by}
+      - {source: recommendation, target: architecture, kind: implemented-through}
+      - {source: architecture, target: technology-options, kind: has-options}
+      - {source: technology-options, target: demo, kind: illustrated-by}
+      - {source: demo, target: action, kind: owned-through}
+  - finding_id: F-AI-OPERATING
+    gap: AI-data freshness drift approved use incidents and lifecycle decisions lack accountable operations.
+    impact: AI datasets may age drift or use sensitive data without accountable operational response.
+    priority: High-priority foundation
+    recommendation_id: R-AI-OPERATING
+    architecture_id: ARCH-AI-DATA-OPERATIONS
+    technology_option_ids: [alternative-analytics]
+    profile_role_refs:
+      - {profile_id: aws-first-profile, role_ids: [analytics]}
+      - {profile_id: local-demo-evidence, role_ids: [local-orchestration, local-analytics]}
+    demo_reference_id: DEMO-PLACEHOLDER-AI-OPERATIONS
+    owner_role: AI data product owner
+    horizon: 30-90 days
+    success_measure: Approved use freshness drift incident and retirement measures have owners and thresholds.
+    edges:
+      - {source: gap, target: impact, kind: causes}
+      - {source: impact, target: priority, kind: prioritized-as}
+      - {source: priority, target: recommendation, kind: addressed-by}
+      - {source: recommendation, target: architecture, kind: implemented-through}
+      - {source: architecture, target: technology-options, kind: has-options}
+      - {source: technology-options, target: demo, kind: illustrated-by}
+      - {source: demo, target: action, kind: owned-through}

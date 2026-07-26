@@ -1,4 +1,4 @@
-# AI-ready assessment Phases 1–6
+# AI-ready assessment Phases 1–7
 
 This isolated Python 3.12 package proves the Issue #38 rubric, scoring/gates, synthetic
 calibration, v1 public contracts, authoritative local engagement folders, prototype migration,
@@ -9,6 +9,8 @@ and Demo Guide catalog without changing assessment truth. It is deliberately off
 dependency and pinned-browser/diagram-tool installation
 and does not control the retail data platform. Phase 6 displays validated repository-relative
 golden evidence and manifests through the same read-only, non-scoring boundary.
+Phase 7 adds complete typed finding-to-action mappings, three advisory deep dives, explicit
+architect-reviewed result promotion, and an inert additive recipe-extension proof.
 
 From the repository root:
 
@@ -59,14 +61,24 @@ it is not a hosted or deployment mode.
 
 The workflow supports local engagement create/list/open, all 30 quick questions, explicit
 readiness facts, evidence status and attachment-only evidence, visible autosave/revision state,
-review and architect finding dispositions, deep-dive planning, deterministic reports, and
+review and architect finding dispositions, deep-dive completion and reviewed promotion,
+deterministic reports, and
 bounded archive preflight/import into a different configured root. Every operation also works
 through ordinary POST/Redirect/GET forms with JavaScript disabled. JavaScript only serializes
 autosave requests and improves disclosure/status feedback.
 
-Deep dives are selection records only. Their question banks remain honestly
-`planned-content-pending`/`not-installed` until Phase 7. Catalog and demo pages are read-only
-views of validated package assets; unavailable repository evidence stays visibly unavailable.
+The three installed advisory deep dives contain exactly 20 data-quality, 24
+governance/metadata/lineage, and 20 security/privacy/policy questions. Every question has
+complete 0–4 anchors, evidence guidance, duration, confidence/evidence semantics, and linked
+recommendations. Advisory documents and quick results are stored separately. A deep dive cannot
+alter readiness until an architect explicitly reviews a digest-bound, conflict-complete
+promotion; that promotion creates a new result revision through the same engine and seven gates,
+retains the prior quick result, and records before/after provenance. No latest document is
+selected implicitly. Promotion binds the reviewed advisory to the active result and answer
+digests, so a concurrent change or replay is stale. The web report selector and the
+`evaluate`/`report --revision N` CLI option can explicitly regenerate a retained revision.
+Catalog and demo pages are read-only views of validated package assets;
+unavailable repository evidence stays visibly unavailable.
 The catalog contains exactly ten capability domains, nine vendor-neutral logical patterns,
 an AWS-first content-only option set, a separate read-only local sandbox mapping, deferred
 alternatives, and seven reviewed accessible SVG/source pairs. The Demo Guide contains nine
@@ -82,8 +94,10 @@ headers. It binds to `127.0.0.1` by default.
 `make assessment-e2e` runs one Playwright worker through the complete synthetic Solution
 Architect journey. `make assessment-runtime-smoke` repeats that same real journey and retains
 ignored standalone report, archive, imported-report, screenshot, transcript, result, and digest
-evidence under `assessment/.generated/runtime-smoke/`. It proves 30 answers, all seven gate
-traces, deep-dive pending state, deterministic export/import/reopen equality, no-JavaScript
+evidence under `assessment/.generated/runtime-smoke/`. It proves 30 quick answers, all seven gate
+traces, a completed 20-question advisory deep dive, unchanged readiness before promotion,
+explicit reviewed promotion with retained prior and active revisions, deterministic
+export/import/reopen equality, no-JavaScript
 completion, catalog/Demo Guide wide and narrow reflow, seven local diagrams, honest
 available/unavailable artifact status, browser back/reload behavior, no remote browser requests,
 and clean server/browser teardown.
@@ -111,7 +125,8 @@ an explicit output directory:
 
 .assessment-venv/bin/python -m assessment report \
   --engagement-root /absolute/path/to/engagement \
-  --output-root /absolute/path/to/report-output
+  --output-root /absolute/path/to/report-output \
+  --revision 1
 ```
 
 `evaluate` writes canonical `assessment-result.json`. `report` writes canonical `report.json`,
@@ -161,4 +176,10 @@ The future object-store boundary is documentation-only in
 Terraform execution, SQLite authority, cloud resource, customer data, or deployment behavior.
 The AWS profile is content only and the local demo mapping is read only. Phase 6 adds
 deterministic local retail evidence, a fixed application policy export, and versioned manifests
-outside assessment truth; Phases 7–8 remain pending.
+outside assessment truth. Phase 7 keeps every demo leaf non-scoring and adds one inert,
+non-production manufacturing-maintenance fixture under `tests/fixtures`; it loads only through
+the public additive recipe extension and creates no alternate engine, schema, route, or pipeline.
+Corrupt declared demo content produces an explicit validation failure while the separate
+assessment source remains available and unchanged.
+Cloud/object-store implementation, deployment, and release finalization remain Phase 8 or
+explicitly deferred.

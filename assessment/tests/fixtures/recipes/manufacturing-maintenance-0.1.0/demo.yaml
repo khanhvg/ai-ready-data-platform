@@ -1,0 +1,4 @@
+status: absent
+reason: This inert non-production fixture declares no demo pipeline artifacts or runtime.
+non_scoring: true
+executable: false

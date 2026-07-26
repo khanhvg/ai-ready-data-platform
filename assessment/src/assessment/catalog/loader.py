@@ -19,8 +19,9 @@ from assessment.catalog.models import (
     DemoCatalog,
     validate_catalog_relative_path,
 )
-from assessment.content.loader import MAX_AUTHORED_BYTES
+from assessment.content.loader import MAX_AUTHORED_BYTES, load_yaml
 from assessment.domain.errors import ContentValidationError
+from assessment.domain.models import AIReadyDatasetManifest, DemoStageManifest
 
 CATALOG_VERSION = "1.0.0"
 CATALOG_ROOT = ("catalog", CATALOG_VERSION)
@@ -367,7 +368,25 @@ def _artifact_status(repository_root: Path | None, relative_path: str) -> str:
         and resolved_root not in resolved_candidate.parents
     ):
         raise ContentValidationError(f"demo artifact {relative_path}: escapes repository root")
-    return "available" if resolved_candidate.is_file() else "unavailable"
+    if not resolved_candidate.is_file():
+        return "unavailable"
+    if relative_path.startswith("demo/manifests/stages/") and relative_path.endswith(
+        ".yaml"
+    ):
+        try:
+            DemoStageManifest.model_validate(load_yaml(resolved_candidate))
+        except ValueError as error:
+            raise ContentValidationError(
+                f"demo artifact {relative_path}: corrupt stage manifest"
+            ) from error
+    elif relative_path == "demo/manifests/ai-ready-customer-product.v1.yaml":
+        try:
+            AIReadyDatasetManifest.model_validate(load_yaml(resolved_candidate))
+        except ValueError as error:
+            raise ContentValidationError(
+                f"demo artifact {relative_path}: corrupt dataset manifest"
+            ) from error
+    return "available"
 
 
 def load_demo_catalog(

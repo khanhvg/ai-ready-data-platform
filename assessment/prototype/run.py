@@ -1122,12 +1122,24 @@ def build_check(dist: Path) -> dict[str, Any]:
         "assessment/cli.py",
         "assessment/catalog/__init__.py",
         "assessment/catalog/loader.py",
+        "assessment/catalog/mapping.py",
         "assessment/catalog/models.py",
         "assessment/catalog/renderer.py",
         "assessment/content/loader.py",
         "assessment/content/markdown.py",
+        "assessment/content/recipes.py",
         "assessment/content/schemas.py",
         "assessment/content/semantics.py",
+        "assessment/content/catalog/1.0.0/mappings/finding-action-chains.yaml",
+        *(
+            f"assessment/content/frameworks/1.0.0/deep-dives/{name}.yaml"
+            for name in (
+                "data-quality",
+                "governance-metadata-lineage",
+                "security-privacy-policy",
+            )
+        ),
+        "assessment/domain/deep_dives.py",
         "assessment/domain/errors.py",
         "assessment/domain/models.py",
         "assessment/domain/versions.py",
@@ -1172,6 +1184,7 @@ def build_check(dist: Path) -> dict[str, Any]:
         "assessment/web/templates/base.html",
         "assessment/web/templates/catalog.html",
         "assessment/web/templates/deep-dive-select.html",
+        "assessment/web/templates/deep-dive.html",
         "assessment/web/templates/demo.html",
         "assessment/web/templates/error.html",
         "assessment/web/templates/import.html",

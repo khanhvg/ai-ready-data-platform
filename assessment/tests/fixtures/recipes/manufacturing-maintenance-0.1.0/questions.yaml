@@ -1,0 +1,13 @@
+questions:
+  - id: MM-Q-01
+    capability_id: QUA
+    text: How are synthetic sensor-quality failures separated from accepted maintenance signals?
+    advisory_only: true
+  - id: MM-Q-02
+    capability_id: LIN
+    text: How is synthetic asset-to-work-order lineage represented for change impact?
+    advisory_only: true
+  - id: MM-Q-03
+    capability_id: SEC
+    text: How are synthetic maintenance roles separated from restricted operational fields?
+    advisory_only: true

@@ -1,0 +1,4 @@
+terms:
+  asset: Synthetic maintainable equipment identity used only by this contract fixture.
+  work-order: Synthetic maintenance instruction with no operational system connection.
+  failure-mode: Advisory classification used to discuss quality lineage and policy controls.

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="eyebrow">Separate advisory result · {{ definition.duration_minutes }} minutes</p>
+<h1>{{ definition.title }}</h1>
+<p class="status neutral">Capabilities {{ definition.capability_ids | join(", ") }}. Ratings use the same 0–4 maturity scale while evidence status remains independent. Synthetic or redacted evidence only.</p>
+
+<section class="summary-grid">
+  <article class="metric"><span>Active revision</span><strong>{{ revisions.active.revision }} · {{ revisions.active.source_kind }}</strong></article>
+  <article class="metric"><span>Prior revision</span><strong>{% if revisions.prior %}{{ revisions.prior.revision }} · retained{% else %}None{% endif %}</strong></article>
+  <article class="metric"><span>Reviewed target-state digest</span><strong><code class="artifact-digest">{{ target_digest }}</code></strong></article>
+</section>
+
+<form method="post" action="/engagements/{{ engagement_id }}/deep-dives/{{ definition.id }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <input type="hidden" name="revision" value="{{ state.revision }}">
+  {% for question in definition.questions %}
+  <fieldset class="panel">
+    <legend>{{ question.id }} · {{ question.text }}</legend>
+    <p><strong>Evidence guidance:</strong> {{ question.evidence_guidance }}</p>
+    <p>{{ question.confidence_semantics }}</p>
+    <label for="rating-{{ question.id }}">Maturity rating</label>
+    <select id="rating-{{ question.id }}" name="rating-{{ question.id }}" required>
+      {% for level, anchor in question.anchors.items() %}
+      <option value="{{ level }}">{{ level }} · {{ anchor }}</option>
+      {% endfor %}
+    </select>
+    <label for="evidence-status-{{ question.id }}">Evidence status</label>
+    <select id="evidence-status-{{ question.id }}" name="evidence-status-{{ question.id }}" required>
+      {% for status in evidence_statuses %}
+      {% if status != "Not assessed" %}<option value="{{ status }}">{{ status }}</option>{% endif %}
+      {% endfor %}
+    </select>
+    <label for="note-{{ question.id }}">Synthetic/redacted evidence note</label>
+    <textarea id="note-{{ question.id }}" name="note-{{ question.id }}" maxlength="4096"></textarea>
+  </fieldset>
+  {% endfor %}
+  <button type="submit">Complete advisory deep dive</button>
+</form>
+
+{% if advisory %}
+<section class="panel">
+  <p class="eyebrow">Advisory result · no readiness effect</p>
+  <h2>Review before promotion</h2>
+  <p>Source digest <code class="artifact-digest">{{ advisory.document_digest }}</code></p>
+  <ul>
+  {% for capability_id, score in advisory.capability_scores.items() %}
+    <li>{{ capability_id }} advisory maturity: {{ score }}</li>
+  {% endfor %}
+  </ul>
+  <form method="post" action="/engagements/{{ engagement_id }}/deep-dives/{{ definition.id }}/promote">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="source_digest" value="{{ advisory.document_digest }}">
+    <input type="hidden" name="target_digest" value="{{ target_digest }}">
+    {% for capability_id in definition.capability_ids %}
+    <fieldset>
+      <legend>{{ capability_id }} conflict choice</legend>
+      <label><input type="checkbox" name="promote-{{ capability_id }}" value="yes"> Include in reviewed promotion</label>
+      <label><input type="radio" name="choice-{{ capability_id }}" value="use-deep-dive"> Use deep-dive advisory</label>
+      <label><input type="radio" name="choice-{{ capability_id }}" value="use-quick"> Retain quick value</label>
+    </fieldset>
+    {% endfor %}
+    <label for="reviewed-by">Reviewed by accountable architect</label>
+    <input id="reviewed-by" name="reviewed_by" maxlength="128" required>
+    <label for="rationale">Promotion rationale</label>
+    <textarea id="rationale" name="rationale" minlength="12" maxlength="4096" required></textarea>
+    <button type="submit">Create reviewed result revision</button>
+  </form>
+</section>
+{% endif %}
+{% endblock %}

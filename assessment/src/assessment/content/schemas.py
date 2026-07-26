@@ -28,7 +28,9 @@ def load_schema(path: Path | Traversable) -> dict[str, Any]:
     return schema
 
 
-def validate_document(document: Mapping[str, Any], schema_path: Path) -> None:
+def validate_document(
+    document: Mapping[str, Any], schema_path: Path | Traversable
+) -> None:
     validator = Draft202012Validator(load_schema(schema_path))
     errors = sorted(validator.iter_errors(document), key=lambda item: list(item.absolute_path))
     if errors:

@@ -66,6 +66,7 @@ def test_report_has_exact_sections_provenance_digest_and_safe_stable_html() -> N
         "customer answer",
         "customer evidence",
         "architect judgment",
+        "catalog reference",
         "demo illustration",
     }
     sections = {section["id"]: section["content"] for section in report["sections"]}
@@ -74,7 +75,7 @@ def test_report_has_exact_sections_provenance_digest_and_safe_stable_html() -> N
         for item in sections["reference-diagrams"]["items"]
     )
     assert all(
-        item["provenance_class"] == "architect judgment"
+        item["provenance_class"] == "catalog reference"
         for item in sections["technology-options"]["items"]
     )
     assert all(

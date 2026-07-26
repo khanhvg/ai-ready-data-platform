@@ -12,8 +12,8 @@
 - Date: 2026-07-24
 - Description: Complete the finding-to-action mapping chain, add initial high-value deep dives, and prove a future domain recipe is inert content rather than an engine/schema fork.
 - Priority: P2
-- Implementation status: Pending
-- Review status: Pending golden evidence review.
+- Implementation status: Completed by the producing Phase 7 worker.
+- Review status: Producer specification/code-quality review complete; mandatory fresh independent exact-head verification remains controller-managed after publication.
 
 ## Key Insights
 
@@ -73,14 +73,14 @@ The extension fixture `assessment/tests/fixtures/recipes/manufacturing-maintenan
 
 ## Todo list
 
-- [ ] Define and validate the full mapping-chain contract.
-- [ ] Map 100% of critical finding families through accountable action.
-- [ ] Author/calibrate quality, governance-lineage, and security-policy deep dives.
-- [ ] Preserve quick/deep provenance and transparent recalculation.
-- [ ] Display mapping/deep-dive outputs in review/report/web.
-- [ ] Add inert future recipe fixture only.
-- [ ] Prove engine/core schema hashes and existing outputs are unchanged.
-- [ ] Test demo-present/absent/corrupt behavior.
+- [x] Define and validate the full mapping-chain contract.
+- [x] Map 100% of critical finding families through accountable action.
+- [x] Author/calibrate quality, governance-lineage, and security-policy deep dives.
+- [x] Preserve quick/deep provenance and transparent recalculation.
+- [x] Display mapping/deep-dive outputs in review/report/web.
+- [x] Add inert future recipe fixture only.
+- [x] Prove engine/core schema hashes and existing outputs are unchanged.
+- [x] Test demo-present/absent/corrupt behavior.
 
 ## Success Criteria
 

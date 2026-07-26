@@ -1,0 +1,4 @@
+mappings:
+  - {question_id: MM-Q-01, recommendation_id: R-QUALITY, architecture_id: ARCH-QUALITY-GATE}
+  - {question_id: MM-Q-02, recommendation_id: R-LINEAGE, architecture_id: ARCH-METADATA-LINEAGE}
+  - {question_id: MM-Q-03, recommendation_id: R-SECURITY, architecture_id: ARCH-POLICY-ACCESS}

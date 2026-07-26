@@ -73,11 +73,13 @@ standalone report.html (embedded CSS, no script or remote resources)
         |
 versioned advisory catalog (presentation only)
   10 capabilities -> 9 logical patterns -> technology option sets
+  -> 8 critical finding-to-action chains -> optional non-scoring demo leaves
   -> 7 reviewed diagrams -> 9-stage read-only Demo Guide
         ^
         |
 loopback FastAPI/Jinja2 workflow
-  create/resume -> quick assessment -> review -> deep-dive planning
+  create/resume -> quick assessment -> review -> advisory deep-dive
+  -> explicit architect-reviewed revision promotion
   -> deterministic report -> archive export/preflight/import/reopen
 ```
 
@@ -151,14 +153,37 @@ provenance, automation state, and non-scoring status. The explicit executable ra
 (100%). The assessment web only resolves and displays those references; mutation or removal can
 change evidence availability in the appendix but cannot enter engine inputs.
 
+Phase 7 resolves every critical finding family through a typed deterministic graph:
+gap, business/AI impact, priority, recommendation, logical architecture, vendor-neutral
+technology options, optional demo leaf, and accountable roadmap action. `MappingResolver`
+deep-copies validated assessment, catalog, and demo registries and has no mutation or engine
+execution surface. Demo leaves remain presentation-only regardless of whether repository
+evidence is present, absent, unavailable, or corrupt; corrupt declared content fails validation.
+
+The three installed deep dives contain 20 data-quality, 24
+governance/metadata/lineage, and 20 security/privacy/policy questions. Advisory answers live
+outside quick assessment truth. Promotion requires an explicit reviewed record naming source
+and target digests, capability IDs, rationale, engagement-metadata timestamp, and every conflict
+choice. The service rejects stale digests, invalid or duplicate capabilities, unresolved
+conflicts, and implicit latest selection. A successful promotion creates a new immutable result
+revision through the existing engine and seven gates, then moves an explicit active pointer
+while retaining the prior quick result and reportability. The target digest binds the active
+revision, active result, and selected answer state. CLI and web report surfaces accept an
+explicit retained revision and label the selected and active revisions independently.
+
+The manufacturing-maintenance recipe is an inert non-production test fixture. It is loaded only
+through the public additive recipe extension and declares demo evidence absent and non-scoring.
+Its add/remove proof binds unchanged engine and core-schema tree hashes plus unchanged existing
+scenario/report hashes; it adds no route, engine, schema, pipeline, or executable behavior.
+
 Portable export/import is separate from the retail pipeline: deterministic `ZIP_STORED` archives
 contain normalized files and a canonical digest manifest. Import fully preflights archive names,
 features, limits, checksums, versions, secrets, credentialed URIs, and machine paths, then writes
 only to a sibling staging directory before atomic destination promotion. No assessment command
 starts Docker, DuckDB, dbt, Rill, Airflow, Lakekeeper, OpenMetadata, AWS, or Terraform.
 
-Deep-dive execution content, cloud/object-store implementation, and deployment remain Phase 7–8
-work or explicitly deferred.
+Cloud/object-store implementation, deployment, hosted operation, and release finalization remain
+Phase 8 work or explicitly deferred.
 
 ## The logical/physical distinction
 

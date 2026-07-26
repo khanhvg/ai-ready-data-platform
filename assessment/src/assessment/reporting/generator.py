@@ -7,6 +7,7 @@ from dataclasses import asdict
 from typing import Any
 
 from assessment.catalog.loader import load_catalog, load_demo_catalog
+from assessment.catalog.mapping import MappingResolver, load_mapping_registry
 from assessment.catalog.models import CatalogBundle, DemoCatalog
 from assessment.content.markdown import validate_markdown
 from assessment.domain.models import (
@@ -24,6 +25,7 @@ PROVENANCE_CLASSES = (
     "customer answer",
     "customer evidence",
     "architect judgment",
+    "catalog reference",
     "demo illustration",
 )
 SOURCE_STATE_KEYS = {
@@ -31,7 +33,7 @@ SOURCE_STATE_KEYS = {
     "findings/review.json",
     "selections/deep-dives.json",
 }
-SOURCE_STATE_PREFIXES = ("assessment/", "evidence/")
+SOURCE_STATE_PREFIXES = ("assessment/", "evidence/", "promotions/", "results/")
 
 
 def canonical_source_state(
@@ -136,9 +138,20 @@ def _finding_items(
     demo_catalog: DemoCatalog,
 ) -> list[dict[str, Any]]:
     items: list[dict[str, Any]] = []
+    resolver = MappingResolver(
+        load_framework("1.0.0"),
+        catalog,
+        demo_catalog,
+        load_mapping_registry(),
+    )
     for finding in result.findings:
         architecture = catalog.architecture(finding.architecture_reference)
         demo_link = demo_catalog.evidence_link(finding.demo_reference)
+        chain = resolver.by_finding_id(finding.id)
+        chain_document = chain.model_dump(mode="json")
+        chain_document["gap"]["text"] = finding.gap
+        chain_document["impact"]["text"] = finding.impact
+        chain_document["priority"]["label"] = finding.priority
         items.append(
             {
             "id": finding.id,
@@ -162,6 +175,7 @@ def _finding_items(
             "architect_review": asdict(finding.review),
             "provenance_class": "architect judgment",
             "demo_provenance_class": "demo illustration",
+            "mapping_chain": chain_document,
             }
         )
     return items
@@ -173,6 +187,10 @@ def generate_report(
     *,
     reviews: dict[str, dict[str, str]] | None = None,
     source_snapshot: dict[str, str] | None = None,
+    catalog_bundle: CatalogBundle | None = None,
+    demo_bundle: DemoCatalog | None = None,
+    revision_context: dict[str, Any] | None = None,
+    deep_dive_context: list[dict[str, Any]] | None = None,
 ) -> GeneratedReport:
     review_records = reviews or {}
     engagement, source_digest = _validate_source(
@@ -189,8 +207,8 @@ def generate_report(
     )
     # Versioned advisory content is loaded only after assessment evaluation. It
     # enriches presentation and cannot influence maturity, confidence, or gates.
-    catalog = load_catalog(engagement.catalog_version)
-    demo_catalog = load_demo_catalog(engagement.demo_content_version)
+    catalog = catalog_bundle or load_catalog(engagement.catalog_version)
+    demo_catalog = demo_bundle or load_demo_catalog(engagement.demo_content_version)
     capabilities = _capability_items(result)
     findings = _finding_items(result, catalog, demo_catalog)
     blockers = [
@@ -279,9 +297,14 @@ def generate_report(
                 {
                     "sequence": index,
                     "priority": finding["priority"],
-                    "action": finding["recommendation"],
+                    "action": finding["mapping_chain"]["recommendation"]["title"],
+                    "owner_role": finding["mapping_chain"]["action"]["owner_role"],
+                    "horizon": finding["mapping_chain"]["action"]["horizon"],
+                    "success_measure": finding["mapping_chain"]["action"][
+                        "success_measure"
+                    ],
                     "review_state": finding["architect_review"]["state"],
-                    "provenance_class": "architect judgment",
+                    "provenance_class": "catalog reference",
                 }
                 for index, finding in enumerate(findings, start=1)
             ]
@@ -291,8 +314,13 @@ def generate_report(
             "items": [
                 {
                     "finding_id": finding["id"],
-                    "vendor_neutral_options": finding["technology_options"],
-                    "provenance_class": "architect judgment",
+                    "vendor_neutral_options": [
+                        item["role"]
+                        for item in finding["mapping_chain"]["technology_options"]
+                    ],
+                    "profile_options": finding["mapping_chain"]["profile_options"],
+                    "demo_leaf": finding["mapping_chain"]["demo"],
+                    "provenance_class": "catalog reference",
                 }
                 for finding in findings
             ],
@@ -310,6 +338,16 @@ def generate_report(
             "answers": answer_document["answers"],
             "diagnostic_facts": answer_document["diagnostic_facts"],
             "demo_evidence_used_for_scoring": False,
+            "assessment_revision": revision_context
+            or {
+                "selected_revision": 1,
+                "active_revision": 1,
+                "is_active": True,
+                "prior_revision": None,
+                "source_kind": "quick",
+                "promotion_reviewed": False,
+            },
+            "deep_dives": deep_dive_context or [],
         },
     }
     report_document = {

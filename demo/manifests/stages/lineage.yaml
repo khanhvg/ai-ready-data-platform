@@ -4,7 +4,7 @@ stage_id: DEMO-LINEAGE
 status: executed
 artifacts:
   - path: docs/system-architecture.md
-    sha256: 80a6e75b4f60c3d523ccd010b1f660d2d8253a7dde8e9d9daf9d5ea5a0232d23
+    sha256: c8f440a8deff45d75482b28efd68bbafd69d54917729c127a017efb0b7d71a3b
     origin: tracked
     availability: available
     description: Logical DuckDB and physical Iceberg identity boundary.

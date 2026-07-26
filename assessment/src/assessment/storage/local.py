@@ -496,6 +496,77 @@ class LocalEngagementStore:
             snapshot = self._snapshot_at(engagement_descriptor)
         return documents, snapshot
 
+    def read_active_assessment_and_snapshot(
+        self,
+        engagement_id: str,
+        revision_number: int | None = None,
+    ) -> tuple[dict[str, dict[str, Any] | None], dict[str, str]]:
+        """Read active or one explicitly selected result under one writer lock."""
+        if revision_number is not None and revision_number < 1:
+            raise ValueError("assessment result revision must be positive")
+        keys = (
+            "engagement.json",
+            "assessment/quick.json",
+            "findings/review.json",
+            "results/active.json",
+        )
+        documents: dict[str, dict[str, Any] | None] = {}
+        with self.lock(engagement_id) as engagement_descriptor:
+            for key in keys:
+                try:
+                    document = json.loads(
+                        _read_relative_at(engagement_descriptor, key)
+                    )
+                except FileNotFoundError:
+                    documents[key] = None
+                    continue
+                if not isinstance(document, dict):
+                    raise ValueError(f"{key}: expected a JSON object")
+                documents[key] = document
+            active_answers = documents["assessment/quick.json"]
+            pointer = documents["results/active.json"]
+            active_revision_number: int | None = None
+            if pointer is not None:
+                active_revision_number = pointer.get("active_revision")
+                if (
+                    not isinstance(active_revision_number, int)
+                    or active_revision_number < 1
+                ):
+                    raise ValueError("active result revision pointer is invalid")
+            selected_revision = (
+                revision_number
+                if revision_number is not None
+                else active_revision_number
+            )
+            if selected_revision is not None:
+                revision_key = f"results/revisions/{selected_revision}.json"
+                revision = json.loads(
+                    _read_relative_at(engagement_descriptor, revision_key)
+                )
+                if not isinstance(revision, dict):
+                    raise ValueError(f"{revision_key}: expected a JSON object")
+                quick_changed = (
+                    revision_number is None
+                    and
+                    revision.get("source_kind") == "quick"
+                    and isinstance(active_answers, dict)
+                    and revision.get("source_digest")
+                    != sha256_bytes(canonical_json(active_answers))
+                )
+                if not quick_changed:
+                    answer_key = revision.get("answer_document_key")
+                    if not isinstance(answer_key, str):
+                        raise ValueError("active result revision answer key is invalid")
+                    active_answers = json.loads(
+                        _read_relative_at(engagement_descriptor, answer_key)
+                    )
+                    if not isinstance(active_answers, dict):
+                        raise ValueError(f"{answer_key}: expected a JSON object")
+                documents[revision_key] = revision
+            documents["assessment/active.json"] = active_answers
+            snapshot = self._snapshot_at(engagement_descriptor)
+        return documents, snapshot
+
     def write_document(self, engagement_id: str, key: str, document: Mapping[str, Any]) -> None:
         validate_relative_posix_path(key)
         if key == "engagement.json":

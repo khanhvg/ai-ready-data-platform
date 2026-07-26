@@ -13,8 +13,8 @@
 - Date: 2026-07-24
 - Description: Populate the versioned capability, logical architecture, vendor-neutral technology mapping, Demo Guide, and multi-audience diagram catalog.
 - Priority: P2
-- Implementation status: Pending
-- Review status: Pending local workflow review.
+- Implementation status: Completed
+- Review status: Completed through merged Phase 5 verification evidence.
 
 ## Key Insights
 
@@ -77,13 +77,13 @@ SVG rendering is deterministic through a build-only locked `assessment/diagram-t
 
 ## Todo list
 
-- [ ] Complete all 10 capability catalog entries.
-- [ ] Complete vendor-neutral architecture patterns and mappings.
-- [ ] Add the AWS-first profile, local demo-evidence profile, and alternatives without scoring vendors.
-- [ ] Produce and review seven audience-specific diagram pairs.
-- [ ] Complete versioned Demo Guide/stage content.
-- [ ] Wire read-only catalog/report/web presentation.
-- [ ] Pass semantic, diagram parity, and technology-neutrality checks.
+- [x] Complete all 10 capability catalog entries.
+- [x] Complete vendor-neutral architecture patterns and mappings.
+- [x] Add the AWS-first profile, local demo-evidence profile, and alternatives without scoring vendors.
+- [x] Produce and review seven audience-specific diagram pairs.
+- [x] Complete versioned Demo Guide/stage content.
+- [x] Wire read-only catalog/report/web presentation.
+- [x] Pass semantic, diagram parity, and technology-neutrality checks.
 
 ## Success Criteria
 
