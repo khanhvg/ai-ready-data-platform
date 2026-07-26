@@ -9,7 +9,7 @@ artifacts:
     availability: available
     description: Layered dbt project with additive quarantine, curated, and product schemas.
   - path: orchestration/airflow/dags/retail_batch_pipeline.py
-    sha256: 0c0579c4950c145b66ab1b089af0b35ac1d30656310c6caa95ae19c7a1ef8814
+    sha256: 8ca5470d549da2c035ee660164165e5a74ebab5cffa1a35cd352aa07ad1ac0ba
     origin: tracked
     availability: available
     description: Airflow 3 TaskFlow DAG for the default full retail path.

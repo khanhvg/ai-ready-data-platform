@@ -59,10 +59,34 @@ non-scoring.
 
 ## Staged local profiles
 
-`make demo-airflow-verify` exited zero after starting Airflow alone. Import
-errors were empty, the exact run ID was
-`phase6__20260726T124806Z`, and all six default DAG tasks reached terminal
-`success`:
+Independent verification of frozen head
+`0d43cb383dee57ba61d609c238118d5718becf93` invalidated the earlier Airflow
+pass recorded here. The verifier unpaused the daily DAG before triggering the
+required manual run, and scheduled run
+`scheduled__2026-07-26T00:00:00+00:00` raced manual run
+`phase6__20260726T134543Z`. DuckDB writer contention failed
+`transform.dbt_build`; the docs and snapshot tasks became `upstream_failed`.
+The immutable independent report remains in
+[Issue 38](https://github.com/khanhvg/ai-ready-data-platform/issues/38#issuecomment-5083768869).
+
+Before changing product behavior, a contemporaneous retry of the live
+frozen-head command happened to pass, demonstrating that the defect was a
+race rather than a deterministic command failure. The focused regression then
+failed three assertions on the frozen source: the scheduled DAG had no
+single-active-run bound, the verifier emitted no zero-concurrency evidence,
+and it did not fail closed when presented with two running DAG runs.
+
+The bounded review-fix keeps `schedule="@daily"` and adds
+`max_active_runs=1`, so scheduled and manual instances of this single-writer
+pipeline cannot execute concurrently. The verifier also lists running DAG runs
+during every task-state poll, fails closed if more than one is running, and
+records `concurrent_writer_runs: 0`.
+
+After that source change, `make demo-airflow-verify` exited zero after starting
+Airflow alone with deterministic `SCALE=small SEED=42`. Import errors were
+empty, the exact required manual run ID was
+`phase6__20260726T141507Z`, `concurrent_writer_runs` was zero, and all six
+default DAG tasks reached terminal `success`:
 
 - `generate.seed`
 - `load.load_raw`
@@ -71,7 +95,8 @@ errors were empty, the exact run ID was
 - `transform.dbt_docs_generate`
 - `serve.export_marts_snapshot`
 
-The verifier always ran `make down`; the final Compose service list was empty.
+The verifier ran `make down`; the final Compose service list was empty and
+the existing named volumes remained present.
 
 The lake sequence ran only after Airflow stopped:
 
@@ -97,37 +122,28 @@ limits as 1g/2g.
 
 ## Assessment and browser separation
 
-Independent non-profile verification exited zero:
+The producing review-fix context is not an independent or post-merge verifier.
+It freshly executed the checks invalidated by the bounded source, test, and
+manifest changes:
 
-- demo contract/verification: 37 focused tests passed;
-- assessment contract: 40 tests passed;
-- engine: 28 tests passed;
-- complete non-E2E suite: 189 passed, one unchanged documented platform
-  object-store boundary skipped, and two E2E tests deselected;
-- Ruff and mypy: zero findings;
-- wheel/sdist build: 113 packaged files checked;
-- diagram renderer/security: five tests and seven deterministic rendered pairs
-  passed with render parity;
-- Compose configuration, tracked Python compilation, and `git diff --check`:
-  exit zero.
+- the genuine Airflow RED regression failed 3 and passed 1 on frozen source,
+  then the focused Airflow plus Phase 6 demo suite passed 15/15 after the fix;
+- `make demo-contract demo-verify` passed, including 41 policy, manifest,
+  contract, catalog, and non-scoring tests;
+- the focused catalog-web and non-scoring rerun brought the combined focused
+  result to 19 passed;
+- the exact small/42 core prerequisites passed with PASS=205, WARN=7, ERROR=0,
+  SKIP=0, TOTAL=212 before the representative demo regression;
+- assessment Ruff and strict mypy reported zero findings; wheel/sdist
+  build-check inspected 113 packaged files;
+- Compose configuration, compilation of 88 tracked/new Python files, changed
+  source lint, and `git diff --check` exited zero.
 
-The `--pending` specification review completed with Critical 0, Important 0,
-and Minor 0. The `--pending` code-quality re-review completed with Critical 0,
-Important 0, and Minor 1. Its non-blocking robustness note is that the web
-presentation derives manifest availability from repository-file presence while
-the required contract gate performs the semantic validation.
-
-The real loopback Chromium journey used Playwright Chromium 149.0.7827.55.
-It displayed all nine stage manifests and declared artifacts, the available
-current product, the historical/current-unexecuted metadata state, and a
-separate repository view in which the product and stage provenance were
-unavailable. It exposed no demo controls, made no remote requests, produced no
-console or page errors, preserved back/reload state, and shut down every
-browser context and loopback server.
-
-The mutation proof physically removed a stage-manifest artifact in a temporary
-repository view. Only artifact availability changed; the canonical maturity,
-confidence, gate, and finding-priority JSON projection remained byte-identical.
+The producing `--pending` specification and code-quality review completed in
+that order with Critical 0, Important 0, and Minor 0. The retained earlier
+browser, full-suite, diagram, lake, and catalog statements are prior producer
+claims, not fresh replacement-head verification by this review-fix context.
+Fresh independent replacement-head verification remains required.
 
 ## Cleanup, limitations, and rollback
 

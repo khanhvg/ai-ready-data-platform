@@ -138,6 +138,30 @@ def _write_evidence(document: dict[str, Any]) -> None:
         temporary.unlink(missing_ok=True)
 
 
+def _assert_single_running_dag_run() -> None:
+    running_runs = _json_output(
+        _docker_exec(
+            "dags",
+            "list-runs",
+            DAG_ID,
+            "--state",
+            "running",
+            "--output",
+            "json",
+        ),
+        "Airflow running-run check",
+    )
+    if not isinstance(running_runs, list):
+        raise AirflowVerificationError(
+            f"Airflow running-run check returned a non-list: {running_runs!r}"
+        )
+    if len(running_runs) > 1:
+        raise AirflowVerificationError(
+            f"Airflow has {len(running_runs)} concurrent DAG runs; "
+            "the single-writer invariant was violated"
+        )
+
+
 def verify() -> dict[str, Any]:
     _run(["docker", "compose", "--profile", "orchestration", "up", "-d"], timeout=900)
     _wait_healthy()
@@ -185,6 +209,7 @@ def verify() -> dict[str, Any]:
             for item in state_rows
             if isinstance(item, dict)
         }
+        _assert_single_running_dag_run()
         failures = {
             task_id: state
             for task_id, state in task_states.items()
@@ -202,6 +227,7 @@ def verify() -> dict[str, Any]:
                 "scale": "small",
                 "seed": 42,
                 "lake_profile_enabled": False,
+                "concurrent_writer_runs": 0,
             }
         time.sleep(5)
     raise AirflowVerificationError(
