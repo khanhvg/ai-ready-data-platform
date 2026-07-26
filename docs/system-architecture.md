@@ -16,6 +16,7 @@ ingestion/load_raw.py               (raw.* landing tables in warehouse/retail.du
         v
 dbt (transform/dbt/)                staging (18 views) -> intermediate (6 ephemeral)
         |                              -> core: dim (7) + fct (9) -> marts (11 tables)
+        |                              -> accepted + quarantine + governed product (additive)
         v
         +-----------------------------------------+
         |                                         |
@@ -129,14 +130,35 @@ is explicit. It also exercises all seven local diagram assets, catalog/Demo Guid
 reflow, a 200%-equivalent viewport, browser back/reload state, and local-only request behavior.
 No route can run the retail pipeline or a command.
 
+Phase 6 completes the bounded golden-retail evidence gaps without replacing that architecture.
+`accepted_orders` and `quarantine_orders` are complementary tables over deduplicated
+`stg_orders`; null/empty or invalid statuses retain rule and reason evidence in quarantine.
+`ai_ready_customer_product` consumes only accepted orders, joins synthetic customer attributes,
+and publishes deterministic pseudonymous keys without raw email or raw customer/order IDs. It
+is deliberately absent from `lake/curated_assets.json`, so Parquet, Rill, Iceberg, and the
+physical OpenMetadata inventory remain the canonical eleven legacy business marts.
+
+The checked policy under `governance/policy/` maps one fixed demo role to one safe logical asset.
+Its CLI accepts only role and asset IDs, rejects raw/staging/classified/unknown assets before
+query construction, opens the fixed DuckDB path internally, and writes only to the fixed ignored
+evidence root. It accepts no SQL, relation, database path, or output path. This is an
+application-level local authorization example, not database IAM; a machine owner can open
+DuckDB directly.
+
+Nine versioned stage manifests and one AI-ready dataset manifest under `demo/manifests/` bind
+repository-relative artifacts, checksums, actual commands, contracts, cleanup, limitations,
+provenance, automation state, and non-scoring status. The explicit executable ratio is 30/30
+(100%). The assessment web only resolves and displays those references; mutation or removal can
+change evidence availability in the appendix but cannot enter engine inputs.
+
 Portable export/import is separate from the retail pipeline: deterministic `ZIP_STORED` archives
 contain normalized files and a canonical digest manifest. Import fully preflights archive names,
 features, limits, checksums, versions, secrets, credentialed URIs, and machine paths, then writes
 only to a sibling staging directory before atomic destination promotion. No assessment command
 starts Docker, DuckDB, dbt, Rill, Airflow, Lakekeeper, OpenMetadata, AWS, or Terraform.
 
-Golden-demo integration, deep-dive execution content, cloud/object-store implementation, and
-deployment remain Phase 6–8 work or explicitly deferred.
+Deep-dive execution content, cloud/object-store implementation, and deployment remain Phase 7–8
+work or explicitly deferred.
 
 ## The logical/physical distinction
 

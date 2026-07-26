@@ -875,13 +875,24 @@ def _read_only_surfaces(
     demo_text = page.locator("main").inner_text().lower()
     for expected in (
         "9 read-only presenter stages",
+        "30/30 = 100%",
         "artifact available",
-        "artifact unavailable",
         "demo artifacts are illustrations only",
+        "current openmetadata execution is unexecuted",
+        "demo/manifests/stages/ingestion.yaml",
+        "demo/manifests/stages/quality-quarantine.yaml",
+        "demo/manifests/stages/transformation.yaml",
+        "demo/manifests/stages/metadata.yaml",
+        "demo/manifests/stages/lineage.yaml",
+        "demo/manifests/stages/governance.yaml",
+        "demo/manifests/stages/access-control.yaml",
+        "demo/manifests/stages/serving.yaml",
+        "demo/manifests/stages/ai-ready-publication.yaml",
+        "demo/manifests/ai-ready-customer-product.v1.yaml",
     ):
         if expected not in demo_text:
             raise AssertionError(f"/demo did not present expected status: {expected}")
-    if page.get_by_role("button").count() or page.locator("form").count():
+    if page.locator("button, form, input, select, textarea").count():
         raise AssertionError("/demo unexpectedly exposes a control action")
     page.screenshot(path=evidence_root / "demo-200-percent-equivalent.png", full_page=True)
 
@@ -901,8 +912,36 @@ def _read_only_surfaces(
             "step": "catalog-demo-read-only",
             "catalog_diagrams": 7,
             "demo_stages": 9,
+            "demo_automation": "30/30 = 100%",
+            "demo_stage_manifests": 9,
             "narrow_viewport": 375,
             "zoom_equivalent_viewport": 640,
+            "controls": 0,
+        }
+    )
+
+
+def _unavailable_demo_surface(
+    page: Page,
+    base_url: str,
+    evidence_root: Path,
+    transcript: list[dict[str, Any]],
+) -> None:
+    page.goto(f"{base_url}/demo")
+    demo_text = page.locator("main").inner_text().lower()
+    if "artifact unavailable" not in demo_text:
+        raise AssertionError("/demo did not render unavailable artifact state")
+    if "current execution claims cannot be confirmed here" not in demo_text:
+        raise AssertionError("/demo did not fail closed on unavailable provenance")
+    if "demo/evidence/current/ai-ready-customer-product.csv" not in demo_text:
+        raise AssertionError("/demo omitted the unavailable generated product")
+    if page.locator("button, form, input, select, textarea").count():
+        raise AssertionError("/demo unavailable state unexpectedly exposes a control action")
+    page.screenshot(path=evidence_root / "demo-unavailable.png", full_page=True)
+    transcript.append(
+        {
+            "step": "demo-unavailable-read-only",
+            "generated_product": "unavailable",
             "controls": 0,
         }
     )
@@ -927,6 +966,7 @@ def run_browser_journey(
         repository_root=repository_root,
     )
     destination_server: RunningServer | None = None
+    unavailable_server: RunningServer | None = None
     transcript: list[dict[str, Any]] = []
     remote_requests: list[str] = []
     console_errors: list[str] = []
@@ -1008,6 +1048,18 @@ def run_browser_journey(
                     evidence_root,
                     transcript,
                 )
+                unavailable_repository = work_root / "unavailable-repository"
+                unavailable_repository.mkdir()
+                unavailable_server = _start_server(
+                    work_root / "unavailable",
+                    repository_root=unavailable_repository,
+                )
+                _unavailable_demo_surface(
+                    page,
+                    unavailable_server.base_url,
+                    evidence_root,
+                    transcript,
+                )
 
                 destination_server = _start_server(
                     work_root / "destination",
@@ -1028,7 +1080,9 @@ def run_browser_journey(
             finally:
                 browser.close()
     finally:
-        server_logs.extend(_stop_servers((destination_server, source_server)))
+        server_logs.extend(
+            _stop_servers((destination_server, unavailable_server, source_server))
+        )
 
     if remote_requests:
         raise AssertionError(f"browser attempted remote requests: {remote_requests}")

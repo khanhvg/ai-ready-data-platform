@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: accepted_orders
+    description: >
+      Accepted side of the deterministic order-status partition over deduplicated
+      stg_orders. This additive demo boundary does not relabel or replace the
+      canonical eleven legacy business marts.
+    columns:
+      - name: order_id
+        tests: [not_null, unique]
+      - name: customer_id
+        tests: [not_null]
+      - name: status
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['completed', 'cancelled', 'returned', 'pending']

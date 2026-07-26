@@ -1,0 +1,39 @@
+schema_version: 1.0.0
+policy_id: local-ai-ready-customer-export
+policy_version: 1.0.0
+roles:
+  demo-ai-consumer:
+    allow:
+      - ai-ready-customer-product
+    deny:
+      - raw-customers
+      - staging-customers
+      - customer-email-pii
+assets:
+  ai-ready-customer-product:
+    decision: governed-export
+    relation: main_products.ai_ready_customer_product
+    output: demo/evidence/current/ai-ready-customer-product.csv
+    columns:
+      - order_key
+      - customer_key
+      - email_pseudonym
+      - loyalty_tier
+      - is_active
+      - order_date
+      - channel
+      - accepted_order_status
+      - order_total
+  raw-customers:
+    decision: deny
+    classification: synthetic-pii
+  staging-customers:
+    decision: deny
+    classification: synthetic-pii
+  customer-email-pii:
+    decision: deny
+    classification: synthetic-pii
+limitations:
+  - This is a fixed application-level authorization demonstration, not DuckDB IAM.
+  - A local machine owner can open the DuckDB file directly and bypass this entrypoint.
+  - The entrypoint accepts no SQL, relation expression, database path, or output path.

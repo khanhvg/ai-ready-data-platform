@@ -1,14 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
+{% set manifest_state = namespace(available=0) %}
+{% for stage in demo.stages %}
+  {% for artifact in stage.artifacts %}
+    {% if "stage manifest" in artifact.label | lower and artifact.status == "available" %}
+      {% set manifest_state.available = manifest_state.available + 1 %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
 <header class="catalog-hero demo-hero">
   <div>
     <p class="eyebrow">Presenter guide · repository evidence · read-only</p>
     <h1>Demo Guide</h1>
     <p class="catalog-lede">{{ demo.presenter_purpose }}</p>
-    <p>9 read-only presenter stages connect repository-relative artifacts to catalog patterns. This view does not execute commands, SQL, pipelines, containers, services, or cloud actions.</p>
+    <p>9 read-only presenter stages expose the Phase 6 manifests and their repository-relative artifacts. This view does not execute commands, SQL, pipelines, containers, services, or cloud actions.</p>
   </div>
   <dl class="catalog-summary" aria-label="Demo Guide summary">
     <div><dt>Stages</dt><dd>{{ demo.stages | length }}</dd></div>
+    <div><dt>Automation</dt><dd>{{ demo.automation_automated_steps }}/{{ demo.automation_eligible_steps }} = {{ (demo.automation_automated_steps * 100 / demo.automation_eligible_steps) | int }}%</dd></div>
     <div><dt>Mode</dt><dd>Read-only</dd></div>
     <div><dt>Version</dt><dd>{{ demo.version }}</dd></div>
   </dl>
@@ -18,6 +27,11 @@
   <h2>Non-scoring illustration</h2>
   <p><strong>Demo artifacts are illustrations only.</strong> {{ demo.non_scoring_disclaimer }}</p>
   <p>Artifact availability describes this local repository only. An unavailable artifact is not a failed customer capability.</p>
+  {% if manifest_state.available == 9 %}
+    <p><strong>Provenance truth:</strong> eight available stage manifests record current executed proof. The metadata manifest is historical, and current OpenMetadata execution is unexecuted.</p>
+  {% else %}
+    <p><strong>Provenance unavailable:</strong> {{ manifest_state.available }} of 9 stage manifests are available in this repository view, so current execution claims cannot be confirmed here. Missing demo evidence never changes assessment scoring.</p>
+  {% endif %}
   <ul>{% for boundary in demo.operating_boundary %}<li>{{ boundary }}</li>{% endfor %}</ul>
 </div>
 

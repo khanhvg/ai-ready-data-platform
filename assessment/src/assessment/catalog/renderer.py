@@ -25,6 +25,8 @@ def demo_view(demo: DemoCatalog) -> dict[str, Any]:
         "title": demo.title,
         "presenter_purpose": demo.presenter_purpose,
         "non_scoring_disclaimer": demo.non_scoring_disclaimer,
+        "automation_eligible_steps": demo.automation_eligible_steps,
+        "automation_automated_steps": demo.automation_automated_steps,
         "operating_boundary": list(demo.operating_boundary),
         "stage_order": list(demo.stage_order),
         "stages": [item.model_dump(mode="json") for item in demo.stages],

@@ -1,0 +1,51 @@
+schema_version: 1.0.0
+demo_content_version: 1.0.0
+stage_id: DEMO-TRANSFORMATION
+status: executed
+artifacts:
+  - path: transform/dbt/dbt_project.yml
+    sha256: 4e3bd0bad08a7a8c15ceb2f824b794b7ed654f28861f017d6057722453cc5fb6
+    origin: tracked
+    availability: available
+    description: Layered dbt project with additive quarantine, curated, and product schemas.
+  - path: orchestration/airflow/dags/retail_batch_pipeline.py
+    sha256: 8ca5470d549da2c035ee660164165e5a74ebab5cffa1a35cd352aa07ad1ac0ba
+    origin: tracked
+    availability: available
+    description: Airflow 3 TaskFlow DAG for the default full retail path.
+commands:
+  - command: make dbt
+    purpose: Build and test the complete deterministic transformation graph.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: dbt build is the established public transformation target.
+  - command: make dbt-docs
+    purpose: Generate current logical catalog and lineage artifacts.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: The target generates dbt manifest and catalog JSON.
+  - command: make demo-airflow-verify
+    purpose: Trigger and poll the exact default DAG run to terminal success.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: The verifier manages health, import, trigger, polling, and teardown.
+expected_contracts:
+  - The default DAG executes generate, load, transform, and serve in dependency order.
+  - Current runtime proof requires an exact successful DAG run, not UI startup.
+cleanup:
+  - command: make down
+    purpose: Stop Airflow and any other local profile without removing named volumes.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: Repository teardown target used by the Airflow verifier.
+limitations:
+  - Airflow runs alone and never overlaps lake or governance profiles.
+  - DAG source presence alone is not current execution proof.
+provenance:
+  input_sha: 7687a666cce3f533d4adac542ada34037b91ed8c
+  evidence_kind: current
+  current_execution: executed
+  references:
+    - docs/transform-orchestration.md
+    - docs/verification/GH-38-phase-6-evidence.md
+non_scoring: true

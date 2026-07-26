@@ -30,6 +30,7 @@ DEFAULT_DUCKDB_PATH = REPO_ROOT / "warehouse" / "retail.duckdb"
 # OpenMetadata Iceberg ingestion YAML renderer to keep the curated-asset set
 # from drifting between publish, export, and catalog ingestion.
 CURATED_ASSETS_PATH = Path(__file__).resolve().parent / "curated_assets.json"
+NIL_PROJECT_ID = "00000000-0000-0000-0000-000000000000"
 
 
 def _load_curated_assets(path: Path = CURATED_ASSETS_PATH) -> list[dict[str, str]]:
@@ -66,6 +67,57 @@ def _management_api_base(catalog_uri: str) -> str:
     return catalog_uri.rsplit("/catalog", 1)[0]
 
 
+def _read_server_info(base: str) -> dict[str, object]:
+    info_req = urllib.request.Request(f"{base}/management/v1/info")
+    try:
+        with urllib.request.urlopen(info_req, timeout=10) as response:
+            return json.load(response)
+    except urllib.error.URLError as exc:
+        raise RuntimeError(
+            f"Could not read Lakekeeper server status at {base}: {exc}. "
+            "Is the `lake` profile up (`make lake-up`)?"
+        ) from exc
+
+
+def _assert_default_project(info: dict[str, object]) -> None:
+    if (
+        info.get("bootstrapped") is not True
+        or info.get("default-project-id") != NIL_PROJECT_ID
+    ):
+        raise RuntimeError(
+            "Lakekeeper bootstrap did not create the required local default project"
+        )
+
+
+def _ensure_bootstrapped(base: str) -> None:
+    """Initialize a fresh local Lakekeeper server and its default project."""
+    info = _read_server_info(base)
+    if info.get("bootstrapped") is True:
+        _assert_default_project(info)
+        return
+
+    payload = json.dumps({"accept-terms-of-use": True}).encode()
+    bootstrap_req = urllib.request.Request(
+        f"{base}/management/v1/bootstrap",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        urllib.request.urlopen(bootstrap_req, timeout=10)
+    except urllib.error.HTTPError as exc:
+        try:
+            _assert_default_project(_read_server_info(base))
+            return
+        except RuntimeError:
+            pass
+        detail = exc.read().decode(errors="replace")
+        raise RuntimeError(
+            f"Failed to bootstrap the local Lakekeeper server: {exc.code} {detail}"
+        ) from exc
+    _assert_default_project(_read_server_info(base))
+
+
 def _ensure_warehouse(cfg: dict[str, str]) -> None:
     """Create the Lakekeeper warehouse if it doesn't exist yet.
 
@@ -79,6 +131,7 @@ def _ensure_warehouse(cfg: dict[str, str]) -> None:
     this script's own `lake_s3` secret instead.
     """
     base = _management_api_base(cfg["catalog_uri"])
+    _ensure_bootstrapped(base)
     list_req = urllib.request.Request(f"{base}/management/v1/warehouse")
     try:
         with urllib.request.urlopen(list_req, timeout=10) as resp:

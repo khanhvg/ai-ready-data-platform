@@ -1,0 +1,56 @@
+schema_version: 1.0.0
+demo_content_version: 1.0.0
+stage_id: DEMO-INGESTION
+status: executed
+artifacts:
+  - path: data-generator/generate.py
+    sha256: f6ac5de8390750093a22c35f7e4057605b9f6512338b6974714fce8efeb0d683
+    origin: tracked
+    availability: available
+    description: Deterministic eighteen-table synthetic retail generator.
+  - path: ingestion/load_raw.py
+    sha256: 2a94bf947dc6dd8c46b69833914c836e5b81efe6fb4e8143969e7fc3250c0406
+    origin: tracked
+    availability: available
+    description: Idempotent local DuckDB raw landing entrypoint.
+commands:
+  - command: make seed SCALE=small SEED=42
+    purpose: Generate the pinned deterministic synthetic fixture.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: The repository Make target invokes the fixed generator interface.
+  - command: make load
+    purpose: Land all generated CSV sources into the local raw schema.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: The repository Make target invokes the bounded loader.
+  - command: make health
+    purpose: Open DuckDB read-only and verify the raw landing.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: The health target performs the complete local assertion.
+expected_contracts:
+  - Small scale and seed 42 produce deterministic synthetic retail data only.
+  - Eighteen raw tables are landed locally and remain outside assessment scoring.
+cleanup:
+  - command: make down
+    purpose: Stop any local Compose profile without removing named volumes.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: Repository teardown target.
+  - command: make clean
+    purpose: Remove generated core pipeline files.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: Repository cleanup target.
+limitations:
+  - The generated manifest timestamp is intentionally run-specific.
+  - Synthetic sandbox ingestion is not evidence of customer ingestion maturity.
+provenance:
+  input_sha: 7687a666cce3f533d4adac542ada34037b91ed8c
+  evidence_kind: current
+  current_execution: executed
+  references:
+    - docs/demo-runbook.md
+    - docs/verification/GH-38-phase-6-evidence.md
+non_scoring: true

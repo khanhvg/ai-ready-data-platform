@@ -28,7 +28,29 @@
     },
     "artifact_path": {"$ref": "#/$defs/relative_path"},
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "row_count": {"type": "integer", "minimum": 0}
+    "row_count": {"type": "integer", "minimum": 0},
+    "owner": {"$ref": "#/$defs/owner"},
+    "contract": {"$ref": "#/$defs/contract"},
+    "service_levels": {"$ref": "#/$defs/service_levels"},
+    "access": {"$ref": "#/$defs/access"},
+    "lineage": {"$ref": "#/$defs/lineage"},
+    "reproduction": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/command"}
+    },
+    "source_checksums": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/artifact"}
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1, "maxLength": 2048}
+    },
+    "synthetic_data": {"const": true},
+    "non_scoring": {"const": true}
   },
   "$defs": {
     "id": {
@@ -37,7 +59,147 @@
     },
     "relative_path": {
       "type": "string",
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}(?:/[A-Za-z0-9][A-Za-z0-9._-]{0,127})*$"
+      "pattern": "^[A-Za-z0-9_][A-Za-z0-9._-]{0,127}(?:/[A-Za-z0-9_][A-Za-z0-9._-]{0,127})*$"
+    },
+    "owner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "accountable_role"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1, "maxLength": 256},
+        "accountable_role": {"type": "string", "minLength": 1, "maxLength": 256}
+      }
+    },
+    "column": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type", "nullable", "description"],
+      "properties": {
+        "name": {"$ref": "#/$defs/id"},
+        "type": {"type": "string", "minLength": 1, "maxLength": 128},
+        "nullable": {"type": "boolean"},
+        "description": {"type": "string", "minLength": 1, "maxLength": 1024}
+      }
+    },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "grain", "columns"],
+      "properties": {
+        "schema": {"$ref": "#/$defs/relative_path"},
+        "grain": {"type": "string", "minLength": 1, "maxLength": 1024},
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/column"}
+        }
+      }
+    },
+    "service_level": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objective", "verification"],
+      "properties": {
+        "objective": {"type": "string", "minLength": 1, "maxLength": 1024},
+        "verification": {"type": "string", "minLength": 1, "maxLength": 512}
+      }
+    },
+    "service_levels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["quality", "freshness"],
+      "properties": {
+        "quality": {"$ref": "#/$defs/service_level"},
+        "freshness": {"$ref": "#/$defs/service_level"}
+      }
+    },
+    "access": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification",
+        "approved_role_ids",
+        "policy_path",
+        "prohibited_fields"
+      ],
+      "properties": {
+        "classification": {"const": "synthetic-pii-derived"},
+        "approved_role_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/id"}
+        },
+        "policy_path": {"$ref": "#/$defs/relative_path"},
+        "prohibited_fields": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/id"}
+        }
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sources", "model_path", "metadata_references"],
+      "properties": {
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/id"}
+        },
+        "model_path": {"$ref": "#/$defs/relative_path"},
+        "metadata_references": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/relative_path"}
+        }
+      }
+    },
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "purpose",
+        "eligible_for_automation",
+        "automated",
+        "automation_rationale"
+      ],
+      "properties": {
+        "command": {"type": "string", "minLength": 1, "maxLength": 512},
+        "purpose": {"type": "string", "minLength": 1, "maxLength": 1024},
+        "eligible_for_automation": {"type": "boolean"},
+        "automated": {"type": "boolean"},
+        "automation_rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "origin",
+        "availability",
+        "description"
+      ],
+      "properties": {
+        "path": {"$ref": "#/$defs/relative_path"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "origin": {"enum": ["tracked", "generated", "historical"]},
+        "availability": {
+          "enum": ["available", "current", "historical", "unavailable"]
+        },
+        "description": {"type": "string", "minLength": 1, "maxLength": 2048}
+      }
     }
   }
 }

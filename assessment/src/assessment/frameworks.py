@@ -11,7 +11,7 @@ from typing import Any
 import yaml
 
 from assessment.domain.errors import CompatibilityError, ContentValidationError
-from prototype import run as prototype  # type: ignore
+from prototype.run import load_framework as load_prototype_framework  # type: ignore
 
 FRAMEWORK_VERSION = "1.0.0"
 
@@ -86,7 +86,7 @@ def load_framework(version: str) -> FrameworkBundle:
     if version != FRAMEWORK_VERSION:
         raise CompatibilityError(f"framework: unsupported version {version!r}")
     _verified_content()
-    source = prototype.load_framework()
+    source = load_prototype_framework()
     return FrameworkBundle(
         version=FRAMEWORK_VERSION,
         domains=copy.deepcopy(source.capabilities["domains"]),

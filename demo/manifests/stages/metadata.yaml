@@ -1,0 +1,40 @@
+schema_version: 1.0.0
+demo_content_version: 1.0.0
+stage_id: DEMO-METADATA
+status: historical
+artifacts:
+  - path: governance/openmetadata/README.md
+    sha256: a02f128f7c523cd3f63297fe2365c365b4db5b9bdc8197fd4ccf190817480e98
+    origin: tracked
+    availability: available
+    description: Staged local OpenMetadata ingestion and verification runbook.
+  - path: governance/openmetadata/ingestion/dbt_ingestion.yaml
+    sha256: 5d23aec7b6d5d858191fb7d46a4669663443790496cb65e56bb9fbc6fd0fda29
+    origin: tracked
+    availability: available
+    description: Logical dbt metadata ingestion configuration.
+commands:
+  - command: make catalog-ingest
+    purpose: Run the guarded lake and governance ingestion window.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: The target stages services but requires a separately supplied local token.
+expected_contracts:
+  - Current execution is unexecuted unless the documented local token is supplied.
+  - Historical proof remains labeled historical and does not become current evidence.
+cleanup:
+  - command: make down
+    purpose: Stop the guarded governance window without removing named volumes.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: Repository teardown target.
+limitations:
+  - Current OpenMetadata ingestion requires a local ingestion-bot token that is never tracked.
+  - OpenMetadata search and server memory limits are 1g and 2g.
+provenance:
+  input_sha: 7687a666cce3f533d4adac542ada34037b91ed8c
+  evidence_kind: historical
+  current_execution: unexecuted
+  references:
+    - docs/verification/GH-3-full-flow-evidence.md
+non_scoring: true

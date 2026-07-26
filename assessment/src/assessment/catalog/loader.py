@@ -416,6 +416,12 @@ def load_demo_catalog(
             "title": guide_document.get("title"),
             "presenter_purpose": guide_document.get("presenter_purpose"),
             "non_scoring_disclaimer": guide_document.get("non_scoring_disclaimer"),
+            "automation_eligible_steps": guide_document.get(
+                "automation_eligible_steps"
+            ),
+            "automation_automated_steps": guide_document.get(
+                "automation_automated_steps"
+            ),
             "operating_boundary": guide_document.get("operating_boundary"),
             "stage_order": guide_document.get("stage_order"),
             "stages": stages,

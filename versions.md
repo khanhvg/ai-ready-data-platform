@@ -18,14 +18,14 @@ throwaway venv. This replaces the plan's *candidate* matrix with the actually-te
 | Lakekeeper (Iceberg REST catalog) | `v0.13.1` (`quay.io/lakekeeper/catalog`) | `lake` profile only — required for DuckDB Iceberg **writes** (raw S3 path insufficient); pinned instead of `latest-main` |
 | OpenMetadata | `1.6.5` (`docker.getcollate.io/openmetadata/server`) | `governance` profile only. `openmetadata-ingestion[iceberg,dbt]==1.6.5.0` ingests **both** the physical Iceberg tables (via its Iceberg RestCatalog connector, pyiceberg 0.5.1) and the logical dbt artifacts (`governance/openmetadata/`) — see the Phase 6 spike below. No native DuckDB connector, so the dbt-sourced `retail_duckdb` service is bootstrapped from dbt's own `catalog.json`, not a live crawl. |
 
-## Issue #38 Phase 1–4 assessment package
+## Issue #38 Phase 1–6 assessment package
 
 The assessment uses its own `.assessment-venv` and hash-locked dependency files. Verified on
 macOS arm64 with Python 3.12.3:
 
 | Component | Version |
 |---|---:|
-| Package | `0.4.0` |
+| Package | `0.5.0` |
 | Prototype framework/schema | `0.1.0-prototype` |
 | Public contracts/archive format | `1.0.0` |
 | pip | 25.1.1 |
@@ -54,6 +54,12 @@ portability, security, test, lint, typecheck, and build commands are process-loc
 shared network-denying wrapper. Phase 4 browser installation is a separate bounded target.
 Browser acceptance uses one pinned Chromium worker and a loopback-only sandbox that denies
 external network requests.
+
+Phase 6 also verified the fixed policy interface on Python 3.12.3 and DuckDB 1.5.4. Raw,
+staging, classified-email, unknown role, and unknown asset cases fail nonzero; the one governed
+product succeeds; attempted SQL and output-path arguments are rejected by the parser. PyYAML
+6.0.3 and jsonschema 4.26.0 are explicitly pinned for the core policy/manifest verification
+surface. The limitation is intentional: this is application authorization, not DuckDB IAM.
 
 ## Phase 6 compatibility spike: OpenMetadata 1.6.5 Iceberg connector vs Lakekeeper v0.13.1
 

@@ -1,0 +1,46 @@
+schema_version: 1.0.0
+demo_content_version: 1.0.0
+stage_id: DEMO-AI-READY-PUBLICATION
+status: executed
+artifacts:
+  - path: transform/dbt/models/products/ai_ready_customer_product.sql
+    sha256: 02fc18e722ab4411006067b29fca5c109ef81256d859cfdfc1ff70df2374b294
+    origin: tracked
+    availability: available
+    description: Governed pseudonymous product model outside the canonical marts.
+  - path: demo/manifests/ai-ready-customer-product.v1.yaml
+    sha256: 47768d4f25dc6d993dc2df9e1be124a888cfab98a91e00e453fcfa5c97b7dd70
+    origin: tracked
+    availability: available
+    description: Versioned owner, contract, SLA, access, lineage, and reproduction manifest.
+commands:
+  - command: make demo-contract
+    purpose: Validate schemas and semantic references without generated artifacts.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: The contract target is deterministic and service-free.
+  - command: make demo-verify
+    purpose: Export, hash, and verify the current governed product.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: The verifier exercises real relations and the policy CLI.
+expected_contracts:
+  - The manifest binds the deterministic output to ownership, schema, service levels, access, lineage, and checksums.
+  - Publication evidence remains explicitly synthetic, local, and non-scoring.
+cleanup:
+  - command: make clean
+    purpose: Remove generated AI-ready product and verification evidence.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: Repository cleanup target includes Phase 6 current evidence.
+limitations:
+  - No AI model is trained and no dataset is uploaded or deployed.
+  - The product is a bounded demonstration outside the canonical eleven marts.
+provenance:
+  input_sha: 7687a666cce3f533d4adac542ada34037b91ed8c
+  evidence_kind: current
+  current_execution: executed
+  references:
+    - docs/demo-guide.md
+    - docs/verification/GH-38-phase-6-evidence.md
+non_scoring: true

@@ -34,6 +34,7 @@ LAKE_PROFILE_ENABLED = os.environ.get("LAKE_PROFILE_ENABLED", "false").strip().l
     schedule="@daily",
     start_date=datetime(2026, 1, 1),
     catchup=False,
+    max_active_runs=1,
     tags=["retail", "batch"],
 )
 def retail_batch_pipeline():
