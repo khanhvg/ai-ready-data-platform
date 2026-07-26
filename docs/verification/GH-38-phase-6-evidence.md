@@ -102,7 +102,7 @@ Independent non-profile verification exited zero:
 - demo contract/verification: 37 focused tests passed;
 - assessment contract: 40 tests passed;
 - engine: 28 tests passed;
-- complete non-E2E suite: 188 passed, one unchanged documented platform
+- complete non-E2E suite: 189 passed, one unchanged documented platform
   object-store boundary skipped, and two E2E tests deselected;
 - Ruff and mypy: zero findings;
 - wheel/sdist build: 113 packaged files checked;
