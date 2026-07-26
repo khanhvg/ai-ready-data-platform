@@ -38,14 +38,16 @@ Generated data and warehouses are intentionally gitignored.
 
 ## AI-ready assessment package
 
-Issue #38 Phases 1–6 add a separate, local-only Python 3.12 package under `assessment/`. It
+Issue #38 Phases 1–7 add a separate, local-only Python 3.12 package under `assessment/`. It
 validates the 10-domain rubric and 30 anchored questions, recomputes four two-rater scenarios,
 checks the 117/119 calibration result, defines the v1 portable engagement contracts and local
 folder authority, and evaluates those folders with a deterministic maturity, confidence,
 seven-gate, finding, recommendation, and report engine. Phase 4 adds a loopback-only,
 server-rendered architect workflow and a bounded real-Chromium acceptance path. Phase 5 adds
 the versioned ten-domain capability catalog, vendor-neutral architecture patterns, advisory
-technology mappings, seven reviewed diagrams, and a read-only Demo Guide:
+technology mappings, seven reviewed diagrams, and a read-only Demo Guide. Phase 7 adds
+deterministic finding-to-action chains, three advisory deep dives, explicit reviewed
+revision promotion, and one inert non-production recipe-extension fixture:
 
 ```bash
 make assessment-install
@@ -72,6 +74,9 @@ accepted/quarantine evidence, one pseudonymous AI-ready customer product outside
 eleven marts, a fixed application-level policy export, nine stage manifests, and a versioned
 dataset manifest. Run the existing core sequence through `make dbt-docs make bi`, then
 `make demo-contract demo-verify`; see `docs/demo-guide.md`.
+Deep-dive answers remain advisory until an architect explicitly promotes a digest-bound,
+conflict-complete selection through the versioned engine. Promotion creates a new active result
+revision and retains every prior quick result; there is no automatic latest-wins behavior.
 
 ## Scale profiles
 

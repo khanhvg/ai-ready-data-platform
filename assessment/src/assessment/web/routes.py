@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal, cast
 
 from fastapi import APIRouter, Request
 from fastapi.responses import (
@@ -14,10 +14,16 @@ from fastapi.responses import (
     Response,
 )
 from fastapi.templating import Jinja2Templates
+from pydantic import ValidationError
 from starlette.datastructures import UploadFile
 
+from assessment.domain.deep_dives import DeepDiveAnswer
 from assessment.domain.errors import AssessmentError
-from assessment.domain.models import validate_identifier, validate_relative_posix_path
+from assessment.domain.models import (
+    EvidenceStatus,
+    validate_identifier,
+    validate_relative_posix_path,
+)
 from assessment.storage.archive import (
     IMAGE_EXTENSIONS,
     canonicalize_evidence_attachment,
@@ -365,6 +371,7 @@ async def review(request: Request, engagement_id: str) -> HTMLResponse:
             title="Assessment review",
             engagement_id=engagement_id,
             result=web.result_view(result),
+            revisions=web.revision_view(engagement_id),
             state=web.state(engagement_id),
         ),
     )
@@ -411,7 +418,7 @@ async def deep_dives(request: Request, engagement_id: str) -> HTMLResponse:
             request,
             title="Plan deep dives",
             engagement_id=engagement_id,
-            domains=web.framework.domains,
+            deep_dives=web.deep_dive_service.registry.deep_dives,
             selection=document,
             selected={
                 str(item["capability_id"]) for item in document.get("selections", [])
@@ -446,12 +453,151 @@ async def save_deep_dives(
     return RedirectResponse(f"/engagements/{engagement_id}/deep-dives", status_code=303)
 
 
+@router.get("/engagements/{engagement_id}/deep-dives/{deep_dive_id}")
+async def deep_dive_workshop(
+    request: Request,
+    engagement_id: str,
+    deep_dive_id: str,
+    source: str | None = None,
+) -> HTMLResponse:
+    try:
+        web = services(request)
+        definition = web.deep_dive_service.registry.by_id(deep_dive_id)
+        advisory = (
+            None
+            if source is None
+            else web.deep_dive_service.advisory(engagement_id, source)
+        )
+        revisions = web.revision_view(engagement_id)
+        target_digest = web.deep_dive_service.promotion_target_digest(
+            engagement_id
+        )
+    except (AssessmentError, ValueError, FileNotFoundError) as error:
+        return _error(
+            request,
+            str(error),
+            status_code=404,
+            engagement_id=engagement_id,
+        )
+    return templates.TemplateResponse(
+        request,
+        "deep-dive.html",
+        _context(
+            request,
+            title=definition.title,
+            engagement_id=engagement_id,
+            definition=definition,
+            advisory=advisory,
+            revisions=revisions,
+            target_digest=target_digest,
+            state=web.state(engagement_id),
+            evidence_statuses=EVIDENCE_STATUSES,
+        ),
+    )
+
+
+@router.post("/engagements/{engagement_id}/deep-dives/{deep_dive_id}")
+async def save_deep_dive_workshop(
+    request: Request,
+    engagement_id: str,
+    deep_dive_id: str,
+) -> Response:
+    form = await request.form()
+    if forbidden := _csrf_or_403(request, form):
+        return forbidden
+    try:
+        web = services(request)
+        definition = web.deep_dive_service.registry.by_id(deep_dive_id)
+        answers: list[DeepDiveAnswer] = []
+        for question in definition.questions:
+            raw_rating = str(form.get(f"rating-{question.id}", ""))
+            rating = None if raw_rating == "" else int(raw_rating)
+            evidence_status = str(
+                form.get(f"evidence-status-{question.id}", "")
+            )
+            if evidence_status not in EVIDENCE_STATUSES:
+                raise ValueError("deep-dive evidence status is invalid")
+            answers.append(
+                DeepDiveAnswer(
+                    question_id=question.id,
+                    rating=rating,
+                    evidence_status=cast(EvidenceStatus, evidence_status),
+                    note=str(form.get(f"note-{question.id}", "")),
+                    evidence_refs=[],
+                )
+            )
+        advisory = web.save_deep_dive_advisory(
+            engagement_id,
+            deep_dive_id=deep_dive_id,
+            answers=answers,
+        )
+    except (AssessmentError, ValidationError, ValueError) as error:
+        return _error(request, str(error), engagement_id=engagement_id)
+    return RedirectResponse(
+        f"/engagements/{engagement_id}/deep-dives/{deep_dive_id}"
+        f"?source={advisory.document_digest}",
+        status_code=303,
+    )
+
+
+@router.post(
+    "/engagements/{engagement_id}/deep-dives/{deep_dive_id}/promote"
+)
+async def promote_deep_dive(
+    request: Request,
+    engagement_id: str,
+    deep_dive_id: str,
+) -> Response:
+    form = await request.form()
+    if forbidden := _csrf_or_403(request, form):
+        return forbidden
+    try:
+        web = services(request)
+        definition = web.deep_dive_service.registry.by_id(deep_dive_id)
+        source_digest = str(form.get("source_digest", ""))
+        if not re.fullmatch(r"[0-9a-f]{64}", source_digest):
+            raise ValueError("promotion source digest is invalid")
+        target_digest = str(form.get("target_digest", ""))
+        if not re.fullmatch(r"[0-9a-f]{64}", target_digest):
+            raise ValueError("promotion target digest is invalid")
+        capability_ids = [
+            capability_id
+            for capability_id in definition.capability_ids
+            if str(form.get(f"promote-{capability_id}", "")) == "yes"
+        ]
+        choices: dict[str, Literal["use-quick", "use-deep-dive"]] = {}
+        for capability_id in capability_ids:
+            choice = str(form.get(f"choice-{capability_id}", ""))
+            if choice not in {"use-quick", "use-deep-dive"}:
+                raise ValueError("every promoted capability requires a conflict choice")
+            choices[capability_id] = cast(
+                Literal["use-quick", "use-deep-dive"], choice
+            )
+        web.promote_deep_dive(
+            engagement_id,
+            source_digest=source_digest,
+            target_digest=target_digest,
+            capability_ids=capability_ids,
+            rationale=str(form.get("rationale", "")),
+            reviewed_by=str(form.get("reviewed_by", "")),
+            choices=choices,
+        )
+    except (AssessmentError, ValidationError, ValueError, FileNotFoundError) as error:
+        return _error(request, str(error), engagement_id=engagement_id)
+    return RedirectResponse(
+        f"/engagements/{engagement_id}/deep-dives/{deep_dive_id}"
+        f"?source={source_digest}",
+        status_code=303,
+    )
+
+
 @router.get("/engagements/{engagement_id}/report")
 async def report_view(request: Request, engagement_id: str) -> HTMLResponse:
     try:
         web = services(request)
         web.store.open(engagement_id)
         report_status = web.report_status(engagement_id)
+        revisions = web.revision_view(engagement_id)
     except (AssessmentError, ValueError, FileNotFoundError) as error:
         return _error(request, str(error), status_code=404)
     return templates.TemplateResponse(
@@ -462,6 +608,7 @@ async def report_view(request: Request, engagement_id: str) -> HTMLResponse:
             title="Assessment report",
             engagement_id=engagement_id,
             report_status=report_status,
+            revisions=revisions,
         ),
     )
 
@@ -475,7 +622,12 @@ async def generate_report(
     if forbidden := _csrf_or_403(request, form):
         return forbidden
     try:
-        services(request).generate_report(engagement_id)
+        raw_revision = str(form.get("revision", "")).strip()
+        revision_number = None if raw_revision == "" else int(raw_revision)
+        services(request).generate_report(
+            engagement_id,
+            revision_number=revision_number,
+        )
     except (AssessmentError, ValueError, FileNotFoundError) as error:
         return _error(request, str(error), engagement_id=engagement_id)
     return RedirectResponse(f"/engagements/{engagement_id}/report", status_code=303)
@@ -630,12 +782,20 @@ async def catalog_diagram(request: Request, name: str) -> Response:
 @router.get("/demo")
 async def demo(request: Request) -> HTMLResponse:
     web = services(request)
+    try:
+        view = web.demo_view()
+    except AssessmentError as error:
+        return _error(
+            request,
+            str(error),
+            status_code=422,
+        )
     return templates.TemplateResponse(
         request,
         "demo.html",
         _context(
             request,
             title="Demo-stage artifacts",
-            demo=web.demo_view(),
+            demo=view,
         ),
     )

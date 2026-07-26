@@ -15,7 +15,7 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 from playwright.sync_api import (
     Browser,
@@ -402,13 +402,20 @@ def _inspect_standalone_report(
     if page.locator("script, form, a, button, input, select, textarea").count():
         raise AssertionError("standalone report unexpectedly exposes executable controls")
 
-    source_digests = page.locator("#evidence-appendix code").all_inner_texts()
-    if len(source_digests) != 1 or any(
+    report = json.loads(report_path.read_bytes())
+    appendix = next(
+        section["content"]
+        for section in report["sections"]
+        if section["id"] == "evidence-appendix"
+    )
+    visible_digests = page.locator("#evidence-appendix code").all_inner_texts()
+    if appendix["source_state_digest"] not in visible_digests or any(
         len(digest) != 64 or any(character not in "0123456789abcdef" for character in digest)
-        for digest in source_digests
+        for digest in visible_digests
     ):
         raise AssertionError(
-            f"standalone report does not expose its full source digest: {source_digests}"
+            "standalone report does not expose full source/revision digests: "
+            f"{visible_digests}"
         )
     profile_statuses = page.locator("#technology-options article > p").all_inner_texts()
     if sum("content only · non-executable" in status for status in profile_statuses) != 3:
@@ -417,7 +424,6 @@ def _inspect_standalone_report(
         "(cells) => cells.some((cell) => !cell.innerText.trim())"
     ):
         raise AssertionError("standalone profile tables contain an empty visible cell")
-    report = json.loads(report_path.read_bytes())
     technology = next(
         section["content"]
         for section in report["sections"]
@@ -705,14 +711,39 @@ def _review_select_report_export(
         _assert_url_suffix(page, f"/engagements/{engagement_id}/review")
 
     page.goto(f"{base_url}/engagements/{engagement_id}/deep-dives")
-    page.get_by_text("Question bank not installed", exact=False).wait_for()
+    page.get_by_text("Validated question banks are installed", exact=False).wait_for()
     page.locator('input[name="capability_id"][value="QUA"]').check()
     page.get_by_label("Workshop planning note").fill(
-        "Plan a quality workshop after validated content is installed."
+        "Complete the validated quality workshop with synthetic evidence."
     )
     page.get_by_role("button", name="Save workshop plan").click()
     _assert_url_suffix(page, f"/engagements/{engagement_id}/deep-dives")
-    page.get_by_text("Question bank not installed", exact=False).wait_for()
+    page.get_by_role("link", name="Open data-quality").click()
+    _assert_url_suffix(
+        page, f"/engagements/{engagement_id}/deep-dives/data-quality"
+    )
+    for index in range(1, 21):
+        question_id = f"DQ-{index:02d}"
+        page.locator(f"#rating-{question_id}").select_option("4")
+        page.locator(f"#evidence-status-{question_id}").select_option("Evidenced")
+        page.locator(f"#note-{question_id}").fill(
+            "Sanitized synthetic deep-dive evidence."
+        )
+    page.get_by_role("button", name="Complete advisory deep dive").click()
+    page.get_by_text("Advisory result · no readiness effect", exact=False).wait_for()
+    source_values = parse_qs(urlparse(page.url).query).get("source", [])
+    if len(source_values) != 1:
+        raise AssertionError("deep-dive completion did not expose one source digest")
+    source_digest = source_values[0]
+    transcript.append(
+        {
+            "step": "deep-dive-advisory",
+            "deep_dive_id": "data-quality",
+            "answers": 20,
+            "source_digest": source_digest,
+            "readiness_effect": False,
+        }
+    )
 
     page.goto(f"{base_url}/engagements/{engagement_id}/report")
     page.get_by_role("button", name="Generate report").click()
@@ -740,6 +771,56 @@ def _review_select_report_export(
         raise AssertionError(
             f"stale report download returned {stale_download.status}, expected 409"
         )
+    page.get_by_role("button", name="Regenerate report").click()
+    _assert_url_suffix(page, f"/engagements/{engagement_id}/report")
+    page.get_by_text("Report generated", exact=False).wait_for()
+
+    page.goto(
+        f"{base_url}/engagements/{engagement_id}/deep-dives/data-quality"
+        f"?source={source_digest}"
+    )
+    page.get_by_label("Include in reviewed promotion").check()
+    page.get_by_label("Use deep-dive advisory").check()
+    page.get_by_label("Reviewed by accountable architect").fill(
+        "solution-architect"
+    )
+    page.get_by_label("Promotion rationale").fill(
+        "Reviewed the complete synthetic quality deep dive and conflicts."
+    )
+    page.get_by_role("button", name="Create reviewed result revision").click()
+    page.get_by_text("reviewed-promotion", exact=False).wait_for()
+    if "retained" not in page.locator("main").inner_text():
+        raise AssertionError("promotion did not retain the prior result revision")
+    page.reload()
+    page.go_back()
+    page.goto(
+        f"{base_url}/engagements/{engagement_id}/deep-dives/data-quality"
+        f"?source={source_digest}"
+    )
+    page.get_by_text("reviewed-promotion", exact=False).wait_for()
+    page.goto(f"{base_url}/engagements/{engagement_id}/review")
+    review_text = page.locator("main").inner_text()
+    for expected in (
+        "Accountable roadmap action",
+        "Vendor-neutral technology options",
+        "reviewed-promotion",
+        "retained",
+    ):
+        if expected not in review_text:
+            raise AssertionError(
+                f"promoted review is missing visible state: {expected}"
+            )
+    transcript.append(
+        {
+            "step": "reviewed-promotion",
+            "source_digest": source_digest,
+            "prior_revision_retained": True,
+            "full_gate_traces": 7,
+        }
+    )
+
+    page.goto(f"{base_url}/engagements/{engagement_id}/report")
+    page.get_by_text("Report is stale", exact=False).wait_for()
     page.get_by_role("button", name="Regenerate report").click()
     _assert_url_suffix(page, f"/engagements/{engagement_id}/report")
     page.get_by_text("Report generated", exact=False).wait_for()
@@ -947,6 +1028,46 @@ def _unavailable_demo_surface(
     )
 
 
+def _corrupt_demo_surface(
+    page: Page,
+    server: RunningServer,
+    engagement_id: str,
+    expected_snapshot: dict[str, str],
+    evidence_root: Path,
+    transcript: list[dict[str, Any]],
+    console_errors: list[str],
+) -> None:
+    prior_console_error_count = len(console_errors)
+    response = page.goto(f"{server.base_url}/demo")
+    if response is None or response.status != 422:
+        raise AssertionError("corrupt demo content did not fail validation")
+    if "corrupt stage manifest" not in page.locator("main").inner_text().lower():
+        raise AssertionError("corrupt demo validation failure was not explicit")
+    expected_console_errors = console_errors[prior_console_error_count:]
+    if expected_console_errors != [
+        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
+    ]:
+        raise AssertionError(
+            f"corrupt demo emitted unexpected console errors: {expected_console_errors}"
+        )
+    del console_errors[prior_console_error_count:]
+    page.goto(f"{server.base_url}/engagements/{engagement_id}/review")
+    page.get_by_text("Active revision", exact=False).wait_for()
+    recovered_snapshot = LocalEngagementStore(server.engagement_root).snapshot(
+        engagement_id
+    )
+    if recovered_snapshot != expected_snapshot:
+        raise AssertionError("corrupt demo validation changed recoverable assessment source")
+    page.screenshot(path=evidence_root / "demo-corrupt.png", full_page=True)
+    transcript.append(
+        {
+            "step": "demo-corrupt-fail-closed",
+            "http_status": 422,
+            "assessment_source_recoverable": True,
+        }
+    )
+
+
 def _digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -967,6 +1088,7 @@ def run_browser_journey(
     )
     destination_server: RunningServer | None = None
     unavailable_server: RunningServer | None = None
+    corrupt_server: RunningServer | None = None
     transcript: list[dict[str, Any]] = []
     remote_requests: list[str] = []
     console_errors: list[str] = []
@@ -1061,6 +1183,41 @@ def run_browser_journey(
                     transcript,
                 )
 
+                source_snapshot = LocalEngagementStore(
+                    source_server.engagement_root
+                ).snapshot(engagement_id)
+                corrupt_repository = work_root / "corrupt-repository"
+                corrupt_manifest = (
+                    corrupt_repository
+                    / "demo"
+                    / "manifests"
+                    / "stages"
+                    / "ingestion.yaml"
+                )
+                corrupt_manifest.parent.mkdir(parents=True)
+                corrupt_manifest.write_text(
+                    "schema_version: 1.0.0\nstage_id: wrong\n",
+                    encoding="utf-8",
+                )
+                corrupt_server_root = work_root / "corrupt"
+                shutil.copytree(
+                    source_server.engagement_root,
+                    corrupt_server_root / "engagements",
+                )
+                corrupt_server = _start_server(
+                    corrupt_server_root,
+                    repository_root=corrupt_repository,
+                )
+                _corrupt_demo_surface(
+                    page,
+                    corrupt_server,
+                    engagement_id,
+                    source_snapshot,
+                    evidence_root,
+                    transcript,
+                    console_errors,
+                )
+
                 destination_server = _start_server(
                     work_root / "destination",
                     repository_root=repository_root,
@@ -1081,7 +1238,14 @@ def run_browser_journey(
                 browser.close()
     finally:
         server_logs.extend(
-            _stop_servers((destination_server, unavailable_server, source_server))
+            _stop_servers(
+                (
+                    destination_server,
+                    corrupt_server,
+                    unavailable_server,
+                    source_server,
+                )
+            )
         )
 
     if remote_requests:

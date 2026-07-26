@@ -131,6 +131,11 @@ def build_parser() -> argparse.ArgumentParser:
         command = commands.add_parser(command_name, help=help_text)
         command.add_argument("--engagement-root", type=Path, required=True)
         command.add_argument("--output-root", type=Path, required=True)
+        command.add_argument(
+            "--revision",
+            type=int,
+            help="explicit retained result revision; defaults to the active pointer",
+        )
     web = commands.add_parser("web", help="run the local server-rendered assessment workflow")
     web.add_argument("--engagement-root", type=Path, required=True)
     web.add_argument("--runtime-root", type=Path, required=True)
@@ -163,25 +168,24 @@ def _machine_error(code: str, error: Exception) -> int:
 
 def _read_source(
     engagement_root: Path,
+    revision_number: int | None = None,
 ) -> tuple[
     dict[str, Any],
     dict[str, Any],
     dict[str, dict[str, str]],
     dict[str, str],
+    dict[str, Any],
+    list[dict[str, Any]],
 ]:
     if engagement_root.is_symlink() or not engagement_root.is_dir():
         raise ValueError("engagement root must be a real local directory")
     store = LocalEngagementStore(engagement_root.parent)
-    documents, source_snapshot = store.read_documents_and_snapshot(
+    documents, source_snapshot = store.read_active_assessment_and_snapshot(
         engagement_root.name,
-        (
-            "engagement.json",
-            "assessment/quick.json",
-            "findings/review.json",
-        ),
+        revision_number=revision_number,
     )
     engagement = documents["engagement.json"]
-    answers = documents["assessment/quick.json"]
+    answers = documents["assessment/active.json"]
     if engagement is None or answers is None:
         raise ValueError("engagement and assessment answer documents are required")
     reviews: dict[str, dict[str, str]] = {}
@@ -194,7 +198,59 @@ def _read_source(
         ):
             raise ValueError("findings/review.json: reviews must be an object")
         reviews = records
-    return engagement, answers, reviews, source_snapshot
+    revision_context: dict[str, Any] = {
+        "selected_revision": 1,
+        "active_revision": 1,
+        "is_active": True,
+        "prior_revision": None,
+        "source_kind": "quick",
+        "promotion_reviewed": False,
+    }
+    deep_dive_context: list[dict[str, Any]] = []
+    pointer = documents["results/active.json"]
+    if pointer is not None:
+        active_revision = pointer.get("active_revision")
+        if not isinstance(active_revision, int):
+            raise ValueError("active result revision pointer is invalid")
+        selected_revision = (
+            active_revision if revision_number is None else revision_number
+        )
+        revision = documents.get(f"results/revisions/{selected_revision}.json")
+        if not isinstance(revision, dict):
+            raise ValueError("selected result revision is unavailable")
+        revision_context = {
+            "selected_revision": selected_revision,
+            "active_revision": active_revision,
+            "is_active": selected_revision == active_revision,
+            "prior_revision": revision.get("prior_revision"),
+            "source_kind": revision.get("source_kind"),
+            "source_digest": revision.get("source_digest"),
+            "before_result_digest": revision.get("before_result_digest"),
+            "after_result_digest": revision.get("after_result_digest"),
+            "promotion_reviewed": revision.get("source_kind")
+            == "reviewed-promotion",
+        }
+        if revision_context["promotion_reviewed"]:
+            source_digest = revision.get("source_digest")
+            candidates = [
+                key
+                for key in source_snapshot
+                if key.startswith("assessment/deep-dives/")
+                and key.endswith(f"/{source_digest}.json")
+            ]
+            if len(candidates) != 1:
+                raise ValueError("promoted deep-dive source is unavailable or ambiguous")
+            deep_dive_context.append(
+                store.read_document(engagement_root.name, candidates[0])
+            )
+    return (
+        engagement,
+        answers,
+        reviews,
+        source_snapshot,
+        revision_context,
+        deep_dive_context,
+    )
 
 
 def _safe_output_root(engagement_root: Path, output_root: Path) -> int:
@@ -219,6 +275,7 @@ def _write_evaluation(
     answers: dict[str, Any],
     reviews: dict[str, dict[str, str]],
     source_snapshot: dict[str, str],
+    revision_context: dict[str, Any],
     output_descriptor: int,
 ) -> dict[str, Any]:
     framework = load_framework(str(engagement["framework_version"]))
@@ -239,6 +296,7 @@ def _write_evaluation(
         "framework_version": framework.version,
         "source_state_digest": source_digest,
         "result": dataclasses.asdict(result),
+        "assessment_revision": revision_context,
     }
     evaluation_bytes = canonical_json(document)
     atomic_write_at(output_descriptor, "assessment-result.json", evaluation_bytes)
@@ -292,7 +350,14 @@ def _run(arguments: argparse.Namespace) -> int:
         return 0
     if arguments.command in {"evaluate", "report"}:
         engagement_root = arguments.engagement_root.absolute()
-        engagement, answers, reviews, source_snapshot = _read_source(engagement_root)
+        (
+            engagement,
+            answers,
+            reviews,
+            source_snapshot,
+            revision_context,
+            deep_dive_context,
+        ) = _read_source(engagement_root, arguments.revision)
         try:
             output_descriptor = _safe_output_root(
                 engagement_root,
@@ -308,6 +373,7 @@ def _run(arguments: argparse.Namespace) -> int:
                         answers,
                         reviews,
                         source_snapshot,
+                        revision_context,
                         output_descriptor,
                     )
                 )
@@ -317,6 +383,8 @@ def _run(arguments: argparse.Namespace) -> int:
                 answers,
                 reviews=reviews,
                 source_snapshot=source_snapshot,
+                revision_context=revision_context,
+                deep_dive_context=deep_dive_context,
             )
             report_document = json.loads(generated.json_bytes)
             html_bytes = render_report(report_document)

@@ -4,7 +4,7 @@ description: "Build a portable, architect-led assessment workflow with determini
 status: in-progress
 priority: P2
 effort: 36d
-branch: feature/issue-38-phase-3-deterministic-engine-report
+branch: feature/issue-38-phase-7-mappings-deep-dives-recipes
 tags: [assessment, architecture, evidence, local-first, data-platform]
 created: 2026-07-24
 ---
@@ -30,10 +30,10 @@ Deliver a Python 3.12 local-first package for Solution/Enterprise Architects to 
 | 1 | [Rubric/report prototype and synthetic calibration](./phase-01-rubric-report-prototype-and-calibration.md) | 4d | Completed | 100% |
 | 2 | [Versioned schemas, local store, migration, import/export](./phase-02-versioned-contracts-local-store-and-portability.md) | 5d | Completed | 100% |
 | 3 | [Deterministic assessment engine and report generation](./phase-03-deterministic-engine-and-report-generation.md) | 5d | Completed | 100% |
-| 4 | [Loopback server-rendered assessment workflow](./phase-04-loopback-web-assessment-workflow.md) | 4d | Pending | 0% |
-| 5 | [Capability, architecture, mapping, and Demo Guide catalog](./phase-05-capability-architecture-and-demo-catalog.md) | 4d | Pending | 0% |
-| 6 | [Golden retail pipeline evidence gaps and manifests](./phase-06-golden-retail-evidence-and-manifests.md) | 5d | Pending | 0% |
-| 7 | [End-to-end mappings, deep dives, and recipe extension](./phase-07-mappings-deep-dives-and-recipe-extension.md) | 4d | Pending | 0% |
+| 4 | [Loopback server-rendered assessment workflow](./phase-04-loopback-web-assessment-workflow.md) | 4d | Completed | 100% |
+| 5 | [Capability, architecture, mapping, and Demo Guide catalog](./phase-05-capability-architecture-and-demo-catalog.md) | 4d | Completed | 100% |
+| 6 | [Golden retail pipeline evidence gaps and manifests](./phase-06-golden-retail-evidence-and-manifests.md) | 5d | Completed | 100% |
+| 7 | [End-to-end mappings, deep dives, and recipe extension](./phase-07-mappings-deep-dives-and-recipe-extension.md) | 4d | Implemented; independent verification pending | 100% |
 | 8 | [Portability, security, resource, regression, docs, release](./phase-08-verification-regression-docs-and-release.md) | 5d | Pending | 0% |
 
 Binding sequence: `P1 → P2 → P3 → P4 → P5 → P6 → P7 → P8`. The first reviewable vertical slice is **Phase 1 only**; it proves the rubric/report/scenarios before framework infrastructure, web, or golden-pipeline work. Recommended later reviews follow P2–P3, P4–P5, P6–P7, and P8; do not create GitHub issues from this plan.

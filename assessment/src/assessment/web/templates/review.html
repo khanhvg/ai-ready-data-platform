@@ -11,6 +11,8 @@
   <article class="metric"><span>Final readiness</span><strong>{{ result.gates.final_level }} · {{ result.gates.final_label }}</strong></article>
   <article class="metric"><span>Presentation only</span><strong>{{ result.maturity.presentation_score }}/100</strong></article>
   <article class="metric"><span>Least assured</span><strong>{{ result.confidence.least_assured_assessed_status }}</strong></article>
+  <article class="metric"><span>Active revision</span><strong>{{ revisions.active.revision }} · {{ revisions.active.source_kind }}</strong></article>
+  <article class="metric"><span>Prior revision</span><strong>{% if revisions.prior %}{{ revisions.prior.revision }} · retained{% else %}None{% endif %}</strong></article>
 </section>
 <section>
   <h2>Capability maturity and confidence</h2>
@@ -75,8 +77,15 @@
       <p><strong>Impact:</strong> {{ finding.impact }}</p>
       <p><strong>Recommendation:</strong> {{ finding.recommendation }}</p>
       <p><strong>Architecture:</strong> {{ finding.architecture_reference }}</p>
+      <p><strong>Accountable roadmap action:</strong> {{ finding.mapping_chain.action.owner_role }} · {{ finding.mapping_chain.action.horizon }} · {{ finding.mapping_chain.action.success_measure }}</p>
+      <p><strong>Vendor-neutral technology options:</strong>
+        {% for option in finding.mapping_chain.technology_options %}{{ option.role }} — {{ option.alternatives | join(", ") }}{% if not loop.last %}; {% endif %}{% endfor %}
+      </p>
+      <p><strong>Optional content-only profiles:</strong>
+        {% for option in finding.mapping_chain.profile_options %}{{ option.profile_id }} / {{ option.role }} — {{ option.selected_tool }}{% if not loop.last %}; {% endif %}{% endfor %}
+      </p>
       <p><strong>Evidence action:</strong> {{ finding.evidence_validation_action }}</p>
-      <p class="status neutral">Demo illustration: {{ finding.demo_reference }} — not used for scoring</p>
+      <p class="status neutral">Demo illustration: {{ finding.demo_reference }} · {{ finding.mapping_chain.demo.status }} — optional and not used for scoring</p>
       <form method="post" action="/engagements/{{ engagement_id }}/review">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <input type="hidden" name="revision" value="{{ state.revision }}">

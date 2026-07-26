@@ -1,21 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
-<p class="eyebrow">Workshop planning only</p>
-<h1>Plan deep dives</h1>
-<section class="status warn" role="status">
-  <strong>Question bank not installed.</strong>
-  Selection records a planned workshop area only. Deep-dive execution and readiness recalculation remain unavailable until validated Phase 7 content is installed.
+<p class="eyebrow">Independent advisory workshops</p>
+<h1>Select deep dives</h1>
+<section class="status neutral" role="status">
+  <strong>Validated question banks are installed.</strong>
+  Deep-dive answers remain advisory and separate from quick-assessment truth until an architect explicitly reviews and promotes a digest-bound revision.
 </section>
 <form class="panel" method="post" action="/engagements/{{ engagement_id }}/deep-dives">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
   <input type="hidden" name="revision" value="{{ state.revision }}">
   <fieldset>
     <legend>Select capability areas</legend>
-    {% for domain in domains %}
+    {% for deep_dive in deep_dives %}
+    {% set capability_id = deep_dive.capability_ids[0] %}
     <label class="check-option">
-      <input type="checkbox" name="capability_id" value="{{ domain.id }}"
-        {% if domain.id in selected %}checked{% endif %}>
-      <span><strong>{{ domain.id }}</strong> · {{ domain.name }}</span>
+      <input type="checkbox" name="capability_id" value="{{ capability_id }}"
+        {% if capability_id in selected %}checked{% endif %}>
+      <span><strong>{{ capability_id }}</strong> · {{ deep_dive.title }} · {{ deep_dive.questions | length }} questions · {{ deep_dive.duration_minutes }} minutes</span>
     </label>
     {% endfor %}
   </fieldset>
@@ -23,4 +24,14 @@
   <textarea id="planning-note" name="planning_note" maxlength="4096" rows="5">{{ selection.planning_note or "" }}</textarea>
   <button type="submit">Save workshop plan</button>
 </form>
+{% if selection.selections %}
+<section>
+  <h2>Selected workshops</h2>
+  <ul class="card-list">
+  {% for item in selection.selections %}
+    <li class="panel"><a href="/engagements/{{ engagement_id }}/deep-dives/{{ item.deep_dive_id }}">Open {{ item.deep_dive_id }}</a> · {{ item.status }}</li>
+  {% endfor %}
+  </ul>
+</section>
+{% endif %}
 {% endblock %}

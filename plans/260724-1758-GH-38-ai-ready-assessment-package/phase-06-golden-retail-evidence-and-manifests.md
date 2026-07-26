@@ -14,8 +14,8 @@
 - Date: 2026-07-24
 - Description: Reuse the existing golden retail pipeline and add only missing quarantine, PII classification/masking/access-policy proof, AI-ready manifest, Demo Guide, and stage evidence manifests.
 - Priority: P2
-- Implementation status: Pending
-- Review status: Pending catalog/Demo Guide contract review.
+- Implementation status: Completed
+- Review status: Completed through merged Phase 6 verification evidence.
 
 ## Key Insights
 
@@ -85,15 +85,15 @@ The governed AI-ready customer product consumes `accepted_orders`, joins custome
 
 ## Todo list
 
-- [ ] Pass bounded access-policy compatibility spike or raise BQ-02.
-- [ ] Add explicit quarantine/accepted partition and curated-exclusion proof.
-- [ ] Add PII classification and masked safe product.
-- [ ] Prove raw-deny/safe-allow policy behavior.
-- [ ] Add versioned AI-ready dataset manifest.
-- [ ] Add and validate all nine stage manifests.
-- [ ] Update Demo Guide/runbook/architecture and automation ratio.
-- [ ] Run exact core, Airflow-DAG, then staged heavy evidence with current guards.
-- [ ] Prove demo evidence cannot alter customer maturity.
+- [x] Pass bounded access-policy compatibility spike or raise BQ-02.
+- [x] Add explicit quarantine/accepted partition and curated-exclusion proof.
+- [x] Add PII classification and masked safe product.
+- [x] Prove raw-deny/safe-allow policy behavior.
+- [x] Add versioned AI-ready dataset manifest.
+- [x] Add and validate all nine stage manifests.
+- [x] Update Demo Guide/runbook/architecture and automation ratio.
+- [x] Run exact core, Airflow-DAG, then staged heavy evidence with current guards.
+- [x] Prove demo evidence cannot alter customer maturity.
 
 ## Success Criteria
 

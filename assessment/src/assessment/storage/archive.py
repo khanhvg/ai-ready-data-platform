@@ -5,6 +5,7 @@ from __future__ import annotations
 import io
 import json
 import os
+import re
 import shutil
 import stat
 import struct
@@ -13,11 +14,18 @@ import unicodedata
 import uuid
 import zipfile
 from collections.abc import Iterator, Mapping
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
 from PIL import Image
 
+from assessment.domain.deep_dives import (
+    AssessmentRevision,
+    DeepDiveAdvisory,
+    PromotionRequest,
+    build_promoted_answer_document,
+)
 from assessment.domain.errors import ArchiveValidationError, CompatibilityError
 from assessment.domain.models import (
     AnswerEvidenceDocument,
@@ -31,6 +39,8 @@ from assessment.domain.versions import (
     SCHEMA_VERSION,
     require_supported_version,
 )
+from assessment.engine.evaluator import evaluate_assessment
+from assessment.frameworks import load_framework
 from assessment.storage.hygiene import scan_bytes, scan_json_keys
 from assessment.storage.limits import (
     MAX_ARCHIVE_BYTES,
@@ -67,6 +77,12 @@ TEXT_EXTENSIONS = {
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg"}
 EVIDENCE_TEXT_EXTENSIONS = {".json", ".txt", ".csv"}
 EXCLUDED_NAMES = {".engagement.lock", ".DS_Store"}
+ADVISORY_KEY = re.compile(
+    r"^assessment/deep-dives/([^/]+)/([0-9a-f]{64})\.json$"
+)
+ANSWER_REVISION_KEY = re.compile(r"^assessment/revisions/([1-9][0-9]*)\.json$")
+RESULT_REVISION_KEY = re.compile(r"^results/revisions/([1-9][0-9]*)\.json$")
+PROMOTION_KEY = re.compile(r"^promotions/revision-([1-9][0-9]*)\.json$")
 
 
 def _canonical_text(content: bytes, *, context: str) -> bytes:
@@ -314,7 +330,200 @@ def _collect_export_entries(root: Path) -> dict[str, bytes]:
     return dict(sorted(entries.items()))
 
 
+def _state_digest(document: Any) -> str:
+    return sha256_bytes(canonical_json(document))
+
+
+def _validate_revision_graph(documents: Mapping[str, dict[str, Any]]) -> None:
+    """Validate Phase 7 revision links and digests as one portable unit."""
+    engagement_document = documents.get("engagement.json")
+    if engagement_document is None:
+        return
+    engagement = Engagement.model_validate(engagement_document)
+    framework = load_framework(engagement.framework_version)
+
+    advisories: dict[str, DeepDiveAdvisory] = {}
+    answer_revisions: dict[int, dict[str, Any]] = {}
+    result_revisions: dict[int, AssessmentRevision] = {}
+    promotions: dict[int, dict[str, Any]] = {}
+
+    for key, document in documents.items():
+        if match := ADVISORY_KEY.fullmatch(key):
+            advisory = DeepDiveAdvisory.model_validate(document)
+            deep_dive_id, digest = match.groups()
+            unsigned = advisory.model_dump(mode="json", exclude={"document_digest"})
+            if (
+                advisory.engagement_id != engagement.engagement_id
+                or advisory.deep_dive_id != deep_dive_id
+                or advisory.document_digest != digest
+                or _state_digest(unsigned) != digest
+            ):
+                raise ValueError("deep-dive advisory identity or digest is invalid")
+            advisories[digest] = advisory
+        elif match := ANSWER_REVISION_KEY.fullmatch(key):
+            revision_number = int(match.group(1))
+            answer_document_model = AnswerEvidenceDocument.model_validate(document)
+            if answer_document_model.engagement_id != engagement.engagement_id:
+                raise ValueError("answer revision engagement identity is invalid")
+            answer_revisions[revision_number] = answer_document_model.model_dump(
+                mode="json"
+            )
+        elif match := RESULT_REVISION_KEY.fullmatch(key):
+            revision_number = int(match.group(1))
+            revision = AssessmentRevision.model_validate(document)
+            if (
+                revision.engagement_id != engagement.engagement_id
+                or revision.revision != revision_number
+                or revision.answer_document_key
+                != f"assessment/revisions/{revision_number}.json"
+                or revision.active
+            ):
+                raise ValueError("result revision identity is invalid")
+            result_revisions[revision_number] = revision
+        elif match := PROMOTION_KEY.fullmatch(key):
+            revision_number = int(match.group(1))
+            if document.get("revision") != revision_number:
+                raise ValueError("promotion filename and revision differ")
+            promotions[revision_number] = document
+        elif key.startswith(
+            (
+                "assessment/deep-dives/",
+                "assessment/revisions/",
+                "results/revisions/",
+                "promotions/revision-",
+            )
+        ):
+            raise ValueError("revision graph contains an invalid state path")
+
+    pointer = documents.get("results/active.json")
+    if not result_revisions:
+        if pointer is not None or answer_revisions or promotions:
+            raise ValueError("revision graph is incomplete")
+        return
+    if pointer is None:
+        raise ValueError("active result revision pointer is missing")
+    active_revision = pointer.get("active_revision")
+    if type(active_revision) is not int or active_revision not in result_revisions:
+        raise ValueError("active result revision pointer does not resolve")
+    if set(answer_revisions) != set(result_revisions):
+        raise ValueError("result and answer revision sets differ")
+    expected_revisions = set(range(1, max(result_revisions) + 1))
+    if set(result_revisions) != expected_revisions:
+        raise ValueError("result revision sequence is not contiguous")
+
+    for revision_number in sorted(result_revisions):
+        revision = result_revisions[revision_number]
+        answer_document = answer_revisions[revision_number]
+        result = evaluate_assessment(
+            answer_document,
+            framework,
+            expected_engagement_id=engagement.engagement_id,
+        )
+        result_digest = _state_digest(asdict(result))
+        if (
+            revision.result_digest != result_digest
+            or revision.after_result_digest != result_digest
+            or canonical_json(revision.gate_trace)
+            != canonical_json([asdict(trace) for trace in result.gates.traces])
+        ):
+            raise ValueError("result revision digest or gate trace is invalid")
+        if revision_number == 1:
+            if (
+                revision.prior_revision is not None
+                or revision.before_result_digest != result_digest
+                or revision.source_kind != "quick"
+            ):
+                raise ValueError("initial result revision is invalid")
+        else:
+            prior = result_revisions[revision_number - 1]
+            if (
+                revision.prior_revision != prior.revision
+                or revision.before_result_digest != prior.result_digest
+            ):
+                raise ValueError("result revision prior link is invalid")
+        if revision.source_kind == "quick":
+            if revision.source_digest != _state_digest(answer_document):
+                raise ValueError("quick result revision source digest is invalid")
+            if revision_number in promotions:
+                raise ValueError("quick result revision cannot have a promotion")
+            continue
+
+        selected_advisory = advisories.get(revision.source_digest)
+        promotion = promotions.get(revision_number)
+        if selected_advisory is None or promotion is None:
+            raise ValueError("reviewed result revision lacks advisory or promotion")
+        request = PromotionRequest.model_validate(
+            {
+                name: promotion.get(name)
+                for name in (
+                    "source_digest",
+                    "target_digest",
+                    "capability_ids",
+                    "rationale",
+                    "reviewed_by",
+                    "review_timestamp",
+                    "conflict_choices",
+                )
+            }
+        )
+        choice_ids = [
+            choice.capability_id for choice in request.conflict_choices
+        ]
+        if (
+            request.source_digest != revision.source_digest
+            or promotion.get("before_result_digest")
+            != revision.before_result_digest
+            or promotion.get("after_result_digest") != revision.after_result_digest
+            or len(request.capability_ids) != len(set(request.capability_ids))
+            or len(choice_ids) != len(set(choice_ids))
+            or set(choice_ids) != set(request.capability_ids)
+            or not set(request.capability_ids)
+            <= set(selected_advisory.capability_ids)
+        ):
+            raise ValueError("promotion does not match its result revision")
+        prior = result_revisions[revision_number - 1]
+        target_candidates = {
+            _state_digest(
+                {
+                    "active_revision": prior.revision,
+                    "active_result_digest": prior.result_digest,
+                    "answer_digest": _state_digest(answer_revisions[prior.revision]),
+                }
+            )
+        }
+        if prior.source_kind == "quick" and prior.prior_revision is not None:
+            previous = result_revisions[prior.prior_revision]
+            target_candidates.add(
+                _state_digest(
+                    {
+                        "active_revision": previous.revision,
+                        "active_result_digest": previous.result_digest,
+                        "answer_digest": _state_digest(answer_revisions[prior.revision]),
+                    }
+                )
+            )
+        if request.target_digest not in target_candidates:
+            raise ValueError("promotion target digest is invalid")
+        expected_answers = build_promoted_answer_document(
+            framework,
+            answer_revisions[prior.revision],
+            selected_advisory,
+            request,
+        )
+        if canonical_json(expected_answers) != canonical_json(answer_document):
+            raise ValueError("reviewed promotion answer replay differs")
+
+    reviewed_revisions = {
+        revision_number
+        for revision_number, revision in result_revisions.items()
+        if revision.source_kind == "reviewed-promotion"
+    }
+    if set(promotions) != reviewed_revisions:
+        raise ValueError("promotion and reviewed revision sets differ")
+
+
 def _validate_portable_documents(entries: Mapping[str, bytes]) -> None:
+    documents: dict[str, dict[str, Any]] = {}
     for key, content in entries.items():
         if Path(key).suffix.lower() != ".json" or key.startswith("evidence/files/"):
             continue
@@ -324,6 +533,7 @@ def _validate_portable_documents(entries: Mapping[str, bytes]) -> None:
             raise ArchiveValidationError(f"{key}: invalid portable JSON state") from error
         if not isinstance(document, dict) or "schema_version" not in document:
             raise ArchiveValidationError(f"{key}: portable state requires schema_version")
+        documents[key] = document
         require_supported_version(
             document["schema_version"],
             SCHEMA_VERSION,
@@ -362,25 +572,88 @@ def _validate_portable_documents(entries: Mapping[str, bytes]) -> None:
                     ):
                         raise ValueError("invalid finding review record")
             elif key == "selections/deep-dives.json":
+                content_status = document.get("content_status")
                 if (
                     not isinstance(document.get("engagement_id"), str)
                     or not isinstance(document.get("framework_version"), str)
-                    or document.get("content_status") != "not-installed"
+                    or content_status not in {"not-installed", "installed"}
                     or not isinstance(document.get("planning_note", ""), str)
                     or len(document.get("planning_note", "")) > 4096
                     or not isinstance(document.get("selections"), list)
                 ):
                     raise ValueError("invalid deep-dive selection document")
                 for selection in document["selections"]:
+                    expected_status = (
+                        "selected"
+                        if content_status == "installed"
+                        else "planned-content-pending"
+                    )
                     if (
                         not isinstance(selection, dict)
                         or not isinstance(selection.get("capability_id"), str)
-                        or selection.get("status") != "planned-content-pending"
+                        or selection.get("status") != expected_status
                     ):
                         raise ValueError("invalid deep-dive selection record")
                     validate_identifier(selection["capability_id"])
+                    if content_status == "installed":
+                        validate_identifier(str(selection.get("deep_dive_id", "")))
+                if content_status == "installed" and any(
+                    set(selection)
+                    != {"capability_id", "deep_dive_id", "status"}
+                    for selection in document["selections"]
+                ):
+                    raise ValueError("invalid installed deep-dive selection fields")
+            elif key.startswith("assessment/deep-dives/"):
+                DeepDiveAdvisory.model_validate(document)
+            elif key.startswith("assessment/revisions/"):
+                AnswerEvidenceDocument.model_validate(document)
+            elif key.startswith("results/revisions/"):
+                AssessmentRevision.model_validate(document)
+            elif key == "results/active.json":
+                if set(document) != {"schema_version", "active_revision"} or (
+                    isinstance(document.get("active_revision"), bool)
+                    or not isinstance(document.get("active_revision"), int)
+                    or document["active_revision"] < 1
+                ):
+                    raise ValueError("invalid active result revision pointer")
+            elif key.startswith("promotions/revision-"):
+                PromotionRequest.model_validate(
+                    {
+                        name: document.get(name)
+                        for name in (
+                            "source_digest",
+                            "target_digest",
+                            "capability_ids",
+                            "rationale",
+                            "reviewed_by",
+                            "review_timestamp",
+                            "conflict_choices",
+                        )
+                    }
+                )
+                if (
+                    isinstance(document.get("revision"), bool)
+                    or not isinstance(document.get("revision"), int)
+                    or document["revision"] < 2
+                ):
+                    raise ValueError("invalid promotion revision")
+            elif key == "engagement/metadata.json":
+                timestamp = document.get("assessment_timestamp")
+                if (
+                    set(document) != {"schema_version", "assessment_timestamp"}
+                    or not isinstance(timestamp, str)
+                    or len(timestamp) != 20
+                    or not timestamp.endswith("Z")
+                ):
+                    raise ValueError("invalid engagement metadata timestamp")
         except ValueError as error:
             raise ArchiveValidationError(f"{key}: document violates its v1 contract") from error
+    try:
+        _validate_revision_graph(documents)
+    except ValueError as error:
+        raise ArchiveValidationError(
+            "portable Phase 7 revision graph is invalid"
+        ) from error
 
 
 def _entry_records(entries: Mapping[str, bytes]) -> list[dict[str, Any]]:

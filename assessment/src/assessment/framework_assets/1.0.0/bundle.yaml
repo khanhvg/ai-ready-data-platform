@@ -12,7 +12,7 @@ content:
   recommendations.yaml: 4edf81f0b84cd57eb0eeae30a5b3cb87adb5cc29d37d345e1db35282da9940e6
 report_assets:
   report.css: 91f4d5bbeb2c661d766b692b6e910a1b183a0db70203f0a0f48a4f49d118052f
-  report.html.j2: a2389bd4f4477d4535a0a228f5ded718f50adb2c2aebf889d5c79fa2960e2e4e
+  report.html.j2: 2627667e8bde73379c79b455626d62397f6dcc1fd63041f54d108a6d887612c0
 phase_1_to_v1_deltas:
   - deterministic finding ordering
   - source-state digest binding

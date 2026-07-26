@@ -7,16 +7,25 @@ import os
 import secrets
 import tempfile
 from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from assessment.catalog.loader import (
     load_catalog,
     load_demo_catalog,
     read_catalog_asset,
 )
+from assessment.catalog.mapping import MappingResolver, load_mapping_registry
 from assessment.catalog.renderer import catalog_view, demo_view
-from assessment.domain.errors import ConcurrentWriteError
+from assessment.domain.deep_dives import (
+    ConflictChoice,
+    DeepDiveAdvisory,
+    DeepDiveAnswer,
+    DeepDiveService,
+    PromotionRequest,
+)
+from assessment.domain.errors import ConcurrentWriteError, ContentValidationError
 from assessment.domain.models import AnswerEvidenceDocument, Engagement
 from assessment.engine.evaluator import AssessmentResult, evaluate_assessment
 from assessment.frameworks import FrameworkBundle, load_framework
@@ -70,9 +79,21 @@ class WebServices:
         self.store = store or LocalEngagementStore(config.engagement_root)
         self.framework = framework or load_framework("1.0.0")
         self.catalog = load_catalog("1.0.0")
-        self.demo_catalog = load_demo_catalog(
-            "1.0.0",
-            repository_root=config.repository_root,
+        self.demo_validation_error: str | None = None
+        try:
+            self.demo_catalog = load_demo_catalog(
+                "1.0.0",
+                repository_root=config.repository_root,
+            )
+        except ContentValidationError as error:
+            self.demo_validation_error = str(error)
+            self.demo_catalog = load_demo_catalog("1.0.0")
+        self.deep_dive_service = DeepDiveService(self.store, self.framework)
+        self.mapping_resolver = MappingResolver(
+            self.framework,
+            self.catalog,
+            self.demo_catalog,
+            load_mapping_registry(),
         )
         self._imports: dict[str, tuple[bytes, dict[str, Any]]] = {}
         for root in (
@@ -90,6 +111,8 @@ class WebServices:
         return catalog_view(self.catalog)
 
     def demo_view(self) -> dict[str, Any]:
+        if self.demo_validation_error is not None:
+            raise ContentValidationError(self.demo_validation_error)
         return demo_view(self.demo_catalog)
 
     def catalog_diagram(self, name: str) -> bytes:
@@ -114,6 +137,9 @@ class WebServices:
                 "gate_bundle_version": 1,
             }
         )
+        assessment_timestamp = (
+            datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+        )
         return self.store.create(
             engagement.model_dump(mode="json"),
             initial_payloads={
@@ -131,6 +157,12 @@ class WebServices:
                         "schema_version": "1.0.0",
                         "revision": 0,
                         "last_saved_status": "Created",
+                    }
+                ),
+                "engagement/metadata.json": canonical_json(
+                    {
+                        "schema_version": "1.0.0",
+                        "assessment_timestamp": assessment_timestamp,
                     }
                 ),
             },
@@ -152,6 +184,21 @@ class WebServices:
             "revision": revision + 1,
             "last_saved_status": status,
         }
+
+    def _assert_quick_editable(self, engagement_id: str) -> None:
+        try:
+            pointer = self.store.read_document(engagement_id, "results/active.json")
+        except FileNotFoundError:
+            return
+        revision_number = pointer.get("active_revision")
+        if not isinstance(revision_number, int):
+            raise ValueError("active result revision pointer is invalid")
+        revision = self.deep_dive_service.revision(engagement_id, revision_number)
+        if revision.source_kind == "reviewed-promotion":
+            raise ValueError(
+                "quick assessment is immutable after reviewed promotion; "
+                "start an explicit new assessment revision"
+            )
 
     def _commit(
         self,
@@ -185,6 +232,7 @@ class WebServices:
         expected_revision: int,
         answer: AnswerForm,
     ) -> int:
+        self._assert_quick_editable(engagement_id)
         document = self.quick_document(engagement_id)
         records = {
             str(item["question_id"]): dict(item)
@@ -218,6 +266,7 @@ class WebServices:
         expected_revision: int,
         facts: dict[str, int | bool],
     ) -> int:
+        self._assert_quick_editable(engagement_id)
         document = self.quick_document(engagement_id)
         document["diagnostic_facts"] = facts
         return self._commit(
@@ -236,6 +285,7 @@ class WebServices:
         key: str,
         content: bytes,
     ) -> int:
+        self._assert_quick_editable(engagement_id)
         document = self.quick_document(engagement_id)
         answer = next(
             (
@@ -262,8 +312,16 @@ class WebServices:
             status=f"Attached evidence to {question_id}",
         )
 
-    def evaluate(self, engagement_id: str) -> AssessmentResult:
-        engagement, quick, reviews, _ = self._coherent_assessment(engagement_id)
+    def evaluate(
+        self,
+        engagement_id: str,
+        *,
+        revision_number: int | None = None,
+    ) -> AssessmentResult:
+        engagement, quick, reviews, _ = self._coherent_assessment(
+            engagement_id,
+            revision_number=revision_number,
+        )
         return evaluate_assessment(
             quick,
             self.framework,
@@ -274,22 +332,20 @@ class WebServices:
     def _coherent_assessment(
         self,
         engagement_id: str,
+        *,
+        revision_number: int | None = None,
     ) -> tuple[
         dict[str, Any],
         dict[str, Any],
         dict[str, dict[str, str]],
         dict[str, str],
     ]:
-        documents, snapshot = self.store.read_documents_and_snapshot(
+        documents, snapshot = self.store.read_active_assessment_and_snapshot(
             engagement_id,
-            (
-                "engagement.json",
-                "assessment/quick.json",
-                "findings/review.json",
-            ),
+            revision_number=revision_number,
         )
         engagement = documents["engagement.json"]
-        quick = documents["assessment/quick.json"]
+        quick = documents["assessment/active.json"]
         if engagement is None or quick is None:
             raise ValueError("engagement and quick assessment documents are required")
         raw_review = documents["findings/review.json"]
@@ -363,7 +419,7 @@ class WebServices:
                 "schema_version": "1.0.0",
                 "engagement_id": engagement_id,
                 "framework_version": self.framework.version,
-                "content_status": "not-installed",
+                "content_status": "installed",
                 "selections": [],
             }
 
@@ -375,12 +431,16 @@ class WebServices:
         capability_ids: list[str],
         planning_note: str,
     ) -> int:
-        domain_order = {
-            str(domain["id"]): index
-            for index, domain in enumerate(self.framework.domains)
+        capability_to_deep_dive = {
+            definition.capability_ids[0]: definition
+            for definition in self.deep_dive_service.registry.deep_dives
         }
-        allowed = set(domain_order)
-        selected = sorted(set(capability_ids), key=domain_order.__getitem__)
+        allowed = set(capability_to_deep_dive)
+        selected = [
+            capability_id
+            for capability_id in capability_to_deep_dive
+            if capability_id in set(capability_ids)
+        ]
         if not set(selected) <= allowed:
             raise ValueError("deep-dive selection contains an unknown capability")
         if len(planning_note) > 4096:
@@ -394,12 +454,13 @@ class WebServices:
                     "schema_version": "1.0.0",
                     "engagement_id": engagement_id,
                     "framework_version": self.framework.version,
-                    "content_status": "not-installed",
+                    "content_status": "installed",
                     "planning_note": planning_note,
                     "selections": [
                         {
                             "capability_id": item,
-                            "status": "planned-content-pending",
+                            "deep_dive_id": capability_to_deep_dive[item].id,
+                            "status": "selected",
                         }
                         for item in selected
                     ],
@@ -409,16 +470,109 @@ class WebServices:
             status="Saved deep-dive workshop plan",
         )
 
-    def generate_report(self, engagement_id: str) -> ReportArtifacts:
-        validate_identifier(engagement_id)
-        engagement, quick, reviews, source_snapshot = self._coherent_assessment(
-            engagement_id
+    def save_deep_dive_advisory(
+        self,
+        engagement_id: str,
+        *,
+        deep_dive_id: str,
+        answers: list[DeepDiveAnswer],
+    ) -> DeepDiveAdvisory:
+        return self.deep_dive_service.save_advisory(
+            engagement_id,
+            deep_dive_id=deep_dive_id,
+            answers=answers,
         )
+
+    def promote_deep_dive(
+        self,
+        engagement_id: str,
+        *,
+        source_digest: str,
+        target_digest: str,
+        capability_ids: list[str],
+        rationale: str,
+        reviewed_by: str,
+        choices: dict[str, Literal["use-quick", "use-deep-dive"]],
+    ) -> Any:
+        request = PromotionRequest(
+            source_digest=source_digest,
+            target_digest=target_digest,
+            capability_ids=capability_ids,
+            rationale=rationale,
+            reviewed_by=reviewed_by,
+            review_timestamp=self.deep_dive_service.engagement_timestamp(
+                engagement_id
+            ),
+            conflict_choices=[
+                ConflictChoice(
+                    capability_id=capability_id,
+                    choice=choices[capability_id],
+                    rationale=(
+                        f"Architect selected {choices[capability_id]} for "
+                        f"{capability_id}; {rationale}"
+                    ),
+                )
+                for capability_id in capability_ids
+                if capability_id in choices
+            ],
+        )
+        return self.deep_dive_service.promote(engagement_id, request)
+
+    def revision_view(self, engagement_id: str) -> dict[str, Any]:
+        active = self.deep_dive_service.active_revision(engagement_id)
+        prior = (
+            self.deep_dive_service.revision(engagement_id, active.prior_revision)
+            if active.prior_revision is not None
+            else None
+        )
+        return {
+            "active": active.model_dump(mode="json"),
+            "prior": None if prior is None else prior.model_dump(mode="json"),
+        }
+
+    def generate_report(
+        self,
+        engagement_id: str,
+        *,
+        revision_number: int | None = None,
+    ) -> ReportArtifacts:
+        validate_identifier(engagement_id)
+        active_revision = self.deep_dive_service.active_revision(engagement_id)
+        engagement, quick, reviews, source_snapshot = self._coherent_assessment(
+            engagement_id,
+            revision_number=revision_number,
+        )
+        revision = (
+            active_revision
+            if revision_number is None
+            else self.deep_dive_service.revision(engagement_id, revision_number)
+        )
+        deep_dive_context: list[dict[str, Any]] = []
+        if revision.source_kind == "reviewed-promotion":
+            deep_dive_context.append(
+                self.deep_dive_service.advisory(
+                    engagement_id, revision.source_digest
+                ).model_dump(mode="json")
+            )
         generated = generate_report(
             engagement,
             quick,
             reviews=reviews,
             source_snapshot=source_snapshot,
+            catalog_bundle=self.catalog,
+            demo_bundle=self.demo_catalog,
+            revision_context={
+                "selected_revision": revision.revision,
+                "active_revision": active_revision.revision,
+                "is_active": revision.revision == active_revision.revision,
+                "prior_revision": revision.prior_revision,
+                "source_kind": revision.source_kind,
+                "source_digest": revision.source_digest,
+                "before_result_digest": revision.before_result_digest,
+                "after_result_digest": revision.after_result_digest,
+                "promotion_reviewed": revision.source_kind == "reviewed-promotion",
+            },
+            deep_dive_context=deep_dive_context,
         )
         report = json.loads(generated.json_bytes)
         html = render_report(report)
@@ -453,8 +607,33 @@ class WebServices:
         if published is None:
             return ReportStatus(artifact=None, stale=False)
         report, manifest, json_bytes, html_bytes = published
+        evidence_appendix = next(
+            (
+                section.get("content")
+                for section in report.get("sections", [])
+                if section.get("id") == "evidence-appendix"
+            ),
+            None,
+        )
+        if not isinstance(evidence_appendix, dict):
+            raise ContentValidationError(
+                "published report evidence appendix is unavailable"
+            )
+        revision_context = evidence_appendix.get("assessment_revision")
+        if not isinstance(revision_context, dict):
+            raise ContentValidationError(
+                "published report assessment revision is unavailable"
+            )
+        selected_revision = revision_context.get("selected_revision")
+        is_active = revision_context.get("is_active")
+        if type(selected_revision) is not int or not isinstance(is_active, bool):
+            raise ContentValidationError(
+                "published report assessment revision is invalid"
+            )
+        status_revision = None if is_active else selected_revision
         engagement, quick, reviews, source_snapshot = self._coherent_assessment(
-            engagement_id
+            engagement_id,
+            revision_number=status_revision,
         )
         current_digest = source_state_digest(
             engagement,
@@ -537,6 +716,10 @@ class WebServices:
 
     def result_view(self, result: AssessmentResult) -> dict[str, Any]:
         view = asdict(result)
+        for finding in view["findings"]:
+            finding["mapping_chain"] = self.mapping_resolver.by_finding_id(
+                str(finding["id"])
+            ).model_dump(mode="json")
         view["blockers"] = [
             finding
             for finding in view["findings"]

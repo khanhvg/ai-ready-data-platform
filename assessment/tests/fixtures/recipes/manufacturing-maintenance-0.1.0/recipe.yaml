@@ -1,0 +1,6 @@
+schema_version: 1.0.0
+recipe_id: manufacturing-maintenance-0.1.0
+framework_version: 1.0.0
+title: INERT NON-PRODUCTION manufacturing maintenance recipe fixture
+capability_ids: [QUA, LIN, GOV, SEC, OPS, AID]
+question_ids: [MM-Q-01, MM-Q-02, MM-Q-03]

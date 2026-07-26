@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-ready-assessment-prototype"
-version = "0.5.0"
+version = "0.6.0"
 description = "Local-first AI-ready assessment workflow, deterministic reports, and portability"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
@@ -48,6 +48,7 @@ prototype = ["0.1.0/*.yaml", "*.j2", "*.css"]
 "assessment.public_schemas" = ["*.schema.json"]
 "assessment.content" = [
   "catalog/1.0.0/**/*.yaml",
+  "frameworks/1.0.0/deep-dives/*.yaml",
   "catalog/1.0.0/diagrams/*.mmd",
   "catalog/1.0.0/diagrams/*.svg",
   "catalog/1.0.0/diagrams/*.json",

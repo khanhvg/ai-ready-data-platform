@@ -60,10 +60,14 @@
         <p><strong>Recommendation:</strong> {{ item.recommendation }}</p>
         <p><strong>Architecture:</strong> {{ item.architecture_reference }} — {{ item.architecture_title }}</p>
         <p>{{ item.architecture_problem }}</p>
+        <p><strong>Typed chain:</strong> gap → impact → priority → recommendation → logical architecture → vendor-neutral options → optional demo → accountable action.</p>
+        <p><strong>Vendor-neutral options:</strong> {% for option in item.mapping_chain.technology_options %}{{ option.role }} — {{ option.alternatives | join(", ") }}{% if not loop.last %}; {% endif %}{% endfor %}</p>
+        <p><strong>Optional content-only profiles:</strong> {% for option in item.mapping_chain.profile_options %}{{ option.profile_id }} / {{ option.role }} — {{ option.selected_tool }}{% if not loop.last %}; {% endif %}{% endfor %}</p>
+        <p><strong>Accountable action:</strong> {{ item.mapping_chain.action.owner_role }} · {{ item.mapping_chain.action.horizon }} · {{ item.mapping_chain.action.success_measure }}</p>
         <p><strong>Diagram references:</strong> {{ item.diagram_ids | join(", ") }}</p>
         <p><strong>Evidence action:</strong> {{ item.evidence_validation_action }}</p>
         <p><strong>Source operands:</strong> {{ item.source_operand_ids | join(", ") }}</p>
-        <p><strong>Demo illustration:</strong> {{ item.demo_reference }} — {{ item.demo_explanation }}</p>
+        <p><strong>Demo illustration:</strong> {{ item.demo_reference }} · {{ item.mapping_chain.demo.status }} — {{ item.demo_explanation }} Optional and non-scoring.</p>
         <p><strong>Presenter stages:</strong> {{ item.demo_stage_ids | join(", ") }}</p>
         <p><strong>Architect review:</strong> {{ item.architect_review.state }}{% if item.architect_review.edit_note %} — {{ item.architect_review.edit_note }}{% endif %}</p>
       </article>
@@ -80,9 +84,9 @@
       {% for item in section.content["items"] %}<tr><th scope="row">{{ item.audience }}</th><td><strong>{{ item.title }}</strong><br>{{ item.purpose }}</td><td>{{ item.text_alternative }}</td></tr>{% else %}<tr><td colspan="3">No architecture references.</td></tr>{% endfor %}
       </tbody></table>
     {% elif section.id == "roadmap" %}
-      <ol>{% for item in section.content["items"] %}<li><strong>{{ item.priority }}</strong> — {{ item.action }} ({{ item.review_state }})</li>{% else %}<li>No generated roadmap actions.</li>{% endfor %}</ol>
+      <ol>{% for item in section.content["items"] %}<li><strong>{{ item.priority }}</strong> — {{ item.action }} · owner {{ item.owner_role }} · {{ item.horizon }} · measure {{ item.success_measure }} ({{ item.review_state }})</li>{% else %}<li>No generated roadmap actions.</li>{% endfor %}</ol>
     {% elif section.id == "technology-options" %}
-      <ul>{% for item in section.content["items"] %}<li>{{ item.finding_id }}: {{ item.vendor_neutral_options | join(", ") }}</li>{% else %}<li>No technology options required.</li>{% endfor %}</ul>
+      <ul>{% for item in section.content["items"] %}<li>{{ item.finding_id }}: {{ item.vendor_neutral_options | join(", ") }} · optional profiles {% for option in item.profile_options %}{{ option.profile_id }} / {{ option.selected_tool }}{% if not loop.last %}; {% endif %}{% endfor %} · demo {{ item.demo_leaf.status if item.demo_leaf else "absent" }} and non-scoring</li>{% else %}<li>No technology options required.</li>{% endfor %}</ul>
       {% for profile in section.content.profiles %}
       <article>
         <h3>{{ profile.title }}</h3>
@@ -97,6 +101,15 @@
       <p><strong>Source-state digest:</strong> <code>{{ section.content.source_state_digest }}</code></p>
       <p><strong>Provenance classes:</strong> {{ section.content.provenance_classes | join(", ") }}</p>
       <p><strong>Demo evidence used for scoring:</strong> {{ section.content.demo_evidence_used_for_scoring }}</p>
+      <p><strong>Assessment revision:</strong> selected {{ section.content.assessment_revision.selected_revision }} ({{ "active" if section.content.assessment_revision.is_active else "prior" }}); active {{ section.content.assessment_revision.active_revision }}; prior {{ section.content.assessment_revision.prior_revision if section.content.assessment_revision.prior_revision is not none else "none" }}; source {{ section.content.assessment_revision.source_kind }}; reviewed promotion {{ section.content.assessment_revision.promotion_reviewed }}</p>
+      {% if section.content.assessment_revision.before_result_digest is defined %}<p><strong>Before/after result digests:</strong> <code>{{ section.content.assessment_revision.before_result_digest }}</code> → <code>{{ section.content.assessment_revision.after_result_digest }}</code></p>{% endif %}
+      {% for deep_dive in section.content.deep_dives %}
+      <h3>Deep-dive advisory {{ deep_dive.deep_dive_id }}</h3>
+      <p><strong>Source digest:</strong> <code>{{ deep_dive.document_digest }}</code> · advisory only</p>
+      <table><caption>{{ deep_dive.deep_dive_id }} answers and evidence semantics</caption><thead><tr><th scope="col">Question</th><th scope="col">Rating</th><th scope="col">Evidence status</th><th scope="col">Note</th></tr></thead><tbody>
+      {% for answer in deep_dive.answers %}<tr><th scope="row">{{ answer.question_id }}</th><td>{{ answer.rating if answer.rating is not none else "Not assessed" }}</td><td>{{ answer.evidence_status }}</td><td>{{ answer.note if answer.note else "None" }}</td></tr>{% endfor %}
+      </tbody></table>
+      {% endfor %}
       <table><caption>Answers and evidence references</caption><thead><tr><th scope="col">Question</th><th scope="col">Rating</th><th scope="col">Evidence status</th><th scope="col">Note</th><th scope="col">Evidence references</th></tr></thead><tbody>
       {% for answer in section.content.answers %}<tr><th scope="row">{{ answer.question_id }}</th><td>{{ answer.rating if answer.rating is not none else "Not assessed" }}</td><td>{{ answer.evidence_status }}</td><td>{{ answer.note if answer.note else "None" }}</td><td>{{ answer.evidence_refs | join(", ") if answer.evidence_refs else "None" }}</td></tr>{% endfor %}
       </tbody></table>

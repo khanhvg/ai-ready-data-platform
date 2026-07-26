@@ -12,8 +12,8 @@
 - Date: 2026-07-24
 - Description: Deliver the complete loopback create-assess-review-deep-dive-select-report-export-import path with server-rendered pages.
 - Priority: P2
-- Implementation status: Pending
-- Review status: Pending stable engine/report contract.
+- Implementation status: Completed
+- Review status: Completed through merged Phase 4 verification evidence.
 
 ## Key Insights
 
@@ -62,15 +62,15 @@ Route families: `/engagements`, `/quick`, `/review`, `/deep-dives`, `/report`, `
 
 ## Todo list
 
-- [ ] Build loopback-only app and secure request boundary.
-- [ ] Complete create/resume/quick assessment forms.
-- [ ] Complete review/gate/finding/confidence pages.
-- [ ] Complete deep-dive selection/planning; defer question-bank forms to Phase 7.
-- [ ] Complete report/export/import/reopen journey.
-- [ ] Add read-only catalog/demo artifact display.
-- [ ] Pass bounded accessible Playwright smoke with network blocked.
-- [ ] Pass the artifact-producing Solution Architect runtime smoke.
-- [ ] Prove no pipeline-control surface or heavy service startup.
+- [x] Build loopback-only app and secure request boundary.
+- [x] Complete create/resume/quick assessment forms.
+- [x] Complete review/gate/finding/confidence pages.
+- [x] Complete deep-dive selection/planning; defer question-bank forms to Phase 7.
+- [x] Complete report/export/import/reopen journey.
+- [x] Add read-only catalog/demo artifact display.
+- [x] Pass bounded accessible Playwright smoke with network blocked.
+- [x] Pass the artifact-producing Solution Architect runtime smoke.
+- [x] Prove no pipeline-control surface or heavy service startup.
 
 ## Success Criteria
 
