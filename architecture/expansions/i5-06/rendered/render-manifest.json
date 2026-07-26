@@ -1,0 +1,129 @@
+{
+  "schemaVersion": "i5-06-architecture-render-manifest-v1",
+  "owner": "I5-06",
+  "baseRenderManifest": {
+    "path": "architecture/rendered/render-manifest.json",
+    "blob": "c116d89ab5d1768894fce101e2eb1d1b9896e97c",
+    "sha256": "7934c00f9f7bd772f0f2eec4730332b6b6a8b5907f2d7547673fbef9718a04e6"
+  },
+  "tool": {
+    "path": "learning/curriculum/tools/architecture-render.mjs",
+    "sha256": "9cf6900324e4ae94c381e2ea4189a0117260af36697140fac245da1048c5f780",
+    "finalizerPath": "learning/curriculum/tools/architecture_expansion.py",
+    "finalizerSha256": "2fd10d73e282a38e024c4535c7de4b06c307d9560d9338f7b406f0fc7d953d19"
+  },
+  "sourceClosure": {
+    "modelSha256": "f451b50a3938ff80c52646430a0cc6c15311251fcd48f0d9e534daf01aeb680f",
+    "specificationSha256": "6859b7d0bc790616983021ccc75f68cb5d94c171d1e0cc2eca7dd0a57654ed11",
+    "viewManifestSha256": "383d0dbbe57e487e9501a9bffed01ddbf04306b0e43cdadd07471e820a4092b9",
+    "traceSha256": "cf514a63d2ca25a5f3abaaa3a25a40023c7247de0148ac363fbf73704b838a45",
+    "bridgeMappingSha256": "f1b2c55412725e9de4ae1023ddb773b1834e44b1a82f099fb284dca54409d35c"
+  },
+  "numberingAuthority": "renderer-only",
+  "runs": {
+    "cleanIsolated": 2,
+    "byteIdentical": true,
+    "networkAfterAdmission": false
+  },
+  "views": [
+    {
+      "id": "C4-L2-AWS",
+      "sourceSha256": "f047a9ebc75413f470456cfe7eb58d07f3bf337a87aa43e31ef6bdd7715f3340",
+      "svgSha256": "a86ae95438146f7a8508f0694bb1ea24601b91d4f5efcc738be9c4a193426922",
+      "textSha256": "c5a5b1a981a3efc6f84f4488f989ba14581d063d8c80eacd5bdf8df4339c79b7",
+      "semanticProjectionSha256": "84dfcd910452b1c05cff6c14ea7813ed4677447a4e506fd0903824255447094c",
+      "freshnessSha256": "30423b3605364a50390c3afe58bca6d3d47c376be2748cba77c79ec4d8f7b6d4",
+      "visual": {
+        "aspect": 2.0,
+        "titlePx1024": 20.48,
+        "primaryPx1024": 15.36,
+        "secondaryPx1024": 12.8,
+        "minContrast": 13.92,
+        "onCanvas": true,
+        "overlap": false,
+        "clipping": false
+      },
+      "rawSvgSha256": "80da9a7292097948b637341ab9f3020dc8fbd5a57866b3758bcd4ffa54e835eb"
+    },
+    {
+      "id": "DEP-AWS",
+      "sourceSha256": "1c9bcc280787eea46dcd6806d1df9d0fa31ca5fa1a4d4c59423a3129d1f3030f",
+      "svgSha256": "34c69efa5c1483d5b74cb36416d20dd0a2d07c472f7a62d3501626b76d73883c",
+      "textSha256": "8914ffa0759963854425c64887a3171a6a57c14491bcca76b317f5a5d93a9bd3",
+      "semanticProjectionSha256": "fcf666e8e6225186e1c26e7e178e050cc71e9584775b327bfe24e474148861d6",
+      "freshnessSha256": "e36fca0b3ac3029712aae5a7f66f9f67682c0cb3e13535a16cd127038b0a0e88",
+      "visual": {
+        "aspect": 2.0,
+        "titlePx1024": 20.48,
+        "primaryPx1024": 15.36,
+        "secondaryPx1024": 12.8,
+        "minContrast": 13.92,
+        "onCanvas": true,
+        "overlap": false,
+        "clipping": false
+      },
+      "rawSvgSha256": "0474b548a06986c37e59b96ed61163e3b03be81a68b9254933e3d24c2e43fad9"
+    },
+    {
+      "id": "DYN-OFFICE",
+      "sourceSha256": "e02e9b64e49c14b288b3bef2c0a71215c9ecea1230b44493a8f173c84fc73dd7",
+      "svgSha256": "b9a0bd25b0e8e68fd3307316a828272e409a8ce21887fd1f3dbc968b5dbc82d7",
+      "textSha256": "7f108acff9f702c405835f4672dd1b05a924147b98a02405fdc496d11ac7843b",
+      "semanticProjectionSha256": "f58a55dc44a63e664758c73a168bbd4204bb9b6352bc3872be3056cd4b5adf75",
+      "freshnessSha256": "909b2c28d4dfb2bec348d54222eed7cb173cf42b94b2a6b9fa0bcc1993320f26",
+      "visual": {
+        "aspect": 2.0,
+        "titlePx1024": 20.48,
+        "primaryPx1024": 14.51,
+        "secondaryPx1024": 12.8,
+        "minContrast": 15.27,
+        "onCanvas": true,
+        "overlap": false,
+        "clipping": false
+      },
+      "rawSvgSha256": "dc17212bfc40a359129417d343b271bf0abed96922496eb744f7bfcabda2454c"
+    },
+    {
+      "id": "DYN-PUBLISH",
+      "sourceSha256": "59b67b3751510e6dee05f34c42c230734f300be46862e018c90002fd82e49099",
+      "svgSha256": "e3f05304de723fcc37d6fa0648cff95b10d870575a2cab9519c7a0df82dde18e",
+      "textSha256": "a0585e7a55c59d3d6c4ad0d0a600c86a18ac035386b70f7f5eba7f107aa9d497",
+      "semanticProjectionSha256": "3e64fd3646b40362ce1ddee26337e9d30382493213a62fb0dd6ee08262099ee7",
+      "freshnessSha256": "8d4c456aada474e5b343a9665fad9c5f2c07289113ff112e1516803b70e90d84",
+      "visual": {
+        "aspect": 2.0,
+        "titlePx1024": 20.48,
+        "primaryPx1024": 14.51,
+        "secondaryPx1024": 12.8,
+        "minContrast": 15.27,
+        "onCanvas": true,
+        "overlap": false,
+        "clipping": false
+      },
+      "rawSvgSha256": "4136d88dcf346853a8155dd014d23a72347102ba4a0d43f37a5e2d3bbeef09d3"
+    },
+    {
+      "id": "DYN-RESTORE",
+      "sourceSha256": "d2ad6451335234742d897dda1eabce64cecbbd8b48a7e44478af5d748cacea12",
+      "svgSha256": "27ebf8078495cd4bcfc80dc9e7f808456725dc4af60d44ef47e120da50cc3ced",
+      "textSha256": "719892c40961faa798b4b8a9a3763c07304c8cefab969cd6f3a4aac3427419c2",
+      "semanticProjectionSha256": "b80f785d19636fe4effba559dd1c7dc67de0060d274e6fda79aeed64a59bc2c4",
+      "freshnessSha256": "cf84dddf555e3e5aee0a8adbc413ebf363b19944263e5eec5a3f3ddda9a510f1",
+      "visual": {
+        "aspect": 2.0,
+        "titlePx1024": 20.48,
+        "primaryPx1024": 14.51,
+        "secondaryPx1024": 12.8,
+        "minContrast": 15.27,
+        "onCanvas": true,
+        "overlap": false,
+        "clipping": false
+      },
+      "rawSvgSha256": "cd58bce8be2540ae6b552622680edc915823786729edc4aa6401d88d90b4c160"
+    }
+  ],
+  "humanReview": {
+    "status": "fresh-independent-required",
+    "synthesized": false
+  }
+}

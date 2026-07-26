@@ -1,0 +1,6 @@
+views {
+  deployment view dep_aws {
+    title 'Triển khai AWS — chỉ khái niệm và TBC (AWS deployment — conceptual only)'
+    include aws_conceptual.**
+  }
+}

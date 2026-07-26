@@ -1,0 +1,21 @@
+views {
+  dynamic view dyn_office {
+    title 'Vận hành office window — chỉ khái niệm (Office window — conceptual only)'
+    operator -> awsConcept.admission 'Yêu cầu mở [CF-OFFICE-OPEN:request-open]'
+    awsConcept.admission -> awsConcept.compute 'Kiểm tra ngân sách và capacity [CF-OFFICE-OPEN:admit-budget-capacity]'
+    awsConcept.admission -> awsConcept.compute 'Khởi động compute [CF-OFFICE-OPEN:start-compute]'
+    awsConcept.compute -> awsConcept.lake 'Khôi phục và hydrate [CF-OFFICE-OPEN:restore-hydrate]'
+    awsConcept.compute -> awsConcept.evidenceStore 'Vượt readiness [CF-OFFICE-OPEN:pass-readiness]'
+    awsConcept.compute -> awsConcept.bi 'Mở endpoint [CF-OFFICE-OPEN:expose-endpoint]'
+    awsConcept.evidenceStore -> awsConcept.lake 'Probe data authority [CF-OFFICE-READINESS:probe-data-authority]'
+    awsConcept.evidenceStore -> awsConcept.governance 'Probe metadata authority [CF-OFFICE-READINESS:probe-metadata-authority]'
+    awsConcept.evidenceStore -> awsConcept.bi 'Probe đường BI [CF-OFFICE-READINESS:probe-bi-path]'
+    awsConcept.evidenceStore -> awsConcept.compute 'So sánh tương đương [CF-OFFICE-READINESS:compare-equivalence]'
+    awsConcept.evidenceStore -> operator 'Tuyên bố ready có điều kiện [CF-OFFICE-READINESS:declare-ready]'
+    operator -> awsConcept.admission 'Dừng admission [CF-OFFICE-CLOSE:stop-admission]'
+    awsConcept.admission -> awsConcept.compute 'Drain công việc [CF-OFFICE-CLOSE:drain-work]'
+    awsConcept.compute -> awsConcept.lake 'Checkpoint authority [CF-OFFICE-CLOSE:checkpoint-authorities]'
+    awsConcept.admission -> awsConcept.compute 'Dừng compute [CF-OFFICE-CLOSE:stop-compute]'
+    awsConcept.compute -> awsConcept.evidenceStore 'Kiểm kê trạng thái và cost còn lại [CF-OFFICE-CLOSE:inventory-residual-state-cost]'
+  }
+}

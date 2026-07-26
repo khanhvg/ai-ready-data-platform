@@ -1,0 +1,46 @@
+Vận hành office window — chỉ khái niệm (Office window — conceptual only)
+Mã view: DYN-OFFICE
+Đối tượng: van-hanh-finops
+Mối quan tâm: open-readiness-close-order
+Phạm vi: office-window-conceptual
+Giới hạn: thiết kế tĩnh; AWS chỉ khái niệm/TBC; không phải bằng chứng runtime hay triển khai.
+Phần tử: awsConcept.admission, awsConcept.bi, awsConcept.compute, awsConcept.evidenceStore, awsConcept.governance, awsConcept.lake, operator
+Thứ tự quan hệ:
+1. Yêu cầu mở [request-open; operator -> awsConcept.admission]
+2. Kiểm tra ngân sách và capacity [admit-budget-capacity; awsConcept.admission -> awsConcept.compute]
+3. Khởi động compute [start-compute; awsConcept.admission -> awsConcept.compute]
+4. Khôi phục và hydrate [restore-hydrate; awsConcept.compute -> awsConcept.lake]
+5. Vượt readiness [pass-readiness; awsConcept.compute -> awsConcept.evidenceStore]
+6. Mở endpoint [expose-endpoint; awsConcept.compute -> awsConcept.bi]
+7. Probe data authority [probe-data-authority; awsConcept.evidenceStore -> awsConcept.lake]
+8. Probe metadata authority [probe-metadata-authority; awsConcept.evidenceStore -> awsConcept.governance]
+9. Probe đường BI [probe-bi-path; awsConcept.evidenceStore -> awsConcept.bi]
+10. So sánh tương đương [compare-equivalence; awsConcept.evidenceStore -> awsConcept.compute]
+11. Tuyên bố ready có điều kiện [declare-ready; awsConcept.evidenceStore -> operator]
+12. Dừng admission [stop-admission; operator -> awsConcept.admission]
+13. Drain công việc [drain-work; awsConcept.admission -> awsConcept.compute]
+14. Checkpoint authority [checkpoint-authorities; awsConcept.compute -> awsConcept.lake]
+15. Dừng compute [stop-compute; awsConcept.admission -> awsConcept.compute]
+16. Kiểm kê trạng thái và cost còn lại [inventory-residual-state-cost; awsConcept.compute -> awsConcept.evidenceStore]
+Ràng buộc topology triển khai:
+- CF-OFFICE-OPEN; deployment=DEP-AWS; environment=aws_conceptual
+  placements: awsConcept.admission=admission_instance, awsConcept.bi=bi_instance, awsConcept.compute=compute_instance, awsConcept.evidenceStore=evidence_instance, awsConcept.lake=lake_instance, operator=edge
+  edges: 1.request-open:edge->admission_instance; 2.admit-budget-capacity:admission_instance->compute_instance; 3.start-compute:admission_instance->compute_instance; 4.restore-hydrate:compute_instance->lake_instance; 5.pass-readiness:compute_instance->evidence_instance; 6.expose-endpoint:compute_instance->bi_instance
+  trust: edge, authority_boundary, recovery_state; failure: admission_instance, bi_instance, compute_instance, edge, evidence_instance, lake_instance
+- CF-OFFICE-READINESS; deployment=DEP-AWS; environment=aws_conceptual
+  placements: awsConcept.bi=bi_instance, awsConcept.compute=compute_instance, awsConcept.evidenceStore=evidence_instance, awsConcept.governance=governance_instance, awsConcept.lake=lake_instance, operator=edge
+  edges: 1.probe-data-authority:evidence_instance->lake_instance; 2.probe-metadata-authority:evidence_instance->governance_instance; 3.probe-bi-path:evidence_instance->bi_instance; 4.compare-equivalence:evidence_instance->compute_instance; 5.declare-ready:evidence_instance->edge
+  trust: edge, authority_boundary, recovery_state; failure: bi_instance, compute_instance, edge, evidence_instance, governance_instance, lake_instance
+- CF-OFFICE-CLOSE; deployment=DEP-AWS; environment=aws_conceptual
+  placements: awsConcept.admission=admission_instance, awsConcept.compute=compute_instance, awsConcept.evidenceStore=evidence_instance, awsConcept.lake=lake_instance, operator=edge
+  edges: 1.stop-admission:edge->admission_instance; 2.drain-work:admission_instance->compute_instance; 3.checkpoint-authorities:compute_instance->lake_instance; 4.stop-compute:admission_instance->compute_instance; 5.inventory-residual-state-cost:compute_instance->evidence_instance
+  trust: edge, authority_boundary, recovery_state; failure: admission_instance, compute_instance, edge, evidence_instance, lake_instance
+Bridge khái niệm (không phải bằng chứng runtime):
+- BR-ANALYTICS-01; claim=conceptual-only; relations=CF-RESTORE-ANALYTICS:run-equivalence; topology=retail_instance->compute_instance
+- BR-BI-01; claim=conceptual-only; relations=CF-OFFICE-READINESS:probe-bi-path; topology=retail_instance->bi_instance
+- BR-GOVERNANCE-01; claim=conceptual-only; relations=CF-CATALOG-INGEST-HANDOFF:ingest-physical; topology=progress_instance->governance_instance
+- BR-LAKE-01; claim=conceptual-only; relations=CF-PUBLISH-STAGE-COMMIT:write-object,CF-PUBLISH-STAGE-COMMIT:commit-catalog-pointer; topology=retail_instance->lake_instance
+- BR-COMPUTE-01; claim=conceptual-only; relations=CF-OFFICE-OPEN:start-compute,CF-OFFICE-CLOSE:stop-compute; topology=runner_instance->compute_instance
+- BR-STATE-01; claim=conceptual-only; relations=CF-RESTORE-EVIDENCE:reconcile-current-state; topology=workspace_evidence->recovery_state
+- BR-SECURITY-01; claim=conceptual-only; relations=CF-OFFICE-OPEN:admit-budget-capacity; topology=developer_host->edge
+- BR-COST-01; claim=conceptual-only; relations=CF-OFFICE-CLOSE:inventory-residual-state-cost; topology=developer_host->admission_instance

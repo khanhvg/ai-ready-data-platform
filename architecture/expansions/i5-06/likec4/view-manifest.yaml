@@ -1,0 +1,14 @@
+schemaVersion: i5-06-architecture-view-extension-v1
+owner: I5-06
+baseManifest:
+  path: architecture/likec4/view-manifest.yaml
+  blob: ff8f59a76440561d0de17a08b3d79fc580d2e043
+  sha256: 1659c51389718f2799581550ab17fd31c4dd30639723d5b443ac088944178169
+numberingAuthority: renderer-only
+legendVi: Quan hệ một chiều có nhãn; AWS là ánh xạ khái niệm, không phải runtime hay deployability.
+views:
+  - {id: C4-L2-AWS, key: c4_l2_aws, type: container, audience: kien-truc-su-bao-mat-finops, concern: ranh-gioi-va-danh-doi-aws-khai-niem, scope: aws-conceptual, source: architecture/expansions/i5-06/likec4/views/C4-L2-AWS.c4, svg: architecture/expansions/i5-06/rendered/C4-L2-AWS.svg, text: architecture/expansions/i5-06/rendered/C4-L2-AWS.txt}
+  - {id: DEP-AWS, key: dep_aws, type: deployment, audience: van-hanh-bao-mat, concern: topology-authority-trust-recovery, scope: aws-conceptual, source: architecture/expansions/i5-06/likec4/views/DEP-AWS.c4, svg: architecture/expansions/i5-06/rendered/DEP-AWS.svg, text: architecture/expansions/i5-06/rendered/DEP-AWS.txt}
+  - {id: DYN-OFFICE, key: dyn_office, type: dynamic, audience: van-hanh-finops, concern: open-readiness-close-order, scope: office-window-conceptual, source: architecture/expansions/i5-06/likec4/views/DYN-OFFICE.c4, svg: architecture/expansions/i5-06/rendered/DYN-OFFICE.svg, text: architecture/expansions/i5-06/rendered/DYN-OFFICE.txt}
+  - {id: DYN-PUBLISH, key: dyn_publish, type: dynamic, audience: data-platform-governance, concern: commit-retry-ingest-order, scope: local-publication, source: architecture/expansions/i5-06/likec4/views/DYN-PUBLISH.c4, svg: architecture/expansions/i5-06/rendered/DYN-PUBLISH.svg, text: architecture/expansions/i5-06/rendered/DYN-PUBLISH.txt}
+  - {id: DYN-RESTORE, key: dyn_restore, type: dynamic, audience: incident-commander-governance, concern: authority-ordered-restore, scope: restore-conceptual, source: architecture/expansions/i5-06/likec4/views/DYN-RESTORE.c4, svg: architecture/expansions/i5-06/rendered/DYN-RESTORE.svg, text: architecture/expansions/i5-06/rendered/DYN-RESTORE.txt}

@@ -1,0 +1,48 @@
+{
+  "$id": "urn:i5-06:architecture-template-registry-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "registryId", "registryVersion", "compatibility", "templates"],
+  "properties": {
+    "schemaVersion": {"const": "i5-06-architecture-template-registry-v1"},
+    "registryId": {"const": "i5-06-architecture-template-registry"},
+    "registryVersion": {"const": "1.0.0"},
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["readerRange", "instanceBindingVersion", "supersessionPolicy", "removalPolicy"],
+      "properties": {
+        "readerRange": {"const": "^1.0.0"},
+        "instanceBindingVersion": {"const": "1"},
+        "supersessionPolicy": {"type": "string", "minLength": 20},
+        "removalPolicy": {"type": "string", "minLength": 20}
+      }
+    },
+    "templates": {
+      "type": "array", "minItems": 12, "maxItems": 12,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["templateId", "version", "contentSha256", "schemaToken", "registryId", "status", "compatibilityRange", "supersedes", "instanceIds", "content"],
+        "properties": {
+          "templateId": {"pattern": "^TPL-[A-Z0-9-]+$"},
+          "version": {"pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+          "contentSha256": {"pattern": "^[0-9a-f]{64}$"},
+          "schemaToken": {"const": "i5-06-architecture-template-registry-v1"},
+          "registryId": {"const": "i5-06-architecture-template-registry"},
+          "status": {"enum": ["active", "superseded"]},
+          "compatibilityRange": {"const": "^1.0.0"},
+          "supersedes": {"type": ["object", "null"]},
+          "instanceIds": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"pattern": "^[FJDM][0-9]{2}$"}},
+          "content": {
+            "type": "object", "additionalProperties": false,
+            "required": ["promptVi", "required"],
+            "properties": {
+              "promptVi": {"type": "string", "minLength": 20},
+              "required": {"type": "array", "minItems": 3, "uniqueItems": true, "items": {"type": "string", "minLength": 2}}
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,44 @@
+model {
+  curriculum = softwareSystem 'Chương trình kiến trúc (Architecture curriculum)' 'Nội dung tĩnh tiếng Việt, template, trace và fitness function'
+  publisher = softwareSystem 'Bộ công bố cục bộ (Local publisher)' 'Dàn snapshot, ghi object, kiểm tra và commit con trỏ'
+  objectStore = softwareSystem 'Kho object cục bộ (Local object store)' 'Lưu snapshot bất biến'
+  localCatalog = softwareSystem 'Catalog cục bộ (Local catalog)' 'Giữ con trỏ current đã kiểm tra'
+  metadataGovernance = softwareSystem 'Quản trị metadata (Metadata governance)' 'Nhận physical metadata và logical lineage'
+  awsConcept = softwareSystem 'Nền phân tích AWS — chỉ khái niệm (AWS analytics — conceptual only)' 'Không phải runtime, tài khoản, tài nguyên hay bằng chứng triển khai' {
+    admission = container 'Cổng ngân sách (Budget admission)' 'Nhận hoặc từ chối office window' 'Khái niệm'
+    compute = container 'Năng lực tính toán (Compute capacity)' 'ClickHouse và ECS/EC2 chỉ là ánh xạ khái niệm' 'Khái niệm'
+    lake = container 'Object và catalog (Object/catalog)' 'S3 và catalog chỉ là ánh xạ khái niệm' 'Khái niệm'
+    bi = container 'Truy cập BI (BI access)' 'Superset chỉ là ánh xạ khái niệm' 'Khái niệm'
+    governance = container 'Quản trị (Governance)' 'OpenMetadata, DB và search chỉ là ánh xạ khái niệm' 'Khái niệm'
+    evidenceStore = container 'Bằng chứng phục hồi (Recovery evidence)' 'Index đóng, hash payload và kết quả reconcile' 'Khái niệm'
+  }
+  curriculum -> publisher 'Dạy luồng công bố [teaches-publish]' 'Nội dung tĩnh'
+  publisher -> objectStore 'Ghi snapshot bất biến [write-object]' 'File/object contract'
+  publisher -> localCatalog 'Commit con trỏ sau kiểm tra [commit-pointer]' 'Catalog contract'
+  metadataGovernance -> localCatalog 'Đối chiếu metadata [reconcile-metadata]' 'Read-only contract'
+  operator -> awsConcept.admission 'Yêu cầu office window [request-open]' 'Khái niệm, không runtime'
+  awsConcept.admission -> awsConcept.compute 'Cho phép năng lực [admit-capacity]' 'Khái niệm'
+  awsConcept.compute -> awsConcept.lake 'Đọc authority dữ liệu [read-authority]' 'Khái niệm'
+  awsConcept.compute -> awsConcept.bi 'Phục vụ truy vấn [serve-bi]' 'Khái niệm'
+  awsConcept.governance -> awsConcept.lake 'Đối chiếu lineage [reconcile-lineage]' 'Khái niệm'
+  awsConcept.evidenceStore -> operator 'Báo kết quả phục hồi [recovery-result]' 'Khái niệm'
+}
+
+deployment {
+  environment aws_conceptual 'AWS — chỉ khái niệm, TBC sau Stage B' {
+    host edge 'Ranh giới truy cập (Access boundary)' {
+      admission_instance = instanceOf awsConcept.admission
+    }
+    host compute_boundary 'Ranh giới tính toán (Compute boundary)' {
+      compute_instance = instanceOf awsConcept.compute
+      bi_instance = instanceOf awsConcept.bi
+    }
+    host authority_boundary 'Ranh giới authority và trạng thái (Authority/state boundary)' {
+      lake_instance = instanceOf awsConcept.lake
+      governance_instance = instanceOf awsConcept.governance
+      privateStorage recovery_state 'Trạng thái phục hồi riêng (Private recovery state)' {
+        evidence_instance = instanceOf awsConcept.evidenceStore
+      }
+    }
+  }
+}
