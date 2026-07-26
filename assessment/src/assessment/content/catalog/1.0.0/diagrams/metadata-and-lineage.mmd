@@ -1,0 +1,11 @@
+flowchart TD
+  accTitle: Metadata and source-to-product lineage
+  accDescr: Source contracts, transformation metadata, product definitions, and run evidence combine into catalog and lineage views used for impact analysis.
+  A[Source contracts] --> B[Transformation metadata]
+  B --> C[Governed product definitions]
+  D[Orchestration and run evidence] --> B
+  A --> E[Metadata catalog]
+  B --> E
+  C --> E
+  E --> F[Source-to-product lineage]
+  F --> G[Discovery and impact analysis]

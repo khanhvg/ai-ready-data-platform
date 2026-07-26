@@ -66,25 +66,25 @@ def _wait_for_health(server: RunningServer) -> None:
     raise RuntimeError(f"loopback server did not become healthy: {last_error}")
 
 
-def _start_server(root: Path) -> RunningServer:
+def _start_server(root: Path, *, repository_root: Path | None = None) -> RunningServer:
     port = _free_port()
     engagement_root = root / "engagements"
     runtime_root = root / "runtime"
+    command = [
+        sys.executable,
+        "-m",
+        "assessment",
+        "web",
+        "--engagement-root",
+        str(engagement_root),
+        "--runtime-root",
+        str(runtime_root),
+    ]
+    if repository_root is not None:
+        command.extend(["--repository-root", str(repository_root)])
+    command.extend(["--host", "127.0.0.1", "--port", str(port)])
     process = subprocess.Popen(  # noqa: S603 -- fixed local package lifecycle command
-        [
-            sys.executable,
-            "-m",
-            "assessment",
-            "web",
-            "--engagement-root",
-            str(engagement_root),
-            "--runtime-root",
-            str(runtime_root),
-            "--host",
-            "127.0.0.1",
-            "--port",
-            str(port),
-        ],
+        command,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
@@ -122,6 +122,21 @@ def _stop_server(server: RunningServer) -> str:
     raise RuntimeError("loopback server still accepted requests after teardown")
 
 
+def _stop_servers(servers: tuple[RunningServer | None, ...]) -> list[str]:
+    logs: list[str] = []
+    errors: list[Exception] = []
+    for server in servers:
+        if server is None:
+            continue
+        try:
+            logs.append(_stop_server(server))
+        except Exception as error:
+            errors.append(error)
+    if errors:
+        raise ExceptionGroup("one or more loopback servers failed to stop", errors)
+    return logs
+
+
 def _guard_context(
     context: BrowserContext,
     *,
@@ -129,10 +144,18 @@ def _guard_context(
     console_errors: list[str],
     page_errors: list[str],
     request_failures: list[dict[str, str]],
+    allowed_file_urls: set[str] | None = None,
 ) -> None:
+    allowed_files = allowed_file_urls or set()
+
     def route_request(route: Any) -> None:
         parsed = urlparse(route.request.url)
-        if parsed.hostname not in LOOPBACK_HOSTS and parsed.scheme not in {"data", "about"}:
+        local_file = route.request.url in allowed_files
+        if (
+            parsed.hostname not in LOOPBACK_HOSTS
+            and parsed.scheme not in {"data", "about"}
+            and not local_file
+        ):
             remote_requests.append(route.request.url)
             route.abort()
             return
@@ -362,6 +385,224 @@ def _assert_report_reflow(
     )
 
 
+def _inspect_standalone_report(
+    page: Page,
+    html_path: Path,
+    report_path: Path,
+    evidence_root: Path,
+    transcript: list[dict[str, Any]],
+) -> None:
+    page.goto(html_path.resolve().as_uri())
+    if page.locator("#technology-options article table").count() != 3:
+        raise AssertionError("standalone report does not contain all three profile tables")
+    if page.locator(".diagram svg").count() != 7:
+        raise AssertionError("standalone report does not contain all seven diagrams")
+    if page.locator(".diagram p").count() != 7:
+        raise AssertionError("standalone report does not contain seven text alternatives")
+    if page.locator("script, form, a, button, input, select, textarea").count():
+        raise AssertionError("standalone report unexpectedly exposes executable controls")
+
+    source_digests = page.locator("#evidence-appendix code").all_inner_texts()
+    if len(source_digests) != 1 or any(
+        len(digest) != 64 or any(character not in "0123456789abcdef" for character in digest)
+        for digest in source_digests
+    ):
+        raise AssertionError(
+            f"standalone report does not expose its full source digest: {source_digests}"
+        )
+    profile_statuses = page.locator("#technology-options article > p").all_inner_texts()
+    if sum("content only · non-executable" in status for status in profile_statuses) != 3:
+        raise AssertionError("standalone report omits a technology-profile safety status")
+    if page.locator("#technology-options th, #technology-options td").evaluate_all(
+        "(cells) => cells.some((cell) => !cell.innerText.trim())"
+    ):
+        raise AssertionError("standalone profile tables contain an empty visible cell")
+    report = json.loads(report_path.read_bytes())
+    technology = next(
+        section["content"]
+        for section in report["sections"]
+        if section["id"] == "technology-options"
+    )
+    expected_rows = [
+        [
+            [
+                role["role"],
+                role["selected_tool"] if role["selected_tool"] else ", ".join(role["alternatives"]),
+                "; ".join(role["constraints"]),
+            ]
+            for role in profile["roles"]
+        ]
+        for profile in technology["profiles"]
+    ]
+    actual_rows = page.locator("#technology-options article table").evaluate_all(
+        """(tables) => tables.map((table) =>
+            [...table.tBodies[0].rows].map((row) =>
+                [...row.cells].map((cell) => cell.innerText.trim())
+            )
+        )"""
+    )
+    if actual_rows != expected_rows:
+        raise AssertionError("standalone profile tables differ from canonical report JSON")
+
+    measurements: dict[str, Any] = {}
+    viewports = (
+        ("wide", 1280, 900, ""),
+        ("375px", 375, 812, ""),
+        ("200%-320px-equivalent", 640, 900, "200%"),
+    )
+    for name, width, height, zoom in viewports:
+        page.set_viewport_size({"width": width, "height": height})
+        page.evaluate("(zoom) => { document.body.style.zoom = zoom; }", zoom)
+        measurements[name] = page.evaluate(
+            """() => {
+                const documentElement = document.documentElement;
+                const profileTables = [...document.querySelectorAll(
+                    "#technology-options article table"
+                )];
+                const tables = [...document.querySelectorAll("table")];
+                const visibleNodes = [...document.querySelectorAll("th, td, code")];
+                const rows = [...document.querySelectorAll(
+                    "#technology-options article tr"
+                )];
+                const parseRgb = (value) =>
+                    (value.match(/[0-9.]+/g) || []).slice(0, 3).map(Number);
+                const luminance = (value) => {
+                    const channels = parseRgb(value).map((channel) => {
+                        const normalized = channel / 255;
+                        return normalized <= 0.04045
+                            ? normalized / 12.92
+                            : ((normalized + 0.055) / 1.055) ** 2.4;
+                    });
+                    return (
+                        0.2126 * channels[0] +
+                        0.7152 * channels[1] +
+                        0.0722 * channels[2]
+                    );
+                };
+                const contrast = (foreground, background) => {
+                    const first = luminance(foreground);
+                    const second = luminance(background);
+                    return (Math.max(first, second) + 0.05) /
+                        (Math.min(first, second) + 0.05);
+                };
+                const section = document.querySelector("section");
+                const bodyStyle = getComputedStyle(document.body);
+                const sectionStyle = getComputedStyle(section);
+                const mutedStyle = getComputedStyle(document.querySelector(".meta"));
+                return {
+                    scroll: documentElement.scrollWidth,
+                    client: documentElement.clientWidth,
+                    bodyFontSize: parseFloat(bodyStyle.fontSize),
+                    bodyTextContrast: contrast(bodyStyle.color, sectionStyle.backgroundColor),
+                    mutedTextContrast: contrast(
+                        mutedStyle.color,
+                        sectionStyle.backgroundColor
+                    ),
+                    tableRects: profileTables.map((table) => {
+                        const rect = table.getBoundingClientRect();
+                        return {
+                            left: Math.round(rect.left),
+                            right: Math.round(rect.right),
+                            width: Math.round(rect.width),
+                            scrollWidth: table.scrollWidth,
+                            clientWidth: table.clientWidth,
+                        };
+                    }),
+                    overflowingElements: [...document.body.querySelectorAll("*")]
+                        .filter((node) => {
+                            const rect = node.getBoundingClientRect();
+                            return rect.width > 0 && (
+                                rect.left < -0.5 ||
+                                rect.right > documentElement.clientWidth + 0.5
+                            );
+                        })
+                        .slice(0, 20)
+                        .map((node) => {
+                            const rect = node.getBoundingClientRect();
+                            return {
+                                tag: node.tagName,
+                                id: node.id,
+                                className: node.getAttribute("class") || "",
+                                left: Math.round(rect.left),
+                                right: Math.round(rect.right),
+                                text: (node.textContent || "").trim().slice(0, 80),
+                            };
+                        }),
+                    clippedCells: visibleNodes.filter((node) =>
+                        node.scrollWidth > node.clientWidth ||
+                        node.scrollHeight > node.clientHeight
+                    ).length,
+                    clippedTables: tables.filter((table) =>
+                        table.scrollWidth > table.clientWidth
+                    ).length,
+                    overlappingRows: rows.slice(1).filter((row, index) =>
+                        row.getBoundingClientRect().top <
+                        rows[index].getBoundingClientRect().bottom - 0.5
+                    ).length,
+                };
+            }"""
+        )
+        page.screenshot(
+            path=evidence_root / f"standalone-report-{name}.png",
+            full_page=True,
+        )
+        page.locator("#technology-options").screenshot(
+            path=evidence_root / f"standalone-technology-options-{name}.png",
+        )
+    page.evaluate("document.body.style.zoom = ''")
+    (evidence_root / "standalone-report-measurements.json").write_bytes(
+        canonical_json(measurements)
+    )
+
+    failures: list[str] = []
+    for name, measurement in measurements.items():
+        if measurement["scroll"] > measurement["client"]:
+            failures.append(f"{name}: document {measurement['scroll']}>{measurement['client']}")
+        for index, table in enumerate(measurement["tableRects"], start=1):
+            if (
+                table["left"] < 0
+                or table["right"] > measurement["client"]
+                or table["scrollWidth"] > table["clientWidth"]
+            ):
+                failures.append(f"{name}: profile table {index} {table}")
+        if measurement["clippedCells"]:
+            failures.append(
+                f"{name}: {measurement['clippedCells']} table cells or digests clip content"
+            )
+        if measurement["overflowingElements"]:
+            failures.append(
+                f"{name}: elements extend off-screen {measurement['overflowingElements']}"
+            )
+        if measurement["clippedTables"]:
+            failures.append(f"{name}: {measurement['clippedTables']} tables clip content")
+        if measurement["overlappingRows"]:
+            failures.append(f"{name}: {measurement['overlappingRows']} profile rows overlap")
+        if measurement["bodyFontSize"] < 14:
+            failures.append(f"{name}: body text is only {measurement['bodyFontSize']}px")
+        if measurement["bodyTextContrast"] < 4.5:
+            failures.append(f"{name}: body text contrast is {measurement['bodyTextContrast']}")
+        if measurement["mutedTextContrast"] < 4.5:
+            failures.append(f"{name}: muted text contrast is {measurement['mutedTextContrast']}")
+    if failures:
+        raise AssertionError(
+            "standalone report reflow failed: "
+            + "; ".join(failures)
+            + f"; measurements={measurements}"
+        )
+    transcript.append(
+        {
+            "step": "standalone-report-reflow",
+            "measurements": measurements,
+            "profile_tables": 3,
+            "profile_rows": sum(len(rows) for rows in expected_rows),
+            "canonical_profile_content": True,
+            "full_source_digest": True,
+            "diagram_text_alternatives": 7,
+            "controls": 0,
+        }
+    )
+
+
 def _save_answer(
     page: Page,
     base_url: str,
@@ -511,6 +752,17 @@ def _review_select_report_export(
         page.get_by_role("link", name="Download canonical JSON").click()
     json_path = evidence_root / "report.json"
     json_download.value.save_as(json_path)
+    standalone_page = page.context.new_page()
+    try:
+        _inspect_standalone_report(
+            standalone_page,
+            html_path,
+            json_path,
+            evidence_root,
+            transcript,
+        )
+    finally:
+        standalone_page.close()
 
     page.goto(f"{base_url}/engagements/{engagement_id}/archive")
     with page.expect_download() as archive_download:
@@ -579,30 +831,101 @@ def _import_reopen_compare(
     return imported_report
 
 
-def _read_only_surfaces(page: Page, base_url: str) -> None:
-    for path, expected in (
-        ("/catalog", "details not installed"),
-        ("/demo", "not installed"),
+def _read_only_surfaces(
+    page: Page,
+    base_url: str,
+    evidence_root: Path,
+    transcript: list[dict[str, Any]],
+) -> None:
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.goto(f"{base_url}/catalog")
+    catalog_text = page.locator("main").inner_text().lower()
+    if "10 capability domains" not in catalog_text:
+        raise AssertionError("/catalog did not present the validated catalog")
+    if page.locator("img.catalog-diagram").count() != 7:
+        raise AssertionError("/catalog did not present exactly seven local diagrams")
+    page.locator("img.catalog-diagram").last.scroll_into_view_if_needed()
+    page.wait_for_load_state("networkidle")
+    loaded_diagrams = page.locator("img.catalog-diagram").evaluate_all(
+        "(images) => images.filter((image) => image.complete && image.naturalWidth > 0).length"
+    )
+    if loaded_diagrams != 7:
+        raise AssertionError("/catalog did not render all seven local diagrams")
+    diagram_sources = page.locator("img.catalog-diagram").evaluate_all(
+        "(images) => images.map((image) => image.getAttribute('src'))"
+    )
+    if any(
+        not isinstance(source, str)
+        or not source.startswith("/catalog/diagrams/")
+        for source in diagram_sources
     ):
-        page.goto(f"{base_url}{path}")
-        text = page.locator("main").inner_text().lower()
-        if expected not in text:
-            raise AssertionError(f"{path} did not disclose its unavailable status")
-        if page.get_by_role("button").count():
-            raise AssertionError(f"{path} unexpectedly exposes a control action")
+        raise AssertionError("/catalog exposed a non-local diagram asset")
+    if page.get_by_role("button").count() or page.locator("form").count():
+        raise AssertionError("/catalog unexpectedly exposes a control action")
+    page.screenshot(path=evidence_root / "catalog-wide.png", full_page=True)
+
+    page.set_viewport_size({"width": 375, "height": 812})
+    page.reload()
+    if page.evaluate("document.documentElement.scrollWidth > window.innerWidth"):
+        raise AssertionError("/catalog overflows the narrow viewport")
+    page.screenshot(path=evidence_root / "catalog-narrow.png", full_page=True)
+
+    page.set_viewport_size({"width": 640, "height": 900})
+    page.goto(f"{base_url}/demo")
+    demo_text = page.locator("main").inner_text().lower()
+    for expected in (
+        "9 read-only presenter stages",
+        "artifact available",
+        "artifact unavailable",
+        "demo artifacts are illustrations only",
+    ):
+        if expected not in demo_text:
+            raise AssertionError(f"/demo did not present expected status: {expected}")
+    if page.get_by_role("button").count() or page.locator("form").count():
+        raise AssertionError("/demo unexpectedly exposes a control action")
+    page.screenshot(path=evidence_root / "demo-200-percent-equivalent.png", full_page=True)
+
+    page.set_viewport_size({"width": 375, "height": 812})
+    page.reload()
+    if page.evaluate("document.documentElement.scrollWidth > window.innerWidth"):
+        raise AssertionError("/demo overflows the narrow viewport")
+    page.screenshot(path=evidence_root / "demo-narrow.png", full_page=True)
+    page.go_back()
+    if not page.url.endswith("/catalog"):
+        raise AssertionError("catalog/demo browser back state was not preserved")
+    page.reload()
+    if "10 capability domains" not in page.locator("main").inner_text().lower():
+        raise AssertionError("catalog reload did not preserve read-only content")
+    transcript.append(
+        {
+            "step": "catalog-demo-read-only",
+            "catalog_diagrams": 7,
+            "demo_stages": 9,
+            "narrow_viewport": 375,
+            "zoom_equivalent_viewport": 640,
+            "controls": 0,
+        }
+    )
 
 
 def _digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def run_browser_journey(evidence_root: Path) -> dict[str, Any]:
+def run_browser_journey(
+    evidence_root: Path,
+    *,
+    repository_root: Path,
+) -> dict[str, Any]:
     """Run the complete journey once, retain evidence, and tear down all processes."""
     evidence_root.mkdir(parents=True, exist_ok=True)
     work_root = evidence_root / "work"
     shutil.rmtree(work_root, ignore_errors=True)
     work_root.mkdir()
-    source_server = _start_server(work_root / "source")
+    source_server = _start_server(
+        work_root / "source",
+        repository_root=repository_root,
+    )
     destination_server: RunningServer | None = None
     transcript: list[dict[str, Any]] = []
     remote_requests: list[str] = []
@@ -653,6 +976,9 @@ def run_browser_journey(evidence_root: Path) -> dict[str, Any]:
                     console_errors=console_errors,
                     page_errors=page_errors,
                     request_failures=request_failures,
+                    allowed_file_urls={
+                        (evidence_root / "report.html").resolve().as_uri()
+                    },
                 )
                 page = plain_context.new_page()
                 _complete_plain_form_assessment(
@@ -676,9 +1002,17 @@ def run_browser_journey(evidence_root: Path) -> dict[str, Any]:
                     response.headers.get("content-security-policy") or ""
                 ):
                     raise AssertionError("live response is missing the restrictive CSP")
-                _read_only_surfaces(page, source_server.base_url)
+                _read_only_surfaces(
+                    page,
+                    source_server.base_url,
+                    evidence_root,
+                    transcript,
+                )
 
-                destination_server = _start_server(work_root / "destination")
+                destination_server = _start_server(
+                    work_root / "destination",
+                    repository_root=repository_root,
+                )
                 _import_reopen_compare(
                     page,
                     destination_server,
@@ -694,9 +1028,7 @@ def run_browser_journey(evidence_root: Path) -> dict[str, Any]:
             finally:
                 browser.close()
     finally:
-        if destination_server is not None:
-            server_logs.append(_stop_server(destination_server))
-        server_logs.append(_stop_server(source_server))
+        server_logs.extend(_stop_servers((destination_server, source_server)))
 
     if remote_requests:
         raise AssertionError(f"browser attempted remote requests: {remote_requests}")
@@ -739,6 +1071,7 @@ def run_browser_journey(evidence_root: Path) -> dict[str, Any]:
         "digests": digests,
         "transcript": transcript,
         "server_logs_clean": server_logs_clean,
+        "clean_teardown": True,
     }
     (evidence_root / "transcript.json").write_bytes(canonical_json(transcript))
     (evidence_root / "digests.json").write_bytes(canonical_json(digests))

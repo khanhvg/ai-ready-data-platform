@@ -1,15 +1,215 @@
 {% extends "base.html" %}
 {% block content %}
-<p class="eyebrow">Read-only reference surface</p>
-<h1>Catalog references</h1>
-<p class="status warn">Framework references are validated. Detailed Phase 5 capability, architecture diagrams, and technology mapping content is not installed.</p>
-{% if architectures %}
-<ul class="card-list">
-{% for item in architectures %}
-  <li class="panel"><strong>{{ item.id }}</strong> · {{ item.title }}<br><span class="tag">details not installed</span></li>
-{% endfor %}
-</ul>
-{% else %}
-<p class="status neutral">No validated catalog references are available.</p>
-{% endif %}
+<header class="catalog-hero">
+  <div>
+    <p class="eyebrow">Versioned · validated · read-only</p>
+    <h1>Capability and architecture catalog</h1>
+    <p class="catalog-lede">A vendor-neutral reference for customer conversations, architecture judgment, and evidence-aware recommendations. This catalog describes options; it does not execute a pipeline, provision infrastructure, or change an assessment score.</p>
+  </div>
+  <dl class="catalog-summary" aria-label="Catalog summary">
+    <div><dt>Coverage</dt><dd>10 capability domains</dd></div>
+    <div><dt>Diagrams</dt><dd>{{ catalog.diagrams | length }} audience views</dd></div>
+    <div><dt>Version</dt><dd>{{ catalog.version }}</dd></div>
+  </dl>
+</header>
+
+<nav class="catalog-page-nav" aria-label="Catalog sections">
+  <a href="#capabilities">Capabilities</a>
+  <a href="#architectures">Architecture patterns</a>
+  <a href="#technology-options">Technology options</a>
+  <a href="#diagrams">Audience diagrams</a>
+</nav>
+
+<section id="capabilities" class="catalog-section" aria-labelledby="capabilities-heading">
+  <div class="catalog-section-heading">
+    <p class="eyebrow">Conversation and evidence model</p>
+    <h2 id="capabilities-heading">10 capability domains</h2>
+    <p>Each domain keeps customer language and architect language side by side. Evidence labels distinguish self-report, customer evidence, architect judgment, and demo illustration; those sources are not interchangeable.</p>
+  </div>
+  <ol class="catalog-card-list">
+  {% for capability in catalog.capabilities %}
+    <li id="capability-{{ capability.id }}" class="catalog-card">
+      <div class="catalog-card-heading">
+        <span class="catalog-index" aria-hidden="true">{{ "%02d" | format(loop.index) }}</span>
+        <div>
+          <p class="catalog-id">{{ capability.id }}</p>
+          <h3>{{ capability.name }}</h3>
+        </div>
+      </div>
+      <div class="catalog-language-grid">
+        <section aria-labelledby="customer-{{ capability.id }}">
+          <h4 id="customer-{{ capability.id }}">Customer language</h4>
+          <p>{{ capability.customer_language }}</p>
+        </section>
+        <section aria-labelledby="architect-{{ capability.id }}">
+          <h4 id="architect-{{ capability.id }}">Architect language</h4>
+          <p>{{ capability.architect_language }}</p>
+        </section>
+      </div>
+      <div class="table-region" role="region" aria-label="{{ capability.name }} evidence distinctions" tabindex="0">
+        <table class="catalog-evidence-table">
+          <thead>
+            <tr>
+              <th scope="col">Evidence source</th>
+              <th scope="col">Example</th>
+              <th scope="col">Assessment effect</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for evidence in capability.evidence_examples %}
+            <tr>
+              <th scope="row"><span class="evidence-kind evidence-{{ evidence.provenance }}">{{ evidence.provenance | replace("-", " ") }}</span><br>{{ evidence.label }}</th>
+              <td>{{ evidence.example }}</td>
+              <td>{{ evidence.scoring_effect | replace("-", " ") }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <dl class="catalog-reference-list">
+        <div><dt>Architecture references</dt><dd>{{ capability.architecture_ids | join(", ") }}</dd></div>
+        <div><dt>Recommendation references</dt><dd>{{ capability.recommendation_ids | join(", ") if capability.recommendation_ids else "No direct recommendation reference" }}</dd></div>
+      </dl>
+    </li>
+  {% endfor %}
+  </ol>
+</section>
+
+<section id="architectures" class="catalog-section" aria-labelledby="architectures-heading">
+  <div class="catalog-section-heading">
+    <p class="eyebrow">Vendor-neutral logical patterns</p>
+    <h2 id="architectures-heading">Architecture patterns</h2>
+    <p>Patterns explain problems, boundaries, controls, evidence, and trade-offs before any product choice. Finding and recommendation references remain visible for traceability.</p>
+  </div>
+  <div class="catalog-pattern-list">
+  {% for architecture in catalog.architectures %}
+    <article id="architecture-{{ architecture.id }}" class="catalog-card architecture-card">
+      <header>
+        <p class="catalog-id">{{ architecture.id }} · {{ architecture.theme | replace("-", " ") }}</p>
+        <h3>{{ architecture.title }}</h3>
+        <p>{{ architecture.problem }}</p>
+      </header>
+      <div class="catalog-detail-grid">
+        <section>
+          <h4>Forces</h4>
+          <ul>{% for item in architecture.forces %}<li>{{ item }}</li>{% endfor %}</ul>
+        </section>
+        <section>
+          <h4>Logical components</h4>
+          <ul>{% for item in architecture.logical_components %}<li>{{ item }}</li>{% endfor %}</ul>
+        </section>
+        <section>
+          <h4>Controls</h4>
+          <ul>{% for item in architecture.controls %}<li>{{ item }}</li>{% endfor %}</ul>
+        </section>
+        <section>
+          <h4>Data flows</h4>
+          <ul>{% for item in architecture.data_flows %}<li>{{ item }}</li>{% endfor %}</ul>
+        </section>
+        <section>
+          <h4>Trade-offs</h4>
+          <ul>{% for item in architecture.trade_offs %}<li>{{ item }}</li>{% endfor %}</ul>
+        </section>
+        <section>
+          <h4>Expected evidence</h4>
+          <ul>{% for item in architecture.evidence_expectations %}<li>{{ item }}</li>{% endfor %}</ul>
+        </section>
+      </div>
+      <dl class="catalog-reference-list">
+        <div><dt>Capabilities</dt><dd>{{ architecture.capability_ids | join(", ") }}</dd></div>
+        <div><dt>Findings</dt><dd>{{ architecture.finding_ids | join(", ") if architecture.finding_ids else "No direct finding reference" }}</dd></div>
+        <div><dt>Recommendations</dt><dd>{{ architecture.recommendation_ids | join(", ") if architecture.recommendation_ids else "No direct recommendation reference" }}</dd></div>
+        <div><dt>Diagrams</dt><dd>{{ architecture.diagram_ids | join(", ") if architecture.diagram_ids else "No direct diagram reference" }}</dd></div>
+      </dl>
+    </article>
+  {% endfor %}
+  </div>
+</section>
+
+<section id="technology-options" class="catalog-section" aria-labelledby="technology-heading">
+  <div class="catalog-section-heading">
+    <p class="eyebrow">Content-only mappings</p>
+    <h2 id="technology-heading">Technology option sets</h2>
+    <p>Named tools illustrate how logical roles could be filled. Tool presence, absence, or preference never contributes to maturity or readiness.</p>
+  </div>
+  <div class="technology-profile-list">
+  {% for profile in catalog.technology_profiles %}
+    <article class="catalog-card technology-profile">
+      <header class="technology-profile-heading">
+        <div>
+          <p class="catalog-id">{{ profile.id }} · published {{ profile.published_date }}</p>
+          <h3>{{ profile.title }}</h3>
+        </div>
+        <span class="read-only-badge">content only · does not execute</span>
+      </header>
+      {% if profile.title == "AWS first named implementation profile" %}
+      <p class="status neutral"><strong>AWS first named implementation profile</strong> is advisory content only: no account, credential, SDK, provisioning, or cloud action is used.</p>
+      {% elif profile.title == "Existing sandbox read-only demo evidence mapping" %}
+      <p class="status neutral"><strong>Existing sandbox read-only demo evidence mapping</strong> describes repository evidence separately from the named implementation profile.</p>
+      {% endif %}
+      <dl class="catalog-reference-list">
+        <div><dt>Profile kind</dt><dd>{{ profile.kind | replace("-", " ") }}</dd></div>
+        <div><dt>Provider</dt><dd>{{ profile.provider or "Vendor-neutral / local" }}</dd></div>
+        <div><dt>Read-only</dt><dd>{{ "Yes" if profile.read_only else "No" }}</dd></div>
+      </dl>
+      <h4>Limitations</h4>
+      <ul>{% for item in profile.limitations %}<li>{{ item }}</li>{% endfor %}</ul>
+      <div class="table-region" role="region" aria-label="{{ profile.title }} role mapping" tabindex="0">
+        <table class="catalog-role-table">
+          <thead>
+            <tr>
+              <th scope="col">Logical role</th>
+              <th scope="col">Selected tool / option set</th>
+              <th scope="col">Mapped references</th>
+              <th scope="col">Constraints</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for role in profile.roles %}
+            <tr>
+              <th scope="row">{{ role.role }}<br><span class="catalog-id">{{ role.id }}</span></th>
+              <td>
+                {% if role.selected_tool %}<strong>{{ role.selected_tool }}</strong>{% endif %}
+                {% if role.alternatives %}<span class="catalog-block-label">Deferred alternatives</span>{{ role.alternatives | join(", ") }}{% endif %}
+              </td>
+              <td><strong>Capabilities:</strong> {{ role.capability_ids | join(", ") }}<br><strong>Architectures:</strong> {{ role.architecture_ids | join(", ") }}</td>
+              <td><ul class="compact-list">{% for item in role.constraints %}<li>{{ item }}</li>{% endfor %}</ul></td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </article>
+  {% endfor %}
+  </div>
+</section>
+
+<section id="diagrams" class="catalog-section" aria-labelledby="diagrams-heading">
+  <div class="catalog-section-heading">
+    <p class="eyebrow">Seven audience-specific views</p>
+    <h2 id="diagrams-heading">Architecture diagrams</h2>
+    <p>Each reviewed SVG is served locally and paired with an adjacent text alternative. The text conveys the same core relationship without requiring the image.</p>
+  </div>
+  <div class="catalog-diagram-list">
+  {% for diagram in catalog.diagrams %}
+    <figure class="catalog-diagram-figure">
+      <figcaption>
+        <p class="catalog-id">{{ diagram.audience }}</p>
+        <h3>{{ diagram.accessible_title }}</h3>
+        <p>{{ diagram.purpose }}</p>
+      </figcaption>
+      <img class="catalog-diagram" src="/catalog/diagrams/{{ diagram.id }}.svg" alt="{{ diagram.accessible_description }}" loading="lazy">
+      <div class="diagram-text-alternative">
+        <h4>Text alternative</h4>
+        <p>{{ diagram.text_alternative }}</p>
+      </div>
+    </figure>
+  {% endfor %}
+  </div>
+</section>
+
+<aside class="catalog-disclaimer" aria-label="Demo evidence boundary">
+  <h2>Demo evidence boundary</h2>
+  <p><strong>Demo artifacts are illustrations only.</strong> {{ demo_disclaimer }}</p>
+</aside>
 {% endblock %}

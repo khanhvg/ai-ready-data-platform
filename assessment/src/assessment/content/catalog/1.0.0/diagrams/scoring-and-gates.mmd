@@ -1,0 +1,11 @@
+flowchart TD
+  accTitle: Scoring and readiness gate separation
+  accDescr: Customer answers determine maturity, evidence status determines confidence, diagnostic facts and domain scores drive gates, and demo illustrations never score.
+  A[Customer answer ratings] --> B[Capability maturity]
+  C[Evidence status] --> D[Independent confidence]
+  B --> E[Pre-gate readiness]
+  F[Domain scores and diagnostic facts] --> G[Seven gate traces]
+  E --> G
+  G --> H[Final readiness]
+  H --> I[Findings and roadmap]
+  J[Demo illustrations] -. presentation only .-> I

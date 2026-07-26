@@ -1,0 +1,84 @@
+technology_profile:
+  id: aws-first-profile
+  title: AWS first named implementation profile
+  kind: named-implementation
+  provider: AWS
+  content_only: true
+  executable: false
+  read_only: true
+  published_date: "2026-07-25"
+  limitations:
+    - This is advisory mapping content, not a deployment plan, bill of materials, or maturity criterion.
+    - No credential, account, region, SDK call, provisioning action, or executable cloud command is included.
+    - IAM supplies identities and policy primitives to Lake Formation; it is not a competing selected access-governance product.
+  roles:
+    - id: object-storage
+      role: Durable object storage for landing, accepted, governed, and product zones
+      selected_tool: Amazon S3
+      alternatives: []
+      capability_ids: [STO, ING, AID]
+      architecture_ids: [ARCH-PLATFORM-INTEGRATION, ARCH-VERSIONED-PRODUCT]
+      constraints: [Apply lifecycle and encryption policy, Separate trust boundaries, Retain immutable product manifests]
+    - id: data-catalog
+      role: Technical catalog for registered datasets and schemas
+      selected_tool: AWS Glue Data Catalog
+      alternatives: []
+      capability_ids: [LIN, GOV]
+      architecture_ids: [ARCH-METADATA-LINEAGE, ARCH-GOVERNANCE-CONTROL]
+      constraints: [Preserve ownership and business definitions, Measure metadata coverage and freshness]
+    - id: query
+      role: Serverless SQL query over governed object data
+      selected_tool: Amazon Athena
+      alternatives: []
+      capability_ids: [AID, OPS]
+      architecture_ids: [ARCH-PLATFORM-INTEGRATION, ARCH-VERSIONED-PRODUCT]
+      constraints: [Expose only governed locations, Bound scan cost, Record query and product identity]
+    - id: access-governance
+      role: Governed data permissions and policy enforcement
+      selected_tool: AWS Lake Formation
+      alternatives: []
+      capability_ids: [GOV, SEC]
+      architecture_ids: [ARCH-POLICY-ACCESS, ARCH-PRIVACY-CONTROLS]
+      constraints: [Use IAM identities and policies as inputs, Test least privilege and revocation, Audit allow and deny outcomes]
+    - id: transformation
+      role: Versioned transformation and data-product build
+      selected_tool: dbt Core with dbt-athena
+      alternatives: []
+      capability_ids: [TRN, QUA, LIN, AID]
+      architecture_ids: [ARCH-PLATFORM-INTEGRATION, ARCH-VERSIONED-PRODUCT, ARCH-METADATA-LINEAGE]
+      constraints: [Pin project and adapter versions, Test contracts, Publish manifest and lineage evidence]
+    - id: data-quality
+      role: Reusable quality rules and result evidence
+      selected_tool: Soda Core
+      alternatives: []
+      capability_ids: [QUA, OPS]
+      architecture_ids: [ARCH-QUALITY-GATE]
+      constraints: [Assign rule ownership and severity, Separate quarantine from accepted data, Retain remediation evidence]
+    - id: metadata-lineage
+      role: Business and technical metadata with lineage and impact analysis
+      selected_tool: OpenMetadata
+      alternatives: []
+      capability_ids: [LIN, GOV, AID]
+      architecture_ids: [ARCH-METADATA-LINEAGE, ARCH-GOVERNANCE-CONTROL]
+      constraints: [Keep logical and physical identities honest, Reconcile without fabricating edges, Measure critical-path coverage]
+    - id: analytics
+      role: Governed analytics and product consumption
+      selected_tool: Apache Superset
+      alternatives: []
+      capability_ids: [AID, OPS]
+      architecture_ids: [ARCH-PLATFORM-INTEGRATION, ARCH-AI-DATA-OPERATIONS]
+      constraints: [Connect only to governed products, Apply access policy, Measure adoption and service outcomes]
+    - id: infrastructure-source
+      role: Reviewed infrastructure definition source
+      selected_tool: Terraform
+      alternatives: []
+      capability_ids: [STR, OPS, SEC]
+      architecture_ids: [ARCH-OPERATING-MODEL, ARCH-PLATFORM-INTEGRATION]
+      constraints: [Source and review only in this catalog, No apply or destroy is authorized, Separate environment state and approvals]
+    - id: synthetic-data
+      role: Deterministic non-customer demonstration data
+      selected_tool: Deterministic synthetic generator
+      alternatives: []
+      capability_ids: [ING, QUA, AID]
+      architecture_ids: [ARCH-PLATFORM-INTEGRATION, ARCH-VERSIONED-PRODUCT]
+      constraints: [Use synthetic inputs only, Record seed profile counts and digests, Never represent demo data as customer evidence]

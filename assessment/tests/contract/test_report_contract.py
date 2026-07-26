@@ -90,16 +90,72 @@ def test_report_has_exact_sections_provenance_digest_and_safe_stable_html() -> N
     assert "DEMO-PLACEHOLDER-QUALITY" in text
     assert "Self-reported:" in text
     assert "critical_lineage" in text
-    assert "<svg" in text and "Diagram data table" in text
+    assert text.count("<svg") == 7 and "Diagram data table" in text
+    assert "Vendor-neutral logical platform context" in text
+    assert "Demo evidence to catalog mapping" in text
     assert "@media print" in text
     assert not re.search(r"(?i)<(?:script|form|iframe|object|embed)\b", text)
-    assert not re.search(r"(?i)(?:https?:|//|@font-face|telemetry)", text)
+    remote_scan = text.replace("http://www.w3.org/2000/svg", "")
+    assert not re.search(r"(?i)(?:https?:|//|@font-face|telemetry)", remote_scan)
     assert not re.search(r"(?i)\s(?:src|href|on[a-z]+)\s*=", text)
     parser = StructuralParser()
     parser.feed(text)
     assert parser.main_count == 1
     assert parser.section_ids == list(prototype.REPORT_SECTION_IDS)
     assert "Diagram data table" in parser.table_captions
+
+
+def test_report_projects_validated_catalog_without_changing_assessment_truth() -> None:
+    engagement, answers = _source()
+    report = json.loads(generate_report(engagement, answers).json_bytes)
+    sections = {section["id"]: section["content"] for section in report["sections"]}
+
+    diagrams = sections["reference-diagrams"]["items"]
+    assert len(diagrams) == 7
+    assert {item["diagram_id"] for item in diagrams} == {
+        "executive-ai-readiness",
+        "logical-platform-context",
+        "engagement-lifecycle",
+        "scoring-and-gates",
+        "security-and-access",
+        "metadata-and-lineage",
+        "demo-evidence-mapping",
+    }
+    assert all(
+        item["audience"]
+        and item["purpose"]
+        and item["text_alternative"]
+        and item["provenance_class"] == "architect judgment"
+        for item in diagrams
+    )
+
+    technology = sections["technology-options"]
+    assert technology["catalog_version"] == "1.0.0"
+    assert [profile["id"] for profile in technology["profiles"]] == [
+        "aws-first-profile",
+        "local-demo-evidence",
+        "deferred-alternatives",
+    ]
+    aws = technology["profiles"][0]
+    assert aws["content_only"] is True
+    assert aws["executable"] is False
+    assert all(role["selected_tool"] for role in aws["roles"])
+    assert all(not role["alternatives"] for role in aws["roles"])
+    assert technology["profiles"][1]["kind"] == "local-demo-evidence"
+    assert all(
+        role["selected_tool"] is None
+        for role in technology["profiles"][2]["roles"]
+    )
+
+    findings = sections["findings"]["items"]
+    assert all(item["architecture_title"] for item in findings)
+    assert all(item["architecture_problem"] for item in findings)
+    assert all(item["diagram_ids"] for item in findings)
+    assert all(item["demo_stage_ids"] for item in findings)
+    assert all(item["demo_explanation"] for item in findings)
+    assert sections["target-state"]["catalog_version"] == "1.0.0"
+    assert len(sections["target-state"]["patterns"]) == 9
+    assert sections["evidence-appendix"]["demo_evidence_used_for_scoring"] is False
 
 
 def test_source_digest_tracks_evidence_but_excludes_generated_reports() -> None:

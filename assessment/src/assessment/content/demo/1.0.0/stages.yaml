@@ -1,0 +1,192 @@
+schema_version: 1.0.0
+demo_content_version: 1.0.0
+stages:
+  - id: DEMO-INGESTION
+    title: Deterministic source and ingestion evidence
+    presenter_goal: Explain source reproducibility, manifest evidence, bounded landing, and the difference between tracked source logic and generated local data.
+    prerequisites:
+      - The repository source files are available for read-only inspection.
+      - Generated source and warehouse artifacts may be absent without affecting the assessment.
+    artifacts:
+      - {label: Synthetic generator source, path: data-generator/generate.py, expected: Seeded profiles emit deterministic synthetic retail data and a manifest., status: unavailable}
+      - {label: Landing source, path: ingestion/load_raw.py, expected: Raw landing is idempotent and keeps the embedded warehouse local., status: unavailable}
+      - {label: Generated manifest, path: data/raw/manifest.json, expected: When present it records profile seed counts checksums and quality observations., status: unavailable}
+    expected_evidence:
+      - Source code defines deterministic profile and seed behavior.
+      - Generated manifest status is shown honestly as available or unavailable.
+    limitations:
+      - The read-only guide does not generate data, open DuckDB, or prove a current run.
+      - Synthetic sandbox evidence is not customer ingestion evidence.
+    cleanup:
+      - No cleanup is performed by the guide.
+      - Any separately generated local data remains governed by the existing demo runbook.
+    read_only: true
+    non_scoring: true
+  - id: DEMO-QUALITY-QUARANTINE
+    title: Quality validation and quarantine evidence
+    presenter_goal: Explain how critical rules separate accepted and rejected records and retain reasons and remediation evidence.
+    prerequisites:
+      - Existing dbt quality contracts are available for read-only inspection.
+      - The explicit accepted and quarantine boundary remains a later-phase artifact until installed.
+    artifacts:
+      - {label: dbt model contracts, path: transform/dbt/models/_staging__models.yml, expected: Tests and descriptions illustrate repeatable quality validation., status: unavailable}
+      - {label: Accepted orders contract, path: demo/quality/accepted-orders.json, expected: A later artifact will prove the accepted partition identity and counts., status: unavailable}
+      - {label: Quarantine orders contract, path: demo/quality/quarantine-orders.json, expected: A later artifact will retain controlled failures and rule reasons., status: unavailable}
+    expected_evidence:
+      - Quality rules and ownership are distinguishable from execution results.
+      - Explicit accepted and quarantine evidence stays unavailable until a later phase creates it.
+    limitations:
+      - Existing warnings do not yet prove exclusion from a curated acceptance boundary.
+      - No rule is executed and no generated table is queried by the guide.
+    cleanup:
+      - No cleanup is performed by the guide.
+      - Later generated quality artifacts must remain removable without deleting assessment sources.
+    read_only: true
+    non_scoring: true
+  - id: DEMO-TRANSFORMATION
+    title: Versioned transformation and orchestration evidence
+    presenter_goal: Explain tested transformations, dependency-aware orchestration, recovery boundaries, and reproducible source-to-product logic.
+    prerequisites:
+      - Tracked dbt project and Airflow DAG source are available for read-only inspection.
+      - Generated dbt or Airflow runtime artifacts are optional and may be unavailable.
+    artifacts:
+      - {label: dbt project, path: transform/dbt/dbt_project.yml, expected: The project defines layered versioned transformations and tests., status: unavailable}
+      - {label: Airflow TaskFlow DAG, path: orchestration/airflow/dags/retail_batch_pipeline.py, expected: The DAG source shows generate load transform serve and optional publish dependencies., status: unavailable}
+      - {label: dbt manifest, path: transform/dbt/target/manifest.json, expected: When present the generated manifest records model identities dependencies and metadata., status: unavailable}
+    expected_evidence:
+      - Tracked source shows transformation and orchestration structure.
+      - Generated execution evidence is clearly distinguished from source definitions.
+    limitations:
+      - The guide does not run dbt, trigger Airflow, or start a service.
+      - Source presence alone is not proof of a current successful execution.
+    cleanup:
+      - No cleanup is performed by the guide.
+      - Existing generated dbt and Airflow state follows the repository runbook.
+    read_only: true
+    non_scoring: true
+  - id: DEMO-METADATA
+    title: Metadata catalog evidence
+    presenter_goal: Explain asset definitions, ownership, classification, and the separate logical and physical catalog views.
+    prerequisites:
+      - Tracked dbt metadata and OpenMetadata ingestion definitions are available.
+      - A live catalog is optional and is never started from the assessment.
+    artifacts:
+      - {label: dbt model metadata, path: transform/dbt/models/_marts__models.yml, expected: Business-facing marts carry descriptions tests and model metadata., status: unavailable}
+      - {label: OpenMetadata runbook, path: governance/openmetadata/README.md, expected: The runbook explains logical and physical ingestion boundaries., status: unavailable}
+      - {label: Current catalog verification, path: demo/evidence/openmetadata-verification.json, expected: A later retained artifact may record current verified catalog state., status: unavailable}
+    expected_evidence:
+      - Tracked definitions identify intended metadata and catalog relationships.
+      - Current execution status is never inferred from historical documentation.
+    limitations:
+      - Historical verification can illustrate a pattern but is not a current live-catalog claim.
+      - No service, credential, or ingestion workflow is invoked.
+    cleanup:
+      - No cleanup is performed by the guide.
+      - Any separately operated catalog is managed by the existing staged runbook.
+    read_only: true
+    non_scoring: true
+  - id: DEMO-LINEAGE
+    title: Source-to-product lineage evidence
+    presenter_goal: Explain transformation lineage, publication identity, and why logical dbt lineage stays separate from physical Iceberg assets.
+    prerequisites:
+      - System architecture and tracked transformation definitions are available.
+      - Generated lineage exports may be unavailable.
+    artifacts:
+      - {label: System architecture, path: docs/system-architecture.md, expected: The architecture explains logical transformation and physical publication identities., status: unavailable}
+      - {label: Curated asset inventory, path: lake/curated_assets.json, expected: The canonical inventory identifies the eleven published mart products., status: unavailable}
+      - {label: Generated dbt lineage, path: transform/dbt/target/manifest.json, expected: When present the manifest exposes observed source-to-model dependency edges., status: unavailable}
+    expected_evidence:
+      - Logical and physical identities are described without fabricated cross-service edges.
+      - Generated lineage availability is explicit.
+    limitations:
+      - The guide does not generate dbt documents or query OpenMetadata.
+      - Tracked architecture does not substitute for current runtime lineage evidence.
+    cleanup:
+      - No cleanup is performed by the guide.
+      - Generated lineage artifacts remain under existing ignored paths.
+    read_only: true
+    non_scoring: true
+  - id: DEMO-GOVERNANCE
+    title: Governance ownership and policy evidence
+    presenter_goal: Explain how owners, obligations, classifications, decisions, exceptions, controls, and evidence should connect.
+    prerequisites:
+      - Catalog architecture patterns and tracked metadata definitions are available.
+      - Later classification and policy evidence may remain unavailable.
+    artifacts:
+      - {label: Governance catalog pattern, path: assessment/src/assessment/content/catalog/1.0.0/architectures/governance-metadata-lineage.yaml, expected: Vendor-neutral patterns define ownership decisions controls and evidence., status: unavailable}
+      - {label: PII classification evidence, path: demo/governance/pii-classification.yaml, expected: A later artifact will identify classified fields purposes owners and controls., status: unavailable}
+      - {label: Governance decision evidence, path: demo/governance/decision-evidence.json, expected: A later artifact may bind decisions exceptions and review outcomes., status: unavailable}
+    expected_evidence:
+      - Logical governance guidance is available independently from demo execution.
+      - Missing later-phase evidence remains visibly unavailable.
+    limitations:
+      - Catalog guidance is advisory and not proof of enforced governance.
+      - No customer policy or customer data is stored.
+    cleanup:
+      - No cleanup is performed by the guide.
+      - Later demo evidence must remain synthetic and removable.
+    read_only: true
+    non_scoring: true
+  - id: DEMO-POLICY-ACCESS
+    title: Policy-based access evidence
+    presenter_goal: Explain identity and asset decisions, raw denial, governed masked allowance, audit evidence, and the limitation of a local application boundary.
+    prerequisites:
+      - The vendor-neutral security pattern is available.
+      - The bounded local policy proof remains unavailable until the later authorized phase.
+    artifacts:
+      - {label: Security and access pattern, path: assessment/src/assessment/content/catalog/1.0.0/architectures/security-policy.yaml, expected: The pattern defines policy decision enforcement denial and evidence boundaries., status: unavailable}
+      - {label: Local policy source, path: demo/policy/access-policy.yaml, expected: A later versioned policy will map fixed roles and assets to decisions., status: unavailable}
+      - {label: Allow and deny evidence, path: demo/evidence/policy-decisions.json, expected: A later artifact will record tested safe allowance and raw denial., status: unavailable}
+    expected_evidence:
+      - Guidance clearly separates policy intent, enforcement, and audit evidence.
+      - The local control is not represented as database IAM or production enforcement.
+    limitations:
+      - No policy command, SQL, data export, or access decision is executed in Phase 5.
+      - A local operating-system user may bypass a later application-only demonstration boundary.
+    cleanup:
+      - No cleanup is performed by the guide.
+      - Later policy output must remain bounded to its explicit generated root.
+    read_only: true
+    non_scoring: true
+  - id: DEMO-SERVING
+    title: Governed serving and analytics evidence
+    presenter_goal: Explain how one canonical product inventory serves local Parquet analytics and physical publication without changing product identity.
+    prerequisites:
+      - Curated asset inventory and serving definitions are available.
+      - Generated Parquet and live analytics views may be unavailable.
+    artifacts:
+      - {label: Curated asset inventory, path: lake/curated_assets.json, expected: The inventory is the shared authority for eleven business-facing marts., status: unavailable}
+      - {label: Rill project, path: serving/rill/rill.yaml, expected: The project defines the local analytics serving surface., status: unavailable}
+      - {label: Exported mart snapshot, path: serving/export/mart_daily_revenue.parquet, expected: When present the ignored artifact illustrates a published product snapshot., status: unavailable}
+    expected_evidence:
+      - Tracked sources show product inventory and serving intent.
+      - Generated product bytes remain optional and honestly unavailable when absent.
+    limitations:
+      - The guide does not export marts, start Rill, or publish Iceberg.
+      - A local serving illustration does not prove customer analytics readiness.
+    cleanup:
+      - No cleanup is performed by the guide.
+      - Generated exports follow existing cleanup boundaries.
+    read_only: true
+    non_scoring: true
+  - id: DEMO-AI-READY-PUBLICATION
+    title: Versioned AI-ready data product publication
+    presenter_goal: Explain the owner contract approved use source lineage quality policy service measures and immutable manifest required for an AI-ready product.
+    prerequisites:
+      - Existing curated product inventory and catalog patterns are available.
+      - The versioned AI-ready dataset manifest remains unavailable until a later phase.
+    artifacts:
+      - {label: Versioned product pattern, path: assessment/src/assessment/content/catalog/1.0.0/architectures/ai-data-products.yaml, expected: The pattern defines reproducible governed product publication., status: unavailable}
+      - {label: AI-ready dataset manifest, path: demo/manifests/ai-ready-customer-product.json, expected: A later artifact will bind source code contract environment output and approved-use evidence., status: unavailable}
+      - {label: Demo-stage manifest, path: demo/manifests/ai-ready-publication-stage.json, expected: A later artifact will bind stage status and retained evidence digests., status: unavailable}
+    expected_evidence:
+      - The guide states the complete evidence contract before a later artifact exists.
+      - Missing manifests remain unavailable and non-scoring.
+    limitations:
+      - No AI model is trained and no dataset is uploaded or deployed.
+      - Existing marts alone do not satisfy the versioned AI-ready manifest contract.
+    cleanup:
+      - No cleanup is performed by the guide.
+      - Later generated manifests remain reproducible and removable without deleting sources.
+    read_only: true
+    non_scoring: true

@@ -10,7 +10,12 @@ profile='(version 1)
   (allow default)
   (deny network*)
   (allow network* (local unix-socket))
-  (allow network* (local ip "localhost:*"))
+  (allow network-inbound (local ip "localhost:*"))
   (allow network-outbound (remote ip "localhost:*"))'
 
-exec env -u PYTHONPATH sandbox-exec -p "$profile" "$@"
+capability='assessment-loopback-capability-v1'
+exec 9<<<"$capability"
+exec env -u PYTHONPATH \
+  ASSESSMENT_LOOPBACK_SANDBOX=1 \
+  ASSESSMENT_LOOPBACK_CAPABILITY_FD=9 \
+  sandbox-exec -p "$profile" "$@"

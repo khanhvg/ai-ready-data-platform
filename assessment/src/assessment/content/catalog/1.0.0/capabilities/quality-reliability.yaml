@@ -1,0 +1,12 @@
+capability:
+  id: QUA
+  name: Data quality and reliability
+  customer_language: Identify the critical rules, owners, service expectations, alerts, quarantine boundaries, and remediation measures that keep defective data from trusted products.
+  architect_language: Enforce contracts at ingestion and transformation boundaries, separate rejected and accepted records, and measure prevention, remediation, and consumer impact.
+  evidence_examples:
+    - {provenance: self-report, label: Interview statement, example: "A team reports regular checks and quick fixes without showing owned rules or outcomes.", scoring_effect: assessment-input}
+    - {provenance: customer-evidence, label: Customer artifact, example: "Versioned rules, failed-record evidence, quarantine records, alerts, and remediation measures are current.", scoring_effect: confidence-only}
+    - {provenance: architect-judgment, label: Architect conclusion, example: "The architect judges whether controls prevent known defects from crossing the accepted boundary.", scoring_effect: advisory-only}
+    - {provenance: demo-illustration, label: Sandbox illustration, example: "Existing dbt checks and a planned quarantine artifact illustrate quality evidence without scoring the customer.", scoring_effect: none}
+  architecture_ids: [ARCH-QUALITY-GATE, ARCH-PLATFORM-INTEGRATION, ARCH-AI-DATA-OPERATIONS]
+  recommendation_ids: [R-QUALITY]

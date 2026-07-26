@@ -10,6 +10,12 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
+from assessment.catalog.loader import (
+    load_catalog,
+    load_demo_catalog,
+    read_catalog_asset,
+)
+from assessment.catalog.renderer import catalog_view, demo_view
 from assessment.domain.errors import ConcurrentWriteError
 from assessment.domain.models import AnswerEvidenceDocument, Engagement
 from assessment.engine.evaluator import AssessmentResult, evaluate_assessment
@@ -63,6 +69,11 @@ class WebServices:
         self.config = config
         self.store = store or LocalEngagementStore(config.engagement_root)
         self.framework = framework or load_framework("1.0.0")
+        self.catalog = load_catalog("1.0.0")
+        self.demo_catalog = load_demo_catalog(
+            "1.0.0",
+            repository_root=config.repository_root,
+        )
         self._imports: dict[str, tuple[bytes, dict[str, Any]]] = {}
         for root in (
             self.config.runtime_root,
@@ -74,6 +85,22 @@ class WebServices:
     @property
     def report_root(self) -> Path:
         return self.config.runtime_root / "reports"
+
+    def catalog_view(self) -> dict[str, Any]:
+        return catalog_view(self.catalog)
+
+    def demo_view(self) -> dict[str, Any]:
+        return demo_view(self.demo_catalog)
+
+    def catalog_diagram(self, name: str) -> bytes:
+        allowed = {
+            f"{diagram.id}.svg": diagram.svg_path
+            for diagram in self.catalog.diagrams
+        }
+        path = allowed.get(name)
+        if path is None:
+            raise ValueError("catalog diagram is not installed")
+        return read_catalog_asset(path)
 
     def create_engagement(self, engagement_id: str) -> Path:
         engagement = Engagement.model_validate(

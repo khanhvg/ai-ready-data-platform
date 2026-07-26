@@ -6,6 +6,8 @@ import hashlib
 from dataclasses import asdict
 from typing import Any
 
+from assessment.catalog.loader import load_catalog, load_demo_catalog
+from assessment.catalog.models import CatalogBundle, DemoCatalog
 from assessment.content.markdown import validate_markdown
 from assessment.domain.models import (
     REPORT_SECTION_IDS,
@@ -128,9 +130,17 @@ def _capability_items(result: AssessmentResult) -> list[dict[str, Any]]:
     ]
 
 
-def _finding_items(result: AssessmentResult) -> list[dict[str, Any]]:
-    return [
-        {
+def _finding_items(
+    result: AssessmentResult,
+    catalog: CatalogBundle,
+    demo_catalog: DemoCatalog,
+) -> list[dict[str, Any]]:
+    items: list[dict[str, Any]] = []
+    for finding in result.findings:
+        architecture = catalog.architecture(finding.architecture_reference)
+        demo_link = demo_catalog.evidence_link(finding.demo_reference)
+        items.append(
+            {
             "id": finding.id,
             "title": finding.title,
             "gap": finding.gap,
@@ -139,17 +149,22 @@ def _finding_items(result: AssessmentResult) -> list[dict[str, Any]]:
             "recommendation_id": finding.recommendation_id,
             "recommendation": finding.recommendation,
             "architecture_reference": finding.architecture_reference,
+            "architecture_title": architecture.title,
+            "architecture_problem": architecture.problem,
+            "diagram_ids": list(architecture.diagram_ids),
             "technology_options": list(finding.technology_options),
             "demo_reference": finding.demo_reference,
+            "demo_stage_ids": list(demo_link.stage_ids),
+            "demo_explanation": demo_link.explanation,
             "evidence_validation_action": finding.evidence_validation_action,
             "source_operand_ids": list(finding.source_operand_ids),
             "generated_truth_preserved": True,
             "architect_review": asdict(finding.review),
             "provenance_class": "architect judgment",
             "demo_provenance_class": "demo illustration",
-        }
-        for finding in result.findings
-    ]
+            }
+        )
+    return items
 
 
 def generate_report(
@@ -172,8 +187,12 @@ def generate_report(
         framework,
         reviews=review_records,
     )
+    # Versioned advisory content is loaded only after assessment evaluation. It
+    # enriches presentation and cannot influence maturity, confidence, or gates.
+    catalog = load_catalog(engagement.catalog_version)
+    demo_catalog = load_demo_catalog(engagement.demo_content_version)
     capabilities = _capability_items(result)
-    findings = _finding_items(result)
+    findings = _finding_items(result, catalog, demo_catalog)
     blockers = [
         finding for finding in findings if finding["priority"] == "Critical blocker"
     ]
@@ -218,6 +237,7 @@ def generate_report(
         "blockers": {"items": blockers},
         "findings": {"items": findings},
         "target-state": {
+            "catalog_version": catalog.version,
             "principle": (
                 "Raise critical foundations before claiming production AI readiness."
             ),
@@ -226,27 +246,32 @@ def generate_report(
                 if result.gates.final_level is not None
                 else None
             ),
+            "patterns": [
+                {
+                    "id": architecture.id,
+                    "title": architecture.title,
+                    "theme": architecture.theme,
+                    "problem": architecture.problem,
+                    "trade_offs": list(architecture.trade_offs),
+                    "provenance_class": "architect judgment",
+                }
+                for architecture in catalog.architectures
+            ],
             "provenance_class": "architect judgment",
         },
         "reference-diagrams": {
+            "catalog_version": catalog.version,
             "items": [
                 {
-                    "architecture_id": finding["architecture_reference"],
-                    "title": finding["title"],
-                    "score": next(
-                        (
-                            item["score"]
-                            for item in capabilities
-                            if any(
-                                operand == f"domain.{item['capability_id']}"
-                                for operand in finding["source_operand_ids"]
-                            )
-                        ),
-                        None,
-                    ),
+                    "diagram_id": diagram.id,
+                    "title": diagram.accessible_title,
+                    "description": diagram.accessible_description,
+                    "audience": diagram.audience,
+                    "purpose": diagram.purpose,
+                    "text_alternative": diagram.text_alternative,
                     "provenance_class": "architect judgment",
                 }
-                for finding in findings
+                for diagram in catalog.diagrams
             ]
         },
         "roadmap": {
@@ -262,6 +287,7 @@ def generate_report(
             ]
         },
         "technology-options": {
+            "catalog_version": catalog.version,
             "items": [
                 {
                     "finding_id": finding["id"],
@@ -269,7 +295,14 @@ def generate_report(
                     "provenance_class": "architect judgment",
                 }
                 for finding in findings
-            ]
+            ],
+            "profiles": [
+                {
+                    **profile.model_dump(mode="json"),
+                    "provenance_class": "architect judgment",
+                }
+                for profile in catalog.technology_profiles
+            ],
         },
         "evidence-appendix": {
             "source_state_digest": source_digest,

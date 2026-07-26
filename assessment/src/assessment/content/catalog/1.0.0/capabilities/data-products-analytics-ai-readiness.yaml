@@ -1,0 +1,12 @@
+capability:
+  id: AID
+  name: Data products, analytics, and AI readiness
+  customer_language: Identify governed data products with owners, contracts, reproducible versions, service measures, approved AI uses, and lifecycle decisions.
+  architect_language: Publish immutable product manifests and consumer contracts, connect lineage and policy, and monitor freshness, drift, adoption, value, and retirement.
+  evidence_examples:
+    - {provenance: self-report, label: Interview statement, example: "Teams describe analytics or AI datasets without a durable owner, contract, or version record.", scoring_effect: assessment-input}
+    - {provenance: customer-evidence, label: Customer artifact, example: "Product contracts, manifests, approved-use records, service measures, and lifecycle evidence are current.", scoring_effect: confidence-only}
+    - {provenance: architect-judgment, label: Architect conclusion, example: "The architect judges whether products are governed, reproducible, observable, reusable, and fit for approved AI use.", scoring_effect: advisory-only}
+    - {provenance: demo-illustration, label: Sandbox illustration, example: "Existing marts and a planned AI-ready manifest illustrate a product pattern without proving customer readiness.", scoring_effect: none}
+  architecture_ids: [ARCH-OPERATING-MODEL, ARCH-GOVERNANCE-CONTROL, ARCH-METADATA-LINEAGE, ARCH-PRIVACY-CONTROLS, ARCH-POLICY-ACCESS, ARCH-PLATFORM-INTEGRATION, ARCH-AI-DATA-OPERATIONS, ARCH-VERSIONED-PRODUCT]
+  recommendation_ids: [R-REPRODUCIBILITY, R-AI-OPERATING]

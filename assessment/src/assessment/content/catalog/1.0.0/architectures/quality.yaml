@@ -1,0 +1,36 @@
+architectures:
+  - id: ARCH-QUALITY-GATE
+    title: Quality gate with quarantine and accepted boundary
+    theme: quality
+    problem: Defective records can silently enter trusted products when validation and disposition are not explicit.
+    forces:
+      - Rules must be understandable to data owners and executable at repeatable boundaries.
+      - Rejected records must remain inspectable without contaminating accepted products.
+      - Remediation speed and consumer impact matter as much as rule counts.
+    logical_components:
+      - Versioned contract and rule registry
+      - Validation service at ingestion and transformation boundaries
+      - Quarantine and accepted partitions
+      - Alerting, ownership, and remediation workflow
+      - Quality results and trend evidence
+    controls:
+      - Fail or quarantine on critical rule violations
+      - Prove rejected and accepted partitions are disjoint and complete
+      - Require owner, severity, service expectation, and disposition for critical rules
+    data_flows:
+      - Source records enter validation before the trusted boundary.
+      - Passing records enter the accepted partition while failing records enter quarantine with reasons.
+      - Results and remediation evidence feed operational and governance review.
+    trade_offs:
+      - Strict blocking improves trust but requires explicit exception and recovery paths.
+      - Central rules improve reuse while domain owners must retain semantic accountability.
+    evidence_expectations:
+      - Versioned rules and owners
+      - Non-empty controlled failure with quarantine reason
+      - Disjoint and complete accepted/quarantine proof
+      - Alert, remediation, and trend records
+    capability_ids: [ING, TRN, QUA, OPS]
+    finding_ids: [F-QUALITY]
+    recommendation_ids: [R-QUALITY]
+    diagram_ids: [logical-platform-context, demo-evidence-mapping]
+    vendor_products: []

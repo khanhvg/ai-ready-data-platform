@@ -1,0 +1,27 @@
+schema_version: 1.0.0
+demo_content_version: 1.0.0
+evidence_links:
+  - id: DEMO-PLACEHOLDER-OWNERSHIP
+    stage_ids: [DEMO-GOVERNANCE, DEMO-AI-READY-PUBLICATION]
+    explanation: Ownership guidance is illustrated through governance decisions and product-manifest accountability.
+  - id: DEMO-PLACEHOLDER-QUALITY
+    stage_ids: [DEMO-QUALITY-QUARANTINE]
+    explanation: Quality guidance maps to rule evidence and the explicit quarantine and accepted boundary.
+  - id: DEMO-PLACEHOLDER-PRIVACY
+    stage_ids: [DEMO-GOVERNANCE, DEMO-POLICY-ACCESS]
+    explanation: Privacy guidance maps to classification approved purpose protected products and policy evidence.
+  - id: DEMO-PLACEHOLDER-SECURITY
+    stage_ids: [DEMO-POLICY-ACCESS]
+    explanation: Security guidance maps to versioned access decisions safe allowance raw denial and audit evidence.
+  - id: DEMO-PLACEHOLDER-GOVERNANCE
+    stage_ids: [DEMO-GOVERNANCE]
+    explanation: Governance guidance maps to owned obligations decisions exceptions controls and effectiveness evidence.
+  - id: DEMO-PLACEHOLDER-LINEAGE
+    stage_ids: [DEMO-METADATA, DEMO-LINEAGE]
+    explanation: Lineage guidance maps to catalog metadata and observed source-to-product relationships.
+  - id: DEMO-PLACEHOLDER-REPRODUCIBILITY
+    stage_ids: [DEMO-INGESTION, DEMO-TRANSFORMATION, DEMO-AI-READY-PUBLICATION]
+    explanation: Reproducibility guidance maps to deterministic inputs versioned transformations and immutable product manifests.
+  - id: DEMO-PLACEHOLDER-AI-OPERATIONS
+    stage_ids: [DEMO-SERVING, DEMO-AI-READY-PUBLICATION]
+    explanation: AI-data operations guidance maps to governed serving product measures approved use and lifecycle evidence.

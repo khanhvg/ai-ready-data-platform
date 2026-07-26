@@ -1,0 +1,12 @@
+capability:
+  id: STR
+  name: Strategy, ownership, and operating model
+  customer_language: Clarify which outcomes the data platform must enable, who owns each critical data product, and how funding and decisions are governed.
+  architect_language: Establish explicit product, control, and platform accountabilities with decision rights, measures, review cadence, and exception escalation.
+  evidence_examples:
+    - {provenance: self-report, label: Interview statement, example: "A sponsor describes ownership and priorities without a reviewed supporting record.", scoring_effect: assessment-input}
+    - {provenance: customer-evidence, label: Customer artifact, example: "A current decision register names owners, measures, review cadence, and approved exceptions.", scoring_effect: confidence-only}
+    - {provenance: architect-judgment, label: Architect conclusion, example: "The architect judges whether the operating model covers critical products and decisions consistently.", scoring_effect: advisory-only}
+    - {provenance: demo-illustration, label: Sandbox illustration, example: "A read-only catalog entry shows how product and control ownership could be represented.", scoring_effect: none}
+  architecture_ids: [ARCH-OPERATING-MODEL, ARCH-GOVERNANCE-CONTROL]
+  recommendation_ids: [R-OWNERSHIP, R-GOVERNANCE]

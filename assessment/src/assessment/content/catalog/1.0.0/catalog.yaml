@@ -1,0 +1,81 @@
+schema_version: 1.0.0
+catalog_version: 1.0.0
+capability_files:
+  - capabilities/strategy-ownership-operating-model.yaml
+  - capabilities/sources-ingestion-integration.yaml
+  - capabilities/storage-lifecycle-organization.yaml
+  - capabilities/transformation-orchestration.yaml
+  - capabilities/quality-reliability.yaml
+  - capabilities/metadata-catalog-lineage.yaml
+  - capabilities/governance-privacy-compliance.yaml
+  - capabilities/security-access-policy.yaml
+  - capabilities/observability-operations-cost.yaml
+  - capabilities/data-products-analytics-ai-readiness.yaml
+architecture_files:
+  - architectures/quality.yaml
+  - architectures/governance-metadata-lineage.yaml
+  - architectures/security-policy.yaml
+  - architectures/platform-integration.yaml
+  - architectures/operations.yaml
+  - architectures/ai-data-products.yaml
+technology_mapping_files:
+  - technology-mappings/aws-first-profile.yaml
+  - technology-mappings/local-demo-evidence.yaml
+  - technology-mappings/alternatives.yaml
+diagrams:
+  - id: executive-ai-readiness
+    audience: Executive sponsor
+    purpose: Explain how capabilities, critical gates, readiness, and a sequenced roadmap relate.
+    source_path: diagrams/executive-ai-readiness.mmd
+    svg_path: diagrams/executive-ai-readiness.svg
+    accessible_title: Executive AI readiness decision flow
+    accessible_description: Ten capability domains inform maturity, critical gates cap readiness, and accepted findings become a sequenced roadmap.
+    text_alternative: Capability evidence informs maturity; critical gaps independently cap readiness; architect-reviewed findings become roadmap actions.
+  - id: logical-platform-context
+    audience: Enterprise Architect
+    purpose: Show vendor-neutral target-state boundaries and the independent assessment, catalog, and demo evidence cores.
+    source_path: diagrams/logical-platform-context.mmd
+    svg_path: diagrams/logical-platform-context.svg
+    accessible_title: Vendor-neutral logical platform context
+    accessible_description: Sources pass through integration, governed data products, and consumption while control planes provide quality, metadata, security, and operations.
+    text_alternative: Data moves from sources through integration and governed products to consumers; quality, metadata, security, and operations apply cross-cutting controls.
+  - id: engagement-lifecycle
+    audience: Solution Architect
+    purpose: Show the local create, assess, review, deep-dive planning, report, and portable archive sequence.
+    source_path: diagrams/engagement-lifecycle.mmd
+    svg_path: diagrams/engagement-lifecycle.svg
+    accessible_title: Architect engagement lifecycle
+    accessible_description: An architect creates an engagement, records assessment evidence, reviews deterministic findings, plans deep dives, generates a report, and exports a portable archive.
+    text_alternative: Create engagement; assess; review; plan deep dives; generate report; export or import a portable archive.
+  - id: scoring-and-gates
+    audience: Architect and reviewer
+    purpose: Separate maturity, confidence, readiness gates, findings, and demo illustration.
+    source_path: diagrams/scoring-and-gates.mmd
+    svg_path: diagrams/scoring-and-gates.svg
+    accessible_title: Scoring and readiness gate separation
+    accessible_description: Customer answers determine maturity, evidence status determines confidence, diagnostic facts and domain scores drive gates, and demo illustrations never score.
+    text_alternative: Maturity comes only from customer answers; confidence is separate; gates use explicit operands; demo evidence has no scoring path.
+  - id: security-and-access
+    audience: Security and data governance
+    purpose: Explain classification, policy decision, masked product, audit evidence, and denial boundaries.
+    source_path: diagrams/security-and-access.mmd
+    svg_path: diagrams/security-and-access.svg
+    accessible_title: Security privacy and access control pattern
+    accessible_description: Classified data and approved purposes feed policy decisions that allow masked governed products or deny raw sensitive access while recording evidence.
+    text_alternative: Classify sensitive data, evaluate approved identity and purpose, permit a masked product, deny raw sensitive access, and retain decision evidence.
+  - id: metadata-and-lineage
+    audience: Data and platform architect
+    purpose: Explain source-to-transform-to-product metadata and lineage proof.
+    source_path: diagrams/metadata-and-lineage.mmd
+    svg_path: diagrams/metadata-and-lineage.svg
+    accessible_title: Metadata and source-to-product lineage
+    accessible_description: Source contracts, transformation metadata, product definitions, and run evidence combine into catalog and lineage views used for impact analysis.
+    text_alternative: Capture source contracts, transformation edges, product definitions, and run evidence; publish them to a catalog for discovery and impact analysis.
+  - id: demo-evidence-mapping
+    audience: Demo presenter
+    purpose: Map read-only local artifacts to catalog patterns without treating demo evidence as customer evidence.
+    source_path: diagrams/demo-evidence-mapping.mmd
+    svg_path: diagrams/demo-evidence-mapping.svg
+    accessible_title: Demo evidence to catalog mapping
+    accessible_description: Read-only sandbox artifacts illustrate ingestion, quality, lineage, governance, access, serving, and AI-ready publication patterns but never affect customer scores.
+    text_alternative: Local artifacts illustrate catalog patterns and presenter stages; unavailable artifacts remain unavailable; none influence maturity or gates.

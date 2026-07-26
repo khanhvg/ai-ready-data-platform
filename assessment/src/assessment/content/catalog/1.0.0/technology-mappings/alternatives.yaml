@@ -1,0 +1,83 @@
+technology_profile:
+  id: deferred-alternatives
+  title: Deferred vendor-neutral option sets
+  kind: deferred-alternatives
+  provider: null
+  content_only: true
+  executable: false
+  read_only: true
+  published_date: "2026-07-25"
+  limitations:
+    - Alternatives are discovery prompts, not rankings, endorsements, maturity criteria, or selected implementation tools.
+    - Selection requires workload, risk, operating model, skills, cost, portability, and support evaluation outside this bounded phase.
+  roles:
+    - id: alternative-object-storage
+      role: Durable object storage
+      selected_tool: null
+      alternatives: [Cloud object service, S3-compatible object store, Distributed filesystem]
+      capability_ids: [STO, ING, AID]
+      architecture_ids: [ARCH-PLATFORM-INTEGRATION, ARCH-VERSIONED-PRODUCT]
+      constraints: [Evaluate durability lifecycle security interoperability and cost]
+    - id: alternative-catalog
+      role: Metadata catalog and glossary
+      selected_tool: null
+      alternatives: [Managed metadata catalog, Open-source metadata platform, Enterprise data catalog]
+      capability_ids: [LIN, GOV]
+      architecture_ids: [ARCH-METADATA-LINEAGE, ARCH-GOVERNANCE-CONTROL]
+      constraints: [Evaluate connectors semantic workflow lineage coverage and stewardship]
+    - id: alternative-query
+      role: Governed analytical query
+      selected_tool: null
+      alternatives: [Serverless SQL engine, Lakehouse query engine, Warehouse service]
+      capability_ids: [AID, OPS]
+      architecture_ids: [ARCH-PLATFORM-INTEGRATION, ARCH-VERSIONED-PRODUCT]
+      constraints: [Evaluate workload isolation governance performance portability and unit cost]
+    - id: alternative-access-governance
+      role: Policy decision and enforcement
+      selected_tool: null
+      alternatives: [Native platform governance, External policy engine, Data access proxy]
+      capability_ids: [GOV, SEC]
+      architecture_ids: [ARCH-POLICY-ACCESS, ARCH-PRIVACY-CONTROLS]
+      constraints: [Evaluate identity integration deny behavior audit revocation and least privilege]
+    - id: alternative-transformation
+      role: Versioned transformation
+      selected_tool: null
+      alternatives: [SQL transformation framework, Distributed processing framework, Managed data integration]
+      capability_ids: [TRN, QUA, LIN]
+      architecture_ids: [ARCH-PLATFORM-INTEGRATION, ARCH-VERSIONED-PRODUCT]
+      constraints: [Evaluate testing lineage release control reproducibility and recovery]
+    - id: alternative-quality
+      role: Data quality validation
+      selected_tool: null
+      alternatives: [Contract validator, Quality rule engine, Observability platform]
+      capability_ids: [QUA, OPS]
+      architecture_ids: [ARCH-QUALITY-GATE]
+      constraints: [Evaluate rule ownership quarantine integration alerting and remediation evidence]
+    - id: alternative-lineage
+      role: Metadata and lineage analysis
+      selected_tool: null
+      alternatives: [Open metadata platform, Managed lineage service, Build-artifact lineage collector]
+      capability_ids: [LIN, GOV, AID]
+      architecture_ids: [ARCH-METADATA-LINEAGE]
+      constraints: [Evaluate observed coverage semantic ownership freshness and impact analysis]
+    - id: alternative-analytics
+      role: Governed analytics consumption
+      selected_tool: null
+      alternatives: [Business intelligence platform, Semantic query application, Embedded analytics]
+      capability_ids: [AID, OPS]
+      architecture_ids: [ARCH-PLATFORM-INTEGRATION, ARCH-AI-DATA-OPERATIONS]
+      constraints: [Evaluate governed connectivity accessibility adoption and operational ownership]
+    - id: alternative-infrastructure-source
+      role: Reviewed infrastructure definition
+      selected_tool: null
+      alternatives: [Declarative infrastructure source, Platform configuration source, Policy-controlled service catalog]
+      capability_ids: [STR, OPS, SEC]
+      architecture_ids: [ARCH-OPERATING-MODEL, ARCH-PLATFORM-INTEGRATION]
+      constraints: [Evaluate review controls state separation rollback and policy validation]
+    - id: alternative-synthetic-data
+      role: Deterministic demonstration data
+      selected_tool: null
+      alternatives: [Seeded domain generator, Approved synthetic dataset, Contract-driven fixture builder]
+      capability_ids: [ING, QUA, AID]
+      architecture_ids: [ARCH-PLATFORM-INTEGRATION, ARCH-VERSIONED-PRODUCT]
+      constraints: [Evaluate determinism privacy coverage scale and manifest evidence]
