@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:i5-06:architecture-curriculum-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "locale", "inputSha", "releasedStageASha", "runtimeStatus", "moduleCollections", "templateRegistry", "trace", "assessment", "patterns", "mapping", "example", "claims", "openApiOperationIds", "asyncApiAdmission"],
+  "properties": {
+    "schemaVersion": {"const": "architecture-curriculum-v1"},
+    "id": {"const": "architecture-foundation-mid-v1"},
+    "locale": {"const": "vi-VN"},
+    "inputSha": {"pattern": "^[0-9a-f]{40}$"},
+    "releasedStageASha": {"pattern": "^[0-9a-f]{40}$"},
+    "runtimeStatus": {"const": "not-executed-static-only"},
+    "moduleCollections": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"pattern": "^learning/curriculum/modules/[a-z]+-v1\\.json$"}},
+    "templateRegistry": {"const": "learning/curriculum/templates/architecture-templates-v1.json"},
+    "trace": {"const": "learning/curriculum/traces/architecture-trace-v1.json"},
+    "assessment": {"const": "learning/curriculum/assessments/architecture-assessment-v1.json"},
+    "patterns": {"const": "learning/curriculum/patterns/system-design-patterns-v1.json"},
+    "mapping": {"const": "learning/curriculum/mappings/local-aws-conceptual-v1.json"},
+    "example": {"const": "learning/curriculum/examples/promotion-publication-architecture-v1.json"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["staticContent", "portal", "executableLab", "reset", "progress", "completion", "learnerEvidence", "cloudDeployment"],
+      "properties": {
+        "staticContent": {"const": true}, "portal": {"const": false}, "executableLab": {"const": false},
+        "reset": {"const": false}, "progress": {"const": false}, "completion": {"const": false},
+        "learnerEvidence": {"const": false}, "cloudDeployment": {"const": false}
+      }
+    },
+    "openApiOperationIds": {"type": "array", "minItems": 16, "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "asyncApiAdmission": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason", "channelIds"],
+      "properties": {"status": {"const": "not-admitted"}, "reason": {"const": "no-released-channel"}, "channelIds": {"type": "array", "maxItems": 0}}
+    }
+  }
+}

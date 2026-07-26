@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "local-aws-conceptual-mapping-v1",
+  "claim": "conceptual-static-only-no-deployment",
+  "mappings": [
+    {"capabilityId":"cap-analytical-storage","local":"DuckDB","awsConcept":"ClickHouse-compatible analytical engine","sharedInvariantVi":"Giữ grain, metric và authority độc lập với engine.","differenceVi":"Topology, vận hành và mô hình chi phí phải được đo lại."},
+    {"capabilityId":"cap-business-intelligence","local":"Rill","awsConcept":"Superset-compatible BI surface","sharedInvariantVi":"Giữ metric contract và audience concern.","differenceVi":"Cache, concurrency và quyền truy cập không được suy diễn tương đương."},
+    {"capabilityId":"cap-metadata","local":"OpenMetadata local profile","awsConcept":"OpenMetadata on managed compute","sharedInvariantVi":"Giữ owner, classification và lineage identifiers.","differenceVi":"Identity, network và backup là TBC chặn hosted claim."},
+    {"capabilityId":"cap-object-storage","local":"MinIO and Iceberg","awsConcept":"S3-compatible object storage and catalog","sharedInvariantVi":"Giữ snapshot authority và restore oracle.","differenceVi":"Endpoint, account và lifecycle policy không nằm trong Stage A."},
+    {"capabilityId":"cap-orchestration","local":"Airflow local profile","awsConcept":"Container scheduler on managed compute","sharedInvariantVi":"Giữ idempotency, deadline và retry budget.","differenceVi":"Autoscaling và residual compute cần capacity evidence mới."},
+    {"capabilityId":"cap-learning-runtime","local":"Marker-owned Python runtime","awsConcept":"Isolated task runtime","sharedInvariantVi":"Giữ command ownership, evidence và least authority.","differenceVi":"Hosted authentication và tenant isolation vẫn bị chặn."}
+  ],
+  "limitations": ["Không có tài khoản, endpoint, giá hiện hành hay resource identifier.", "Không gọi provider, không lập kế hoạch hạ tầng và không tuyên bố deployable.", "Mọi khác biệt chưa đo là TBC có chủ sở hữu trước Stage B."]
+}

@@ -1,0 +1,6 @@
+views {
+  deployment view dep_aws {
+    title 'Conceptual AWS deployment, trust, state, and residual cost'
+    include aws_conceptual.**
+  }
+}

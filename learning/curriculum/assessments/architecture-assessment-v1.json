@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "architecture-assessment-v1",
+  "authority": {"runtimeStatus": "not-executed-static-only", "authoritative": false, "completionMutation": false, "learnerEvidenceEmission": false},
+  "rubrics": [
+    {"moduleId":"F01","rubricIds":["rubric-F01-outcome","rubric-F01-owner"]}, {"moduleId":"F02","rubricIds":["rubric-F02-capability","rubric-F02-stream"]},
+    {"moduleId":"F03","rubricIds":["rubric-F03-threshold","rubric-F03-verifier"]}, {"moduleId":"F04","rubricIds":["rubric-F04-concern","rubric-F04-view"]},
+    {"moduleId":"J01","rubricIds":["rubric-J01-adr","rubric-J01-evidence"]}, {"moduleId":"J02","rubricIds":["rubric-J02-operation","rubric-J02-denial"]},
+    {"moduleId":"J03","rubricIds":["rubric-J03-boundary","rubric-J03-operability"]}, {"moduleId":"J04","rubricIds":["rubric-J04-retry","rubric-J04-recovery"]},
+    {"moduleId":"J05","rubricIds":["rubric-J05-threat","rubric-J05-negative"]}, {"moduleId":"J06","rubricIds":["rubric-J06-trigger","rubric-J06-slo"]},
+    {"moduleId":"D01","rubricIds":["rubric-D01-grain","rubric-D01-authority"]}, {"moduleId":"D02","rubricIds":["rubric-D02-lineage","rubric-D02-warning"]},
+    {"moduleId":"D03","rubricIds":["rubric-D03-partition","rubric-D03-backpressure"]}, {"moduleId":"D04","rubricIds":["rubric-D04-metric","rubric-D04-equivalence"]},
+    {"moduleId":"D05","rubricIds":["rubric-D05-restore","rubric-D05-oracle"]}, {"moduleId":"D06","rubricIds":["rubric-D06-owner","rubric-D06-governance"]},
+    {"moduleId":"M01","rubricIds":["rubric-M01-capacity","rubric-M01-cost"]}, {"moduleId":"M02","rubricIds":["rubric-M02-rto","rubric-M02-readiness"]},
+    {"moduleId":"M03","rubricIds":["rubric-M03-invariant","rubric-M03-deviation"]}, {"moduleId":"M04","rubricIds":["rubric-M04-authz","rubric-M04-residual"]}
+  ],
+  "reflectionPolicy": {"purposeVi": "Phản tư giúp người học giải thích quyết định nhưng không đặt tiến độ hay hoàn thành.", "storage": "not-emitted-stage-a", "completionAuthority": "none"}
+}

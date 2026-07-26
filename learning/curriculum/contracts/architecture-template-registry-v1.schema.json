@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "urn:i5-06:architecture-template-registry-v1",
+  "type": "object", "additionalProperties": false, "required": ["schemaVersion", "compatibilityRuleVi", "templates"],
+  "properties": {
+    "schemaVersion": {"const": "architecture-template-registry-v1"}, "compatibilityRuleVi": {"type": "string", "minLength": 20},
+    "templates": {"type": "array", "minItems": 12, "maxItems": 12, "items": {"type": "object", "additionalProperties": false, "required": ["id", "contentId", "version", "contentSha256", "nameVi", "purposeVi", "requiredSections", "rejectWhenVi", "supersession"], "properties": {
+      "id": {"pattern": "^tpl-[a-z0-9-]+$"}, "contentId": {"pattern": "^i5-06:tpl-[a-z0-9-]+:1\\.0\\.0$"}, "version": {"const": "1.0.0"}, "contentSha256": {"pattern": "^[0-9a-f]{64}$"},
+      "nameVi": {"type": "string", "minLength": 4}, "purposeVi": {"type": "string", "minLength": 12}, "requiredSections": {"type": "array", "minItems": 4, "uniqueItems": true, "items": {"type": "string", "minLength": 2}}, "rejectWhenVi": {"type": "string", "minLength": 12},
+      "supersession": {"type": "object", "additionalProperties": false, "required": ["status", "supersedes", "removalRuleVi"], "properties": {"status": {"const": "active"}, "supersedes": {"type": "null"}, "removalRuleVi": {"type": "string", "minLength": 12}}}
+    }}}
+  }
+}

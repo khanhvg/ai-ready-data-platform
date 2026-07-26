@@ -1,0 +1,109 @@
+<!-- Pages: 1 -->
+<svg width="1328pt" height="889pt"
+ viewBox="0.00 0.00 1328.00 921.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-labelledby="title desc"><title id="title">Conceptual AWS containers and authority boundaries</title><desc id="desc">container view for Kiến trúc sư và chủ sở hữu nền tảng: concern-conceptual-authority</desc>
+<g transform="translate(0 32)"><g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(15.05 874.25)">
+<!-- architecture_reviewer -->
+<g id="node1" class="node">
+<title>architecture_reviewer</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="325.23,-859.2 3.34,-859.2 3.34,-679.2 325.23,-679.2 325.23,-859.2"/>
+<text xml:space="preserve" text-anchor="start" x="70.36" y="-781.2" font-family="Arial" font-size="20.00" fill="#eff6ff">Architecture reviewer</text>
+<text xml:space="preserve" text-anchor="start" x="23.39" y="-758.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Reviews concern&#45;driven static architecture</text>
+<text xml:space="preserve" text-anchor="start" x="134.26" y="-740.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">evidence</text>
+</g>
+<!-- curriculum_registry -->
+<g id="node2" class="node">
+<title>curriculum_registry</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="328.56,-519.6 0,-519.6 0,-339.6 328.56,-339.6 328.56,-519.6"/>
+<text xml:space="preserve" text-anchor="start" x="76.49" y="-441.6" font-family="Arial" font-size="20.00" fill="#eff6ff">Curriculum Registry</text>
+<text xml:space="preserve" text-anchor="start" x="20.06" y="-418.6" font-family="Arial" font-size="15.00" fill="#bfdbfe">Static Vietnamese&#45;first modules, templates,</text>
+<text xml:space="preserve" text-anchor="start" x="55.47" y="-400.6" font-family="Arial" font-size="15.00" fill="#bfdbfe">trace, and assessment metadata</text>
+</g>
+<!-- conceptual_edge -->
+<g id="node3" class="node">
+<title>conceptual_edge</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="972.68,-859.2 649.89,-859.2 649.89,-679.2 972.68,-679.2 972.68,-859.2"/>
+<text xml:space="preserve" text-anchor="start" x="682.31" y="-791" font-family="Arial" font-size="20.00" fill="#eff6ff">Conceptual access boundary</text>
+<text xml:space="preserve" text-anchor="start" x="773.34" y="-770" font-family="Arial" font-size="13.00" fill="#bfdbfe">Concept only</text>
+<text xml:space="preserve" text-anchor="start" x="669.94" y="-748.4" font-family="Arial" font-size="15.00" fill="#bfdbfe">Represents future object authorization and</text>
+<text xml:space="preserve" text-anchor="start" x="763.76" y="-730.4" font-family="Arial" font-size="15.00" fill="#bfdbfe">network policy</text>
+</g>
+<!-- conceptual_compute -->
+<g id="node4" class="node">
+<title>conceptual_compute</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="971.83,-519.6 650.73,-519.6 650.73,-339.6 971.83,-339.6 971.83,-519.6"/>
+<text xml:space="preserve" text-anchor="start" x="675.09" y="-451.4" font-family="Arial" font-size="20.00" fill="#eff6ff">Conceptual analytical compute</text>
+<text xml:space="preserve" text-anchor="start" x="773.34" y="-430.4" font-family="Arial" font-size="13.00" fill="#bfdbfe">Concept only</text>
+<text xml:space="preserve" text-anchor="start" x="670.78" y="-408.8" font-family="Arial" font-size="15.00" fill="#bfdbfe">Represents future query and orchestration</text>
+<text xml:space="preserve" text-anchor="start" x="783.77" y="-390.8" font-family="Arial" font-size="15.00" fill="#bfdbfe">capacity</text>
+</g>
+<!-- retail -->
+<g id="node5" class="node">
+<title>retail</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="324.3,-180 4.26,-180 4.26,0 324.3,0 324.3,-180"/>
+<text xml:space="preserve" text-anchor="start" x="77.57" y="-102" font-family="Arial" font-size="20.00" fill="#eff6ff">Retail data platform</text>
+<text xml:space="preserve" text-anchor="start" x="25.05" y="-79" font-family="Arial" font-size="15.00" fill="#bfdbfe">Synthetic retail source, transformation, BI,</text>
+<text xml:space="preserve" text-anchor="start" x="42.12" y="-61" font-family="Arial" font-size="15.00" fill="#bfdbfe">orchestration, lake, and catalog tools</text>
+</g>
+<!-- conceptual_state -->
+<g id="node6" class="node">
+<title>conceptual_state</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="862.3,-180 542.26,-180 542.26,0 862.3,0 862.3,-180"/>
+<text xml:space="preserve" text-anchor="start" x="569.98" y="-111.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Conceptual authoritative state</text>
+<text xml:space="preserve" text-anchor="start" x="664.34" y="-90.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">Concept only</text>
+<text xml:space="preserve" text-anchor="start" x="563.03" y="-69.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Represents future object storage, catalog,</text>
+<text xml:space="preserve" text-anchor="start" x="639.32" y="-51.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">and evidence state</text>
+</g>
+<!-- conceptual_metadata -->
+<g id="node7" class="node">
+<title>conceptual_metadata</title>
+<polygon fill="#3b82f6" stroke="#2563eb" stroke-width="0" points="1292.42,-180 972.14,-180 972.14,0 1292.42,0 1292.42,-180"/>
+<text xml:space="preserve" text-anchor="start" x="992.2" y="-111.8" font-family="Arial" font-size="20.00" fill="#eff6ff">Conceptual governance service</text>
+<text xml:space="preserve" text-anchor="start" x="1094.34" y="-90.8" font-family="Arial" font-size="13.00" fill="#bfdbfe">Concept only</text>
+<text xml:space="preserve" text-anchor="start" x="994.29" y="-69.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">Represents owner, lineage, classification,</text>
+<text xml:space="preserve" text-anchor="start" x="1088.5" y="-51.2" font-family="Arial" font-size="15.00" fill="#bfdbfe">and retention</text>
+</g>
+<!-- architecture_reviewer&#45;&gt;curriculum_registry -->
+<g id="edge1" class="edge">
+<title>architecture_reviewer&#45;&gt;curriculum_registry</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M164.28,-679.5C164.28,-633.54 164.28,-577.27 164.28,-529.87"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="166.91,-530.11 164.28,-522.61 161.66,-530.11 166.91,-530.11"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="164.28,-579.6 164.28,-619.2 350.03,-619.2 350.03,-579.6 164.28,-579.6"/>
+<text xml:space="preserve" text-anchor="start" x="167.28" y="-602.2" font-family="Arial" font-size="14.00" fill="#c9c9c9">Reviews modules, trace, and</text>
+<text xml:space="preserve" text-anchor="start" x="167.28" y="-585.4" font-family="Arial" font-size="14.00" fill="#c9c9c9">deterministic views</text>
+</g>
+<!-- curriculum_registry&#45;&gt;retail -->
+<g id="edge3" class="edge">
+<title>curriculum_registry&#45;&gt;retail</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M164.28,-339.9C164.28,-293.94 164.28,-237.67 164.28,-190.27"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="166.91,-190.51 164.28,-183.01 161.66,-190.51 166.91,-190.51"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="164.28,-240 164.28,-279.6 360.16,-279.6 360.16,-240 164.28,-240"/>
+<text xml:space="preserve" text-anchor="start" x="167.28" y="-262.6" font-family="Arial" font-size="14.00" fill="#c9c9c9">References local data platform</text>
+<text xml:space="preserve" text-anchor="start" x="167.28" y="-245.8" font-family="Arial" font-size="14.00" fill="#c9c9c9">capabilities</text>
+</g>
+<!-- conceptual_edge&#45;&gt;conceptual_compute -->
+<g id="edge2" class="edge">
+<title>conceptual_edge&#45;&gt;conceptual_compute</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M811.28,-679.5C811.28,-633.54 811.28,-577.27 811.28,-529.87"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="813.91,-530.11 811.28,-522.61 808.66,-530.11 813.91,-530.11"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="811.28,-579.6 811.28,-619.2 1060.87,-619.2 1060.87,-579.6 811.28,-579.6"/>
+<text xml:space="preserve" text-anchor="start" x="814.28" y="-602.2" font-family="Arial" font-size="14.00" fill="#c9c9c9">Routes an admitted request after future</text>
+<text xml:space="preserve" text-anchor="start" x="814.28" y="-585.4" font-family="Arial" font-size="14.00" fill="#c9c9c9">authorization</text>
+</g>
+<!-- conceptual_compute&#45;&gt;conceptual_state -->
+<g id="edge4" class="edge">
+<title>conceptual_compute&#45;&gt;conceptual_state</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M762.01,-339.71C752.7,-320.32 743.8,-299.61 737.12,-279.6 727.59,-251.07 720.45,-219.18 715.2,-189.87"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="717.8,-189.54 713.93,-182.6 712.63,-190.43 717.8,-189.54"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="737.12,-248.4 737.12,-271.2 995.28,-271.2 995.28,-248.4 737.12,-248.4"/>
+<text xml:space="preserve" text-anchor="start" x="740.12" y="-254.2" font-family="Arial" font-size="14.00" fill="#c9c9c9">Reads or publishes authority&#45;bound data</text>
+</g>
+<!-- conceptual_compute&#45;&gt;conceptual_metadata -->
+<g id="edge5" class="edge">
+<title>conceptual_compute&#45;&gt;conceptual_metadata</title>
+<path fill="none" stroke="#8d8d8d" stroke-width="2" stroke-dasharray="5,2" d="M951.35,-339.7C975.1,-321.38 998.46,-301.08 1018.28,-279.6 1043.08,-252.73 1065.25,-219.64 1083.3,-188.72"/>
+<polygon fill="#8d8d8d" stroke="#8d8d8d" stroke-width="2" points="1085.55,-190.06 1087.01,-182.25 1081,-187.45 1085.55,-190.06"/>
+<polygon fill="#18191b" fill-opacity="0.627451" stroke="none" points="1048.6,-248.4 1048.6,-271.2 1297.43,-271.2 1297.43,-248.4 1048.6,-248.4"/>
+<text xml:space="preserve" text-anchor="start" x="1051.6" y="-254.2" font-family="Arial" font-size="14.00" fill="#c9c9c9">Publishes lineage and ownership intent</text>
+</g>
+</g>
+</g><g id="legend"><text x="8" y="20" font-family="Arial" font-size="12">Legend: boxes are elements; arrows are ordered relations</text></g></svg>

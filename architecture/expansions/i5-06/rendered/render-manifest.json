@@ -1,0 +1,67 @@
+{
+  "claim": "deterministic-static-stage-a-only",
+  "leaseId": "i5-06-stage-a-architecture-expansion-v1",
+  "packageLockSha256": "7a56d803a47454023f40a04bcdb3b037f4ab2c2a05321292ad3b7f7225c2118c",
+  "rendererSha256": "25c002a7e2b347369f1a85a5eb455f74db3c5417c567069149789275371eca61",
+  "schemaVersion": "architecture-expansion-render-manifest-v1",
+  "sourceClosureSha256": "8d5a9b2e58c820455ad8c550b045583e29e63e8997cc3aaada1a7690eaac10f0",
+  "toolchain": {
+    "graphviz": "15.0.0",
+    "likec4": "1.59.1",
+    "node": "22.22.3",
+    "npm": "10.9.8",
+    "wasmGraphviz": "1.22.2"
+  },
+  "views": [
+    {
+      "id": "C4-L2-AWS",
+      "key": "c4_l2_aws",
+      "semanticSha256": "102d87278670da244249dd694765598e753bb46c7b0d13dadebc0930547fe20d",
+      "svgBytes": 10233,
+      "svgSha256": "392afa3db81b1a2012b03cb26a62fc1d08920de266e858ca2b5fb69d4d4b0b4b",
+      "txtBytes": 2246,
+      "txtSha256": "b1fd91c06c3424257a01d6bf6c7d3c3a48997e3f0b5465fe5bd0f4eb5945eab4",
+      "type": "container"
+    },
+    {
+      "id": "DEP-AWS",
+      "key": "dep_aws",
+      "semanticSha256": "10fa2602efadbed5dc6a0235ef665bf252f4138e54239e38f62564ae64ddac7b",
+      "svgBytes": 7679,
+      "svgSha256": "6b6af069bb123940cfe5cda4248289bcaa19fe27e903fbab57a11babe0165fa7",
+      "txtBytes": 3051,
+      "txtSha256": "6bf399dc10158a822a7088579651d7bba2d0c09028b0446cab372d970b34d24f",
+      "type": "deployment"
+    },
+    {
+      "id": "DYN-OFFICE",
+      "key": "dyn_office",
+      "semanticSha256": "8f5c87afc53b4f125a2c973bcd31753dc0e233afd12f0204c189312cab9ed7fe",
+      "svgBytes": 8889,
+      "svgSha256": "addf05015ea5474f4f16e43805d871f7f973504a27566a1a33c319dd518fa156",
+      "txtBytes": 1667,
+      "txtSha256": "0a3e0bd22cd9f7e79c5e5ac09b400ceb544f20991ec56c81d57aa53625385ff2",
+      "type": "dynamic"
+    },
+    {
+      "id": "DYN-PUBLISH",
+      "key": "dyn_publish",
+      "semanticSha256": "cf295faa392a47c6828f1f92208800389be26fca468fe9960abeb61edc1171b3",
+      "svgBytes": 11653,
+      "svgSha256": "edf642c86068a09aaa6985b127cb7a1e132a7d8bd96ca5b40f24d77f361825d7",
+      "txtBytes": 2187,
+      "txtSha256": "921380f3438af78b0803888da4e5afbe884a655b5bddb29f9c6e0f86d4a65dbe",
+      "type": "dynamic"
+    },
+    {
+      "id": "DYN-RESTORE",
+      "key": "dyn_restore",
+      "semanticSha256": "7c4c1b3fce280240298387505857a9949740ed643d0804d436c8bd5feefb6ef0",
+      "svgBytes": 9053,
+      "svgSha256": "9a5b7b67f0565da0582506d79eecdee38c4436fe4b724ad9b821c29f07c8637c",
+      "txtBytes": 1713,
+      "txtSha256": "16da455f7acc6eaf4aa3abce75f49b5bb3e2a6c2311c9e81dff0be9e1e1569a7",
+      "type": "dynamic"
+    }
+  ]
+}

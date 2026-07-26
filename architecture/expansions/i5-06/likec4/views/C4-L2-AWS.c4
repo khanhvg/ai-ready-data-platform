@@ -1,0 +1,6 @@
+views {
+  view c4_l2_aws of conceptual_aws {
+    title 'Conceptual AWS containers and authority boundaries'
+    include architecture_reviewer, curriculum_registry, conceptual_edge, conceptual_compute, conceptual_state, conceptual_metadata, retail
+  }
+}

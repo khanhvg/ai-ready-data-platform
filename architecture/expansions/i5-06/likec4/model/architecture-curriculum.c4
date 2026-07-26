@@ -1,0 +1,36 @@
+model {
+  curriculum_registry = softwareSystem 'Curriculum Registry' 'Static Vietnamese-first modules, templates, trace, and assessment metadata'
+  architecture_reviewer = person 'Architecture reviewer' 'Reviews concern-driven static architecture evidence'
+  conceptual_aws = softwareSystem 'Conceptual AWS topology' 'Teaching comparison only; not deployed and not deployable by Stage A' {
+    conceptual_edge = container 'Conceptual access boundary' 'Represents future object authorization and network policy' 'Concept only'
+    conceptual_compute = container 'Conceptual analytical compute' 'Represents future query and orchestration capacity' 'Concept only'
+    conceptual_state = container 'Conceptual authoritative state' 'Represents future object storage, catalog, and evidence state' 'Concept only'
+    conceptual_metadata = container 'Conceptual governance service' 'Represents owner, lineage, classification, and retention' 'Concept only'
+  }
+  local_operator = softwareSystem 'Local operating cycle' 'Office-hours wake, hydrate, verify, ready, stop, and retained state'
+
+  architecture_reviewer -> curriculum_registry 'Reviews modules, trace, and deterministic views' 'Static files'
+  curriculum_registry -> learning 'References released learning operations and static lesson compatibility' 'Released identifiers only'
+  curriculum_registry -> retail 'References local data platform capabilities' 'Conceptual mapping'
+  curriculum_registry -> conceptual_aws 'Maps shared invariants and explicit differences' 'No provider invocation'
+  conceptual_edge -> conceptual_compute 'Routes an admitted request after future authorization' 'Conceptual flow'
+  conceptual_compute -> conceptual_state 'Reads or publishes authority-bound data' 'Conceptual flow'
+  conceptual_compute -> conceptual_metadata 'Publishes lineage and ownership intent' 'Conceptual flow'
+  local_operator -> conceptual_compute 'Starts and stops conceptual compute' 'Office-hours sequence'
+  local_operator -> conceptual_state 'Hydrates and verifies retained state' 'Recovery sequence'
+}
+
+deployment {
+  environment aws_conceptual 'AWS conceptual teaching environment; no deployment claim' {
+    host conceptual_boundary_node 'Conceptual access and trust boundary' {
+      conceptual_edge_instance = instanceOf conceptual_aws.conceptual_edge
+    }
+    host conceptual_compute_node 'Conceptual capacity boundary' {
+      conceptual_compute_instance = instanceOf conceptual_aws.conceptual_compute
+    }
+    privateStorage conceptual_state_node 'Conceptual retained state and residual cost' {
+      conceptual_state_instance = instanceOf conceptual_aws.conceptual_state
+      conceptual_metadata_instance = instanceOf conceptual_aws.conceptual_metadata
+    }
+  }
+}

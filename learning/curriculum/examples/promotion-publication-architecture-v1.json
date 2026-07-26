@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "promotion-publication-architecture-v1",
+  "runtimeStatus": "not-executed-static-only",
+  "decision": "static-four-grain-publication-example",
+  "reasonVi": "Ví dụ nối bốn grain đã phát hành với quyết định công bố nhưng không suy diễn quan hệ nhân quả hay kết quả người học.",
+  "grainIds": ["region", "category", "dq", "overall"],
+  "traceIds": ["trace-D01", "trace-D02", "trace-D04", "trace-D05"],
+  "operationIds": ["queryDataProduct", "getEvidence", "verifyWorkspace"]
+}
