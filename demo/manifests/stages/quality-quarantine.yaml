@@ -1,0 +1,52 @@
+schema_version: 1.0.0
+demo_content_version: 1.0.0
+stage_id: DEMO-QUALITY-QUARANTINE
+status: executed
+artifacts:
+  - path: transform/dbt/models/quarantine/quarantine_orders.sql
+    sha256: 2dd44ef0e5bc5cafdd427f2f3c562db110acf217b8aefae28fb49b8841de2e52
+    origin: tracked
+    availability: available
+    description: Invalid-status side of the complementary order partition.
+  - path: transform/dbt/models/curated/accepted_orders.sql
+    sha256: beabb58a0100af403dfd3e232b0892a43c348a22c2378e51e72ad395ca4bc53a
+    origin: tracked
+    availability: available
+    description: Allowed-status side of the complementary order partition.
+commands:
+  - command: make dbt
+    purpose: Build both partitions and execute their dbt contracts.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: dbt build executes models and tests in one target.
+  - command: make demo-verify
+    purpose: Verify non-empty quarantine, disjointness, coverage, and exclusion.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: The demo verifier queries the actual DuckDB relations.
+expected_contracts:
+  - Accepted and quarantined rows are disjoint and cover deduplicated stg_orders.
+  - The pinned fixture produces a non-empty quarantine with retained rule and reason.
+  - Quarantined keys are absent from accepted and governed outputs.
+cleanup:
+  - command: make down
+    purpose: Stop any local Compose profile without removing named volumes.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: Repository teardown target.
+  - command: make clean
+    purpose: Remove generated partition and warehouse state.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: Repository cleanup target.
+limitations:
+  - This one controlled rule does not claim comprehensive data quality coverage.
+  - The canonical eleven legacy business marts retain their existing contract.
+provenance:
+  input_sha: 7687a666cce3f533d4adac542ada34037b91ed8c
+  evidence_kind: current
+  current_execution: executed
+  references:
+    - data-generator/schema.md
+    - docs/verification/GH-38-phase-6-evidence.md
+non_scoring: true

@@ -32,7 +32,8 @@ ASSESSMENT_HOST ?= 127.0.0.1
 ASSESSMENT_PORT ?= 8765
 ASSESSMENT_RUNTIME_EVIDENCE ?= $(CURDIR)/assessment/.generated/runtime-smoke
 
-.PHONY: venv up down seed load health dbt dbt-docs airflow bi catalog lake-up lake-publish catalog-ingest clean \
+.PHONY: venv up down seed load health dbt dbt-docs airflow bi catalog lake-up lake-publish catalog-ingest \
+	demo-contract demo-verify demo-airflow-verify clean \
 	assessment-install assessment-schema assessment-contract assessment-scenarios assessment-calibration \
 	assessment-report assessment-test assessment-store assessment-migration assessment-import-export \
 	assessment-portability assessment-security-scan assessment-lint assessment-typecheck assessment-build \
@@ -48,7 +49,8 @@ $(VENV)/bin/python3:
 	$(PYENV) $(PIP) install --quiet \
 		-r data-generator/requirements.txt \
 		-r ingestion/requirements.txt \
-		-r transform/dbt/requirements.txt
+		-r transform/dbt/requirements.txt \
+		-r governance/policy/requirements.txt
 
 up: venv
 ifeq ($(PROFILE),core)
@@ -91,6 +93,20 @@ bi: venv
 	$(PYENV) $(PY) serving/export_marts_snapshot.py
 	@echo "Run 'rill start serving/rill' (see docs/demo-runbook.md) to open the dashboard."
 	@echo "First time only: install the Rill CLI -- curl https://cdn.rilldata.com/install.sh | sh"
+
+demo-contract: venv
+	$(PYENV) $(PY) demo/verify_manifests.py --contract-only
+
+demo-verify: venv
+	@test -x $(ASSESSMENT_PY) || (echo "Assessment environment missing -- run 'make assessment-install' first." >&2; exit 1)
+	$(PYENV) $(PY) governance/policy/verify_access_policy.py
+	$(PYENV) $(PY) demo/verify_manifests.py
+	$(PYENV) $(ASSESSMENT_OFFLINE) $(ASSESSMENT_PY) -m pytest -q \
+		assessment/tests/demo assessment/tests/contract/test_v1_contracts.py \
+		assessment/tests/contract/test_catalog_semantics.py
+
+demo-airflow-verify:
+	python3.12 demo/verify_airflow.py
 
 catalog:
 	@test -z "$$($(RUNNING_LAKE))" || (echo "Refusing to start governance while lake containers are running on a 16GB laptop. Run 'make down' first." && exit 1)
@@ -263,5 +279,5 @@ assessment-clean:
 	python3 -c "import pathlib, shutil; [shutil.rmtree(pathlib.Path(p), ignore_errors=True) for p in ['assessment/.generated','assessment/.runtime','assessment/test-results','assessment/.pytest_cache','assessment/.mypy_cache','assessment/.ruff_cache','assessment/build','assessment/dist','assessment/ai_ready_assessment_prototype.egg-info']]"
 
 clean:
-	python3 -c "import pathlib, shutil; [shutil.rmtree(p, ignore_errors=True) for p in [pathlib.Path('$(VENV)'), pathlib.Path('transform/dbt/target'), pathlib.Path('transform/dbt/logs'), pathlib.Path('transform/dbt/dbt_packages'), pathlib.Path('serving/rill/.rill'), pathlib.Path('serving/rill/tmp')]]; [p.unlink(missing_ok=True) for pattern in ['data/raw/*.csv','serving/export/*.parquet','warehouse/*.duckdb','warehouse/*.duckdb.wal'] for p in pathlib.Path('.').glob(pattern)]; pathlib.Path('data/raw/manifest.json').unlink(missing_ok=True); pathlib.Path('transform/dbt/.user.yml').unlink(missing_ok=True)"
+	python3 -c "import pathlib, shutil; [shutil.rmtree(p, ignore_errors=True) for p in [pathlib.Path('$(VENV)'), pathlib.Path('transform/dbt/target'), pathlib.Path('transform/dbt/logs'), pathlib.Path('transform/dbt/dbt_packages'), pathlib.Path('serving/rill/.rill'), pathlib.Path('serving/rill/tmp'), pathlib.Path('demo/evidence/current')]]; [p.unlink(missing_ok=True) for pattern in ['data/raw/*.csv','serving/export/*.parquet','warehouse/*.duckdb','warehouse/*.duckdb.wal'] for p in pathlib.Path('.').glob(pattern)]; pathlib.Path('data/raw/manifest.json').unlink(missing_ok=True); pathlib.Path('transform/dbt/.user.yml').unlink(missing_ok=True)"
 	find . -name .DS_Store -type f -delete

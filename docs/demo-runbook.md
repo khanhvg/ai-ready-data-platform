@@ -44,7 +44,23 @@ Talk track: raw CSV lands into DuckDB `raw.*` tables; this is idempotent and loc
 make dbt
 ```
 
-Talk track: staging views clean/dedupe raw inputs; marts power dashboard metrics. dbt warnings are deliberate quality scenarios, not failures.
+Talk track: staging views clean/dedupe raw inputs; marts power dashboard metrics. dbt warnings
+are deliberate quality scenarios, not failures. Phase 6 adds a complementary boundary over
+deduplicated `stg_orders`: `accepted_orders` retains the four allowed statuses while
+`quarantine_orders` retains every invalid/null status with a rule ID and reason. The canonical
+eleven business marts remain the established legacy publication contract.
+
+Generate lineage metadata and verify the complete additive evidence contract:
+
+```bash
+make dbt-docs
+make demo-contract
+make demo-verify
+```
+
+The pinned small/seed-42 fixture proves 990 accepted and 10 quarantined orders, complete and
+disjoint coverage, no quarantined key in the governed product, and no raw email in the fixed
+policy export. See `docs/demo-guide.md` and the nine manifests under `demo/manifests/stages/`.
 
 ## 4. Export marts for Rill
 
@@ -62,9 +78,17 @@ Open the Rill URL shown by the CLI and walk through daily revenue, top products,
 
 ## 5. Optional: Airflow orchestration
 
+For current proof, use the bounded verifier rather than merely opening the UI:
+
 ```bash
-make airflow
+make demo-airflow-verify
 ```
+
+It starts Airflow alone, waits healthy, checks import errors, triggers an exact run ID, polls all
+six default tasks to success, records ignored local evidence, and always tears the profile down.
+Starting the UI alone is not current execution evidence.
+
+For presenter-only browsing after a separate verified run, `make airflow` remains available.
 
 Open http://localhost:8080 and show `retail_batch_pipeline`, authored with the
 Airflow 3 TaskFlow API (`@dag`/`@task`/`@task_group`, no `PythonOperator`) as five
@@ -72,22 +96,12 @@ visible task groups: `generate` (seed) -> `load` (load_raw, health_check) ->
 `transform` (dbt_build, dbt_docs_generate) -> `serve` (export_marts_snapshot) ->
 optional `publish` (publish_iceberg, iceberg_read_back).
 
-By default (`LAKE_PROFILE_ENABLED` unset/false) the DAG runs
-`generate -> load -> transform -> serve` only -- no `lake` profile needed. To show
-the full flow including `publish`, run `lake` first, then recreate the Airflow
-container with the flag set so the DAG **reparses** (the flag is read at parse
-time; re-triggering an existing run will not pick up a new value):
-
-```bash
-make lake-up
-LAKE_PROFILE_ENABLED=true docker compose --profile orchestration up -d --force-recreate
-```
-
-Then trigger a run from the UI (or `docker compose exec airflow airflow dags trigger retail_batch_pipeline`)
-and confirm the `publish` group turns green. Stop Airflow again
-(`docker compose --profile orchestration down`) before continuing to the
-catalog/lineage step below -- governance ingestion needs Airflow's memory
-budget freed up and is never co-run with it.
+The bounded Phase 6 proof uses the default
+`generate -> load -> transform -> serve` flow with
+`LAKE_PROFILE_ENABLED=false`; no lake profile is needed. The preserved DAG
+contains an optional `publish` group, but this slice does not exercise it
+because Airflow and lake must not overlap. Let `make demo-airflow-verify` stop
+Airflow before starting the separate lake proof below.
 
 ## 6. Optional: Iceberg lake smoke test
 
@@ -123,6 +137,10 @@ you can browse http://localhost:8585). It requires an `OPENMETADATA_JWT_TOKEN` e
 see `governance/openmetadata/README.md` for how to mint the ingestion-bot token and the full
 workflow/measured-memory details.
 
+When the token is unavailable, leave this current stage unexecuted. The tracked GH-3 evidence is
+historical context and must not be presented as a current run. OpenMetadata search and server
+limits are 1g and 2g.
+
 ## 8. Teardown and recovery
 
 Stop every heavy profile's containers when you're done:
@@ -135,8 +153,9 @@ This runs `docker compose --profile orchestration --profile lake --profile gover
 it's safe to run even if only one (or none) of those profiles is currently up. Docker named
 volumes (MinIO's bucket, Lakekeeper's Postgres, OpenMetadata's MySQL/Elasticsearch, Airflow's
 home directory) persist across `make down` by design, so restarting a profile picks up where it
-left off (e.g. previously published Iceberg tables, previously ingested catalog entries). For a
-fully clean slate, remove them explicitly: `docker compose down -v`.
+left off (e.g. previously published Iceberg tables, previously ingested catalog entries).
+Named-volume removal is outside the bounded Phase 6 workflow. `make down` deliberately preserves
+those volumes.
 
 To remove generated local files (CSVs, `manifest.json`, the DuckDB warehouse, Rill's Parquet
 exports, dbt's `target/`/`logs/`, Rill's local runtime state, the Python venv):

@@ -117,6 +117,7 @@ transform/dbt/logs/
 transform/dbt/dbt_packages/
 transform/dbt/.user.yml
 openmetadata-docker/
+demo/evidence/current/
 
 # AI-ready assessment prototype (Issue #38 Phase 1)
 /.assessment-venv/

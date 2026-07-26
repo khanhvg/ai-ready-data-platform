@@ -38,7 +38,7 @@ Generated data and warehouses are intentionally gitignored.
 
 ## AI-ready assessment package
 
-Issue #38 Phases 1–5 add a separate, local-only Python 3.12 package under `assessment/`. It
+Issue #38 Phases 1–6 add a separate, local-only Python 3.12 package under `assessment/`. It
 validates the 10-domain rubric and 30 anchored questions, recomputes four two-rater scenarios,
 checks the 117/119 calibration result, defines the v1 portable engagement contracts and local
 folder authority, and evaluates those folders with a deterministic maturity, confidence,
@@ -57,6 +57,7 @@ make assessment-browser-install assessment-diagram-install
 make assessment-diagrams
 make assessment-e2e assessment-runtime-smoke
 make assessment-lint assessment-typecheck assessment-build
+make demo-contract
 ```
 
 The assessment uses `.assessment-venv`, starts no containers, and does not read from or score
@@ -66,8 +67,11 @@ browser evidence are ignored under `assessment/.generated/`; see `assessment/REA
 the explicit-root CLI, browser bootstrap, security boundary, and exact implemented scope.
 Engagement and output roots are selected explicitly by the user and are never broadly ignored
 or removed by assessment cleanup. Catalog and Demo Guide views are presentation-only and cannot
-influence maturity, confidence, findings, gates, or readiness. Phase 5 verification is recorded
-in `docs/verification/GH-38-phase-5-evidence.md`.
+influence maturity, confidence, findings, gates, or readiness. Phase 6 adds complementary
+accepted/quarantine evidence, one pseudonymous AI-ready customer product outside the canonical
+eleven marts, a fixed application-level policy export, nine stage manifests, and a versioned
+dataset manifest. Run the existing core sequence through `make dbt-docs make bi`, then
+`make demo-contract demo-verify`; see `docs/demo-guide.md`.
 
 ## Scale profiles
 

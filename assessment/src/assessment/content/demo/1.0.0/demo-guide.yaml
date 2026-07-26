@@ -1,11 +1,15 @@
 schema_version: 1.0.0
 demo_content_version: 1.0.0
 title: Read-only AI-ready data platform Demo Guide
-presenter_purpose: Use repository artifacts to illustrate logical catalog patterns without operating the pipeline or treating sandbox facts as customer evidence.
+presenter_purpose: Present the Phase 6 golden retail stage manifests and their exact repository artifacts without operating the pipeline or treating sandbox facts as customer evidence.
 non_scoring_disclaimer: Demo artifacts are illustrations only. Availability, absence, or quality of a sandbox artifact never changes customer maturity, confidence, findings, priority, gates, or readiness.
+automation_eligible_steps: 30
+automation_automated_steps: 30
 operating_boundary:
   - The assessment report and web views read validated repository-relative references only.
   - They expose no run, command, SQL, credential, cloud, provisioning, container, upload, or deployment control.
+  - All 30 of 30 eligible run and cleanup rows are automated for an explicit 100 percent automation result, but automation is not exposed or invoked here.
+  - "Provenance stays explicit: eight stages have current executed proof, while OpenMetadata is historical and its current execution is unexecuted."
   - An unavailable artifact is reported as unavailable and is not a failed customer capability.
   - Presenter prerequisites and cleanup describe state; they are not executable controls.
 stage_order:

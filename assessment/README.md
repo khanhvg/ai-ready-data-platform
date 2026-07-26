@@ -1,4 +1,4 @@
-# AI-ready assessment Phases 1–5
+# AI-ready assessment Phases 1–6
 
 This isolated Python 3.12 package proves the Issue #38 rubric, scoring/gates, synthetic
 calibration, v1 public contracts, authoritative local engagement folders, prototype migration,
@@ -7,7 +7,8 @@ generation. Phase 4 adds a local server-rendered architect workflow without addi
 control surface. Phase 5 adds a versioned capability, architecture, technology-option, diagram,
 and Demo Guide catalog without changing assessment truth. It is deliberately offline after
 dependency and pinned-browser/diagram-tool installation
-and does not import, scan, or control the retail data platform.
+and does not control the retail data platform. Phase 6 displays validated repository-relative
+golden evidence and manifests through the same read-only, non-scoring boundary.
 
 From the repository root:
 
@@ -157,6 +158,7 @@ sibling stage and atomically promoting it.
 
 The future object-store boundary is documentation-only in
 `assessment/docs/object-engagement-store.md`. There is no SDK, S3 upload, credential, bucket,
-Terraform execution, SQLite authority, cloud resource, golden pipeline, customer data, or
-deployment behavior in Phases 1–5. The AWS profile is content only and the local demo mapping is
-read only. Phases 6–8 remain pending.
+Terraform execution, SQLite authority, cloud resource, customer data, or deployment behavior.
+The AWS profile is content only and the local demo mapping is read only. Phase 6 adds
+deterministic local retail evidence, a fixed application policy export, and versioned manifests
+outside assessment truth; Phases 7–8 remain pending.

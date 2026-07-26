@@ -36,7 +36,13 @@ models:
   - name: stg_customers
     description: >
       Deduped on customer_id (see stg_customers.sql). `email` is nullable by
-      design (controlled null-optional-field quality scenario).
+      design (controlled null-optional-field quality scenario). The synthetic
+      email field is classified as PII-like restricted input and may only feed
+      the governed pseudonymous product through the fixed local policy demo.
+    meta:
+      classification:
+        email: synthetic-pii
+      governed_product: ai_ready_customer_product
     columns:
       - name: customer_id
         tests: [not_null, unique]
@@ -46,6 +52,13 @@ models:
               arguments:
                 to: ref('stg_regions')
                 field: region_id
+      - name: email
+        description: >
+          Synthetic PII-like email. Raw values remain in staging for pipeline
+          evidence and are excluded from the governed AI-ready product.
+        meta:
+          classification: synthetic-pii
+          access: restricted
 
   - name: stg_promotions
     columns:

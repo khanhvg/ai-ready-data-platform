@@ -14,6 +14,35 @@ UNSAFE_SVG = re.compile(
     rb"\son[a-z]+\s*=|(?:href|src)\s*=\s*[\"'](?:https?:|//)",
     re.IGNORECASE,
 )
+PHASE_6_DEMO_PATHS = (
+    "demo/manifests/stages/ingestion.yaml",
+    "data-generator/generate.py",
+    "ingestion/load_raw.py",
+    "demo/manifests/stages/quality-quarantine.yaml",
+    "transform/dbt/models/quarantine/quarantine_orders.sql",
+    "transform/dbt/models/curated/accepted_orders.sql",
+    "demo/manifests/stages/transformation.yaml",
+    "transform/dbt/dbt_project.yml",
+    "orchestration/airflow/dags/retail_batch_pipeline.py",
+    "demo/manifests/stages/metadata.yaml",
+    "governance/openmetadata/README.md",
+    "governance/openmetadata/ingestion/dbt_ingestion.yaml",
+    "demo/manifests/stages/lineage.yaml",
+    "docs/system-architecture.md",
+    "lake/curated_assets.json",
+    "demo/manifests/stages/governance.yaml",
+    "transform/dbt/models/staging/_staging__models.yml",
+    "transform/dbt/models/products/_products__models.yml",
+    "demo/manifests/stages/access-control.yaml",
+    "governance/policy/access-policy.yaml",
+    "governance/policy/export_authorized_dataset.py",
+    "demo/manifests/stages/serving.yaml",
+    "serving/export_marts_snapshot.py",
+    "demo/manifests/stages/ai-ready-publication.yaml",
+    "transform/dbt/models/products/ai_ready_customer_product.sql",
+    "demo/manifests/ai-ready-customer-product.v1.yaml",
+)
+DECLARED_CURRENT_OUTPUT = "demo/evidence/current/ai-ready-customer-product.csv"
 
 
 def catalog_client(tmp_path: Path) -> TestClient:
@@ -62,12 +91,28 @@ def test_demo_view_shows_available_and_unavailable_artifacts_without_controls(
         response = client.get("/demo")
     assert response.status_code == 200
     assert "9 read-only presenter stages" in response.text
+    assert "30/30 = 100%" in response.text
     assert "artifact available" in response.text
-    assert "artifact unavailable" in response.text
     assert "Demo artifacts are illustrations only" in response.text
     assert "does not execute" in response.text
-    assert "<button" not in response.text
-    assert "<form" not in response.text
+    assert "current OpenMetadata execution is unexecuted" in response.text
+    for relative_path in (*PHASE_6_DEMO_PATHS, DECLARED_CURRENT_OUTPUT):
+        assert f"<code>{relative_path}</code>" in response.text
+        expected_status = (
+            "available"
+            if REPOSITORY_ROOT.joinpath(relative_path).is_file()
+            else "unavailable"
+        )
+        artifact_row = re.search(
+            rf"<code>{re.escape(relative_path)}</code>.*?"
+            rf"artifact {expected_status}</span>",
+            response.text,
+            re.DOTALL,
+        )
+        assert artifact_row is not None
+    for control in ("<button", "<form", "<input", "<select", "<textarea"):
+        assert control not in response.text
+    assert "action=" not in response.text
 
 
 def test_catalog_and_demo_routes_offer_no_mutating_method(tmp_path: Path) -> None:

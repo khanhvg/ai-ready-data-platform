@@ -1,0 +1,51 @@
+schema_version: 1.0.0
+demo_content_version: 1.0.0
+stage_id: DEMO-SERVING
+status: executed
+artifacts:
+  - path: lake/curated_assets.json
+    sha256: 72a5f378799617075f27b517d75b1c3014554023a82de4069cc438de97eb51f1
+    origin: tracked
+    availability: available
+    description: Shared eleven-mart Parquet, Rill, and Iceberg inventory.
+  - path: serving/export_marts_snapshot.py
+    sha256: ec1f207fd720644c79ca0247d01eabe6f71c237c062beab991ba41af80af806d
+    origin: tracked
+    availability: available
+    description: Local Parquet export implementation for canonical marts.
+commands:
+  - command: make bi
+    purpose: Export the canonical legacy mart snapshots.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: The established target exports and verifies all inventory entries.
+  - command: make lake-up
+    purpose: Start the existing bounded local lake profile.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: The guarded Make target enforces one-profile sequencing.
+  - command: make lake-publish
+    purpose: Publish and read back all eleven canonical marts.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: The established publisher consumes the canonical inventory.
+expected_contracts:
+  - Exactly eleven legacy business marts remain in the canonical publication inventory.
+  - The additive AI-ready customer product is not published by Parquet, Rill, or Iceberg inventory loops.
+cleanup:
+  - command: make down
+    purpose: Stop the lake profile without removing named volumes.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: Repository teardown target.
+limitations:
+  - Rill and historical GH-3 proof illustrate serving but do not score customer readiness.
+  - No object-store or cloud action is performed.
+provenance:
+  input_sha: 7687a666cce3f533d4adac542ada34037b91ed8c
+  evidence_kind: current
+  current_execution: executed
+  references:
+    - docs/verification/GH-3-full-flow-evidence.md
+    - docs/verification/GH-38-phase-6-evidence.md
+non_scoring: true

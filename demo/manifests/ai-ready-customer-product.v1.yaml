@@ -1,0 +1,92 @@
+schema_version: 1.0.0
+dataset_id: ai-ready-customer-product
+dataset_version: 1.0.0
+source_stage_ids:
+  - DEMO-QUALITY-QUARANTINE
+  - DEMO-GOVERNANCE
+  - DEMO-POLICY-ACCESS
+  - DEMO-AI-READY-PUBLICATION
+artifact_path: demo/evidence/current/ai-ready-customer-product.csv
+sha256: 00e03bf1600131a80d275c009f7a1b1b58e8f212d5e64ac50436b2489bfc4d2d
+row_count: 990
+owner:
+  name: Local retail data platform demo
+  accountable_role: Synthetic AI-ready data product owner
+contract:
+  schema: transform/dbt/models/products/_products__models.yml
+  grain: One row per accepted synthetic retail order.
+  columns:
+    - {name: order_key, type: VARCHAR, nullable: false, description: Deterministic pseudonymous accepted-order key.}
+    - {name: customer_key, type: VARCHAR, nullable: false, description: Deterministic pseudonymous customer key.}
+    - {name: email_pseudonym, type: VARCHAR, nullable: true, description: One-way pseudonym derived from nullable synthetic email.}
+    - {name: loyalty_tier, type: VARCHAR, nullable: false, description: Synthetic loyalty segment.}
+    - {name: is_active, type: BOOLEAN, nullable: false, description: Synthetic customer activity indicator.}
+    - {name: order_date, type: DATE, nullable: false, description: Accepted synthetic order date.}
+    - {name: channel, type: VARCHAR, nullable: false, description: Accepted synthetic order channel.}
+    - {name: accepted_order_status, type: VARCHAR, nullable: false, description: Allowed order status only.}
+    - {name: order_total, type: DOUBLE, nullable: false, description: Synthetic accepted order total.}
+service_levels:
+  quality:
+    objective: Every published row comes from accepted_orders; quarantine is non-empty, disjoint, complete, and excluded.
+    verification: make demo-verify
+  freshness:
+    objective: Rebuilt from the pinned small scale and seed 42 deterministic fixture during each current proof.
+    verification: make seed SCALE=small SEED=42 && make load && make dbt
+access:
+  classification: synthetic-pii-derived
+  approved_role_ids:
+    - demo-ai-consumer
+  policy_path: governance/policy/access-policy.yaml
+  prohibited_fields:
+    - email
+    - first_name
+    - last_name
+    - customer_id
+    - order_id
+lineage:
+  sources:
+    - accepted_orders
+    - stg_customers
+  model_path: transform/dbt/models/products/ai_ready_customer_product.sql
+  metadata_references:
+    - transform/dbt/target/manifest.json
+    - governance/openmetadata/README.md
+reproduction:
+  - command: make seed SCALE=small SEED=42
+    purpose: Generate the pinned synthetic retail fixture.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: Repository Make target with fixed scale and seed.
+  - command: make load
+    purpose: Land the fixture into the local DuckDB raw schema.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: Repository Make target.
+  - command: make dbt
+    purpose: Build accepted, quarantine, and governed product relations with tests.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: dbt build executes models and tests.
+  - command: make demo-verify
+    purpose: Exercise policy export and all publication invariants.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: Repository verifier invokes actual local relations and CLI.
+source_checksums:
+  - path: transform/dbt/models/products/ai_ready_customer_product.sql
+    sha256: 02fc18e722ab4411006067b29fca5c109ef81256d859cfdfc1ff70df2374b294
+    origin: tracked
+    availability: available
+    description: Governed product transformation source.
+  - path: governance/policy/access-policy.yaml
+    sha256: 0c5391b8a8d2eee59b18aac45a6f36cfa6645cfc7fea026c46b9f9fd81e59364
+    origin: tracked
+    availability: available
+    description: Fixed application authorization policy.
+limitations:
+  - This is deterministic synthetic retail evidence, not customer data or assessment scoring input.
+  - The policy entrypoint is an application-level local demonstration, not DuckDB IAM.
+  - A local machine owner can open DuckDB directly and bypass the entrypoint.
+  - No AI model, cloud resource, upload, deployment, or object-store implementation is included.
+synthetic_data: true
+non_scoring: true

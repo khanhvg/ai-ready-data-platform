@@ -456,6 +456,8 @@ class DemoCatalog(CatalogModel):
     title: str = Field(min_length=1)
     presenter_purpose: str = Field(min_length=12)
     non_scoring_disclaimer: str = Field(min_length=12)
+    automation_eligible_steps: int = Field(gt=0)
+    automation_automated_steps: int = Field(ge=0)
     operating_boundary: list[str] = Field(min_length=1)
     stage_order: list[str] = Field(min_length=1)
     stages: list[DemoStage] = Field(min_length=1)
@@ -476,6 +478,14 @@ class DemoCatalog(CatalogModel):
         if tuple(catalog.stage_order) != EXPECTED_DEMO_STAGE_IDS:
             raise ContentValidationError(
                 "demo catalog: guide stage order must match the presenter stages"
+            )
+        if (
+            catalog.automation_automated_steps > catalog.automation_eligible_steps
+            or catalog.automation_automated_steps * 100
+            < catalog.automation_eligible_steps * 95
+        ):
+            raise ContentValidationError(
+                "demo catalog: eligible automation must be an explicit ratio of at least 95%"
             )
         if {link.id for link in catalog.evidence_links} != EXPECTED_DEMO_REFERENCE_IDS:
             raise ContentValidationError(

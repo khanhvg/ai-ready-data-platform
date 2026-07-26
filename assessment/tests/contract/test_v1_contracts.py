@@ -300,8 +300,38 @@ def test_schema_and_typed_models_accept_and_reject_the_same_documents(
                     {
                         "path": "demo/artifacts/ingest.json",
                         "sha256": "0" * 64,
+                        "origin": "generated",
+                        "availability": "unavailable",
+                        "description": "Generated ingestion evidence.",
                     }
                 ],
+                "commands": [
+                    {
+                        "command": "make seed SCALE=small SEED=42",
+                        "purpose": "Generate deterministic synthetic data.",
+                        "eligible_for_automation": True,
+                        "automated": True,
+                        "automation_rationale": "Repository Make target.",
+                    }
+                ],
+                "expected_contracts": ["Deterministic synthetic source manifest."],
+                "cleanup": [
+                    {
+                        "command": "make clean",
+                        "purpose": "Remove generated local demo state.",
+                        "eligible_for_automation": True,
+                        "automated": True,
+                        "automation_rationale": "Repository Make target.",
+                    }
+                ],
+                "limitations": ["Demo evidence is not customer evidence."],
+                "provenance": {
+                    "input_sha": "0" * 40,
+                    "evidence_kind": "configured",
+                    "current_execution": "unexecuted",
+                    "references": ["docs/demo-runbook.md"],
+                },
+                "non_scoring": True,
             },
             DemoStageManifest,
         ),
@@ -314,6 +344,64 @@ def test_schema_and_typed_models_accept_and_reject_the_same_documents(
                 "artifact_path": "demo/artifacts/retail.parquet",
                 "sha256": "0" * 64,
                 "row_count": 0,
+                "owner": {
+                    "name": "Data platform demo",
+                    "accountable_role": "Synthetic data product owner",
+                },
+                "contract": {
+                    "schema": "transform/dbt/models/products/_products__models.yml",
+                    "grain": "One row per accepted synthetic order.",
+                    "columns": [
+                        {
+                            "name": "order_key",
+                            "type": "VARCHAR",
+                            "nullable": False,
+                            "description": "Pseudonymous order identifier.",
+                        }
+                    ],
+                },
+                "service_levels": {
+                    "quality": {
+                        "objective": "Only accepted statuses are published.",
+                        "verification": "make demo-verify",
+                    },
+                    "freshness": {
+                        "objective": "Rebuilt from the pinned deterministic fixture.",
+                        "verification": "make demo-verify",
+                    },
+                },
+                "access": {
+                    "classification": "synthetic-pii-derived",
+                    "approved_role_ids": ["demo-ai-consumer"],
+                    "policy_path": "governance/policy/access-policy.yaml",
+                    "prohibited_fields": ["email"],
+                },
+                "lineage": {
+                    "sources": ["accepted_orders", "stg_customers"],
+                    "model_path": "transform/dbt/models/products/ai_ready_customer_product.sql",
+                    "metadata_references": ["transform/dbt/target/manifest.json"],
+                },
+                "reproduction": [
+                    {
+                        "command": "make demo-verify",
+                        "purpose": "Reproduce and verify the product.",
+                        "eligible_for_automation": True,
+                        "automated": True,
+                        "automation_rationale": "Repository Make target.",
+                    }
+                ],
+                "source_checksums": [
+                    {
+                        "path": "transform/dbt/models/products/ai_ready_customer_product.sql",
+                        "sha256": "0" * 64,
+                        "origin": "tracked",
+                        "availability": "available",
+                        "description": "Versioned product model.",
+                    }
+                ],
+                "limitations": ["Application authorization is not database IAM."],
+                "synthetic_data": True,
+                "non_scoring": True,
             },
             AIReadyDatasetManifest,
         ),
@@ -322,10 +410,37 @@ def test_schema_and_typed_models_accept_and_reject_the_same_documents(
         schema_root = "demo" if name in DEMO_SCHEMA_NAMES else "assessment"
         schema_path = ROOT / schema_root / "contracts" / f"{name}-v1.schema.json"
         schema = load_schema(schema_path)
-        assert set(schema["properties"]) == set(model.model_fields)
-        assert set(schema["required"]) == set(model.model_fields)
+        model_property_names = {
+            field.serialization_alias or field.alias or field_name
+            for field_name, field in model.model_fields.items()
+        }
+        assert set(schema["properties"]) == model_property_names
+        if name == "demo-stage-manifest":
+            assert set(schema["required"]) == {
+                "schema_version",
+                "demo_content_version",
+                "stage_id",
+                "status",
+                "artifacts",
+            }
+        elif name == "ai-ready-dataset-manifest":
+            assert set(schema["required"]) == {
+                "schema_version",
+                "dataset_id",
+                "dataset_version",
+                "source_stage_ids",
+                "artifact_path",
+                "sha256",
+                "row_count",
+            }
+        else:
+            assert set(schema["required"]) == model_property_names
         validate_document(document, schema_path)
-        assert model.model_validate(document).model_dump(mode="json", exclude_none=True) == document
+        assert model.model_validate(document).model_dump(
+            mode="json",
+            exclude_none=True,
+            by_alias=True,
+        ) == document
 
         invalid = copy.deepcopy(document)
         invalid["unexpected"] = True
@@ -354,6 +469,53 @@ def test_schema_and_typed_models_accept_and_reject_the_same_documents(
             validate_document(dot_component, schema_path)
         with pytest.raises(ValueError):
             model.model_validate(dot_component)
+
+
+def test_phase2_minimal_demo_manifest_documents_remain_schema_compatible() -> None:
+    stage_document = {
+        "schema_version": "1.0.0",
+        "demo_content_version": "1.0.0",
+        "stage_id": "DEMO-INGEST",
+        "status": "planned",
+        "artifacts": [
+            {
+                "path": "demo/artifacts/ingest.json",
+                "sha256": "0" * 64,
+            }
+        ],
+    }
+    validate_document(
+        stage_document,
+        ROOT / "demo" / "contracts" / "demo-stage-manifest-v1.schema.json",
+    )
+    assert DemoStageManifest.model_validate(stage_document).model_dump(
+        mode="json", exclude_none=True
+    ) == stage_document
+    empty_artifacts_document = {**stage_document, "artifacts": []}
+    validate_document(
+        empty_artifacts_document,
+        ROOT / "demo" / "contracts" / "demo-stage-manifest-v1.schema.json",
+    )
+    assert DemoStageManifest.model_validate(empty_artifacts_document).model_dump(
+        mode="json", exclude_none=True
+    ) == empty_artifacts_document
+
+    dataset_document = {
+        "schema_version": "1.0.0",
+        "dataset_id": "retail-ai-ready",
+        "dataset_version": "1.0.0",
+        "source_stage_ids": ["DEMO-INGEST"],
+        "artifact_path": "demo/artifacts/retail.parquet",
+        "sha256": "0" * 64,
+        "row_count": 0,
+    }
+    validate_document(
+        dataset_document,
+        ROOT / "demo" / "contracts" / "ai-ready-dataset-manifest-v1.schema.json",
+    )
+    assert AIReadyDatasetManifest.model_validate(dataset_document).model_dump(
+        mode="json", exclude_none=True
+    ) == dataset_document
 
 
 @pytest.mark.parametrize(

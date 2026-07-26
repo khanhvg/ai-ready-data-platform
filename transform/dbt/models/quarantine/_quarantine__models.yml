@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: quarantine_orders
+    description: >
+      Rejected side of the deterministic order-status partition over deduplicated
+      stg_orders. Rows retain the source key, invalid value, rule ID, reason, and
+      source-model identity for local demo evidence.
+    columns:
+      - name: order_id
+        tests: [not_null, unique]
+      - name: quality_rule_id
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['invalid-order-status']
+      - name: quality_reason
+        tests: [not_null]
+      - name: source_model
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['stg_orders']

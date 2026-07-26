@@ -32,3 +32,15 @@ models:
       +materialized: table
       +schema: marts
       +tags: ["marts"]
+    quarantine:
+      +materialized: table
+      +schema: quarantine
+      +tags: ["quarantine", "demo-evidence"]
+    curated:
+      +materialized: table
+      +schema: curated
+      +tags: ["accepted", "demo-evidence"]
+    products:
+      +materialized: table
+      +schema: products
+      +tags: ["ai-ready-product", "demo-evidence"]

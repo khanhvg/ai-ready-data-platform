@@ -1,0 +1,42 @@
+schema_version: 1.0.0
+demo_content_version: 1.0.0
+stage_id: DEMO-POLICY-ACCESS
+status: executed
+artifacts:
+  - path: governance/policy/access-policy.yaml
+    sha256: 0c5391b8a8d2eee59b18aac45a6f36cfa6645cfc7fea026c46b9f9fd81e59364
+    origin: tracked
+    availability: available
+    description: Checked fixed-role and fixed-asset application policy.
+  - path: governance/policy/export_authorized_dataset.py
+    sha256: 72109400ae359b32f20a43a3b34853629febf9cf18f1e6e4c1282dcf9e8b1cc4
+    origin: tracked
+    availability: available
+    description: Fixed-interface local policy enforcement entrypoint.
+commands:
+  - command: make demo-verify
+    purpose: Exercise raw, staging, unknown, SQL, path, and safe-product cases.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: The verifier invokes the real CLI for every policy decision.
+expected_contracts:
+  - Raw, staging, classified-email, unknown-role, and unknown-asset requests fail nonzero.
+  - The sole safe product succeeds with the allowlisted schema.
+  - SQL, database path, output path, and relation inputs are absent.
+cleanup:
+  - command: make clean
+    purpose: Remove generated policy decision and export evidence.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: Repository cleanup target includes Phase 6 current evidence.
+limitations:
+  - This application-level control is not DuckDB IAM or production enforcement.
+  - A local machine owner can directly open DuckDB and bypass the entrypoint.
+provenance:
+  input_sha: 7687a666cce3f533d4adac542ada34037b91ed8c
+  evidence_kind: current
+  current_execution: executed
+  references:
+    - docs/demo-guide.md
+    - docs/verification/GH-38-phase-6-evidence.md
+non_scoring: true

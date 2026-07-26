@@ -1,0 +1,46 @@
+schema_version: 1.0.0
+demo_content_version: 1.0.0
+stage_id: DEMO-LINEAGE
+status: executed
+artifacts:
+  - path: docs/system-architecture.md
+    sha256: 80a6e75b4f60c3d523ccd010b1f660d2d8253a7dde8e9d9daf9d5ea5a0232d23
+    origin: tracked
+    availability: available
+    description: Logical DuckDB and physical Iceberg identity boundary.
+  - path: lake/curated_assets.json
+    sha256: 72a5f378799617075f27b517d75b1c3014554023a82de4069cc438de97eb51f1
+    origin: tracked
+    availability: available
+    description: Canonical inventory of eleven legacy business marts.
+commands:
+  - command: make dbt-docs
+    purpose: Generate current dbt lineage metadata.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: The target emits manifest and catalog artifacts.
+  - command: make demo-verify
+    purpose: Verify the AI-ready product lineage and canonical inventory separation.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: The verifier checks exact model sources and canonical asset count.
+expected_contracts:
+  - The AI-ready product resolves to accepted_orders and stg_customers.
+  - The canonical eleven mart inventory excludes the additive product.
+cleanup:
+  - command: make clean
+    purpose: Remove generated dbt lineage artifacts.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: Repository cleanup target.
+limitations:
+  - Tracked architecture is not a substitute for a current OpenMetadata run.
+  - Logical dbt and physical Iceberg assets remain intentionally distinct.
+provenance:
+  input_sha: 7687a666cce3f533d4adac542ada34037b91ed8c
+  evidence_kind: current
+  current_execution: executed
+  references:
+    - docs/system-architecture.md
+    - docs/verification/GH-38-phase-6-evidence.md
+non_scoring: true

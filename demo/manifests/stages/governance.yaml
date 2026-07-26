@@ -1,0 +1,46 @@
+schema_version: 1.0.0
+demo_content_version: 1.0.0
+stage_id: DEMO-GOVERNANCE
+status: executed
+artifacts:
+  - path: transform/dbt/models/staging/_staging__models.yml
+    sha256: d39dd61dc0c172ee0a337cb74503488bbc4701adb56ecc1248bbd27c70f191b4
+    origin: tracked
+    availability: available
+    description: Source-field classification for synthetic customers.email.
+  - path: transform/dbt/models/products/_products__models.yml
+    sha256: 31bf30864b061c8dc16bcfbb9b4cf006382a4d9e17d408438735d23a9ebbd8a0
+    origin: tracked
+    availability: available
+    description: Governed product ownership, classification, and column contract.
+commands:
+  - command: make dbt
+    purpose: Validate classification-linked product tests and metadata.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: dbt build validates the versioned model contracts.
+  - command: make demo-verify
+    purpose: Verify classified input is absent from the governed output.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: The verifier compares actual source and output values.
+expected_contracts:
+  - customers.email is classified as synthetic PII-like restricted input.
+  - No raw email, first name, last name, or raw customer identifier is published.
+cleanup:
+  - command: make clean
+    purpose: Remove generated governed product and warehouse state.
+    eligible_for_automation: true
+    automated: true
+    automation_rationale: Repository cleanup target.
+limitations:
+  - Classification applies to deterministic synthetic demo data only.
+  - This evidence does not assert customer governance maturity.
+provenance:
+  input_sha: 7687a666cce3f533d4adac542ada34037b91ed8c
+  evidence_kind: current
+  current_execution: executed
+  references:
+    - docs/demo-guide.md
+    - docs/verification/GH-38-phase-6-evidence.md
+non_scoring: true

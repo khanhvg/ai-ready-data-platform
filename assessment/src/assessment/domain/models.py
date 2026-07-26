@@ -31,6 +31,8 @@ EvidenceStatus = Literal[
 ]
 
 ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
+PATH_PART_PATTERN = ID_PATTERN
+MANIFEST_PATH_PART_PATTERN = re.compile(r"^[A-Za-z0-9_][A-Za-z0-9._-]{0,127}$")
 WINDOWS_DRIVE = re.compile(r"^[A-Za-z]:")
 
 
@@ -50,8 +52,29 @@ def validate_relative_posix_path(value: str) -> str:
     ):
         raise InvalidPathError(f"unsafe relative POSIX path: {value!r}")
     parts = value.split("/")
-    if any(part in {"", ".", ".."} or not ID_PATTERN.fullmatch(part) for part in parts):
+    if any(
+        part in {"", ".", ".."} or not PATH_PART_PATTERN.fullmatch(part)
+        for part in parts
+    ):
         raise InvalidPathError(f"unsafe relative POSIX path: {value!r}")
+    return value
+
+
+def validate_manifest_relative_posix_path(value: str) -> str:
+    if (
+        not value
+        or value.startswith("/")
+        or WINDOWS_DRIVE.match(value)
+        or "\\" in value
+        or "\x00" in value
+    ):
+        raise InvalidPathError(f"unsafe manifest-relative POSIX path: {value!r}")
+    parts = value.split("/")
+    if any(
+        part in {"", ".", ".."} or not MANIFEST_PATH_PART_PATTERN.fullmatch(part)
+        for part in parts
+    ):
+        raise InvalidPathError(f"unsafe manifest-relative POSIX path: {value!r}")
     return value
 
 
@@ -298,8 +321,39 @@ class Framework(ContractModel):
 class ManifestArtifact(ContractModel):
     path: str
     sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    origin: Literal["tracked", "generated", "historical"] | None = None
+    availability: Literal["available", "current", "historical", "unavailable"] | None = None
+    description: str | None = Field(default=None, min_length=1, max_length=2048)
 
-    _validate_path = field_validator("path")(validate_relative_posix_path)
+    _validate_path = field_validator("path")(validate_manifest_relative_posix_path)
+
+
+class ManifestCommand(ContractModel):
+    command: str = Field(min_length=1, max_length=512)
+    purpose: str = Field(min_length=1, max_length=1024)
+    eligible_for_automation: bool
+    automated: bool
+    automation_rationale: str = Field(min_length=1, max_length=1024)
+
+    @model_validator(mode="after")
+    def validate_automation_eligibility(self) -> ManifestCommand:
+        if self.automated and not self.eligible_for_automation:
+            raise ValueError("an ineligible command cannot be declared automated")
+        return self
+
+
+class ManifestProvenance(ContractModel):
+    input_sha: str = Field(pattern=r"^[0-9a-f]{40}$")
+    evidence_kind: Literal["current", "historical", "configured", "unavailable"]
+    current_execution: Literal["executed", "unexecuted", "not-applicable"]
+    references: list[str]
+
+    @field_validator("references")
+    @classmethod
+    def validate_references(cls, value: list[str]) -> list[str]:
+        if len(value) != len(set(value)):
+            raise ValueError("provenance references must be unique")
+        return [validate_manifest_relative_posix_path(item) for item in value]
 
 
 class DemoStageManifest(ContractModel):
@@ -308,8 +362,77 @@ class DemoStageManifest(ContractModel):
     stage_id: Identifier
     status: Literal["planned", "executed", "historical", "unavailable"]
     artifacts: list[ManifestArtifact]
+    commands: list[ManifestCommand] | None = Field(default=None, min_length=1)
+    expected_contracts: list[str] | None = Field(default=None, min_length=1)
+    cleanup: list[ManifestCommand] | None = Field(default=None, min_length=1)
+    limitations: list[str] | None = Field(default=None, min_length=1)
+    provenance: ManifestProvenance | None = None
+    non_scoring: Literal[True] | None = None
 
     _validate_stage_id = field_validator("stage_id")(validate_identifier)
+
+
+class DatasetOwner(ContractModel):
+    name: str = Field(min_length=1, max_length=256)
+    accountable_role: str = Field(min_length=1, max_length=256)
+
+
+class DatasetColumn(ContractModel):
+    name: Identifier
+    type: str = Field(min_length=1, max_length=128)
+    nullable: bool
+    description: str = Field(min_length=1, max_length=1024)
+
+    _validate_name = field_validator("name")(validate_identifier)
+
+
+class DatasetContract(ContractModel):
+    schema_path: str = Field(alias="schema", serialization_alias="schema")
+    grain: str = Field(min_length=1, max_length=1024)
+    columns: list[DatasetColumn] = Field(min_length=1)
+
+    _validate_schema = field_validator("schema_path")(validate_manifest_relative_posix_path)
+
+
+class DatasetServiceLevel(ContractModel):
+    objective: str = Field(min_length=1, max_length=1024)
+    verification: str = Field(min_length=1, max_length=512)
+
+
+class DatasetServiceLevels(ContractModel):
+    quality: DatasetServiceLevel
+    freshness: DatasetServiceLevel
+
+
+class DatasetAccess(ContractModel):
+    classification: Literal["synthetic-pii-derived"]
+    approved_role_ids: list[Identifier] = Field(min_length=1)
+    policy_path: str
+    prohibited_fields: list[Identifier] = Field(min_length=1)
+
+    _validate_policy_path = field_validator("policy_path")(
+        validate_manifest_relative_posix_path
+    )
+    _validate_roles = field_validator("approved_role_ids")(validate_unique_identifiers)
+    _validate_fields = field_validator("prohibited_fields")(validate_unique_identifiers)
+
+
+class DatasetLineage(ContractModel):
+    sources: list[Identifier] = Field(min_length=1)
+    model_path: str
+    metadata_references: list[str] = Field(min_length=1)
+
+    _validate_sources = field_validator("sources")(validate_unique_identifiers)
+    _validate_model_path = field_validator("model_path")(
+        validate_manifest_relative_posix_path
+    )
+
+    @field_validator("metadata_references")
+    @classmethod
+    def validate_metadata_references(cls, value: list[str]) -> list[str]:
+        if len(value) != len(set(value)):
+            raise ValueError("metadata references must be unique")
+        return [validate_manifest_relative_posix_path(item) for item in value]
 
 
 class AIReadyDatasetManifest(ContractModel):
@@ -320,9 +443,21 @@ class AIReadyDatasetManifest(ContractModel):
     artifact_path: str
     sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     row_count: int = Field(ge=0)
+    owner: DatasetOwner | None = None
+    contract: DatasetContract | None = None
+    service_levels: DatasetServiceLevels | None = None
+    access: DatasetAccess | None = None
+    lineage: DatasetLineage | None = None
+    reproduction: list[ManifestCommand] | None = Field(default=None, min_length=1)
+    source_checksums: list[ManifestArtifact] | None = Field(default=None, min_length=1)
+    limitations: list[str] | None = Field(default=None, min_length=1)
+    synthetic_data: Literal[True] | None = None
+    non_scoring: Literal[True] | None = None
 
     _validate_dataset_id = field_validator("dataset_id")(validate_identifier)
-    _validate_artifact_path = field_validator("artifact_path")(validate_relative_posix_path)
+    _validate_artifact_path = field_validator("artifact_path")(
+        validate_manifest_relative_posix_path
+    )
 
     @field_validator("source_stage_ids")
     @classmethod
