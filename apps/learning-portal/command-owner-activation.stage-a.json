@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "command-owner-activation-v1",
+  "baseRegistryPath": "learning/contracts/command-owner-registry-v1.json",
+  "baseRegistrySha256": "a94ac86bda0b70643edef9f144a59d8753d91f963b83d22cd510adbc31970e80",
+  "owner": "I5-05",
+  "fragment": {
+    "path": "mk/issue-5/i5-05.mk",
+    "sha256": "e76b619925f65731bac5a33962a91a28c02546008beb13276ed6d85c16e14920"
+  },
+  "commands": [
+    { "commandId": "learn", "availability": "implemented", "evidenceVersion": "fitness-result-v2" },
+    { "commandId": "learn-status", "availability": "implemented", "evidenceVersion": "fitness-result-v2" },
+    { "commandId": "learn-down", "availability": "implemented", "evidenceVersion": "fitness-result-v2" },
+    { "commandId": "portal-test", "availability": "implemented", "evidenceVersion": "fitness-result-v2" },
+    { "commandId": "portal-a11y", "availability": "implemented", "evidenceVersion": "fitness-result-v2" },
+    { "commandId": "portal-e2e", "availability": "implemented", "evidenceVersion": "fitness-result-v2" },
+    { "commandId": "lesson-e2e", "availability": "unavailable", "evidenceVersion": "fitness-result-v2" },
+    { "commandId": "local-journey-e2e", "availability": "unavailable", "evidenceVersion": "fitness-result-v2" },
+    { "commandId": "portal-visual-review", "availability": "implemented", "evidenceVersion": "fitness-result-v2" }
+  ]
+}
