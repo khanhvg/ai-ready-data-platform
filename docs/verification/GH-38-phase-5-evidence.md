@@ -43,6 +43,32 @@ demo artifacts, wide and 375px catalog views, 640px 200%-equivalent demo reflow,
 back/reload, zero control forms/buttons, local-only requests, console/page/request-failure
 review, and clean browser/server teardown while preserving the complete Phase 4 journey.
 
+## Standalone report responsive review-fix
+
+Independent verification of frozen head
+`306f0cfcd2bd594c43136e5bc7c1877ea8bc104e` reproduced a page-level overflow in the generated,
+downloaded standalone report: Chromium measured `493 > 375` at 375×812 and `978 > 640` at a
+640px viewport with 200% zoom. All three technology-profile role tables extended beyond the
+narrow viewport.
+
+The preserved browser regression opens the downloaded local `report.html`, permits only that
+exact local file URL, and compares all rendered technology-profile role cells with canonical
+`report.json`. At wide, 375px, and 200%-equivalent reflow it also checks document and
+table geometry, every table cell and full source digest for clipping, profile-row overlap,
+off-screen elements, readable font size, body and muted-text contrast, the three non-executable
+profile status statements, all seven inline diagrams and adjacent alternatives, absence of
+controls, and browser console/page/remote/unexpected-request failures. Screenshots and
+measurements remain ignored local evidence.
+
+The bounded correction makes report text break safely, gives report tables fixed layout, and
+reflows the three technology-profile tables into complete labeled rows at narrow widths without
+changing their real headers or cells, report JSON, scoring, gates, or catalog contracts. The
+same synthetic downloaded report then measures `1280 = 1280`, `375 = 375`, and `640 = 640`,
+with zero clipped cells/tables, overlapping profile rows, or off-screen elements. Body and
+muted text retain contrast ratios above 4.5:1. The known narrow-view limitation remains: labels
+inside scaled catalog SVGs are small, while the adjacent text alternatives remain complete and
+clear.
+
 ## Verification contract
 
 The final exact-head pass records exit codes for:

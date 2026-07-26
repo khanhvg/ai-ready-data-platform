@@ -88,8 +88,8 @@
         <h3>{{ profile.title }}</h3>
         <p><strong>Profile:</strong> {{ profile.kind }} · content only · non-executable{% if profile.provider %} · {{ profile.provider }}{% endif %}</p>
         <p><strong>Limitations:</strong> {{ profile.limitations | join(" ") }}</p>
-        <table><caption>{{ profile.title }} role mapping</caption><thead><tr><th scope="col">Role</th><th scope="col">Selected tool or alternatives</th><th scope="col">Constraints</th></tr></thead><tbody>
-        {% for role in profile.roles %}<tr><th scope="row">{{ role.role }}</th><td>{{ role.selected_tool if role.selected_tool else role.alternatives | join(", ") }}</td><td>{{ role.constraints | join("; ") }}</td></tr>{% endfor %}
+        <table class="technology-role-table"><caption>{{ profile.title }} role mapping</caption><thead><tr><th scope="col">Role</th><th scope="col">Selected tool or alternatives</th><th scope="col">Constraints</th></tr></thead><tbody>
+        {% for role in profile.roles %}<tr><th scope="row">{{ role.role }}</th><td data-label="Selected tool or alternatives">{{ role.selected_tool if role.selected_tool else role.alternatives | join(", ") }}</td><td data-label="Constraints">{{ role.constraints | join("; ") }}</td></tr>{% endfor %}
         </tbody></table>
       </article>
       {% endfor %}

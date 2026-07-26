@@ -1,12 +1,12 @@
 :root { color-scheme: light; --ink: #172033; --muted: #596579; --line: #d8deea; --accent: #2357a5; }
 * { box-sizing: border-box; }
-body { margin: 0; color: var(--ink); background: #f4f6fa; font: 15px/1.5 system-ui, sans-serif; }
+body { margin: 0; color: var(--ink); background: #f4f6fa; font: 15px/1.5 system-ui, sans-serif; overflow-wrap: anywhere; }
 main { width: min(1040px, calc(100% - 32px)); margin: 24px auto; }
 header, section { margin: 0 0 16px; padding: 20px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
 h1, h2, h3 { line-height: 1.2; }
 h1 { margin-top: 0; }
 h2 { padding-bottom: 8px; border-bottom: 1px solid var(--line); color: var(--accent); }
-table { width: 100%; border-collapse: collapse; }
+table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 caption { padding: 8px 0; font-weight: 700; text-align: left; }
 th, td { padding: 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 dt { font-weight: 700; }
@@ -21,6 +21,20 @@ dd { margin: 0 0 8px; }
 .diagram line, .diagram polygon { fill: var(--accent); stroke: var(--accent); stroke-width: 2; }
 .diagram text { fill: var(--ink); font-size: 16px; }
 code { overflow-wrap: anywhere; }
+@media screen and (max-width: 640px) {
+  .technology-role-table,
+  .technology-role-table caption,
+  .technology-role-table thead,
+  .technology-role-table tbody,
+  .technology-role-table tr,
+  .technology-role-table th,
+  .technology-role-table td { display: block; width: 100%; }
+  .technology-role-table thead tr { padding: 0 0 8px; border-bottom: 2px solid var(--line); }
+  .technology-role-table tbody tr { padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .technology-role-table th, .technology-role-table td { padding: 4px 0; border: 0; }
+  .technology-role-table tbody th { font-size: 1.05em; }
+  .technology-role-table td::before { display: block; color: var(--muted); font-weight: 700; content: attr(data-label); }
+}
 @media print {
   body { background: #fff; }
   main { width: 100%; margin: 0; }

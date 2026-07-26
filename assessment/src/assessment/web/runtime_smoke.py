@@ -144,10 +144,18 @@ def _guard_context(
     console_errors: list[str],
     page_errors: list[str],
     request_failures: list[dict[str, str]],
+    allowed_file_urls: set[str] | None = None,
 ) -> None:
+    allowed_files = allowed_file_urls or set()
+
     def route_request(route: Any) -> None:
         parsed = urlparse(route.request.url)
-        if parsed.hostname not in LOOPBACK_HOSTS and parsed.scheme not in {"data", "about"}:
+        local_file = route.request.url in allowed_files
+        if (
+            parsed.hostname not in LOOPBACK_HOSTS
+            and parsed.scheme not in {"data", "about"}
+            and not local_file
+        ):
             remote_requests.append(route.request.url)
             route.abort()
             return
@@ -377,6 +385,224 @@ def _assert_report_reflow(
     )
 
 
+def _inspect_standalone_report(
+    page: Page,
+    html_path: Path,
+    report_path: Path,
+    evidence_root: Path,
+    transcript: list[dict[str, Any]],
+) -> None:
+    page.goto(html_path.resolve().as_uri())
+    if page.locator("#technology-options article table").count() != 3:
+        raise AssertionError("standalone report does not contain all three profile tables")
+    if page.locator(".diagram svg").count() != 7:
+        raise AssertionError("standalone report does not contain all seven diagrams")
+    if page.locator(".diagram p").count() != 7:
+        raise AssertionError("standalone report does not contain seven text alternatives")
+    if page.locator("script, form, a, button, input, select, textarea").count():
+        raise AssertionError("standalone report unexpectedly exposes executable controls")
+
+    source_digests = page.locator("#evidence-appendix code").all_inner_texts()
+    if len(source_digests) != 1 or any(
+        len(digest) != 64 or any(character not in "0123456789abcdef" for character in digest)
+        for digest in source_digests
+    ):
+        raise AssertionError(
+            f"standalone report does not expose its full source digest: {source_digests}"
+        )
+    profile_statuses = page.locator("#technology-options article > p").all_inner_texts()
+    if sum("content only · non-executable" in status for status in profile_statuses) != 3:
+        raise AssertionError("standalone report omits a technology-profile safety status")
+    if page.locator("#technology-options th, #technology-options td").evaluate_all(
+        "(cells) => cells.some((cell) => !cell.innerText.trim())"
+    ):
+        raise AssertionError("standalone profile tables contain an empty visible cell")
+    report = json.loads(report_path.read_bytes())
+    technology = next(
+        section["content"]
+        for section in report["sections"]
+        if section["id"] == "technology-options"
+    )
+    expected_rows = [
+        [
+            [
+                role["role"],
+                role["selected_tool"] if role["selected_tool"] else ", ".join(role["alternatives"]),
+                "; ".join(role["constraints"]),
+            ]
+            for role in profile["roles"]
+        ]
+        for profile in technology["profiles"]
+    ]
+    actual_rows = page.locator("#technology-options article table").evaluate_all(
+        """(tables) => tables.map((table) =>
+            [...table.tBodies[0].rows].map((row) =>
+                [...row.cells].map((cell) => cell.innerText.trim())
+            )
+        )"""
+    )
+    if actual_rows != expected_rows:
+        raise AssertionError("standalone profile tables differ from canonical report JSON")
+
+    measurements: dict[str, Any] = {}
+    viewports = (
+        ("wide", 1280, 900, ""),
+        ("375px", 375, 812, ""),
+        ("200%-320px-equivalent", 640, 900, "200%"),
+    )
+    for name, width, height, zoom in viewports:
+        page.set_viewport_size({"width": width, "height": height})
+        page.evaluate("(zoom) => { document.body.style.zoom = zoom; }", zoom)
+        measurements[name] = page.evaluate(
+            """() => {
+                const documentElement = document.documentElement;
+                const profileTables = [...document.querySelectorAll(
+                    "#technology-options article table"
+                )];
+                const tables = [...document.querySelectorAll("table")];
+                const visibleNodes = [...document.querySelectorAll("th, td, code")];
+                const rows = [...document.querySelectorAll(
+                    "#technology-options article tr"
+                )];
+                const parseRgb = (value) =>
+                    (value.match(/[0-9.]+/g) || []).slice(0, 3).map(Number);
+                const luminance = (value) => {
+                    const channels = parseRgb(value).map((channel) => {
+                        const normalized = channel / 255;
+                        return normalized <= 0.04045
+                            ? normalized / 12.92
+                            : ((normalized + 0.055) / 1.055) ** 2.4;
+                    });
+                    return (
+                        0.2126 * channels[0] +
+                        0.7152 * channels[1] +
+                        0.0722 * channels[2]
+                    );
+                };
+                const contrast = (foreground, background) => {
+                    const first = luminance(foreground);
+                    const second = luminance(background);
+                    return (Math.max(first, second) + 0.05) /
+                        (Math.min(first, second) + 0.05);
+                };
+                const section = document.querySelector("section");
+                const bodyStyle = getComputedStyle(document.body);
+                const sectionStyle = getComputedStyle(section);
+                const mutedStyle = getComputedStyle(document.querySelector(".meta"));
+                return {
+                    scroll: documentElement.scrollWidth,
+                    client: documentElement.clientWidth,
+                    bodyFontSize: parseFloat(bodyStyle.fontSize),
+                    bodyTextContrast: contrast(bodyStyle.color, sectionStyle.backgroundColor),
+                    mutedTextContrast: contrast(
+                        mutedStyle.color,
+                        sectionStyle.backgroundColor
+                    ),
+                    tableRects: profileTables.map((table) => {
+                        const rect = table.getBoundingClientRect();
+                        return {
+                            left: Math.round(rect.left),
+                            right: Math.round(rect.right),
+                            width: Math.round(rect.width),
+                            scrollWidth: table.scrollWidth,
+                            clientWidth: table.clientWidth,
+                        };
+                    }),
+                    overflowingElements: [...document.body.querySelectorAll("*")]
+                        .filter((node) => {
+                            const rect = node.getBoundingClientRect();
+                            return rect.width > 0 && (
+                                rect.left < -0.5 ||
+                                rect.right > documentElement.clientWidth + 0.5
+                            );
+                        })
+                        .slice(0, 20)
+                        .map((node) => {
+                            const rect = node.getBoundingClientRect();
+                            return {
+                                tag: node.tagName,
+                                id: node.id,
+                                className: node.getAttribute("class") || "",
+                                left: Math.round(rect.left),
+                                right: Math.round(rect.right),
+                                text: (node.textContent || "").trim().slice(0, 80),
+                            };
+                        }),
+                    clippedCells: visibleNodes.filter((node) =>
+                        node.scrollWidth > node.clientWidth ||
+                        node.scrollHeight > node.clientHeight
+                    ).length,
+                    clippedTables: tables.filter((table) =>
+                        table.scrollWidth > table.clientWidth
+                    ).length,
+                    overlappingRows: rows.slice(1).filter((row, index) =>
+                        row.getBoundingClientRect().top <
+                        rows[index].getBoundingClientRect().bottom - 0.5
+                    ).length,
+                };
+            }"""
+        )
+        page.screenshot(
+            path=evidence_root / f"standalone-report-{name}.png",
+            full_page=True,
+        )
+        page.locator("#technology-options").screenshot(
+            path=evidence_root / f"standalone-technology-options-{name}.png",
+        )
+    page.evaluate("document.body.style.zoom = ''")
+    (evidence_root / "standalone-report-measurements.json").write_bytes(
+        canonical_json(measurements)
+    )
+
+    failures: list[str] = []
+    for name, measurement in measurements.items():
+        if measurement["scroll"] > measurement["client"]:
+            failures.append(f"{name}: document {measurement['scroll']}>{measurement['client']}")
+        for index, table in enumerate(measurement["tableRects"], start=1):
+            if (
+                table["left"] < 0
+                or table["right"] > measurement["client"]
+                or table["scrollWidth"] > table["clientWidth"]
+            ):
+                failures.append(f"{name}: profile table {index} {table}")
+        if measurement["clippedCells"]:
+            failures.append(
+                f"{name}: {measurement['clippedCells']} table cells or digests clip content"
+            )
+        if measurement["overflowingElements"]:
+            failures.append(
+                f"{name}: elements extend off-screen {measurement['overflowingElements']}"
+            )
+        if measurement["clippedTables"]:
+            failures.append(f"{name}: {measurement['clippedTables']} tables clip content")
+        if measurement["overlappingRows"]:
+            failures.append(f"{name}: {measurement['overlappingRows']} profile rows overlap")
+        if measurement["bodyFontSize"] < 14:
+            failures.append(f"{name}: body text is only {measurement['bodyFontSize']}px")
+        if measurement["bodyTextContrast"] < 4.5:
+            failures.append(f"{name}: body text contrast is {measurement['bodyTextContrast']}")
+        if measurement["mutedTextContrast"] < 4.5:
+            failures.append(f"{name}: muted text contrast is {measurement['mutedTextContrast']}")
+    if failures:
+        raise AssertionError(
+            "standalone report reflow failed: "
+            + "; ".join(failures)
+            + f"; measurements={measurements}"
+        )
+    transcript.append(
+        {
+            "step": "standalone-report-reflow",
+            "measurements": measurements,
+            "profile_tables": 3,
+            "profile_rows": sum(len(rows) for rows in expected_rows),
+            "canonical_profile_content": True,
+            "full_source_digest": True,
+            "diagram_text_alternatives": 7,
+            "controls": 0,
+        }
+    )
+
+
 def _save_answer(
     page: Page,
     base_url: str,
@@ -526,6 +752,17 @@ def _review_select_report_export(
         page.get_by_role("link", name="Download canonical JSON").click()
     json_path = evidence_root / "report.json"
     json_download.value.save_as(json_path)
+    standalone_page = page.context.new_page()
+    try:
+        _inspect_standalone_report(
+            standalone_page,
+            html_path,
+            json_path,
+            evidence_root,
+            transcript,
+        )
+    finally:
+        standalone_page.close()
 
     page.goto(f"{base_url}/engagements/{engagement_id}/archive")
     with page.expect_download() as archive_download:
@@ -739,6 +976,9 @@ def run_browser_journey(
                     console_errors=console_errors,
                     page_errors=page_errors,
                     request_failures=request_failures,
+                    allowed_file_urls={
+                        (evidence_root / "report.html").resolve().as_uri()
+                    },
                 )
                 page = plain_context.new_page()
                 _complete_plain_form_assessment(
@@ -831,6 +1071,7 @@ def run_browser_journey(
         "digests": digests,
         "transcript": transcript,
         "server_logs_clean": server_logs_clean,
+        "clean_teardown": True,
     }
     (evidence_root / "transcript.json").write_bytes(canonical_json(transcript))
     (evidence_root / "digests.json").write_bytes(canonical_json(digests))
